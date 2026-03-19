@@ -440,15 +440,6 @@
 </button>
 
 
-
-<input type="file" id="sig_upload" style="display:none" accept="image/*" onchange="handleSig(event)">
-<button onclick="document.getElementById('sig_upload').click()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
-    <i class="fas fa-signature"></i> Upload Signature
-</button>
-
-
-
-
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
 <select id="template_select" style="margin-bottom: 20px; box-shadow: 5px 5px 0px #000;">
     <option value="modern">Modern (Default)</option>
@@ -543,9 +534,6 @@
 </div>
 
 <script>
-
-    let globalSignatureBase64 = ""; // PASTE THIS HERE FIRST
-
     // --- YOUR FULL JSON INTEGRATION ---
    
   
@@ -12783,9 +12771,6 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const grandTotal = getVal('prev_total');
     const amtInWords = getVal('prev_words');
 
-
-const signatureHtml = typeof signatureImgBase64 !== 'undefined' && signatureImgBase64 ? `<img src="${signatureImgBase64}" width="130" style="display:block;">` : "";
-
     // 2. TEMPLATE ENGINE: Defines how the Word doc looks based on selection
     let templateCSS = "";
     let docBorder = "border: none;";
@@ -12890,24 +12875,9 @@ const signatureHtml = typeof signatureImgBase64 !== 'undefined' && signatureImgB
                 <div class="total-row">${taxBreakup}</div>
                 <div class="total-row grand-total">Grand Total: ${grandTotal}</div>
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
-<table align="right" style="margin-top:30pt; border-collapse:collapse; width:200pt;">
-    <tr>
-        <td align="center" style="border-bottom:1pt solid black; padding-bottom:2pt;">
-            ${signatureHtml}
-        </td>
-    </tr>
-    <tr>
-        <td align="center" style="padding-top:2pt;">
-            <strong style="font-size:10pt;">Authorised Signatory</strong><br>
-            <span style="font-size:8pt;">(For ${sName})</span>
-        </td>
-    </tr>
-</table>
             </div>
             <div class="sig-wrapper">
                 <div class="sig-box">
-
- ${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" width="150" style="display:block; margin:0 auto;">` : "<br><br>"}
                     Authorised Signatory<br>
                     <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
                 </div>
@@ -13024,6 +12994,11 @@ function saveToHistory() {
     let history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
     history.push(entry);
     localStorage.setItem('invoice_history_' + currentUserEmail, JSON.stringify(history));
+
+// ADD THIS: Saves a permanent copy for the dashboard
+    let permData = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
+    permData.push(entry);
+    localStorage.setItem('perm_analytics_' + currentUserEmail, JSON.stringify(permData));
 }
 
 
@@ -13503,6 +13478,8 @@ function toggleDashboard() {
 }
 
 function updateDashboardStats() {
+// ADD THIS: Re-routes the dashboard to read from the permanent storage
+    var history = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
     const selectedMonth = document.getElementById('dash_month_picker').value; // YYYY-MM
     if (!selectedMonth) return;
 
@@ -13533,15 +13510,20 @@ function updateDashboardStats() {
 
 
 
-let signatureImgBase64 = ""; 
-function handleSig(e) {
-    const reader = new FileReader();
-    reader.onload = (event) => { 
-        signatureImgBase64 = event.target.result; 
-        alert("Signature Attached!"); 
-    };
-    reader.readAsDataURL(e.target.files[0]);
-}
+
+
+
+
+// ADD THIS: Moves modals to bottom of body so they don't interfere with validation
+    const dashMod = document.getElementById('dashboard-modal');
+    const histMod = document.getElementById('history-modal');
+    if(dashMod) document.body.appendChild(dashMod);
+    if(histMod) document.body.appendChild(histMod);
+
+    // ADD THIS: Pre-fills the hidden dashboard date so validation doesn't see it as empty
+    if(document.getElementById('dash_month_picker')) {
+        document.getElementById('dash_month_picker').value = new Date().toISOString().slice(0, 7);
+    }
 </script>
 </body>
 </html>
