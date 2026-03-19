@@ -258,15 +258,6 @@
 
 /* Animation when switching */
 #invoice-render { transition: all 0.3s ease; }
-
-
-
-
-/* Helps the PDF engine capture the invoice correctly */
-#invoice-render {
-    background: white !important;
-    color: black !important;
-}
 </style>
 </head>
 <body>
@@ -414,17 +405,6 @@
 </button>
 
 
-
-
-<div class="section-header"><i class="fas fa-pen-fancy"></i> Digital Signature</div>
-<div style="background: white; padding: 15px; border: 2px solid black; box-shadow: 5px 5px 0px #000; margin-bottom: 20px;">
-    <input type="file" id="sig_upload" accept="image/*" onchange="processSignature(this)">
-    <p style="font-size: 0.7rem; color: #666; margin-top: 5px;">Upload a transparent PNG signature to appear in the Word doc.</p>
-</div>
-
-
-
-
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
 <select id="template_select" style="margin-bottom: 20px; box-shadow: 5px 5px 0px #000;">
     <option value="modern">Modern (Default)</option>
@@ -450,7 +430,7 @@
 
 
 
-      <button class="btn-download" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> GENERATE PDF INVOICE</button>
+        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
     </div>
 
     <!-- PREVIEW AREA -->
@@ -12838,12 +12818,10 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
             </div>
             <div class="sig-wrapper">
-          
-<div class="sig-box" style="width: 200pt; border-top: 1pt solid #000; text-align: center; padding-top: 5pt;">
-    ${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" width="120" style="display:block; margin: 0 auto 5pt auto;">` : "<br><br>"}
-    <div style="font-weight: bold; font-size: 10pt;">Authorised Signatory</div>
-    <div style="font-size: 8pt;">(For ${sName})</div>
-</div>
+                <div class="sig-box">
+                    Authorised Signatory<br>
+                    <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
+                </div>
             </div>
         </div>
     </body></html>`;
@@ -13071,144 +13049,6 @@ function applyTemplate() {
     
     // 3. Optional: Visual confirmation in console
     console.log("Applied Template: " + selected);
-}
-
-
-
-
-
-let globalSignatureBase64 = "";
-
-function processSignature(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 200; 
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                globalSignatureBase64 = canvas.toDataURL('image/png');
-                
-                // Add the signature to the LIVE PREVIEW so the PDF sees it
-                const sigContainer = document.querySelector('.sign-line');
-                sigContainer.innerHTML = `
-                    <img src="${globalSignatureBase64}" style="width:120px; display:block; margin:0 auto;">
-                    <p style="font-weight:700; font-size:0.9rem; margin:0">Authorised Signatory</p>
-                    <p id="prev_sign_for" style="font-size:0.7rem; color:#777;">(For ${document.getElementById('s_name').value})</p>
-                `;
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-
-
-
-
-
-
-function generatePDF() {
-    // 1. Validations
-    if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c_gstin]), .input-panel textarea, .input-panel select')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); 
-    if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
-
-    // 2. Save to History
-    saveToHistory();
-
-    // 3. Get Data
-    const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value || document.getElementById(id).innerText : "--";
-    const sName = getVal('s_name');
-    const sAddr = getVal('s_addr');
-    const sGst = getVal('s_gstin');
-    const invNo = getVal('inv_no');
-    const invDate = getVal('inv_date');
-    const cName = getVal('c_name');
-    const cAddr = getVal('c_addr');
-    const cGst = getVal('c_gstin');
-    const tableItems = document.getElementById('prev_table_body').innerHTML;
-    const taxableVal = getVal('prev_taxable');
-    const taxBreakup = document.getElementById('prev_gst_breakup').innerHTML;
-    const grandTotal = getVal('prev_total');
-    const amtInWords = getVal('prev_words');
-
-    // 4. Construct the HTML structure (Same as your original Word alignment)
-    const pdfContent = `
-    <div style="font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff;">
-        <div style="text-align: center; font-size: 24pt; font-weight: bold; margin-bottom: 20px;">TAX INVOICE</div>
-        
-        <table style="width: 100%; margin-bottom: 30px; border: none;">
-            <tr>
-                <td style="width: 50%; vertical-align: top;">
-                    <div style="color: #666; font-size: 9pt; margin-bottom: 5px;">BILL TO:</div>
-                    <strong>${cName}</strong><br>
-                    <span style="white-space: pre-wrap;">${cAddr}</span><br>
-                    <strong>GSTIN: ${cGst}</strong><br>
-                    Date: ${invDate}
-                </td>
-                <td style="width: 50%; text-align: right; vertical-align: top;">
-                    <div style="color: #666; font-size: 9pt; margin-bottom: 5px;">FROM:</div>
-                    <strong>${sName}</strong><br>
-                    <span style="white-space: pre-wrap;">${sAddr}</span><br>
-                    <strong>GSTIN: ${sGst}</strong><br>
-                    Invoice No: ${invNo}
-                </td>
-            </tr>
-        </table>
-
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <thead>
-                <tr style="background-color: #012951; color: white;">
-                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
-                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">HSN</th>
-                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">Qty</th>
-                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">Rate</th>
-                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${tableItems}
-            </tbody>
-        </table>
-
-        <div style="float: right; width: 250px; text-align: right;">
-            <div style="margin-bottom: 5px;">Taxable Value: ${taxableVal}</div>
-            <div style="margin-bottom: 10px;">${taxBreakup}</div>
-            <div style="font-size: 14pt; font-weight: bold; color: #007BFF; border-top: 2px solid #000; padding-top: 10px;">Grand Total: ${grandTotal}</div>
-        </div>
-
-        <div style="margin-top: 120px; clear: both; font-style: italic; font-size: 10pt; color: #444;">
-            Amount in Words: ${amtInWords}
-        </div>
-
-        <div style="margin-top: 60px; text-align: right;">
-            <div style="display: inline-block; width: 200px; text-align: center; border-top: 1px solid #000; padding-top: 10px;">
-                ${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" style="width: 120px; height: auto; margin-bottom: 5px;"><br>` : ""}
-                <strong>Authorised Signatory</strong><br>
-                <span style="font-size: 8pt; color: #666;">(For ${sName})</span>
-            </div>
-        </div>
-    </div>
-    `;
-
-    // 5. PDF Generation Settings
-    const opt = {
-        margin:       [0.4, 0.4],
-        filename:     `Invoice_${invNo}.pdf`,
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 3, useCORS: true },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    // 6. Run the engine using the string
-    html2pdf().set(opt).from(pdfContent).save();
 }
 </script>
 </body>
