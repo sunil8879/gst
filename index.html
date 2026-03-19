@@ -12821,7 +12821,10 @@ const watermarkBase64 = btoa(unescape(encodeURIComponent(svgWatermark)));
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'>
     <style>
-        body { font-family: 'Arial', sans-serif; font-size: 10pt; color: #000; }
+        body { font-family: 'Arial', sans-serif; font-size: 10pt; color: #000;    
+    background-image: url('data:image/svg+xml;base64,${watermarkBase64}');
+    background-repeat: no-repeat;
+    background-position: center center;}
         .title { text-align: center; font-size: 22pt; font-weight: bold; margin-bottom: 15pt; }
         .header-table { width: 100%; border: none; margin-bottom: 20pt; }
         .header-table td { border: none; vertical-align: top; width: 50%; font-size: 10pt; line-height: 1.4; }
@@ -12837,12 +12840,7 @@ const watermarkBase64 = btoa(unescape(encodeURIComponent(svgWatermark)));
     </style>
     </head>
     <body>
-{ 
-    font-family: Arial; font-size: 10pt; 
-    background-image: url('data:image/svg+xml;base64,${watermarkBase64}');
-    background-repeat: no-repeat;
-    background-position: center center;
-}
+
         <div style="${docBorder}">
             <div class="title">TAX INVOICE</div>
             <table class="header-table">
