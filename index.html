@@ -12758,6 +12758,23 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const selectedTpl = document.getElementById('template_select').value;
 
     const sName = getVal('s_name');
+
+
+// --- CREATE FULL-PAGE WATERMARK ---
+const canvas = document.createElement('canvas');
+canvas.width = 1600; // Size of an A4 page
+canvas.height = 2200;
+const ctx = canvas.getContext('2d');
+ctx.font = "bold 150px Arial";
+ctx.fillStyle = "rgba(240, 240, 240, 0.4)"; // Very light grey
+ctx.textAlign = "center";
+ctx.translate(800, 1100); // Center of page
+ctx.rotate(-45 * Math.PI / 180);
+ctx.fillText(sName, 0, 0);
+const watermarkData = canvas.toDataURL('image/png');
+
+
+
     const sAddr = getVal('s_addr');
     const sGst = getVal('s_gstin');
     const invNo = getVal('inv_no');
@@ -12812,7 +12829,7 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'>
     <style>
-        body { font-family: 'Arial', sans-serif; font-size: 10pt; color: #000; }
+<body background="${watermarkData}" style="background-attachment: fixed; background-repeat: no-repeat;">
         .title { text-align: center; font-size: 22pt; font-weight: bold; margin-bottom: 15pt; }
         .header-table { width: 100%; border: none; margin-bottom: 20pt; }
         .header-table td { border: none; vertical-align: top; width: 50%; font-size: 10pt; line-height: 1.4; }
