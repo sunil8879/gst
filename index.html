@@ -440,6 +440,17 @@
 </button>
 
 
+
+
+<!-- Upload Signature UI -->
+<input type="file" id="sig_file" style="display:none" accept="image/*" onchange="uploadSignature(event)">
+<button id="btn-upload-sig" onclick="document.getElementById('sig_file').click()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
+    <i class="fas fa-signature"></i> Upload Signature
+</button>
+
+
+
+
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
 <select id="template_select" style="margin-bottom: 20px; box-shadow: 5px 5px 0px #000;">
     <option value="modern">Modern (Default)</option>
@@ -12771,6 +12782,9 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const grandTotal = getVal('prev_total');
     const amtInWords = getVal('prev_words');
 
+// Add this inside exportToWord()
+const sigImgHtml = signatureBase64 ? `<img src="${signatureBase64}" style="width:150pt; height:auto; display:block; margin-left:auto; margin-right:auto;">` : "";
+
     // 2. TEMPLATE ENGINE: Defines how the Word doc looks based on selection
     let templateCSS = "";
     let docBorder = "border: none;";
@@ -12878,6 +12892,7 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
             </div>
             <div class="sig-wrapper">
                 <div class="sig-box">
+ ${sigImgHtml} 
                     Authorised Signatory<br>
                     <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
                 </div>
@@ -13494,6 +13509,30 @@ function updateDashboardStats() {
     document.getElementById('stat-count').innerText = totalCount;
     document.getElementById('stat-revenue').innerText = "₹ " + totalRevenue.toLocaleString('en-IN', {minimumFractionDigits: 2});
     document.getElementById('stat-gst').innerText = "₹ " + totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2});
+}
+
+
+
+
+
+
+
+
+
+
+
+let signatureBase64 = ""; // Global variable to store signature
+
+function uploadSignature(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            signatureBase64 = e.target.result;
+            alert("Signature uploaded successfully! It will appear in the Word Invoice.");
+        };
+        reader.readAsDataURL(file);
+    }
 }
 </script>
 </body>
