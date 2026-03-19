@@ -13050,6 +13050,108 @@ function applyTemplate() {
     // 3. Optional: Visual confirmation in console
     console.log("Applied Template: " + selected);
 }
+
+
+
+
+
+
+
+
+
+// --- AUTO-STATE POPULATION LOGIC ---
+const cityToStateMap = {
+    "mumbai": "Maharashtra", "pune": "Maharashtra", "nagpur": "Maharashtra", "nashik": "Maharashtra", "thane": "Maharashtra",
+    "delhi": "Delhi", "new delhi": "Delhi",
+    "bangalore": "Karnataka", "bengaluru": "Karnataka", "mysore": "Karnataka", "hubli": "Karnataka",
+    "chennai": "Tamil Nadu", "coimbatore": "Tamil Nadu", "madurai": "Tamil Nadu",
+    "hyderabad": "Telangana", "warangal": "Telangana",
+    "kolkata": "West Bengal", "howrah": "West Bengal",
+    "ahmedabad": "Gujarat", "surat": "Gujarat", "vadodara": "Gujarat", "rajkot": "Gujarat",
+    "jaipur": "Rajasthan", "jodhpur": "Rajasthan", "udaipur": "Rajasthan", "kota": "Rajasthan",
+    "lucknow": "Uttar Pradesh", "kanpur": "Uttar Pradesh", "noida": "Uttar Pradesh", "agra": "Uttar Pradesh", "varanasi": "Uttar Pradesh",
+    "patna": "Bihar", "gaya": "Bihar",
+    "bhopal": "Madhya Pradesh", "indore": "Madhya Pradesh", "gwalior": "Madhya Pradesh",
+    "chandigarh": "Chandigarh",
+    "kochi": "Kerala", "thiruvananthapuram": "Kerala", "kozhikode": "Kerala",
+    "amritsar": "Punjab", "ludhiana": "Punjab", "jalandhar": "Punjab",
+    "gurgaon": "Haryana", "gurugram": "Haryana", "faridabad": "Haryana", "panchkula": "Haryana",
+    "puducherry": "Puducherry",
+    "guwahati": "Assam",
+    "bhubaneswar": "Odisha", "cuttack": "Odisha",
+    "ranchi": "Jharkhand", "jamshedpur": "Jharkhand",
+    "raipur": "Chhattisgarh", "bilaspur": "Chhattisgarh",
+    "dehradun": "Uttarakhand",
+    "shimla": "Himachal Pradesh",
+    "srinagar": "Jammu and Kashmir", "jammu": "Jammu and Kashmir",
+"visakhapatnam": "Andhra Pradesh", "vijayawada": "Andhra Pradesh", "guntur": "Andhra Pradesh", "nellore": "Andhra Pradesh", "kurnool": "Andhra Pradesh", "rajahmundry": "Andhra Pradesh", "tirupati": "Andhra Pradesh", "kakinada": "Andhra Pradesh", "kadapa": "Andhra Pradesh", "anantapur": "Andhra Pradesh",
+    "panaji": "Goa", "margao": "Goa", "vasco da gama": "Goa", "mapusa": "Goa",
+    "aurangabad": "Maharashtra", "solapur": "Maharashtra", "amravati": "Maharashtra", "kolhapur": "Maharashtra", "sangli": "Maharashtra", "jalgaon": "Maharashtra", "akola": "Maharashtra", "latur": "Maharashtra", "ahmednagar": "Maharashtra", "chandrapur": "Maharashtra", "parbhani": "Maharashtra",
+    "mangalore": "Karnataka", "belgaum": "Karnataka", "davanagere": "Karnataka", "bellary": "Karnataka", "gulbarga": "Karnataka", "bijapur": "Karnataka", "shimoga": "Karnataka", "tumkur": "Karnataka", "raichur": "Karnataka", "bidar": "Karnataka", "hospet": "Karnataka",
+    "salem": "Tamil Nadu", "tiruchirappalli": "Tamil Nadu", "tiruppur": "Tamil Nadu", "erode": "Tamil Nadu", "vellore": "Tamil Nadu", "thoothukudi": "Tamil Nadu", "tirunelveli": "Tamil Nadu", "thanjavur": "Tamil Nadu", "dindigul": "Tamil Nadu", "ranipet": "Tamil Nadu",
+    "nizamabad": "Telangana", "khammam": "Telangana", "karimnagar": "Telangana", "ramagundam": "Telangana", "mahbubnagar": "Telangana", "nalgonda": "Telangana",
+    "asansol": "West Bengal", "siliguri": "West Bengal", "durgapur": "West Bengal", "bardhaman": "West Bengal", "malda": "West Bengal", "baharampur": "West Bengal", "kharagpur": "West Bengal", "haldia": "West Bengal",
+    "bhavnagar": "Gujarat", "jamnagar": "Gujarat", "junagadh": "Gujarat", "gandhinagar": "Gujarat", "anand": "Gujarat", "navsari": "Gujarat", "morbi": "Gujarat", "nadiad": "Gujarat", "bharuch": "Gujarat", "porbandar": "Gujarat",
+    "ajmer": "Rajasthan", "bikaner": "Rajasthan", "bhilwara": "Rajasthan", "alwar": "Rajasthan", "bharatpur": "Rajasthan", "sikar": "Rajasthan", "pali": "Rajasthan", "sri ganganagar": "Rajasthan",
+    "ghaziabad": "Uttar Pradesh", "meerut": "Uttar Pradesh", "aligarh": "Uttar Pradesh", "bareilly": "Uttar Pradesh", "moradabad": "Uttar Pradesh", "saharanpur": "Uttar Pradesh", "gorakhpur": "Uttar Pradesh", "jhansi": "Uttar Pradesh", "muzaffarnagar": "Uttar Pradesh", "mathura": "Uttar Pradesh", "firozabad": "Uttar Pradesh", "mirzapur": "Uttar Pradesh",
+    "bhagalpur": "Bihar", "muzaffarpur": "Bihar", "purnia": "Bihar", "darbhanga": "Bihar", "arrah": "Bihar", "begusarai": "Bihar", "katihar": "Bihar", "munger": "Bihar",
+    "jabalpur": "MP", "ujjain": "MP", "sagar": "MP", "dewas": "MP", "satna": "MP", "ratlam": "MP", "rewa": "MP", "murwara": "MP", "singrauli": "MP",
+    "patiala": "Punjab", "bathinda": "Punjab", "mohali": "Punjab", "pathankot": "Punjab", "hoshiarpur": "Punjab", "batala": "Punjab",
+    "ambala": "Haryana", "yamunanagar": "Haryana", "karnal": "Haryana", "rohtak": "Haryana", "hisar": "Haryana", "panipat": "Haryana", "sonipat": "Haryana", "rewari": "Haryana",
+    "kollam": "Kerala", "thrissur": "Kerala", "palakkad": "Kerala", "alappuzha": "Kerala", "malappuram": "Kerala", "kannur": "Kerala", "kottayam": "Kerala",
+    "silchar": "Assam", "dibrugarh": "Assam", "jorhat": "Assam", "nagaon": "Assam", "tinsukia": "Assam",
+    "rourkela": "Odisha", "berhampur": "Odisha", "sambalpur": "Odisha", "puri": "Odisha", "balasore": "Odisha",
+    "dhanbad": "Jharkhand", "bokaro": "Jharkhand", "deoghar": "Jharkhand", "hazaribagh": "Jharkhand",
+    "bhilai": "Chhattisgarh", "korba": "Chhattisgarh", "rajnandgaon": "Chhattisgarh", "durg": "Chhattisgarh",
+    "haridwar": "Uttarakhand", "roorkee": "Uttarakhand", "haldwani": "Uttarakhand", "kashipur": "Uttarakhand",
+    "imphal": "Manipur", "agartala": "Tripura", "aizawl": "Mizoram", "kohima": "Nagaland", "gangtok": "Sikkim", "shillong": "Meghalaya", "itanagar": "Arunachal Pradesh"
+};
+
+function initAutoStateDetection() {
+    const addressInputs = [
+        { addr: 's_addr', state: 's_state' }, // Seller
+        { addr: 'c_addr', state: 'c_state' }  // Customer
+    ];
+
+    addressInputs.forEach(pair => {
+        const addrElem = document.getElementById(pair.addr);
+        const stateElem = document.getElementById(pair.state);
+
+        if (addrElem && stateElem) {
+            addrElem.addEventListener('input', () => {
+                const text = addrElem.value.toLowerCase();
+                let foundMatch = false;
+
+                for (let city in cityToStateMap) {
+                    // Check if the city name exists as a standalone word in the address
+                    const regex = new RegExp("\\b" + city + "\\b", "i");
+                    if (regex.test(text)) {
+                        stateElem.value = cityToStateMap[city];
+                        // Make non-editable
+                        stateElem.style.pointerEvents = "none";
+                        stateElem.style.background = "#f1f1f1";
+                        stateElem.style.color = "#888";
+                        foundMatch = true;
+                        break;
+                    }
+                }
+
+                // If user deletes the city, unlock the state dropdown
+                if (!foundMatch) {
+                    stateElem.style.pointerEvents = "auto";
+                    stateElem.style.background = "white";
+                    stateElem.style.color = "black";
+                }
+                
+                // Trigger your existing liveUpdate to refresh the preview
+                if (typeof liveUpdate === "function") liveUpdate();
+            });
+        }
+    });
+}
+
+// Start listening as soon as the page loads
+window.addEventListener('load', initAutoStateDetection);
 </script>
 </body>
 </html>
