@@ -405,6 +405,17 @@
 </button>
 
 
+
+
+<div class="section-header"><i class="fas fa-pen-fancy"></i> Digital Signature</div>
+<div style="background: white; padding: 15px; border: 2px solid black; box-shadow: 5px 5px 0px #000; margin-bottom: 20px;">
+    <input type="file" id="sig_upload" accept="image/*" onchange="processSignature(this)">
+    <p style="font-size: 0.7rem; color: #666; margin-top: 5px;">Upload a transparent PNG signature to appear in the Word doc.</p>
+</div>
+
+
+
+
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
 <select id="template_select" style="margin-bottom: 20px; box-shadow: 5px 5px 0px #000;">
     <option value="modern">Modern (Default)</option>
@@ -12819,6 +12830,7 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
             </div>
             <div class="sig-wrapper">
                 <div class="sig-box">
+${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" style="width:120pt; height:auto; display:block; margin: 0 auto 5pt auto;"><br>` : ""}
                     Authorised Signatory<br>
                     <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
                 </div>
@@ -13049,6 +13061,20 @@ function applyTemplate() {
     
     // 3. Optional: Visual confirmation in console
     console.log("Applied Template: " + selected);
+}
+
+
+
+
+
+let globalSignatureBase64 = "";
+
+function processSignature(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) { globalSignatureBase64 = e.target.result; };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 </script>
 </body>
