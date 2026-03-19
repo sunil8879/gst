@@ -291,6 +291,41 @@
 
 
 
+<!-- Dashboard Button -->
+<button id="btn-dashboard" onclick="toggleDashboard()" style="background: var(--aqua); color: var(--black); border: 3px solid var(--black); width: 100%; padding: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 20px; box-shadow: 8px 8px 0px var(--black); text-transform: uppercase;">
+    <i class="fas fa-chart-line"></i> Open Business Dashboard
+</button>
+
+<!-- Dashboard Modal -->
+<div id="dashboard-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; padding:20px; box-sizing:border-box;">
+    <div style="background:white; max-width:600px; margin:50px auto; padding:40px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative; text-align: center;">
+        <button onclick="toggleDashboard()" style="position:absolute; top:-20px; right:-20px; background:black; color:white; border:3px solid white; padding:10px 15px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        
+        <h2 style="text-transform:uppercase; margin-top:0; border-bottom:5px solid black; padding-bottom:10px;">Analytics Dashboard</h2>
+        
+        <div style="margin: 25px 0;">
+            <label style="font-weight:800; display:block; margin-bottom:10px;">SELECT MONTH & YEAR:</label>
+            <input type="month" id="dash_month_picker" onchange="updateDashboardStats()" style="width:80%; text-align:center; font-size:1.2rem; border:3px solid black; box-shadow:5px 5px 0px black;">
+        </div>
+
+        <div id="dash-stats" style="display:grid; grid-template-columns:1fr; gap:15px; margin-top:30px;">
+            <div style="border:3px solid black; padding:15px; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.9rem; font-weight:600; color:#666;">TOTAL INVOICES</div>
+                <div id="stat-count" style="font-size:2rem; font-weight:900;">0</div>
+            </div>
+            <div style="border:3px solid black; padding:15px; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.9rem; font-weight:600; color:#666;">TOTAL REVENUE (Excl. GST)</div>
+                <div id="stat-revenue" style="font-size:2rem; font-weight:900; color:#28a745;">₹ 0.00</div>
+            </div>
+            <div style="border:3px solid black; padding:15px; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.9rem; font-weight:600; color:#666;">TOTAL GST COLLECTED</div>
+                <div id="stat-gst" style="font-size:2rem; font-weight:900; color:#007BFF;">₹ 0.00</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
         <div class="section-header"><i class="fas fa-store"></i> Seller Details</div>
@@ -12911,26 +12946,32 @@ function onGoogleLogin(response) {
 
 // Function to save current invoice to local storage
 function saveToHistory() {
-    if (!currentUserEmail) return; // Only save if logged in
+    if (!currentUserEmail) return;
 
     const products = [];
     document.querySelectorAll('[id^="name-"]').forEach(input => {
         if(input.value) products.push(input.value);
     });
 
+    // Helper to clean currency strings into numbers (₹ 50.00 -> 50.00)
+    const cleanNum = (id) => parseFloat(document.getElementById(id).innerText.replace(/[^\d.-]/g, '')) || 0;
+
     const entry = {
-        date: document.getElementById('inv_date').value || "--",
+        date: document.getElementById('inv_date').value || new Date().toISOString().split('T')[0],
         customer: document.getElementById('c_name').value || "--",
         invNo: document.getElementById('inv_no').value || "--",
-        total: document.getElementById('prev_total').innerText || "₹ 0.00",
+        taxable: cleanNum('prev_taxable'), // Revenue
+        total: cleanNum('prev_total'),    // Grand Total
         products: products.join(", ")
     };
+    // GST = Total - Taxable
+    entry.gst = entry.total - entry.taxable;
 
-    // Use email as key to keep history separate per user
     let history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
     history.push(entry);
     localStorage.setItem('invoice_history_' + currentUserEmail, JSON.stringify(history));
 }
+
 
 // Function to display history
 function toggleHistory() {
@@ -13386,6 +13427,49 @@ let hint = hsnHints[singleHsn] || hsnHints[singleHsn.substring(0, 2)] || "";
     } else {
         drop.style.display = 'none';
     }
+}
+
+
+
+
+function toggleDashboard() {
+    const modal = document.getElementById('dashboard-modal');
+    if (!currentUserEmail) return alert("Please login with Google to access the Dashboard.");
+    
+    if (modal.style.display === 'none') {
+        // Set picker to current month by default
+        const now = new Date();
+        const monthStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+        document.getElementById('dash_month_picker').value = monthStr;
+        updateDashboardStats();
+        modal.style.display = 'block';
+    } else {
+        modal.style.display = 'none';
+    }
+}
+
+function updateDashboardStats() {
+    const selectedMonth = document.getElementById('dash_month_picker').value; // YYYY-MM
+    if (!selectedMonth) return;
+
+    const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
+    
+    // Filter history based on year and month
+    const filtered = history.filter(item => item.date.startsWith(selectedMonth));
+
+    let totalCount = filtered.length;
+    let totalRevenue = 0;
+    let totalGst = 0;
+
+    filtered.forEach(item => {
+        totalRevenue += (item.taxable || 0);
+        totalGst += (item.gst || 0);
+    });
+
+    // Update UI
+    document.getElementById('stat-count').innerText = totalCount;
+    document.getElementById('stat-revenue').innerText = "₹ " + totalRevenue.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('stat-gst').innerText = "₹ " + totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
 </script>
 </body>
