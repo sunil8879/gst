@@ -12829,11 +12829,12 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
             </div>
             <div class="sig-wrapper">
-                <div class="sig-box">
-${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" style="width:120pt; height:auto; display:block; margin: 0 auto 5pt auto;"><br>` : ""}
-                    Authorised Signatory<br>
-                    <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
-                </div>
+               // FIND THIS SECTION INSIDE YOUR docContent variable in exportToWord:
+<div class="sig-box" style="width: 200pt; border-top: 1pt solid #000; text-align: center; padding-top: 5pt;">
+    ${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" width="120" style="display:block; margin: 0 auto 5pt auto;">` : "<br><br>"}
+    <div style="font-weight: bold; font-size: 10pt;">Authorised Signatory</div>
+    <div style="font-size: 8pt;">(For ${sName})</div>
+</div>
             </div>
         </div>
     </body></html>`;
@@ -13072,7 +13073,25 @@ let globalSignatureBase64 = "";
 function processSignature(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) { globalSignatureBase64 = e.target.result; };
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // AUTO-RESIZE LOGIC
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 250; // Forces signature to a manageable size
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Save the small version
+                globalSignatureBase64 = canvas.toDataURL('image/png');
+                alert("Signature optimized and uploaded!");
+            };
+            img.src = e.target.result;
+        };
         reader.readAsDataURL(input.files[0]);
     }
 }
