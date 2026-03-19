@@ -12827,32 +12827,28 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
 
 
 
-
-/* Watermark Style for Word */
-        #word-watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+.word-watermark {
+            position: absolute;
+            top: 450pt;
+            left: 0;
             width: 100%;
             text-align: center;
-            color: #f0f0f0;
+            color: #eeeeee;
             font-size: 80pt;
+            font-family: 'Arial';
             font-weight: bold;
-            z-index: -1000;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            opacity: 0.2;
-            text-transform: uppercase;
+            z-index: -1;
+            transform: rotate(-45deg);
+            opacity: 0.5;
         }
+
+
         ${templateCSS}
-
-
-
-
     </style>
     </head>
     <body>
-<div id="word-watermark">${sName}</div>
 
+<div class="word-watermark">${sName}</div>
 
 
         <div style="${docBorder}">
