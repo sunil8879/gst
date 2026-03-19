@@ -283,6 +283,33 @@
 
 /* Animation when switching */
 #invoice-render { transition: all 0.3s ease; }
+
+
+
+
+
+
+
+
+
+/* Syncing Preview with Word Output */
+#invoice-render.tpl-modern { font-family: Arial; border: 2pt solid #000; background: #fff; padding: 15pt; }
+#invoice-render.tpl-modern th { background: #7FFFD4 !important; color: #000; border: 1.5pt solid #000; }
+
+#invoice-render.tpl-simple { font-family: Arial; border: 1pt solid #ccc; background: #fafafa; }
+#invoice-render.tpl-simple th { background: #f0f0f0 !important; color: #444; border: none; border-bottom: 2pt solid #444; }
+#invoice-render.tpl-simple td { border: none; border-bottom: 1pt solid #eee; }
+
+#invoice-render.tpl-professional { font-family: 'Times New Roman'; border: 4pt double #2c3e50; background: #f4f4f4; color: #2c3e50; }
+#invoice-render.tpl-professional th { background: #2c3e50 !important; color: #fff; border: 1pt solid #fff; }
+#invoice-render.tpl-professional h2, #invoice-render.tpl-professional h1 { color: #2c3e50; }
+
+#invoice-render.tpl-retail { font-family: 'Courier New'; border: 1pt solid #000; background: #fff; }
+#invoice-render.tpl-retail th, #invoice-render.tpl-retail td { border: 1pt dashed #000; }
+
+#invoice-render.tpl-service { font-family: Verdana; border: 3pt solid #00796b; background: #e0f7fa; color: #004d40; }
+#invoice-render.tpl-service th { background: #00796b !important; color: #fff; border: 1pt solid #b2dfdb; }
+#invoice-render.tpl-service td { border: 1pt solid #b2dfdb; }
 </style>
 </head>
 <body>
@@ -12800,20 +12827,22 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     let templateCSS = "";
     let docBorder = "border: none;";
 
- if (selectedTpl === "simple") {
-        templateCSS = "body { font-family: 'Arial'; background-color: #fafafa; } .main-table th { background-color: #f0f0f0; color: #444; border: none; border-bottom: 2pt solid #444; } .main-table td { border: none; border-bottom: 1pt solid #eee; }";
+// ADD/UPDATE THIS inside exportToWord to match the Preview CSS above
+    if (selectedTpl === "simple") {
+        templateCSS = "body { font-family: Arial; background-color: #fafafa; } .main-table th { background-color: #f0f0f0; color: #444; border: none; border-bottom: 2pt solid #444; } .main-table td { border: none; border-bottom: 1pt solid #eee; }";
+        docBorder = "border: 1pt solid #ccc; padding: 15pt;";
     } else if (selectedTpl === "professional") {
-        docBorder = "border: 4pt double #2c3e50; padding: 20pt; background-color: #f4f4f4;";
-        templateCSS = "body { font-family: 'Times New Roman'; color: #2c3e50; } .main-table th { background-color: #2c3e50; color: white; } .title { color: #2c3e50; }";
+        templateCSS = "body { font-family: 'Times New Roman'; color: #2c3e50; background-color: #f4f4f4; } .main-table th { background-color: #2c3e50; color: white; border: 1pt solid white; }";
+        docBorder = "border: 4pt double #2c3e50; padding: 20pt;";
     } else if (selectedTpl === "retail") {
-        templateCSS = "body { font-family: 'Courier New'; } .main-table th, .main-table td { border: 1pt dashed black; } .title { font-size: 18pt; }";
-        docBorder = "border: 1pt solid #000; padding: 10pt;";
+        templateCSS = "body { font-family: 'Courier New'; } .main-table th, .main-table td { border: 1pt dashed black; }";
+        docBorder = "border: 1pt solid black; padding: 10pt;";
     } else if (selectedTpl === "service") {
-        templateCSS = "body { font-family: 'Verdana'; color: #004d40; } .main-table th { background-color: #00796b; color: white; } .main-table td { border: 1pt solid #b2dfdb; }";
-        docBorder = "border: 3pt solid #00796b; background-color: #e0f7fa;";
+        templateCSS = "body { font-family: Verdana; color: #004d40; background-color: #e0f7fa; } .main-table th { background-color: #00796b; color: white; border: 1pt solid #b2dfdb; } .main-table td { border: 1pt solid #b2dfdb; }";
+        docBorder = "border: 3pt solid #00796b; padding: 15pt;";
     } else { 
-        // Modern Default
-        templateCSS = "body { font-family: 'Arial'; } .main-table th { background-color: #7FFFD4; color: black; border: 1.5pt solid black; }";
+        // Modern (Default)
+        templateCSS = "body { font-family: Arial; } .main-table th { background-color: #7FFFD4; color: black; border: 1.5pt solid black; }";
         docBorder = "border: 2pt solid black; padding: 15pt;";
     }
 
@@ -13551,6 +13580,15 @@ document.getElementById('template_select').addEventListener('change', function()
 // Initialize default class on load
 window.addEventListener('load', () => {
     document.getElementById('invoice-render').classList.add('tpl-modern');
+});
+
+
+
+// ADD THIS: Changes the screen preview class when dropdown changes
+document.getElementById('template_select').addEventListener('change', function() {
+    const p = document.getElementById('invoice-render');
+    p.classList.remove('tpl-modern', 'tpl-simple', 'tpl-professional', 'tpl-retail', 'tpl-service');
+    p.classList.add('tpl-' + this.value);
 });
 </script>
 </body>
