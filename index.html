@@ -10,6 +10,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
  <style>
+
+/* MODERN (Default) */
+#invoice-render.tpl-modern { font-family: 'Poppins', sans-serif; background: #ffffff; border: 3px solid #000; }
+#invoice-render.tpl-modern th { background: #7FFFD4 !important; color: #000; border: 2px solid #000; }
+
+/* SIMPLE AND CLEAN */
+#invoice-render.tpl-simple { font-family: 'Helvetica', Arial, sans-serif; background: #fafafa; border: 1px solid #cccccc; }
+#invoice-render.tpl-simple th { background: #f0f0f0 !important; color: #444; border-bottom: 2px solid #444; border-top: none; border-left: none; border-right: none; }
+#invoice-render.tpl-simple td { border: none; border-bottom: 1px solid #eee; }
+
+/* CORPORATE AND PROFESSIONAL */
+#invoice-render.tpl-professional { font-family: 'Times New Roman', serif; background: #f4f4f4; border: 6px double #2c3e50; color: #2c3e50; }
+#invoice-render.tpl-professional th { background: #2c3e50 !important; color: #ffffff; border: 1px solid #ffffff; text-transform: uppercase; }
+#invoice-render.tpl-professional .grand-total { color: #c0392b; border-top: 4px solid #2c3e50; }
+
+/* RETAIL RECEIPT */
+#invoice-render.tpl-retail { font-family: 'Courier New', monospace; background: #fff; border: 2px dashed #000; }
+#invoice-render.tpl-retail th { background: transparent !important; color: #000; border: 1px dashed #000; }
+#invoice-render.tpl-retail td { border: 1px dashed #000; }
+#invoice-render.tpl-retail h1, #invoice-render.tpl-retail h2 { letter-spacing: -1px; }
+
+/* SERVICE FOCUSSED */
+#invoice-render.tpl-service { font-family: 'Verdana', sans-serif; background: #e0f7fa; border: 3px solid #00796b; color: #004d40; }
+#invoice-render.tpl-service th { background: #00796b !important; color: white; border-radius: 0; border: none; }
+#invoice-render.tpl-service td { border-bottom: 1px solid #b2dfdb; border-left: 1px solid #b2dfdb; border-right: 1px solid #b2dfdb; }
     :root {
         --aqua: #7FFFD4;
         --black: #000000;
@@ -12775,36 +12800,21 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     let templateCSS = "";
     let docBorder = "border: none;";
 
-    if (selectedTpl === "simple") {
-        templateCSS = `
-            .main-table th { background: white !important; color: black !important; border: none !important; border-bottom: 2pt solid black !important; }
-            .main-table td { border: none !important; border-bottom: 1pt solid #ddd !important; }
-            .title { text-align: left; border-bottom: 1pt solid black; padding-bottom: 10pt; }
-        `;
+ if (selectedTpl === "simple") {
+        templateCSS = "body { font-family: 'Arial'; background-color: #fafafa; } .main-table th { background-color: #f0f0f0; color: #444; border: none; border-bottom: 2pt solid #444; } .main-table td { border: none; border-bottom: 1pt solid #eee; }";
     } else if (selectedTpl === "professional") {
-        docBorder = "border: 6pt double #000; padding: 20pt;";
-        templateCSS = `
-            body { font-family: 'Times New Roman', serif; }
-            .main-table th { background: #333 !important; }
-            .title { text-transform: uppercase; letter-spacing: 5pt; }
-        `;
+        docBorder = "border: 4pt double #2c3e50; padding: 20pt; background-color: #f4f4f4;";
+        templateCSS = "body { font-family: 'Times New Roman'; color: #2c3e50; } .main-table th { background-color: #2c3e50; color: white; } .title { color: #2c3e50; }";
     } else if (selectedTpl === "retail") {
-        templateCSS = `
-            body { font-family: 'Courier New', monospace; font-size: 9pt; }
-            .main-table th, .main-table td { padding: 3pt !important; border: 1pt dashed black !important; }
-            .title { font-size: 16pt; }
-        `;
+        templateCSS = "body { font-family: 'Courier New'; } .main-table th, .main-table td { border: 1pt dashed black; } .title { font-size: 18pt; }";
+        docBorder = "border: 1pt solid #000; padding: 10pt;";
     } else if (selectedTpl === "service") {
-        templateCSS = `
-            .main-table th { background: #7FFFD4 !important; color: black !important; }
-            .main-table td:first-child { font-weight: bold; background: #f9f9f9; }
-        `;
+        templateCSS = "body { font-family: 'Verdana'; color: #004d40; } .main-table th { background-color: #00796b; color: white; } .main-table td { border: 1pt solid #b2dfdb; }";
+        docBorder = "border: 3pt solid #00796b; background-color: #e0f7fa;";
     } else { 
-        // Modern (Default)
-        templateCSS = `
-            .main-table th { background-color: #012951; color: white; }
-            .grand-total { color: #007BFF; }
-        `;
+        // Modern Default
+        templateCSS = "body { font-family: 'Arial'; } .main-table th { background-color: #7FFFD4; color: black; border: 1.5pt solid black; }";
+        docBorder = "border: 2pt solid black; padding: 15pt;";
     }
 
     // 3. CONSTRUCT THE DOCUMENT
@@ -13524,6 +13534,24 @@ function updateDashboardStats() {
     if(document.getElementById('dash_month_picker')) {
         document.getElementById('dash_month_picker').value = new Date().toISOString().slice(0, 7);
     }
+
+
+
+
+
+// Add this inside your existing script
+document.getElementById('template_select').addEventListener('change', function() {
+    const preview = document.getElementById('invoice-render');
+    // Remove all possible template classes
+    preview.classList.remove('tpl-modern', 'tpl-simple', 'tpl-professional', 'tpl-retail', 'tpl-service');
+    // Add the selected one
+    preview.classList.add('tpl-' + this.value);
+});
+
+// Initialize default class on load
+window.addEventListener('load', () => {
+    document.getElementById('invoice-render').classList.add('tpl-modern');
+});
 </script>
 </body>
 </html>
