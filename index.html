@@ -441,7 +441,7 @@
 
 
 
-        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
+      <button class="btn-download" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> GENERATE PDF INVOICE</button>
     </div>
 
     <!-- PREVIEW AREA -->
@@ -12829,7 +12829,7 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
             </div>
             <div class="sig-wrapper">
-               // FIND THIS SECTION INSIDE YOUR docContent variable in exportToWord:
+          
 <div class="sig-box" style="width: 200pt; border-top: 1pt solid #000; text-align: center; padding-top: 5pt;">
     ${globalSignatureBase64 ? `<img src="${globalSignatureBase64}" width="120" style="display:block; margin: 0 auto 5pt auto;">` : "<br><br>"}
     <div style="font-weight: bold; font-size: 10pt;">Authorised Signatory</div>
@@ -13076,24 +13076,57 @@ function processSignature(input) {
         reader.onload = function(e) {
             const img = new Image();
             img.onload = function() {
-                // AUTO-RESIZE LOGIC
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 250; // Forces signature to a manageable size
+                const MAX_WIDTH = 200; 
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
-
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Save the small version
                 globalSignatureBase64 = canvas.toDataURL('image/png');
-                alert("Signature optimized and uploaded!");
+                
+                // Add the signature to the LIVE PREVIEW so the PDF sees it
+                const sigContainer = document.querySelector('.sign-line');
+                sigContainer.innerHTML = `
+                    <img src="${globalSignatureBase64}" style="width:120px; display:block; margin:0 auto;">
+                    <p style="font-weight:700; font-size:0.9rem; margin:0">Authorised Signatory</p>
+                    <p id="prev_sign_for" style="font-size:0.7rem; color:#777;">(For ${document.getElementById('s_name').value})</p>
+                `;
             };
             img.src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+
+
+
+
+
+
+function generatePDF() {
+    // 1. Validations (One-liner you requested)
+    if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c_gstin]), .input-panel textarea, .input-panel select')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
+
+    // 2. Save to History
+    saveToHistory();
+
+    // 3. Generate PDF from the Preview Panel
+    const element = document.getElementById('invoice-render');
+    const invNo = document.getElementById('inv_no').value;
+    
+    const opt = {
+        margin:       [0.5, 0.5],
+        filename:     `Invoice_${invNo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Run the PDF generation
+    html2pdf().set(opt).from(element).save();
 }
 </script>
 </body>
