@@ -488,10 +488,29 @@
 
 
 
+<!-- ADD THIS below the inv_date input -->
+<div style="margin-top:15px;">
+    <input type="file" id="sig_input" style="display:none" accept="image/*" onchange="processSignature(event)">
+    <button onclick="document.getElementById('sig_input').click()" style="background: var(--aqua); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
+        <i class="fas fa-file-upload"></i> Upload Signature
+    </button>
+</div>
+
+
+
+
+
+
 <!-- History Button -->
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
     <i class="fas fa-history"></i> View Invoice History
 </button>
+
+
+
+
+
+
 
 
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
@@ -12825,6 +12844,9 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const grandTotal = getVal('prev_total');
     const amtInWords = getVal('prev_words');
 
+// This creates the rectangle and centers the image inside it
+const sigBoxHtml = signatureData ? `<img src="${signatureData}" style="max-height:50pt; width:auto;">` : "Signature Area";
+
     // 2. TEMPLATE ENGINE: Defines how the Word doc looks based on selection
     let templateCSS = "";
     let docBorder = "border: none;";
@@ -12892,6 +12914,9 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
 
 
         <div style="${docBorder}">
+            <!-- CENTERED HORIZONTAL WATERMARK -->
+            <div style="position:absolute; top:150mm; width:100%; text-align:center; color:#e0e0e0; font-size:80pt; font-weight:bold; z-index:-1; text-transform:uppercase; font-family:Arial;">${sName}</div>
+
             <div class="title">TAX INVOICE</div>
             <table class="header-table">
                 <tr>
@@ -12915,12 +12940,21 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
                 <div class="total-row grand-total">Grand Total: ${grandTotal}</div>
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
             </div>
-            <div class="sig-wrapper">
-                <div class="sig-box">
-                    Authorised Signatory<br>
-                    <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
-                </div>
-            </div>
+
+            <!-- SIGNATURE RECTANGLE BOX SECTION -->
+            <table align="right" style="margin-top:20pt; width:180pt; border-collapse:collapse;">
+                <tr>
+                    <td align="center" style="border:1pt solid black; height:60pt; vertical-align:middle;">
+                        ${(typeof signatureData !== 'undefined' && signatureData) ? `<img src="${signatureData}" style="max-height:50pt; width:auto;">` : "SIGN HERE"}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding-top:5pt;">
+                        <strong style="font-size:10pt;">Authorised Signatory</strong><br>
+                        <span style="font-size:8pt;">(For ${sName})</span>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body></html>`;
 
@@ -13581,6 +13615,24 @@ document.getElementById('template_select').addEventListener('change', function()
 window.addEventListener('load', () => {
     document.getElementById('invoice-render').classList.add('tpl-modern');
 });
+
+
+
+
+
+
+
+
+
+let signatureData = ""; 
+function processSignature(e) {
+    const reader = new FileReader();
+    reader.onload = (event) => { 
+        signatureData = event.target.result; 
+        alert("Signature captured successfully! It will now appear in the rectangle in your Word Document."); 
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}
 </script>
 </body>
 </html>
