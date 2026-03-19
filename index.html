@@ -13188,6 +13188,188 @@ if (!foundMatch) { stateElem.style.pointerEvents = "auto"; stateElem.style.backg
 
 // Start listening as soon as the page loads
 window.addEventListener('load', initAutoStateDetection);
+
+
+
+
+
+
+
+
+
+
+
+
+// --- SMART DYNAMIC HSN DESCRIPTOR ENGINE ---
+const hsnHints = {
+    // Fish & Seafood (030x)
+    "0303": "(Frozen/Chilled)", "0304": "(Fillets/Minced)", "0305": "(Dried/Salted/Smoked)",
+    "0306": "(Crustaceans - Shrimp/Lobster)", "0307": "(Molluscs - Snail/Oyster)", "0308": "(Aquatic Invertebrates)", "0309": "(Flours/Pellets of Fish)",
+    // Meat (020x)
+    "0202": "(Frozen Beef)", "0203": "(Pork)", "0204": "(Lamb/Mutton)", "0205": "(Horse/Mule)", "0206": "(Edible Offal)",
+    "0207": "(Poultry/Chicken)", "0208": "(Other Meat)", "0209": "(Pig/Poultry Fat)", "0210": "(Salted/Brined/Smoked)",
+    // Software
+    "9973": "(Online License/SaaS/Service)", "8523": "(Physical CD/DVD/USB Drive)",
+    // Dairy (040x)
+    "0401": "(Fresh Milk/Cream)", "0402": "(Powdered/Concentrated)", "0403": "(Yoghurt/Buttermilk)", "0404": "(Whey Products)", 
+    "0405": "(Butter/Ghee)", "0406": "(Cheese/Paneer)",
+    // Veg & Fruits
+    "0710": "(Frozen Veg)", "0711": "(Provisionally Preserved)", "0712": "(Dried Veg)", "0713": "(Pulses/Dal)", "0714": "(Roots/Tubers)",
+    "0811": "(Frozen Fruit)", "0812": "(Preserved Fruit)", "0813": "(Dried Fruit/Nuts)", "0814": "(Peel of Citrus/Melons)",
+    // Cereals & Milling (10x, 11x)
+    "1001": "(Wheat)", "1005": "(Maize/Corn)", "1006": "(Rice)", "1101": "(Wheat Flour/Atta)", "1102": "(Cereal Flour)", "1103": "(Suji/Dalia)",
+    // Fertilizers
+    "3101": "(Animal/Veg Fertilizer)", "3102": "(Nitrogenous)", "3103": "(Phosphatic)", "3104": "(Potassic)", "3105": "(Mixed/NPK)",
+
+
+// --- NEW HSN HINTS (Dynamic Categories) ---
+    // Animals & Animal Products
+    "01": "(Live Animals)", 
+    "05": "(Bones/Organs/Animal Waste)",
+    "06": "(Live Plants/Cut Flowers)",
+    // Spices & Spreads (09)
+    "0901": "(Coffee Beans)", "0902": "(Tea Leaves)", "0904": "(Pepper/Chilli)", "0906": "(Cinnamon)", "0907": "(Cloves)", "0908": "(Cardamom)", "0910": "(Turmeric/Ginger/Spices)",
+    // Seeds & Industrial Veg
+    "12": "(Oil Seeds/Medicinal Plants)",
+    "13": "(Gums/Resins/Heeng)",
+    "14": "(Bidi Leaves/Broom Material)",
+    "15": "(Cooking Oil/Vanaspati/Fats)",
+    // Processed Foods
+    "16": "(Processed Meat/Fish/Sausage)",
+    "1701": "(Sugar/Jaggery)", "1702": "(Syrups/Honey Mix)", "1704": "(Candy/Chocolates)",
+    "18": "(Cocoa/Chocolate)",
+    "1902": "(Pasta/Noodles)", "1904": "(Cornflakes/Puffed Rice)", "1905": "(Biscuits/Cakes/Bread/Papad)",
+    "20": "(Pickles/Jams/Juices)",
+    "2103": "(Sauces/Ketchup/Vinegar)", "2104": "(Soups/Broths)", "2105": "(Ice Cream)", "2106": "(Namkeen/Sweets/Batter)",
+    "22": "(Water/Soft Drinks/Alcohol)",
+    "23": "(Animal Feed/Oil Cake)",
+    "24": "(Tobacco/Cigarettes/Biri)",
+    // Minerals & Construction
+    "2501": "(Salt)", "2515": "(Marble/Stone)", "2516": "(Granite)", "2523": "(Cement)",
+    "26": "(Metal Ores/Minerals)",
+    "27": "(Coal/LPG/Petrol/Gas)",
+    // Chemicals & Pharma
+    "28": "(Inorganic Chemicals)", "29": "(Organic Chemicals)",
+    "30": "(Medicines/Vaccines/Pharma)",
+    "32": "(Paints/Varnish/Inks)",
+    "33": "(Perfumes/Makeup/Shampoo/Oil)",
+    "34": "(Soap/Detergent/Wax)",
+    "35": "(Glues/Adhesives/Enzymes)",
+    "36": "(Matches/Fireworks)",
+    "37": "(Photo Film/X-Ray Plates)",
+    "38": "(Pesticides/Disinfectants)",
+    // Plastics & Rubber
+    "39": "(Plastic Goods/PVC/Sheets)",
+    "40": "(Rubber/Tyres/Bands/Gloves)",
+    // Leather & Wood
+    "41": "(Raw Hides/Leather)", "42": "(Bags/Wallets/Belts)", 
+    "44": "(Plywood/Wood Tools/Frames)",
+    "48": "(Notebooks/Paper/Cartons/Labels)",
+    "49": "(Books/Maps/Stamps/Calendars)",
+    // Textiles & Apparel
+    "50": "(Silk)", "51": "(Wool)", "52": "(Cotton)", "54": "(Synthetic Yarn)", "55": "(Staple Fibre)",
+    "57": "(Carpets/Mats)", "58": "(Embroidery/Lace/Zari)",
+    "61": "(Clothing - Knitted)", "62": "(Clothing - Woven)", "63": "(Curtains/Made-up Textiles)",
+    // Footwear & Headgear
+    "64": "(Shoes/Slippers/Sandals)",
+    "65": "(Hats/Caps)",
+    "66": "(Umbrellas/Walking Sticks)",
+    "68": "(Stone Inlay/Abrasives)",
+    "69": "(Tiles/Ceramic Pots/Sinks)",
+    "70": "(Glassware/Mirrors/Bangles)",
+    // Metals & Jewelry
+    "71": "(Gold/Silver/Jewelry/Pearls)",
+    "72": "(Iron/Steel Raw)", "73": "(Nails/Screws/Steel Utensils)",
+    "74": "(Copper Utensils/Wire)", "76": "(Aluminium Foil/Utensils)",
+    "82": "(Knives/Spoons/Hand Tools)", "83": "(Locks/Bells/Signage)",
+    // Machinery & Electronics
+    "84": "(Engines/Pumps/Laptops/Boilers)",
+    "85": "(Mobiles/Batteries/TVs/Wires)",
+    // Vehicles
+    "86": "(Railway Equipment)",
+    "87": "(Cars/Bikes/Tractors/Cycles)",
+    "88": "(Aircraft/Drones/Helicopters)",
+    "89": "(Ships/Boats)",
+    // Specialized Tools
+    "90": "(Lens/Spectacles/Medical Devices)",
+    "91": "(Wrist Watches/Clocks)",
+    "92": "(Musical Instruments)",
+    "93": "(Arms/Ammunition)",
+    "94": "(Furniture/Lights/Mattress)",
+    "95": "(Toys/Games/Sports Goods)",
+    "96": "(Pens/Combs/Brushes/Zippers)",
+    "97": "(Paintings/Statues/Antiques)",
+    "98": "(Laboratory/Personal Items)"
+};
+
+function searchJson(id) {
+    const q = document.getElementById(`name-${id}`).value.toLowerCase();
+    const drop = document.getElementById(`res-${id}`);
+    drop.innerHTML = '';
+    if (q.length < 2) { drop.style.display = 'none'; return; }
+
+    let results = [];
+
+    gstDatabase.forEach(item => {
+        if (item.goods_name.toLowerCase().includes(q)) {
+            // Split multiple HSNs in one entry
+            const splitHsns = item.hsn_code.split(/[\/,]/);
+            
+            splitHsns.forEach(hsn => {
+                const singleHsn = hsn.trim();
+                if (singleHsn) {
+                    // DYNAMIC KEYWORD LOOKUP
+                    // Check if we have a hint for this specific 4-digit code
+                    let hint = hsnHints[singleHsn] || ""; 
+                    
+                    // If no 4-digit hint, check the 2-digit category hint
+                    if (!hint) hint = hsnHints[singleHsn.substring(0, 2)] || "";
+
+                    results.push({
+                        displayName: item.goods_name + " " + hint,
+                        hsn: singleHsn,
+                        fullData: item
+                    });
+                }
+            });
+        }
+    });
+
+    const finalMatches = results.slice(0, 15);
+
+    if (finalMatches.length > 0) {
+        drop.style.display = 'block';
+        finalMatches.forEach(match => {
+            const div = document.createElement('div');
+            div.className = 'search-item';
+            div.style.color = "black";
+            div.style.padding = "10px";
+            div.style.borderBottom = "1px solid #000";
+            div.style.cursor = "pointer";
+            div.style.backgroundColor = "white";
+            
+            // Format the dropdown to be super clear for the shopkeeper
+            div.innerHTML = `
+                <div style="font-weight:900;">${match.displayName}</div>
+                <div style="font-size:0.8rem;">HSN CODE: <strong>${match.hsn}</strong> | GST: ${match.fullData.igst}</div>
+            `;
+            
+            div.onclick = () => {
+                document.getElementById(`name-${id}`).value = match.displayName;
+                document.getElementById(`hsn-${id}`).value = match.hsn;
+                document.getElementById(`gst-str-${id}`).value = match.fullData.igst;
+                document.getElementById(`cgst-${id}`).value = match.fullData.cgst;
+                document.getElementById(`sgst-${id}`).value = match.fullData.sgst;
+                document.getElementById(`igst-${id}`).value = match.fullData.igst;
+                drop.style.display = 'none';
+                if (typeof liveUpdate === "function") liveUpdate();
+            };
+            drop.appendChild(div);
+        });
+    } else {
+        drop.style.display = 'none';
+    }
+}
 </script>
 </body>
 </html>
