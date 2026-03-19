@@ -13299,7 +13299,28 @@ const hsnHints = {
     "95": "(Toys/Games/Sports Goods)",
     "96": "(Pens/Combs/Brushes/Zippers)",
     "97": "(Paintings/Statues/Antiques)",
-    "98": "(Laboratory/Personal Items)"
+    "98": "(Laboratory/Personal Items)",
+
+
+// --- FINAL COMPLETION CODES ---
+    "28": "(Industrial Chemicals/Gases)",
+    "29": "(Organic/Lab Chemicals)",
+    "31": "(Fertilizers/Manure)",
+    "43": "(Furskins/Artificial Fur)",
+    "45": "(Cork Products)",
+    "46": "(Straw/Bamboo/Wickerware)",
+    "47": "(Paper Pulp/Waste)",
+    "53": "(Jute/Flax/Hemp)",
+    "56": "(Twine/Rope/Wadding)",
+    "59": "(Industrial/Coated Fabrics)",
+    "60": "(Knitted Fabrics)",
+    "67": "(Wigs/False Flowers/Feathers)",
+    "75": "(Nickel Products)",
+    "78": "(Lead Products)",
+    "79": "(Zinc Products)",
+    "80": "(Tin Products)",
+    "81": "(Other Base Metals - Titanium/Magnesium)",
+    "99": "(Service/Labour/Consultancy)"
 };
 
 function searchJson(id) {
@@ -13318,12 +13339,8 @@ function searchJson(id) {
             splitHsns.forEach(hsn => {
                 const singleHsn = hsn.trim();
                 if (singleHsn) {
-                    // DYNAMIC KEYWORD LOOKUP
-                    // Check if we have a hint for this specific 4-digit code
-                    let hint = hsnHints[singleHsn] || ""; 
                     
-                    // If no 4-digit hint, check the 2-digit category hint
-                    if (!hint) hint = hsnHints[singleHsn.substring(0, 2)] || "";
+let hint = hsnHints[singleHsn] || hsnHints[singleHsn.substring(0, 2)] || "";
 
                     results.push({
                         displayName: item.goods_name + " " + hint,
