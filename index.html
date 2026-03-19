@@ -12715,6 +12715,7 @@ function searchJson(id) {
     }
 
 function exportToWord() {
+if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c_gstin]), .input-panel textarea, .input-panel select')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
     // 1. Save to history first
     saveToHistory();
 
