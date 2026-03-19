@@ -262,6 +262,8 @@
 </head>
 <body>
 
+ ${watermarkVML}
+
 <div class="navbar">
     <h1>SMART INVOICE GENERATOR</h1>
 </div>
@@ -12806,6 +12808,30 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
             .grand-total { color: #007BFF; }
         `;
     }
+
+
+
+
+// 1. ADD THIS PART BEFORE 'const docContent'
+const watermarkVML = `
+    <!--[if gte vml 1]>
+    <v:rect id="Watermark" style='position:absolute;left:0;top:0;width:600pt;height:800pt;z-index:-1;visibility:visible;mso-wrap-style:square;mso-width-percent:0;mso-height-percent:0;mso-mount-point-horizontal:center;mso-mount-point-vertical:center' filled="f" stroked="f">
+        <v:fill on="f" />
+        <v:shape id="TextWatermark" style='position:absolute;left:50pt;top:300pt;width:500pt;height:150pt;z-index:-1;rotation:-45' coordsize="21600,21600" fillcolor="#f0f0f0" stroked="f">
+            <v:path textpathok="t" />
+            <v:textpath on="t" string="${sName}" style='font-family:"Arial";font-size:48pt;font-weight:bold;opacity:0.2' />
+        </v:shape>
+    </v:rect>
+    <![endif]-->
+`;
+
+// 2. INSERT '${watermarkVML}' AT THE TOP OF YOUR <body> TAG
+// Example:
+// <body>
+//    ${watermarkVML}
+//    <h1 align="center">TAX INVOICE</h1> ...
+
+
 
     // 3. CONSTRUCT THE DOCUMENT
     const docContent = `
