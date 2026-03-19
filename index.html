@@ -13483,7 +13483,7 @@ function updateDashboardStats() {
     const selectedMonth = document.getElementById('dash_month_picker').value; // YYYY-MM
     if (!selectedMonth) return;
 
-    const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
+    //const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
     
     // Filter history based on year and month
     const filtered = history.filter(item => item.date.startsWith(selectedMonth));
