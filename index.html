@@ -12906,6 +12906,7 @@ function searchJson(id) {
         document.getElementById('prev_taxable').innerText = "₹ " + subtotal.toFixed(2);
         document.getElementById('prev_total').innerText = "₹ " + grand.toFixed(2);
         document.getElementById('prev_words').innerText = numberToWords(Math.round(grand)) + " Rupees Only";
+saveProfileData(); // Add this line
     }
 
     function numberToWords(n) {
@@ -13158,6 +13159,7 @@ function onGoogleLogin(response) {
     document.getElementById('user-display-name').innerText = user.name;
     
     currentUserEmail = user.email; // Store email to filter history
+loadProfileData(); // Add this line
 }
 
 // Function to save current invoice to local storage
@@ -13950,6 +13952,64 @@ function showLegal(type) {
 
 function closeLegal() {
     document.getElementById('legal-modal').style.display = 'none';
+}
+
+
+
+
+
+
+// --- AUTO-SAVE & PROFILE PERSISTENCE LOGIC ---
+
+function saveProfileData() {
+    if (!currentUserEmail) return; // Only save if logged in
+    
+    const profile = {
+        sName: document.getElementById('s_name').value,
+        sAddr: document.getElementById('s_addr').value,
+        sGstin: document.getElementById('s_gstin').value,
+        sState: document.getElementById('s_state').value,
+        cName: document.getElementById('c_name').value,
+        cAddr: document.getElementById('c_addr').value,
+        cGstin: document.getElementById('c_gstin').value,
+        cState: document.getElementById('c_state').value,
+        signature: globalSignatureBase64 // Save the drawn signature
+    };
+    
+    localStorage.setItem('profile_' + currentUserEmail, JSON.stringify(profile));
+}
+
+function loadProfileData() {
+    const savedData = localStorage.getItem('profile_' + currentUserEmail);
+    if (!savedData) return;
+    
+    const profile = JSON.parse(savedData);
+    
+    // Fill Seller Fields
+    document.getElementById('s_name').value = profile.sName || "";
+    document.getElementById('s_addr').value = profile.sAddr || "";
+    document.getElementById('s_gstin').value = profile.sGstin || "";
+    document.getElementById('s_state').value = profile.sState || "";
+    
+    // Fill Customer Fields
+    document.getElementById('c_name').value = profile.cName || "";
+    document.getElementById('c_addr').value = profile.cAddr || "";
+    document.getElementById('c_gstin').value = profile.cGstin || "";
+    document.getElementById('c_state').value = profile.cState || "";
+    
+    // Restore Signature
+    if (profile.signature) {
+        globalSignatureBase64 = profile.signature;
+        const img = new Image();
+        img.onload = function() {
+            sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+            sigCtx.drawImage(img, 0, 0);
+        };
+        img.src = profile.signature;
+    }
+    
+    // Update the live preview
+    liveUpdate();
 }
 </script>
 </body>
