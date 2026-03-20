@@ -554,6 +554,14 @@
 
 
 
+<!-- Inventory Tracker Button -->
+<button id="btn-inventory" onclick="toggleInventory()" style="background: var(--aqua); color: var(--black); border: 3px solid var(--black); width: 100%; padding: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 8px 8px 0px var(--black); text-transform: uppercase;">
+    <i class="fas fa-boxes"></i> Inventory Tracker
+</button>
+
+
+
+
         <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
     </div>
 
@@ -621,6 +629,57 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+<!-- Inventory Modal -->
+<div id="inventory-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:20000; padding:10px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:1100px; margin:20px auto; padding:25px; border:4px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative;">
+        <button onclick="toggleInventory()" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        
+        <h2 style="border-bottom:5px solid var(--aqua); padding-bottom:10px; margin-top:0;">📦 INVENTORY MANAGEMENT</h2>
+        
+        <!-- Filter & Add Row -->
+        <div style="display:flex; flex-wrap:wrap; gap:15px; background:#f9f9f9; padding:20px; border:2px solid black; margin-bottom:20px;">
+            <div style="flex:1; min-width:200px;">
+                <label>View Month:</label>
+                <input type="month" id="inv_filter_month" onchange="renderInventory()" style="width:100%; box-shadow:3px 3px 0px black;">
+            </div>
+            <div style="flex:2; min-width:300px; text-align:right; align-self:flex-end;">
+                <button onclick="addNewInventoryRow()" style="background:var(--black); color:var(--aqua); padding:10px 20px; font-weight:800; cursor:pointer; border:none; box-shadow:4px 4px 0px #666;">+ ADD VENDOR RECORD</button>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; background:white; font-size:0.85rem;">
+                <thead>
+                    <tr style="background:var(--black); color:var(--white);">
+                        <th style="padding:10px; border:1px solid black;">Date</th>
+                        <th style="padding:10px; border:1px solid black;">Vendor</th>
+                        <th style="padding:10px; border:1px solid black;">WA</th>
+                        <th style="padding:10px; border:1px solid black;">Item Name</th>
+                        <th style="padding:10px; border:1px solid black;">Code</th>
+                        <th style="padding:10px; border:1px solid black; background:#444;">Opening</th>
+                        <th style="padding:10px; border:1px solid black;">Utilised</th>
+                        <th style="padding:10px; border:1px solid black;">Added</th>
+                        <th style="padding:10px; border:1px solid black; background:#444;">Balance</th>
+                        <th style="padding:10px; border:1px solid black;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-items-body">
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
 
 <script>
     // --- YOUR FULL JSON INTEGRATION ---
@@ -13718,6 +13777,117 @@ installBtn.addEventListener('click', async () => {
         deferredPrompt = null;
     }
 });
+
+
+
+
+
+
+
+
+function toggleInventory() {
+    if (!currentUserEmail) return alert("ACCESS DENIED: Please login with Google first.");
+    const modal = document.getElementById('inventory-modal');
+    if (modal.style.display === 'none') {
+        const now = new Date();
+        document.getElementById('inv_filter_month').value = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+        renderInventory();
+        modal.style.display = 'block';
+    } else {
+        modal.style.display = 'none';
+    }
+}
+
+function getOpeningStock(itemCode, currentMonth) {
+    const history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
+    // Get previous month string
+    const d = new Date(currentMonth + "-01");
+    d.setMonth(d.getMonth() - 1);
+    const prevMonthStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+
+    // Find the LAST record for this item code in the PREVIOUS month
+    const prevMonthRecords = history.filter(r => r.itemCode === itemCode && r.date.startsWith(prevMonthStr));
+    if (prevMonthRecords.length > 0) {
+        return prevMonthRecords[prevMonthRecords.length - 1].balance;
+    }
+    return 100; // Default if no previous history
+}
+
+function addNewInventoryRow() {
+    const date = new Date().toISOString().split('T')[0];
+    const month = date.substring(0, 7);
+    const vName = prompt("Enter Vendor Name:");
+    if (!vName) return;
+    const vPhone = prompt("Enter 10-digit WhatsApp Number:");
+    if (!/^\d{10}$/.test(vPhone)) return alert("Invalid Phone! 10 digits required.");
+    const iName = prompt("Enter Item Name:");
+    const iCode = prompt("Enter Item Code:");
+    
+    const opening = getOpeningStock(iCode, month);
+    const utilised = parseInt(prompt("Stock Utilised:") || 0);
+    const added = parseInt(prompt("Stock Added:") || 0);
+    const balance = opening - utilised + added;
+
+    const record = { date, vName, vPhone, iName, itemCode: iCode, opening, utilised, added, balance };
+    
+    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
+    history.push(record);
+    localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
+    renderInventory();
+}
+
+function renderInventory() {
+    const selectedMonth = document.getElementById('inv_filter_month').value;
+    const history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
+    const filtered = history.filter(r => r.date.startsWith(selectedMonth));
+    const tbody = document.getElementById('inventory-items-body');
+    tbody.innerHTML = '';
+
+    filtered.forEach((r, idx) => {
+        const isLow = r.balance < 10;
+        const row = `
+            <tr style="border-bottom:1px solid black; ${isLow ? 'background:#fffafa;' : ''}">
+                <td style="padding:10px; border:1px solid black;">${r.date}</td>
+                <td style="padding:10px; border:1px solid black;">${r.vName}</td>
+                <td style="padding:10px; border:1px solid black; text-align:center;">
+                    <a href="https://wa.me/91${r.vPhone}" target="_blank" style="color:#25D366; font-size:1.2rem;"><i class="fab fa-whatsapp"></i></a>
+                </td>
+                <td style="padding:10px; border:1px solid black; ${isLow ? 'color:red; font-weight:bold;' : ''}">${r.iName} ${isLow ? '(LOW STOCK)' : ''}</td>
+                <td style="padding:10px; border:1px solid black;">${r.itemCode}</td>
+                <td style="padding:10px; border:1px solid black; background:#eee;">${r.opening}</td>
+                <td style="padding:10px; border:1px solid black;">${r.utilised}</td>
+                <td style="padding:10px; border:1px solid black;">${r.added}</td>
+                <td style="padding:10px; border:1px solid black; background:#eee; font-weight:bold;">${r.balance}</td>
+                <td style="padding:10px; border:1px solid black; text-align:center;">
+                    <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteInv(${idx})"></i>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function deleteInv(displayIndex) {
+    if(!confirm("Delete this inventory record?")) return;
+    const selectedMonth = document.getElementById('inv_filter_month').value;
+    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
+    
+    // Find the actual index in the main array
+    let realIndex = -1;
+    let count = 0;
+    for(let i=0; i<history.length; i++) {
+        if(history[i].date.startsWith(selectedMonth)) {
+            if(count === displayIndex) { realIndex = i; break; }
+            count++;
+        }
+    }
+    
+    if(realIndex > -1) {
+        history.splice(realIndex, 1);
+        localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
+        renderInventory();
+    }
+}
 </script>
 </body>
 </html>
