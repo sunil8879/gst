@@ -12842,7 +12842,13 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const amtInWords = getVal('prev_words');
 
 
-const sigBoxImg = (typeof signatureData !== 'undefined' && signatureData) ? `<img src="${signatureData}" width="150" height="60">` : "<br><br>SIGN HERE";
+
+// ADD THIS: Grabs the drawing from the canvas and converts it to an image for Word
+const sigCanvas = document.getElementById('sig-canvas');
+const signatureDataURL = sigCanvas.toDataURL("image/png");
+
+// Check if the user actually drew something (blank canvas is usually ~1300 chars)
+const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL}" width="150" height="60">` : "SIGN HERE";
 
     // 2. TEMPLATE ENGINE: Defines how the Word doc looks based on selection
     let templateCSS = "";
@@ -12934,12 +12940,23 @@ const sigBoxImg = (typeof signatureData !== 'undefined' && signatureData) ? `<im
                 <div class="total-row grand-total">Grand Total: ${grandTotal}</div>
                 <div style="margin-top: 8pt; font-style: italic; color: #444;">Amount in Words: ${amtInWords}</div>
             </div>
-            <div class="sig-wrapper">
-                <div class="sig-box">
-                    Authorised Signatory<br>
-                    <span style="font-size:8pt; font-weight:normal;">(For ${sName})</span>
-                </div>
-            </div>
+
+
+        <table align="right" style="margin-top:30pt; border-collapse:collapse; width:200pt;">
+                <tr>
+                    <td align="center" style="border:1pt solid black; height:60pt; vertical-align:middle;">
+                        ${sigBoxImg}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding-top:5pt;">
+                        <strong>Authorised Signatory</strong><br>
+                        <span style="font-size:8pt;">(For ${sName})</span>
+                    </td>
+                </tr>
+            </table>
+
+
         </div>
     </body></html>`;
 
