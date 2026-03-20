@@ -12974,15 +12974,19 @@ const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL
 
 
 
-// ADD THIS: Mobile-Fix logic that forces .docx download and exits
-    const docxBlob = new Blob(['\ufeff', docContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    const docxLink = document.createElement('a');
-    docxLink.href = URL.createObjectURL(docxBlob);
-    docxLink.download = `Invoice_${invNo}.docx`;
-    document.body.appendChild(docxLink);
-    docxLink.click();
-    document.body.removeChild(docxLink);
-    return; // This stops the original .doc logic from running
+// ADD THIS: Google Docs Mobile Compatibility Block
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        // We remove '\ufeff' and use 'text/html' so Google Docs imports it cleanly
+        const mobileBlob = new Blob([docContent], { type: 'text/html' });
+        const mobileUrl = URL.createObjectURL(mobileBlob);
+        const mobileLink = document.createElement('a');
+        mobileLink.href = mobileUrl;
+        mobileLink.download = `Invoice_${invNo}.doc`; // Keep .doc so it opens in Docs
+        document.body.appendChild(mobileLink);
+        mobileLink.click();
+        document.body.removeChild(mobileLink);
+        return; // Stop the standard logic
+    }
 
 
 
