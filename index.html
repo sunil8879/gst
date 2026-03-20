@@ -360,6 +360,27 @@
 @media (max-width: 768px) { .visitor-grid { grid-template-columns: repeat(2, 1fr); } }
 
 
+
+
+
+
+
+
+/* ADD THIS: Forces legal buttons and the modal to be visible and clickable */
+#legal-bar { 
+    display: block !important; 
+    position: relative !important; 
+    z-index: 1000 !important; 
+}
+
+#legal-modal { 
+    z-index: 999999 !important; 
+}
+
+/* This line forces the modal to show when the JS triggers it */
+#legal-modal[style*="display: block"] { 
+    display: block !important; 
+}
 </style>
 </head>
 <body>
@@ -622,9 +643,8 @@
         <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
 
 
+<div id="legal-bar" style="text-align: center; margin-top: 30px; width: 100%;">
 
-<!-- Legal Buttons Row -->
-<div style="text-align: center; margin-top: 30px; width: 100%;">
     <button onclick="showLegal('privacy')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Privacy</button>
     <button onclick="showLegal('disclaimer')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Disclaimer</button>
     <button onclick="showLegal('about')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">About</button>
@@ -13257,6 +13277,8 @@ function onGoogleLogin(response) {
     document.getElementById('user-photo').src = user.picture;
     document.getElementById('user-display-name').innerText = user.name;
 
+
+
     currentUserEmail = user.email; // Store email to filter history
 
 // 1. Reveal invoice components BUT exclude the Modals
@@ -13270,6 +13292,7 @@ function onGoogleLogin(response) {
     if(visitorBox) visitorBox.style.display = 'none';
 
     if (typeof resizeCanvas === "function") resizeCanvas();
+
 }
 
 
@@ -14051,37 +14074,25 @@ function deleteInv(displayIndex) {
 const legalContent = {
     privacy: {
         title: "Privacy Statement",
-        text: `At Smart Invoice Pro, we take your data privacy with the utmost seriousness. This application operates as a client-side tool, meaning that your sensitive business data, customer details, and financial records never leave your local environment. We do not maintain a central database to store your invoices. Instead, all information is saved directly into your browser's Local Storage. This ensures that only you, on your specific device, can access your generated history. 
-        <br><br>When you log in using the Google Authentication service, we only request access to your basic profile information (Name, Email, and Profile Picture). This is used solely to create a personalized experience and to compartmentalize your local history so that if multiple users use the same machine, their data remains separated based on their login ID. We do not track your location, sell your data to third-party advertisers, or monitor your business transactions. 
-        <br><br>Please be aware that since your data is stored locally in the browser, clearing your browser cache or "Application Data" will permanently delete your invoice history. We recommend that users regularly generate and save their PDF or Word invoices to their physical hard drives for long-term record keeping. By using this tool, you consent to this local-only data processing model. We reserve the right to update this policy as new browser technologies emerge, but our core principle remains: your business data belongs to you, and we have no access to it.`
+        text: `At Smart Invoice Pro, we take your data privacy with the utmost seriousness. This application operates as a client-side tool, meaning that your sensitive business data, customer details, and financial records never leave your local environment. We do not maintain a central database to store your invoices. Instead, all information is saved directly into your browser's Local Storage. This ensures that only you, on your specific device, can access your generated history. <br><br>When you log in using the Google Authentication service, we only request access to your basic profile information (Name, Email, and Profile Picture). This is used solely to create a personalized experience and to compartmentalize your local history so that if multiple users use the same machine, their data remains separated based on their login ID. We do not track your location, sell your data to third-party advertisers, or monitor your business transactions. <br><br>Please be aware that since your data is stored locally in the browser, clearing your browser cache or "Application Data" will permanently delete your invoice history. We recommend that users regularly generate and save their PDF or Word invoices to their physical hard drives for long-term record keeping. By using this tool, you consent to this local-only data processing model.`
     },
     disclaimer: {
         title: "Disclaimer & Terms of Use",
-        text: `The information and tools provided by Smart Invoice Pro are intended for informational and administrative convenience only. While we strive to ensure that the HSN codes, SAC codes, and GST rates provided in our built-in database are accurate and up-to-date according to standard Indian GST schedules, tax laws are subject to frequent changes by the government. Users are strictly advised to verify all tax rates and HSN classifications with an official GST council notification or a certified Chartered Accountant before issuing a legal tax invoice.
-        <br><br>Smart Invoice Pro and its developers shall not be held liable for any financial loss, legal penalties, or audits resulting from the use of incorrect tax rates, faulty invoice numbering, or calculation errors. This software is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the generated Word or PDF documents will perfectly meet the specific regulatory requirements of every industry or jurisdiction. 
-        <br><br>The digital signature feature and inventory tracker are auxiliary tools. The user assumes full responsibility for the authenticity of the signatures applied and the accuracy of the stock levels recorded. In no event shall the creators of this tool be liable for any special, incidental, indirect, or consequential damages whatsoever arising out of the use of or inability to use this service. By clicking 'Generate,' you acknowledge that you have reviewed the final computation and take full legal responsibility for the document produced.`
+        text: `The information and tools provided by Smart Invoice Pro are intended for informational and administrative convenience only. While we strive to ensure that the HSN codes, SAC codes, and GST rates provided in our built-in database are accurate and up-to-date according to standard Indian GST schedules, tax laws are subject to frequent changes by the government. Users are strictly advised to verify all tax rates and HSN classifications with an official GST council notification or a certified Chartered Accountant before issuing a legal tax invoice. <br><br>Smart Invoice Pro and its developers shall not be held liable for any financial loss, legal penalties, or audits resulting from the use of incorrect tax rates, faulty invoice numbering, or calculation errors. This software is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the generated Word or PDF documents will perfectly meet the specific regulatory requirements of every industry or jurisdiction. <br><br>By clicking 'Generate,' you acknowledge that you have reviewed the final computation and take full legal responsibility for the document produced.`
     },
     about: {
         title: "About Smart Invoice Pro",
-        text: `Smart Invoice Pro is a premier, no-database billing solution designed specifically for small businesses, freelancers, and retail shopkeepers who require a fast, reliable, and secure way to generate GST-compliant invoices. Our mission was to build a tool that combines the power of a professional accounting suite with the simplicity of a single-page web application. 
-        <br><br>Key Features include our Smart HSN Search Engine, which eliminates confusion by providing dynamic "hints" based on whether a product is a physical good or a digital service. Our Business Dashboard offers real-time analytics, allowing users to track their total revenue and GST collections month-by-month without needing complex spreadsheets. The built-in Inventory Tracker provides a seamless way to manage vendor relations and stock levels, ensuring that you never run out of critical items by using our automated 'Low Stock' alerting system.
-        <br><br>Technologically, this tool is a marvel of "Vanilla" web development. It utilizes HTML5, CSS3 Brutalist design principles, and modern JavaScript. By leveraging browser storage and Google Identity Services, we provide a secure, login-protected environment without the security risks associated with cloud-stored financial databases. This project was developed with a focus on speed, mobile responsiveness, and user experience, ensuring that whether you are on a high-end laptop or a budget smartphone, your billing process remains uninterrupted and professional.`
+        text: `Smart Invoice Pro is a premier, no-database billing solution designed specifically for small businesses, freelancers, and retail shopkeepers who require a fast, reliable, and secure way to generate GST-compliant invoices. Our mission was to build a tool that combines the power of a professional accounting suite with the simplicity of a single-page web application. <br><br>Key Features include our Smart HSN Search Engine, which eliminates confusion by providing dynamic "hints" based on whether a product is a physical good or a digital service. Our Business Dashboard offers real-time analytics, allowing users to track their total revenue and GST collections month-by-month without needing complex spreadsheets. Technologically, this tool utilizes HTML5, CSS3, and modern JavaScript. By leveraging browser storage and Google Identity Services, we provide a secure, login-protected environment without the security risks associated with cloud-stored financial databases.`
     },
-
-
-contact: {
+    contact: {
         title: "Contact Us",
-        text: `If you have any queries, feedback, or require support regarding Smart Invoice Pro, please reach out to us through the following channels:
-        <br><br>
-        <strong>Email ID:</strong> contact@smart.com<br>
-        <strong>Contact No:</strong> 1234567890
-        <br><br>
-        Our support team is available Monday to Friday, 9:00 AM to 6:00 PM. We strive to respond to all email inquiries within 24-48 business hours.`
+        text: `If you have any queries, feedback, or require support regarding Smart Invoice Pro, please reach out to us through the following channels: <br><br><strong>Email ID:</strong> contact@smart.com<br><strong>Contact No:</strong> 1234567890<br><br>Our support team is available Monday to Friday, 9:00 AM to 6:00 PM. We strive to respond to all email inquiries within 24-48 business hours.`
     }
 };
 
 function showLegal(type) {
     const data = legalContent[type];
+    if(!data) return;
     document.getElementById('legal-title').innerText = data.title;
     document.getElementById('legal-body').innerHTML = data.text;
     document.getElementById('legal-modal').style.display = 'block';
@@ -14090,7 +14101,6 @@ function showLegal(type) {
 function closeLegal() {
     document.getElementById('legal-modal').style.display = 'none';
 }
-
 
 
 
