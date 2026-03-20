@@ -336,43 +336,46 @@
 
 
 
-/* --- LANDING PAGE STYLES --- */
-#landing-features { margin-top: 30px; text-align: center; }
-.hero-img-gst { width: 100%; max-width: 600px; border: 4px solid black; box-shadow: 10px 10px 0px var(--aqua); margin-bottom: 30px; }
 
-.card-grid {
+
+
+
+/* 1. HIDE THE MAIN APP BY DEFAULT */
+.main-container, #btn-dashboard, #btn-history, #install-pwa, #template_select, .section-header:nth-of-type(4) { 
+    display: none !important; 
+}
+
+/* 2. VISITOR VIEW STYLING */
+#visitor-features { margin-top: 30px; text-align: center; }
+.hero-img { width: 100%; max-width: 600px; border: 3px solid black; box-shadow: 10px 10px 0px var(--aqua); margin-bottom: 25px; }
+
+.feature-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 5 cards per row */
     gap: 15px;
-    max-width: 1100px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
-.card-item {
+.feature-card {
     background: white;
     border: 2px solid black;
     padding: 20px 10px;
     box-shadow: 5px 5px 0px black;
     font-weight: 800;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: 0.2s;
 }
-.card-item i { font-size: 1.5rem; margin-bottom: 10px; color: #007BFF; }
-.card-item:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0px var(--aqua); }
 
-/* --- VISIBILITY CONTROL --- */
-/* Hide the generator and buttons initially */
-.main-container, #btn-dashboard, #btn-history, #install-pwa, #template_select, .section-header:last-of-type { 
-    display: none !important; 
-}
+.feature-card i { font-size: 1.5rem; margin-bottom: 10px; color: #007BFF; }
 
-/* Mobile: Switch to 2 columns */
+/* Mobile: 2 columns for the 10 cards */
 @media (max-width: 768px) {
-    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -396,25 +399,22 @@
         <div class="g_id_signin" data-type="standard"></div>
 
 
-
-
-
-<!-- LANDING PAGE CONTENT -->
-<div id="landing-features">
-    <img src="gst.jpg" class="hero-img-gst">
+<!-- VISITOR VIEW: Visible only before login -->
+<div id="visitor-features">
+    <img src="gst.jpg" class="hero-img">
     
-    <div class="card-grid">
-        <div class="card-item"><i class="fas fa-file-word"></i> Word Export</div>
-        <div class="card-item"><i class="fas fa-calculator"></i> Auto GST</div>
-        <div class="card-item"><i class="fas fa-pen-nib"></i> Draw Signature</div>
-        <div class="card-item"><i class="fas fa-search"></i> HSN Search</div>
-        <div class="card-item"><i class="fas fa-history"></i> Cloud History</div>
+    <div class="feature-grid">
+        <div class="feature-card"><i class="fas fa-file-word"></i> MS Word Export</div>
+        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST Math</div>
+        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Signature</div>
+        <div class="feature-card"><i class="fas fa-history"></i> Cloud History</div>
+        <div class="feature-card"><i class="fas fa-chart-line"></i> Analytics</div>
         
-        <div class="card-item"><i class="fas fa-chart-line"></i> Analytics</div>
-        <div class="card-item"><i class="fas fa-bolt"></i> PWA App</div>
-        <div class="card-item"><i class="fas fa-map-marker-alt"></i> State Finder</div>
-        <div class="card-item"><i class="fas fa-paint-brush"></i> 5 Themes</div>
-        <div class="card-item"><i class="fas fa-mobile-alt"></i> Mobile Ready</div>
+        <div class="feature-card"><i class="fas fa-search"></i> HSN/SAC Finder</div>
+        <div class="feature-card"><i class="fas fa-bolt"></i> PWA App</div>
+        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Finder</div>
+        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Pro Themes</div>
+        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Ready</div>
     </div>
 </div>
     </div>
@@ -13242,20 +13242,21 @@ function onGoogleLogin(response) {
     
     currentUserEmail = user.email; // Store email to filter history
 
-// Reveal the main invoice software
-    const elementsToReveal = ['.main-container', '#btn-dashboard', '#btn-history', '#install-pwa', '#template_select'];
-    elementsToReveal.forEach(selector => {
+
+// A. Reveal the hidden application elements
+    const appParts = ['.main-container', '#btn-dashboard', '#btn-history', '#install-pwa', '#template_select'];
+    appParts.forEach(selector => {
         const el = document.querySelector(selector);
         if(el) {
-            // Use flex for container, block for buttons
-            const displayType = selector === '.main-container' ? 'flex' : 'block';
-            el.style.setProperty('display', displayType, 'important');
+            // Set display to block (or flex for the main container) and override CSS
+            const type = selector === '.main-container' ? 'flex' : 'block';
+            el.style.setProperty('display', type, 'important');
         }
     });
 
-    // Hide the landing page promo
-    const landing = document.getElementById('landing-features');
-    if(landing) landing.style.display = 'none';
+    // B. Hide the visitor features (Image + 10 Cards)
+    const visitorView = document.getElementById('visitor-features');
+    if(visitorView) visitorView.style.display = 'none';
 }
 
 // Function to save current invoice to local storage
