@@ -623,11 +623,13 @@
 
 
 
-<div style="display: flex !important; justify-content: center !important; gap: 15px !important; margin-top: 20px !important; width: 100% !important;">
-        <button onclick="showLegal('privacy')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Privacy</button>
-        <button onclick="showLegal('disclaimer')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Disclaimer</button>
-        <button onclick="showLegal('about')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">About</button>
-    </div>
+<!-- Legal Buttons Row -->
+<div style="text-align: center; margin-top: 30px; width: 100%;">
+    <button onclick="showLegal('privacy')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Privacy</button>
+    <button onclick="showLegal('disclaimer')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Disclaimer</button>
+    <button onclick="showLegal('about')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">About</button>
+<button onclick="showLegal('contact')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Contact</button>
+</div>
 
 <!-- Legal Modal -->
 <div id="legal-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:30000; padding:20px; box-sizing:border-box;">
@@ -637,11 +639,11 @@
         <div id="legal-body" style="line-height:1.6; font-size:0.9rem; text-align:justify; color:#333;"></div>
     </div>
 </div>
-
-
-
-
     </div>
+
+
+
+
 
     <!-- PREVIEW AREA -->
     <div class="preview-panel">
@@ -13208,8 +13210,42 @@ function googleLogout() {
 
 
 
-let currentUserEmail = null; // To track if logged in
+//let currentUserEmail = null; // To track if logged in
 
+// Updated Google Login to capture the user ID
+//function onGoogleLogin(response) {
+   // const base64Url = response.credential.split('.')[1];
+    //const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    //const user = JSON.parse(window.atob(base64));
+
+   // document.getElementById('login-view').style.display = 'none';
+   // document.getElementById('logout-view').style.display = 'flex';
+    //document.getElementById('user-photo').src = user.picture;
+    //document.getElementById('user-display-name').innerText = user.name;
+
+
+   // currentUserEmail = user.email; // Store email to filter history
+
+
+
+
+// 1. Reveal all hidden invoice components inside the panel
+    //document.querySelectorAll('.input-panel > *').forEach(el => {
+        // Specifically fix the grid display for form rows, block for others
+       // let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+        //el.style.setProperty('display', displayType, 'important');
+    //});
+
+
+
+    // 2. Hide the Visitor Landing Box
+    //const visitorBox = document.getElementById('visitor-box');
+    //if(visitorBox) visitorBox.style.display = 'none';
+// ADD THIS at the bottom of onGoogleLogin
+//if (typeof resizeCanvas === "function") resizeCanvas();
+//}
+
+// REPLACE BOTH PREVIOUS onGoogleLogin FUNCTIONS WITH THIS ONE:
 // Updated Google Login to capture the user ID
 function onGoogleLogin(response) {
     const base64Url = response.credential.split('.')[1];
@@ -13221,30 +13257,32 @@ function onGoogleLogin(response) {
     document.getElementById('user-photo').src = user.picture;
     document.getElementById('user-display-name').innerText = user.name;
 
-
     currentUserEmail = user.email; // Store email to filter history
 
-
-
-
-// 1. Reveal all hidden invoice components inside the panel
-    document.querySelectorAll('.input-panel > *').forEach(el => {
-        // Specifically fix the grid display for form rows, block for others
+// 1. Reveal invoice components BUT exclude the Modals
+    document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
         let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
         el.style.setProperty('display', displayType, 'important');
     });
 
-
-
     // 2. Hide the Visitor Landing Box
     const visitorBox = document.getElementById('visitor-box');
     if(visitorBox) visitorBox.style.display = 'none';
-// ADD THIS at the bottom of onGoogleLogin
-if (typeof resizeCanvas === "function") resizeCanvas();
+
+    if (typeof resizeCanvas === "function") resizeCanvas();
 }
 
 
 
+    // 1. Show the main app
+    //document.getElementById('main-app-content').style.display = 'block';
+
+    // 2. Hide the visitor view
+    //document.getElementById('visitor-view').style.display = 'none';
+
+    // 3. Initialize signature
+    //if (typeof initSignaturePad === "function") initSignaturePad();
+//}
 
 
 
@@ -14028,6 +14066,17 @@ const legalContent = {
         text: `Smart Invoice Pro is a premier, no-database billing solution designed specifically for small businesses, freelancers, and retail shopkeepers who require a fast, reliable, and secure way to generate GST-compliant invoices. Our mission was to build a tool that combines the power of a professional accounting suite with the simplicity of a single-page web application. 
         <br><br>Key Features include our Smart HSN Search Engine, which eliminates confusion by providing dynamic "hints" based on whether a product is a physical good or a digital service. Our Business Dashboard offers real-time analytics, allowing users to track their total revenue and GST collections month-by-month without needing complex spreadsheets. The built-in Inventory Tracker provides a seamless way to manage vendor relations and stock levels, ensuring that you never run out of critical items by using our automated 'Low Stock' alerting system.
         <br><br>Technologically, this tool is a marvel of "Vanilla" web development. It utilizes HTML5, CSS3 Brutalist design principles, and modern JavaScript. By leveraging browser storage and Google Identity Services, we provide a secure, login-protected environment without the security risks associated with cloud-stored financial databases. This project was developed with a focus on speed, mobile responsiveness, and user experience, ensuring that whether you are on a high-end laptop or a budget smartphone, your billing process remains uninterrupted and professional.`
+    },
+
+
+contact: {
+        title: "Contact Us",
+        text: `If you have any queries, feedback, or require support regarding Smart Invoice Pro, please reach out to us through the following channels:
+        <br><br>
+        <strong>Email ID:</strong> contact@smart.com<br>
+        <strong>Contact No:</strong> 1234567890
+        <br><br>
+        Our support team is available Monday to Friday, 9:00 AM to 6:00 PM. We strive to respond to all email inquiries within 24-48 business hours.`
     }
 };
 
