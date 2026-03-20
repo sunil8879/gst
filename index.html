@@ -21,6 +21,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
  <style>
+
+
+
+@media print {
+    /* Hide everything except the invoice area */
+    .navbar, .input-panel, .btn-download, #install-pwa, #btn-dashboard, #google-auth-container, #mobile-print-btn { display: none !important; }
+    
+    /* Force the hidden preview panel to become visible for the printer */
+    .preview-panel { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 0; border: none; box-shadow: none; }
+    #invoice-render { display: block !important; border: 1px solid #ccc !important; }
+
+    /* Ensure the watermark appears in the printout */
+    .watermark-preview { display: block !important; color: #e0e0e0 !important; position: absolute; top: 130mm; width: 100%; text-align: center; font-size: 60pt; font-weight: bold; opacity: 0.3; z-index: 0; }
+}
+
+
+
+
+
 #google-auth-container { background: var(--aqua) !important; }
 #btn-history { background: var(--aqua) !important; }
 
@@ -550,6 +569,15 @@
 <button id="install-pwa" style="display:none; background: #007BFF; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-download"></i> Install App
 </button>
+
+
+
+
+<!-- MOBILE PRINT BUTTON -->
+<button id="mobile-print-btn" onclick="window.print()" style="display:none; background: #2ed573; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
+    <i class="fas fa-print"></i> Print Invoice
+</button>
+
 
 
 
@@ -13718,6 +13746,14 @@ installBtn.addEventListener('click', async () => {
         deferredPrompt = null;
     }
 });
+
+
+
+
+// Show Print Button only on Mobile
+if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    document.getElementById('mobile-print-btn').style.display = 'block';
+}
 </script>
 </body>
 </html>
