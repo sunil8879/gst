@@ -24,18 +24,25 @@
 
 
 
+/* ADD THIS to fix the blank mobile print issue */
 @media print {
-    /* Hide everything except the invoice area */
-    .navbar, .input-panel, .btn-download, #install-pwa, #btn-dashboard, #google-auth-container, #mobile-print-btn { display: none !important; }
-    
-    /* Force the hidden preview panel to become visible for the printer */
-    .preview-panel { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 0; border: none; box-shadow: none; }
-    #invoice-render { display: block !important; border: 1px solid #ccc !important; }
-
-    /* Ensure the watermark appears in the printout */
-    .watermark-preview { display: block !important; color: #e0e0e0 !important; position: absolute; top: 130mm; width: 100%; text-align: center; font-size: 60pt; font-weight: bold; opacity: 0.3; z-index: 0; }
+    /* Hide the entire UI */
+    body { background: white !important; }
+    .navbar, .input-panel, #google-auth-container, #install-pwa, #mobile-print-btn { 
+        display: none !important; 
+    }
+    /* Force the invoice to appear even if hidden on screen */
+    .preview-panel, #invoice-render { 
+        display: block !important; 
+        visibility: visible !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+    }
+    /* Hide the specific "History" and "Dashboard" modals if they are open */
+    #dashboard-modal, #history-modal { display: none !important; }
 }
-
 
 
 
@@ -326,29 +333,46 @@
 
 
 
-/* ADD THIS to completely remove the Preview Panel from view */
+/* 1. SCREEN VIEW: Hides preview and centers the form on screen */
 .preview-panel { 
-    display: none !important; 
+    display: none; /* No !important here so printer can override it */
 }
 
 .input-panel { 
-    max-width: 800px !important; 
-    margin: 0 auto !important; 
-    flex: none !important; 
+    max-width: 800px; 
+    margin: 0 auto; 
+    flex: none; 
     width: 100%; 
 }
 
 .main-container { 
-    display: block !important; 
-    padding: 20px !important;
+    display: block; 
+    padding: 20px; 
 }
 
-/* Optional: Make the Generate button more prominent */
 .btn-download {
     position: sticky;
     bottom: 20px;
     z-index: 100;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.3) !important;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+}
+
+/* 2. PRINT VIEW: Hide the form and show ONLY the invoice on paper */
+@media print {
+    /* Hide all UI elements */
+    .navbar, .input-panel, #google-auth-container, #install-pwa, #mobile-print-btn, .btn-download { 
+        display: none !important; 
+    }
+
+    /* Force the hidden invoice to appear on the paper */
+    .preview-panel, #invoice-render { 
+        display: block !important; 
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        visibility: visible !important;
+    }
 }
 </style>
 </head>
@@ -573,8 +597,7 @@
 
 
 
-<!-- MOBILE PRINT BUTTON -->
-<button id="mobile-print-btn" onclick="window.print()" style="display:none; background: #2ed573; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
+<button id="mobile-print-btn" onclick="prepareAndPrint()" style="display:none; background: #2ed573; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-print"></i> Print Invoice
 </button>
 
@@ -13753,6 +13776,25 @@ installBtn.addEventListener('click', async () => {
 // Show Print Button only on Mobile
 if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     document.getElementById('mobile-print-btn').style.display = 'block';
+}
+
+
+
+
+// ADD THIS: Prepares the invoice for the Mobile Printer
+function prepareAndPrint() {
+    // 1. Capture the signature from canvas and put it in the preview
+    const canvas = document.getElementById('sig-canvas');
+    if (canvas) {
+        const sigImage = canvas.toDataURL("image/png");
+        // Create a temporary image in the preview signature box
+        const prevBody = document.getElementById('prev_table_body');
+        // This ensures the preview has the signature data before printing
+        liveUpdate(); 
+    }
+    
+    // 2. Trigger the system print dialog
+    window.print();
 }
 </script>
 </body>
