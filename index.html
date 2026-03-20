@@ -12890,6 +12890,9 @@ const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL
         docBorder = "border: 2pt solid black; padding: 15pt;";
     }
 
+
+const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '130mm' : '150mm';
+
     // 3. CONSTRUCT THE DOCUMENT
     const docContent = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -12930,7 +12933,7 @@ const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL
     </style>
     </head>
     <body>
-<div style="position:absolute; top:900mm; width:100%; text-align:center; color:#e0e0e0; font-size:50pt; font-weight:bold; z-index:-1; text-transform:uppercase; font-family:Arial;">${sName}</div>
+<div style="position:absolute; top:${vPos}; width:100%; text-align:center; color:#e0e0e0; font-size:50pt; font-weight:bold; z-index:-1; text-transform:uppercase; font-family:Arial;">${sName}</div>
 
 
 
