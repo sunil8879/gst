@@ -21,32 +21,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
  <style>
-
-
-
-/* ADD THIS to fix the blank mobile print issue */
-@media print {
-    /* Hide the entire UI */
-    body { background: white !important; }
-    .navbar, .input-panel, #google-auth-container, #install-pwa, #mobile-print-btn { 
-        display: none !important; 
-    }
-    /* Force the invoice to appear even if hidden on screen */
-    .preview-panel, #invoice-render { 
-        display: block !important; 
-        visibility: visible !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-    }
-    /* Hide the specific "History" and "Dashboard" modals if they are open */
-    #dashboard-modal, #history-modal { display: none !important; }
-}
-
-
-
-
 #google-auth-container { background: var(--aqua) !important; }
 #btn-history { background: var(--aqua) !important; }
 
@@ -333,46 +307,29 @@
 
 
 
-/* 1. SCREEN VIEW: Hides preview and centers the form on screen */
+/* ADD THIS to completely remove the Preview Panel from view */
 .preview-panel { 
-    display: none; /* No !important here so printer can override it */
+    display: none !important; 
 }
 
 .input-panel { 
-    max-width: 800px; 
-    margin: 0 auto; 
-    flex: none; 
+    max-width: 800px !important; 
+    margin: 0 auto !important; 
+    flex: none !important; 
     width: 100%; 
 }
 
 .main-container { 
-    display: block; 
-    padding: 20px; 
+    display: block !important; 
+    padding: 20px !important;
 }
 
+/* Optional: Make the Generate button more prominent */
 .btn-download {
     position: sticky;
     bottom: 20px;
     z-index: 100;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
-}
-
-/* 2. PRINT VIEW: Hide the form and show ONLY the invoice on paper */
-@media print {
-    /* Hide all UI elements */
-    .navbar, .input-panel, #google-auth-container, #install-pwa, #mobile-print-btn, .btn-download { 
-        display: none !important; 
-    }
-
-    /* Force the hidden invoice to appear on the paper */
-    .preview-panel, #invoice-render { 
-        display: block !important; 
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        visibility: visible !important;
-    }
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3) !important;
 }
 </style>
 </head>
@@ -593,14 +550,6 @@
 <button id="install-pwa" style="display:none; background: #007BFF; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-download"></i> Install App
 </button>
-
-
-
-
-<button id="mobile-print-btn" onclick="prepareAndPrint()" style="display:none; background: #2ed573; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
-    <i class="fas fa-print"></i> Print Invoice
-</button>
-
 
 
 
@@ -13769,33 +13718,6 @@ installBtn.addEventListener('click', async () => {
         deferredPrompt = null;
     }
 });
-
-
-
-
-// Show Print Button only on Mobile
-if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    document.getElementById('mobile-print-btn').style.display = 'block';
-}
-
-
-
-
-// ADD THIS: Prepares the invoice for the Mobile Printer
-function prepareAndPrint() {
-    // 1. Capture the signature from canvas and put it in the preview
-    const canvas = document.getElementById('sig-canvas');
-    if (canvas) {
-        const sigImage = canvas.toDataURL("image/png");
-        // Create a temporary image in the preview signature box
-        const prevBody = document.getElementById('prev_table_body');
-        // This ensures the preview has the signature data before printing
-        liveUpdate(); 
-    }
-    
-    // 2. Trigger the system print dialog
-    window.print();
-}
 </script>
 </body>
 </html>
