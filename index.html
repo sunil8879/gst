@@ -12839,6 +12839,7 @@ function searchJson(id) {
     }
 
 function exportToWord() {
+const sigGap = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '5pt' : '40pt';
 if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c_gstin]), .input-panel textarea, .input-panel select')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
     // 1. Save to history first
     saveToHistory();
@@ -12965,7 +12966,7 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
 
 
 
-</div><p style="margin-top:60pt;">&nbsp;</p><table align="center" style="width:200pt; border-collapse:collapse;"><tr><td align="center" style="border:1pt solid black; height:70pt; vertical-align:middle; background-color:#ffffff;">${sigBoxImg}</td></tr><tr><td align="center" style="padding-top:5pt; font-family:Arial;"><strong>Authorised Signatory</strong><br><span style="font-size:9pt;">(For ${sName})</span></td></tr></table>
+</div><p style="margin-top:${sigGap}; font-size:1pt;">&nbsp;</p><table align="center" style="width:200pt; border-collapse:collapse;"><tr><td align="center" style="border:1pt solid black; height:70pt; vertical-align:middle; background-color:#ffffff;">${sigBoxImg}</td></tr><tr><td align="center" style="padding-top:5pt; font-family:Arial;"><strong>Authorised Signatory</strong><br><span style="font-size:9pt;">(For ${sName})</span></td></tr></table>
 
 
 
