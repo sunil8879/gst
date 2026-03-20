@@ -334,49 +334,34 @@
 
 
 
-
-
-
-
-
-
-/* 1. HIDE THE MAIN APP BY DEFAULT */
-.main-container, #btn-dashboard, #btn-history, #install-pwa, #template_select, .section-header:nth-of-type(4) { 
-    display: none !important; 
+/* --- VISITOR VIEW STYLING --- */
+/* Hide the invoice sections by default, but keep the container visible */
+.section-header, input, textarea, select, #items-list, .btn-download, #btn-dashboard, #btn-history, #install-pwa, .item-row-box {
+    display: none !important;
 }
 
-/* 2. VISITOR VIEW STYLING */
-#visitor-features { margin-top: 30px; text-align: center; }
-.hero-img { width: 100%; max-width: 600px; border: 3px solid black; box-shadow: 10px 10px 0px var(--aqua); margin-bottom: 25px; }
-
-.feature-grid {
+/* Feature Cards Grid: 5 per row */
+.visitor-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 cards per row */
+    grid-template-columns: repeat(5, 1fr);
     gap: 15px;
-    max-width: 1000px;
-    margin: 0 auto;
+    margin-top: 30px;
 }
-
 .feature-card {
     background: white;
     border: 2px solid black;
-    padding: 20px 10px;
-    box-shadow: 5px 5px 0px black;
+    padding: 15px 5px;
+    text-align: center;
     font-weight: 800;
-    font-size: 0.7rem;
-    text-transform: uppercase;
+    font-size: 0.75rem;
+    box-shadow: 4px 4px 0px var(--aqua);
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: 0.2s;
 }
+.feature-card i { font-size: 1.5rem; color: #007bff; margin-bottom: 10px; }
 
-.feature-card i { font-size: 1.5rem; margin-bottom: 10px; color: #007BFF; }
-
-/* Mobile: 2 columns for the 10 cards */
-@media (max-width: 768px) {
-    .feature-grid { grid-template-columns: repeat(2, 1fr); }
-}
+@media (max-width: 768px) { .visitor-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
@@ -399,22 +384,24 @@
         <div class="g_id_signin" data-type="standard"></div>
 
 
-<!-- VISITOR VIEW: Visible only before login -->
-<div id="visitor-features">
-    <img src="gst.jpg" class="hero-img">
+
+
+<!-- VISITOR VIEW: Image + 10 Feature Cards -->
+<div id="visitor-box" style="text-align:center; margin-top:20px;">
+    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:20px;">
     
-    <div class="feature-grid">
-        <div class="feature-card"><i class="fas fa-file-word"></i> MS Word Export</div>
-        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST Math</div>
-        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Signature</div>
-        <div class="feature-card"><i class="fas fa-history"></i> Cloud History</div>
+    <div class="visitor-grid">
+        <div class="feature-card"><i class="fas fa-file-word"></i> Word Export</div>
+        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST</div>
+        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Sign</div>
+        <div class="feature-card"><i class="fas fa-history"></i> Cloud Data</div>
         <div class="feature-card"><i class="fas fa-chart-line"></i> Analytics</div>
         
-        <div class="feature-card"><i class="fas fa-search"></i> HSN/SAC Finder</div>
+        <div class="feature-card"><i class="fas fa-search"></i> HSN Finder</div>
         <div class="feature-card"><i class="fas fa-bolt"></i> PWA App</div>
-        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Finder</div>
-        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Pro Themes</div>
-        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Ready</div>
+        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Auto</div>
+        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Themes</div>
+        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Pro</div>
     </div>
 </div>
     </div>
@@ -13243,21 +13230,25 @@ function onGoogleLogin(response) {
     currentUserEmail = user.email; // Store email to filter history
 
 
-// A. Reveal the hidden application elements
-    const appParts = ['.main-container', '#btn-dashboard', '#btn-history', '#install-pwa', '#template_select'];
-    appParts.forEach(selector => {
-        const el = document.querySelector(selector);
-        if(el) {
-            // Set display to block (or flex for the main container) and override CSS
-            const type = selector === '.main-container' ? 'flex' : 'block';
-            el.style.setProperty('display', type, 'important');
-        }
+
+
+// 1. Reveal all hidden invoice components
+    const appComponents = '.section-header, input, textarea, select, #items-list, .btn-download, #btn-dashboard, #btn-history, #install-pwa, #template_select, .item-row-box';
+    document.querySelectorAll(appComponents).forEach(el => {
+        // Restore grid for form-rows, block for others
+        const displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+        el.style.setProperty('display', displayType, 'important');
     });
 
-    // B. Hide the visitor features (Image + 10 Cards)
-    const visitorView = document.getElementById('visitor-features');
-    if(visitorView) visitorView.style.display = 'none';
+    // 2. Hide the Visitor View (Image and Cards)
+    const visitorBox = document.getElementById('visitor-box');
+    if(visitorBox) visitorBox.style.display = 'none';
 }
+
+
+
+
+
 
 // Function to save current invoice to local storage
 function saveToHistory() {
