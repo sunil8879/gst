@@ -12970,6 +12970,27 @@ const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL
         </div>
     </body></html>`;
 
+
+
+
+
+// ADD THIS: Mobile compatibility block
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        const link = document.createElement('a');
+        const blob = new Blob(['\ufeff', docContent], { type: 'application/vnd.ms-word;charset=utf-8' });
+        link.href = URL.createObjectURL(blob);
+        link.download = `Invoice_${invNo}.doc`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return; 
+    }
+
+
+
+
+
+
     const blob = new Blob(['\ufeff', docContent], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
