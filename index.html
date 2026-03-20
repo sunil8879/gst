@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
  <style>
+
 #google-auth-container { background: var(--aqua) !important; }
 #btn-history { background: var(--aqua) !important; }
 
@@ -336,32 +337,29 @@
 
 /* --- VISITOR VIEW STYLING --- */
 /* Hide the invoice sections by default, but keep the container visible */
-.section-header, input, textarea, select, #items-list, .btn-download, #btn-dashboard, #btn-history, #install-pwa, .item-row-box {
+/* Hides EVERYTHING in the input panel except the login and the landing cards */
+.input-panel > *:not(#google-auth-container):not(#visitor-box) {
     display: none !important;
 }
 
-/* Feature Cards Grid: 5 per row */
+/* Feature Cards Grid: 5 per row on Laptop */
 .visitor-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 15px;
-    margin-top: 30px;
+    margin-top: 25px;
 }
 .feature-card {
-    background: white;
-    border: 2px solid black;
-    padding: 15px 5px;
-    text-align: center;
-    font-weight: 800;
-    font-size: 0.75rem;
+    background: white; border: 2px solid black; padding: 15px 5px;
+    text-align: center; font-weight: 800; font-size: 0.7rem;
     box-shadow: 4px 4px 0px var(--aqua);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
 }
-.feature-card i { font-size: 1.5rem; color: #007bff; margin-bottom: 10px; }
+.feature-card i { font-size: 1.5rem; color: #007bff; margin-bottom: 8px; }
 
 @media (max-width: 768px) { .visitor-grid { grid-template-columns: repeat(2, 1fr); } }
+
+
 </style>
 </head>
 <body>
@@ -384,11 +382,9 @@
         <div class="g_id_signin" data-type="standard"></div>
 
 
-
-
-<!-- VISITOR VIEW: Image + 10 Feature Cards -->
-<div id="visitor-box" style="text-align:center; margin-top:20px;">
-    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:20px;">
+<!-- LANDING PAGE FOR VISITORS -->
+<div id="visitor-box" style="text-align:center; margin-top:10px;">
+    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:10px;">
     
     <div class="visitor-grid">
         <div class="feature-card"><i class="fas fa-file-word"></i> Word Export</div>
@@ -405,7 +401,6 @@
     </div>
 </div>
     </div>
-
     <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px;">
         <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
         <span id="user-display-name" style="font-weight: 700; color: black;"></span>
@@ -628,12 +623,11 @@
 
 
 
-<!-- Legal Buttons Row -->
-<div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
-    <button onclick="showLegal('privacy')" style="flex: 1; background: white; border: 2px solid black; padding: 10px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Privacy</button>
-    <button onclick="showLegal('disclaimer')" style="flex: 1; background: white; border: 2px solid black; padding: 10px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Disclaimer</button>
-    <button onclick="showLegal('about')" style="flex: 1; background: white; border: 2px solid black; padding: 10px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">About</button>
-</div>
+<div style="display: flex !important; justify-content: center !important; gap: 15px !important; margin-top: 20px !important; width: 100% !important;">
+        <button onclick="showLegal('privacy')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Privacy</button>
+        <button onclick="showLegal('disclaimer')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">Disclaimer</button>
+        <button onclick="showLegal('about')" style="background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase;">About</button>
+    </div>
 
 <!-- Legal Modal -->
 <div id="legal-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:30000; padding:20px; box-sizing:border-box;">
@@ -13185,20 +13179,20 @@ window.addEventListener('load', generateSecureInvoiceID);
 
 
 // Callback function when user logs in via Google
-function onGoogleLogin(response) {
+//function onGoogleLogin(response) {
     // Decode user information from the Google JWT token
-    const base64Url = response.credential.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const user = JSON.parse(window.atob(base64));
+   // const base64Url = response.credential.split('.')[1];
+    //const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    //const user = JSON.parse(window.atob(base64));
 
     // UI Toggle: Hide login, show profile
-    document.getElementById('login-view').style.display = 'none';
-    document.getElementById('logout-view').style.display = 'flex';
+    //document.getElementById('login-view').style.display = 'none';
+   // document.getElementById('logout-view').style.display = 'flex';
     
     // Update profile info
-    document.getElementById('user-photo').src = user.picture;
-    document.getElementById('user-display-name').innerText = user.name;
-}
+    //document.getElementById('user-photo').src = user.picture;
+    //document.getElementById('user-display-name').innerText = user.name;
+//}
 
 // Logout function
 function googleLogout() {
@@ -13226,23 +13220,27 @@ function onGoogleLogin(response) {
     document.getElementById('logout-view').style.display = 'flex';
     document.getElementById('user-photo').src = user.picture;
     document.getElementById('user-display-name').innerText = user.name;
-    
+
+
     currentUserEmail = user.email; // Store email to filter history
 
 
 
 
-// 1. Reveal all hidden invoice components
-    const appComponents = '.section-header, input, textarea, select, #items-list, .btn-download, #btn-dashboard, #btn-history, #install-pwa, #template_select, .item-row-box';
-    document.querySelectorAll(appComponents).forEach(el => {
-        // Restore grid for form-rows, block for others
-        const displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+// 1. Reveal all hidden invoice components inside the panel
+    document.querySelectorAll('.input-panel > *').forEach(el => {
+        // Specifically fix the grid display for form rows, block for others
+        let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
         el.style.setProperty('display', displayType, 'important');
     });
 
-    // 2. Hide the Visitor View (Image and Cards)
+
+
+    // 2. Hide the Visitor Landing Box
     const visitorBox = document.getElementById('visitor-box');
     if(visitorBox) visitorBox.style.display = 'none';
+// ADD THIS at the bottom of onGoogleLogin
+if (typeof resizeCanvas === "function") resizeCanvas();
 }
 
 
@@ -13844,6 +13842,8 @@ function resizeCanvas() {
     ctx.scale(ratio, ratio);
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 2;
+// ADD THIS line inside the existing resizeCanvas function
+canvas.style.width ='100%'; canvas.style.height='100%';
 }
 
 window.addEventListener('load', resizeCanvas);
