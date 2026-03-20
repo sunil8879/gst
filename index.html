@@ -331,13 +331,47 @@
     z-index: 100;
     box-shadow: 0px 10px 30px rgba(0,0,0,0.3) !important;
 }
+
+
+
+
+
+
+
+
+/* --- NEW 3D TITLE & VISITOR DASHBOARD STYLES --- */
+.header-container { display: flex; justify-content: center; padding: 60px 20px; }
+.title-box { 
+    background: white; border: 4px solid black; padding: 20px 40px; 
+    box-shadow: 15px 15px 0px black; transform: rotate(-5deg); text-align: center; 
+}
+.main-title { 
+    font-size: 2.5rem; font-weight: 900; margin: 0; text-transform: uppercase;
+    background: linear-gradient(to bottom, #2ecc71 50%, #000 50%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.title-sub { font-size: 1rem; font-weight: 700; color: black; display: block; margin-top: 5px; }
+
+.feature-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+.feature-card { 
+    background: white; border: 3px solid black; padding: 15px; text-align: center; 
+    box-shadow: 5px 5px 0px #000; font-weight: 800; font-size: 0.7rem; min-height: 70px;
+    display: flex; align-items: center; justify-content: center; color: black; 
+}
+#main-app-content { display: none; } /* This hides your main app until login */
+@media (max-width: 768px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } .title-box { transform: rotate(-10deg); } }
 </style>
 </head>
 <body>
 
-<div class="navbar">
-    <h1>SMART INVOICE PRO</h1>
+<div class="header-container">
+    <div class="title-box">
+        <h1 class="main-title">SMART INVOICE PRO</h1>
+        <span class="title-sub">Invoice right, Business bright</span>
+    </div>
 </div>
+
+
 
 <div class="main-container">
     <!-- INPUT AREA -->
@@ -362,6 +396,27 @@
     </div>
 </div>
 
+
+
+<!-- VISITOR DASHBOARD START -->
+<div id="visitor-view" style="text-align: center; margin-top: 20px;">
+    <img src="gst.jpg" style="width: 100%; border: 4px solid black; box-shadow: 10px 10px 0px black; margin-bottom: 20px;" alt="Banner">
+    <div class="feature-grid">
+        <div class="feature-card">🔍 SMART HSN SEARCH</div>
+        <div class="feature-card">📊 LIVE ANALYTICS</div>
+        <div class="feature-card">✍️ DIGITAL SIGN PAD</div>
+        <div class="feature-card">📦 STOCK TRACKER</div>
+        <div class="feature-card">🛡️ ZERO-DB PRIVACY</div>
+        <div class="feature-card">📱 MOBILE COMPLIANT</div>
+        <div class="feature-card">📄 MS WORD EXPORT</div>
+        <div class="feature-card">🟢 WHATSAPP SYNC</div>
+        <div class="feature-card">🔗 GOOGLE SECURE</div>
+        <div class="feature-card">🎨 MULTI-TEMPLATES</div>
+    </div>
+</div>
+<!-- VISITOR DASHBOARD END -->
+
+<div id="main-app-content"> <!-- This starts the hidden area -->
 
 
 <!-- Dashboard Button -->
@@ -709,7 +764,7 @@
     </div>
 </div>
 
-
+</div>
 
 
 <script>
@@ -13174,8 +13229,12 @@ function onGoogleLogin(response) {
     document.getElementById('user-photo').src = user.picture;
     document.getElementById('user-display-name').innerText = user.name;
     
-    currentUserEmail = user.email; // Store email to filter history
+  currentUserEmail = user.email; 
+    // This part hides the visitor view and shows the app
+    document.getElementById('visitor-view').style.display = 'none';
+    document.getElementById('main-app-content').style.display = 'block';
 }
+
 
 // Function to save current invoice to local storage
 function saveToHistory() {
