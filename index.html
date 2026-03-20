@@ -562,6 +562,15 @@
 
 
 
+<div class="section-header"><i class="fas fa-qrcode"></i> Payment QR Code</div>
+<div style="background: var(--aqua); border: 3px solid black; box-shadow: 8px 8px 0px #000; padding: 15px; margin-bottom: 20px; text-align: center;">
+    <input type="file" id="qr_upload" accept="image/*" onchange="processQR(this)" style="font-weight: 800; cursor: pointer; width: 100%;">
+    <p style="font-size: 0.7rem; color: black; margin-top: 5px; font-weight: 600;">Upload GPay/UPI QR Code to show on invoice.</p>
+</div>
+
+
+
+
         <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
 
 
@@ -706,6 +715,7 @@
 <script>
     // --- YOUR FULL JSON INTEGRATION ---
    
+let globalQRBase64 = "";
   
     const gstDatabase = [
   {
@@ -12989,7 +12999,7 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
         .totals-section { text-align: center; margin-top: 25pt; width: 100%; }
         .total-row { margin-bottom: 12pt; font-weight: bold; display: block; }
         .grand-total { font-size: 15pt; border-top: 1.5pt solid #000; padding-top: 10pt; }
-        .sig-wrapper { margin-top: 50pt; text-align: right; }
+     .sig-wrapper { margin-top: 5pt; text-align: right; }
         .sig-box { display: inline-block; width: 200pt; border-top: 1pt solid #000; text-align: center; padding-top: 4pt; font-weight: bold; }
 
 
@@ -13052,6 +13062,13 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
 
 
         </div>
+
+
+
+
+
+<!-- PASTE THE QR CODE BOX BELOW -->
+${globalQRBase64 ? `<div style="margin-top: 5pt; text-align: right;"><div style="display: inline-block; width: 100pt; border: 1pt solid #000; padding: 5pt; text-align: center;"><div style="font-size: 7pt; font-weight: bold; font-family: Arial;">SCAN TO PAY</div><img src="${globalQRBase64}" width="80" height="80"></div></div>` : ""}
     </body></html>`;
 
 
@@ -13950,6 +13967,21 @@ function showLegal(type) {
 
 function closeLegal() {
     document.getElementById('legal-modal').style.display = 'none';
+}
+
+
+
+
+
+function processQR(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { 
+            globalQRBase64 = e.target.result; 
+            alert("QR Code Uploaded successfully!"); 
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 </script>
 </body>
