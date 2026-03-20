@@ -366,21 +366,7 @@
 
 
 
-/* ADD THIS: Forces legal buttons and the modal to be visible and clickable */
-#legal-bar { 
-    display: block !important; 
-    position: relative !important; 
-    z-index: 1000 !important; 
-}
 
-#legal-modal { 
-    z-index: 999999 !important; 
-}
-
-/* This line forces the modal to show when the JS triggers it */
-#legal-modal[style*="display: block"] { 
-    display: block !important; 
-}
 </style>
 </head>
 <body>
@@ -643,7 +629,8 @@
         <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
 
 
-<div id="legal-bar" style="text-align: center; margin-top: 30px; width: 100%;">
+    </div>
+<div style="text-align: center; margin-top: 30px; width: 100%;">
 
     <button onclick="showLegal('privacy')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Privacy</button>
     <button onclick="showLegal('disclaimer')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Disclaimer</button>
@@ -659,7 +646,6 @@
         <div id="legal-body" style="line-height:1.6; font-size:0.9rem; text-align:justify; color:#333;"></div>
     </div>
 </div>
-    </div>
 
 
 
@@ -14115,6 +14101,22 @@ function processQR(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+
+
+
+
+
+
+
+// ADD THIS: Ensures footer buttons work even if Google Login fails
+window.addEventListener('load', function() {
+    const footerDiv = document.querySelector('div[style*="margin-top: 30px"]');
+    if (footerDiv) {
+        footerDiv.style.setProperty('display', 'block', 'important');
+        footerDiv.style.pointerEvents = 'auto';
+    }
+});
 </script>
 </body>
 </html>
