@@ -494,6 +494,16 @@
 
 
 
+<!-- DIGITAL SIGNATURE PAD -->
+<div class="section-header"><i class="fas fa-pen-nib"></i> Draw Signature</div>
+<div style="border: 2px dashed black; background: white; position: relative; width: 100%; height: 150px; box-shadow: var(--input-shadow);">
+    <canvas id="sig-canvas" style="width: 100%; height: 100%; cursor: crosshair; touch-action: none;"></canvas>
+    <button onclick="clearSig()" style="position: absolute; top: 5px; right: 5px; background: #ff4757; color: white; border: none; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; font-weight: 800;">CLEAR</button>
+</div>
+<p style="font-size: 0.7rem; color: #666; margin-top: 5px;">* Draw with mouse or finger. This signature will appear in the Word Invoice.</p>
+
+
+
 <!-- History Button -->
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
     <i class="fas fa-history"></i> View Invoice History
@@ -12831,6 +12841,9 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const grandTotal = getVal('prev_total');
     const amtInWords = getVal('prev_words');
 
+
+const sigBoxImg = (typeof signatureData !== 'undefined' && signatureData) ? `<img src="${signatureData}" width="150" height="60">` : "<br><br>SIGN HERE";
+
     // 2. TEMPLATE ENGINE: Defines how the Word doc looks based on selection
     let templateCSS = "";
     let docBorder = "border: none;";
@@ -13587,6 +13600,51 @@ document.getElementById('template_select').addEventListener('change', function()
 window.addEventListener('load', () => {
     document.getElementById('invoice-render').classList.add('tpl-modern');
 });
+
+
+
+
+
+
+
+// SIGNATURE DRAWING LOGIC
+let canvas = document.getElementById('sig-canvas');
+let ctx = canvas.getContext('2d');
+let drawing = false;
+
+// Adjust canvas resolution for sharp images
+function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    ctx.scale(ratio, ratio);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+}
+
+window.addEventListener('load', resizeCanvas);
+
+function getPos(e) {
+    let rect = canvas.getBoundingClientRect();
+    let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); let pos = getPos(e); ctx.moveTo(pos.x, pos.y); });
+canvas.addEventListener('mousemove', (e) => { if (!drawing) return; let pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); });
+canvas.addEventListener('mouseup', () => { drawing = false; saveCanvasToVar(); });
+
+canvas.addEventListener('touchstart', (e) => { drawing = true; ctx.beginPath(); let pos = getPos(e); ctx.moveTo(pos.x, pos.y); e.preventDefault(); });
+canvas.addEventListener('touchmove', (e) => { if (!drawing) return; let pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault(); });
+canvas.addEventListener('touchend', () => { drawing = false; saveCanvasToVar(); });
+
+function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); signatureData = ""; }
+
+function saveCanvasToVar() {
+    // This updates the signatureData variable used by the Word Export
+    signatureData = canvas.toDataURL("image/png");
+}
 </script>
 </body>
 </html>
