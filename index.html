@@ -624,6 +624,13 @@
         <input type="number" id="rem_gst" readonly placeholder="GST Amount">
     </div>
 
+
+
+<div class="form-row"><input type="number" id="rem_paid" placeholder="Amount Paid ₹" oninput="processReminderOutput()"></div>
+
+
+
+
     <div class="form-row">
         <input type="text" id="rem_wa" placeholder="WhatsApp (10 Digits)">
         <input type="email" id="rem_email" placeholder="Customer Email">
@@ -13419,6 +13426,10 @@ function toggleHistory() {
 
     if (modal.style.display === 'none') {
         const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
+const reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+const remData = reminders[item.invNo] || { paid: 0, remarks: "--" };
+const amtPaid = parseFloat(remData.paid) || 0;
+const balance = item.total - amtPaid;
         let html = `
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                 <thead>
@@ -13428,6 +13439,9 @@ function toggleHistory() {
                         <th style="padding:10px; border:1px solid black;">Customer Name</th>
                         <th style="padding:10px; border:1px solid black;">Invoice No</th>
                         <th style="padding:10px; border:1px solid black;">Final Amount</th>
+<th style="padding:10px; border:1px solid black;">Paid</th>
+<th style="padding:10px; border:1px solid black;">Balance</th>
+<th style="padding:10px; border:1px solid black;">Remarks</th>
                         <th style="padding:10px; border:1px solid black;">Product Sold</th>
 <th style="padding:10px; border:1px solid black;">Action</th>
                     </tr>
@@ -13446,6 +13460,9 @@ history.reverse().forEach((item, index) => {
                         <td style="padding:10px; border:1px solid black;">${item.customer}</td>
                         <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
                         <td style="padding:10px; border:1px solid black; font-weight:bold;">${item.total}</td>
+<td style="padding:10px; border:1px solid black; color:green;">${amtPaid.toFixed(2)}</td>
+<td style="padding:10px; border:1px solid black; color:${balance > 0 ? 'red' : 'black'}; font-weight:bold;">${balance.toFixed(2)}</td>
+<td style="padding:10px; border:1px solid black; font-size:0.7rem;">${remData.remarks}</td>
                         <td style="padding:10px; border:1px solid black;">${item.products}</td>
 <td style="padding:10px; border:1px solid black; text-align:center;">
 
@@ -14230,6 +14247,7 @@ function fetchInvoiceData() {
         document.getElementById('rem_email').value = r.email;
         document.getElementById('rem_status').value = r.status;
         document.getElementById('rem_remarks').value = r.remarks;
+document.getElementById('rem_paid').value = r.paid || 0;
     }
     processReminderOutput();
 }
@@ -14242,6 +14260,7 @@ function saveReminderRecord() {
         wa: document.getElementById('rem_wa').value,
         email: document.getElementById('rem_email').value,
         status: document.getElementById('rem_status').value,
+paid: document.getElementById('rem_paid').value || 0,
         remarks: document.getElementById('rem_remarks').value,
         invDate: document.getElementById('rem_inv_date').value,
         total: document.getElementById('rem_total').value,
