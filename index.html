@@ -13457,7 +13457,7 @@ history.reverse().forEach((item, index) => {
     const rD = remindersObj[item.invNo] || { paid: 0, remarks: '--' };
     
     const p = parseFloat(rD.paid) || 0; 
-    const b = parseFloat(item.total) - p; // Calculates the remaining balance
+const b = (parseFloat(item.total) - p).toFixed(2);// Calculates the remaining balance
 
     html += `
         <tr>
@@ -14240,7 +14240,7 @@ function fetchInvoiceData() {
     
 document.getElementById('rem_inv_date').value = record.date;
     document.getElementById('rem_c_name').value = record.customer;
-    document.getElementById('rem_total').value = Math.ceil(record.taxable);
+  document.getElementById('rem_total').value = parseFloat(record.total).toFixed(2);
     document.getElementById('rem_gst').value = Math.ceil(record.gst);
     
     // Check if reminder already exists to fill WA/Email
@@ -14385,7 +14385,7 @@ document.getElementById('rem_status').addEventListener('change', function() {
     
     // If Payment is YES and not a "part" payment, auto-fill the full amount
     if (status === 'YES' && !remarks.includes('part')) {
-        document.getElementById('rem_paid').value = total;
+      document.getElementById('rem_paid').value = document.getElementById('rem_total').value;
         processReminderOutput();
     }
 });
