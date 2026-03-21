@@ -13342,7 +13342,7 @@ function googleLogout() {
 
 // REPLACE BOTH PREVIOUS onGoogleLogin FUNCTIONS WITH THIS ONE:
 // Updated Google Login to capture the user ID
-function onGoogleLogin(response) {
+async function onGoogleLogin(response) {
     const base64Url = response.credential.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const user = JSON.parse(window.atob(base64));
@@ -13351,32 +13351,26 @@ function onGoogleLogin(response) {
     document.getElementById('logout-view').style.display = 'flex';
     document.getElementById('user-photo').src = user.picture;
     document.getElementById('user-display-name').innerText = user.name;
+    currentUserEmail = user.email;
 
+    // Bridge Google Auth to Supabase
+    await supabase.auth.signInWithIdToken({ provider: 'google', token: response.credential });
 
-
-    currentUserEmail = user.email; // Store email to filter history
-// Sync Google Login with Supabase Auth
-    supabase.auth.signInWithIdToken({ provider: 'google', token: response.credential });
-
-// 1. Reveal invoice components BUT exclude the Modals
+    // Reveal App Elements
     document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
         let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
         el.style.setProperty('display', displayType, 'important');
     });
 
-    // 2. Hide the Visitor Landing Box
-    const visitorBox = document.getElementById('visitor-box');
-    if(visitorBox) visitorBox.style.display = 'none';
+    // Hide Landing Page
+    if(document.getElementById('visitor-box')) document.getElementById('visitor-box').style.display = 'none';
+    
+    // Hide Unwanted Modals
+    document.querySelectorAll('#dashboard-modal, #history-modal').forEach(m => m.style.display = 'none');
 
     if (typeof resizeCanvas === "function") resizeCanvas();
-
-
-
-
-const remSec = document.getElementById('reminder-section');
-    if(remSec) remSec.style.setProperty('display', 'block', 'important');
-    document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
 }
+
 
 
 
@@ -13439,72 +13433,54 @@ function saveToHistory() {
 // Function to display history
 function toggleHistory() {
     const modal = document.getElementById('history-modal');
-    
-    if (!currentUserEmail) {
-        alert("ACCESS DENIED: Please login with Google to view your invoice history.");
-        return;
-    }
+    if (!currentUserEmail) return alert("Login required.");
 
- if (modal.style.display === 'none') {
-        // FETCH FROM SUPABASE CLOUD
-        supabase.from('invoice_history').select('*').order('inv_date', { ascending: false }).then(({ data: history }) => {
-            if (!history) history = [];
-            
-            let html = `
-            <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-                <thead>
-                    <tr style="background:var(--aqua); border:2px solid black;">
+    if (modal.style.display === 'none') {
+        // Fetch Invoices and Payment data simultaneously
+        Promise.all([
+            supabase.from('invoice_history').select('*').order('inv_date', { ascending: false }),
+            supabase.from('invoice_reminders').select('*')
+        ]).then(([invRes, remRes]) => {
+            const history = invRes.data || [];
+            const remMap = Object.fromEntries((remRes.data || []).map(r => [r.inv_no, r]));
 
-                        <th style="padding:10px; border:1px solid black;">Date</th>
-                        <th style="padding:10px; border:1px solid black;">Customer Name</th>
-                        <th style="padding:10px; border:1px solid black;">Invoice No</th>
-                        <th style="padding:10px; border:1px solid black;">Final Amount</th>
-<th style="padding:10px; border:1px solid black;">Paid</th>
-<th style="padding:10px; border:1px solid black;">Balance</th>
-<th style="padding:10px; border:1px solid black;">Remarks</th>
-                        <th style="padding:10px; border:1px solid black;">Product Sold</th>
-<th style="padding:10px; border:1px solid black;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+            let html = `<table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                <thead><tr style="background:var(--aqua); border:2px solid black;">
+                    <th style="padding:8px; border:1px solid black;">Date</th>
+                    <th style="padding:8px; border:1px solid black;">Customer</th>
+                    <th style="padding:8px; border:1px solid black;">Inv #</th>
+                    <th style="padding:8px; border:1px solid black;">Total</th>
+                    <th style="padding:8px; border:1px solid black;">Paid</th>
+                    <th style="padding:8px; border:1px solid black;">Balance</th>
+                    <th style="padding:8px; border:1px solid black;">Remarks</th>
+                    <th style="padding:8px; border:1px solid black;">Products</th>
+                    <th style="padding:8px; border:1px solid black;">Action</th>
+                </tr></thead><tbody>`;
 
-        if (history.length === 0) {
-            html += `<tr><td colspan="5" style="padding:20px; text-align:center;">No records found. Generate an invoice to see history.</td></tr>`;
-        } else {
-       
-history.reverse().forEach((item, index) => {
-    // This part pulls directly from the reminders you just saved
-    const remindersObj = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    const rD = remindersObj[item.invNo] || { paid: 0, remarks: '--' };
-    
-    const p = parseFloat(rD.paid) || 0; 
-const b = (parseFloat(item.total) - p).toFixed(2);// Calculates the remaining balance
+            history.forEach((item) => {
+                const rD = remMap[item.inv_no] || { amount_paid: 0, remarks: '--' };
+                const p = parseFloat(rD.amount_paid) || 0;
+                const b = (parseFloat(item.final_amount) - p).toFixed(2);
 
-    html += `
-        <tr>
-            <td style="padding:10px; border:1px solid black;">${item.date}</td>
-            <td style="padding:10px; border:1px solid black;">${item.customer}</td>
-            <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
-            <td style="padding:10px; border:1px solid black; font-weight:bold;">${parseFloat(item.total).toFixed(2)}</td>             
-            <td style="padding:10px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
-         <td style="padding:10px; border:1px solid black; color:red;">${b}</td>
-            <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
-            <td style="padding:10px; border:1px solid black;">${item.products}</td>
-            <td style="padding:10px; border:1px solid black; text-align:center;">
-                <i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem(${index})"></i>
-            </td>
-        </tr>
-    `;
-});
-        }
+                html += `<tr>
+                    <td style="padding:8px; border:1px solid black;">${item.inv_date}</td>
+                    <td style="padding:8px; border:1px solid black;">${item.customer_name}</td>
+                    <td style="padding:8px; border:1px solid black;">${item.inv_no}</td>
+                    <td style="padding:8px; border:1px solid black; font-weight:bold;">${parseFloat(item.final_amount).toFixed(2)}</td>             
+                    <td style="padding:8px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
+                    <td style="padding:8px; border:1px solid black; color:${b > 0 ? 'red' : 'black'};">${b}</td>
+                    <td style="padding:8px; border:1px solid black;">${rD.remarks}</td>
+                    <td style="padding:8px; border:1px solid black;">${item.product_sold}</td>
+                    <td style="padding:8px; border:1px solid black; text-align:center;">
+                        <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteHistoryItem('${item.id}')"></i>
+                    </td>
+                </tr>`;
+            });
 
-        html += `</tbody></table>`;
-        document.getElementById('history-content').innerHTML = html;
-        modal.style.display = 'block';
-    } else {
-        modal.style.display = 'none';
-    }
+            document.getElementById('history-content').innerHTML = html + `</tbody></table>`;
+            modal.style.display = 'block';
+        });
+    } else { modal.style.display = 'none'; }
 }
 
 
@@ -14439,41 +14415,33 @@ document.getElementById('rem_status').addEventListener('change', function() {
 });
 
 // --- UPDATED SAVE FUNCTION TO ENSURE DATA INTEGRITY ---
-function saveReminderRecord() {
+async function saveReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
-    if(!invNo) return alert("Fetch an invoice first!");
+    if(!invNo) return alert("Fetch invoice first");
     
-    // VALIDATION LOGIC
+    const paidVal = parseFloat(document.getElementById('rem_paid').value) || 0;
+    const totalVal = parseFloat(document.getElementById('rem_total').value) || 0;
     const status = document.getElementById('rem_status').value;
-    const taxable = parseFloat(document.getElementById('rem_total').value) || 0;
-    const gstAmt = parseFloat(document.getElementById('rem_gst').value) || 0;
-    const paidAmt = parseFloat(document.getElementById('rem_paid').value) || 0;
-    const grandTotalLimit = taxable + gstAmt;
 
-    if (status === 'NO' && paidAmt > 0) {
-        return alert("INVALID: Amount Paid must be 0 if Status is 'NO'.");
-    }
-    if (status === 'YES' && paidAmt > grandTotalLimit) {
-        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
-    }
+    if (status === 'NO' && paidVal > 0) return alert("Paid must be 0 if Status is NO");
+    if (paidVal > totalVal) return alert("Paid cannot exceed Total");
 
-    const data = {
-        wa: document.getElementById('rem_wa').value,
-        email: document.getElementById('rem_email').value,
-        status: status,
-        remarks: document.getElementById('rem_remarks').value,
-        paid: paidAmt,
-        invDate: document.getElementById('rem_inv_date').value,
-        total: grandTotalLimit, // Syncs full total for history balance math
-        cName: document.getElementById('rem_c_name').value
+    const cloudData = {
+        inv_no: invNo,
+        customer_name: document.getElementById('rem_c_name').value,
+        total_amount: totalVal,
+        amount_paid: paidVal,
+        whatsapp_no: document.getElementById('rem_wa').value,
+        customer_email: document.getElementById('rem_email').value,
+        payment_received: status,
+        remarks: document.getElementById('rem_remarks').value
     };
-    
-    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    reminders[invNo] = data;
-    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
-    
-    alert("Payment Record Validated & Saved!");
-    processReminderOutput();
+
+    const { error } = await supabase.from('invoice_reminders').upsert([cloudData], { onConflict: 'inv_no' });
+    if(!error) {
+        alert("Synced to Cloud!");
+        processReminderOutput();
+    }
 }
 </script>
 </body>
