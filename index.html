@@ -14325,7 +14325,9 @@ function processReminderOutput() {
     const status = document.getElementById('rem_status').value;
 
 
-if (!new Error().stack.includes('saveReminderRecord')) return document.getElementById('reminder-output-msg').style.display = 'none'; const total = (parseFloat(document.getElementById('rem_total').value) + parseFloat(document.getElementById('rem_gst').value)).toFixed(2); const paid = parseFloat(document.getElementById('rem_paid').value) || 0; const bal = (total - paid).toFixed(2);
+
+
+if (!new Error().stack.includes('saveReminderRecord')) return document.getElementById('reminder-output-msg').style.display = 'none'; const total = parseFloat(document.getElementById('rem_total').value) || 0; const paid = parseFloat(document.getElementById('rem_paid').value) || 0; const bal = (total - paid).toFixed(2);
 
 
 
@@ -14352,12 +14354,13 @@ if (!new Error().stack.includes('saveReminderRecord')) return document.getElemen
         }
     } else {
         output.style.color = 'green';
-        if(remarks.includes('part')) {
-            output.innerText = `The part payment of ₹${total} is received from ${cName} via ${invNo}. The next message will go after 7 days.`;
+      if(remarks.includes('part')) {
+            output.innerText = `The part payment of ₹${paid} is received from ${cName} via ${invNo}. BALANCE AMOUNT IS ₹${bal}. Next message in 7 days.`;
         } else {
-            output.innerText = `The payment of ₹${total} is received from ${cName} via ${invNo} on ${document.getElementById('rem_today').value}.`;
-            const msg = `Dear sir, ${greet} to you. I hope you are good. This is a confirmation message that the payment of ₹${total} for invoice no ${invNo} has been received. Thank you. Regards: ${sName}`;
-            sendComm(msg);
+            output.innerText = `The payment of ₹${paid} is received from ${cName} via ${invNo} on ${document.getElementById('rem_today').value}.`;
+        }
+        const msg = `Dear sir, ${greet} to you. I hope you are good. This is a confirmation message that the payment of ₹${paid} for invoice no ${invNo} has been received. Thank you. Regards: ${sName}`;
+        sendComm(msg);
         }
     }
 }
