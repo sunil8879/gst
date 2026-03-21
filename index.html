@@ -609,39 +609,34 @@
 <div id="reminder-section" style="margin-top: 25px; padding: 20px; border: 3px solid black; background: #fff; box-shadow: 8px 8px 0px black;">
     <div class="section-header"><i class="fas fa-clock"></i> Invoice Payment Reminder</div>
     
+    <!-- ROW 1 -->
     <div class="form-row">
-        <div><label style="font-size:0.7rem; font-weight:800;">TODAY</label><input type="date" id="rem_today" readonly></div>
-        <div><label style="font-size:0.7rem; font-weight:800;">FETCH INV #</label>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="rem_inv_no" placeholder="INV-XXXX">
-                <button onclick="fetchInvoiceData()" style="background:var(--aqua); border:2px solid black; cursor:pointer; font-weight:800; padding:0 10px;">GO</button>
-            </div>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="rem_inv_no" placeholder="INV-XXXX">
+            <button onclick="fetchInvoiceData()" style="background:var(--aqua); border:2px solid black; cursor:pointer; font-weight:800; padding:0 10px;">GO</button>
         </div>
-    </div>
-
-    <div class="form-row">
         <input type="date" id="rem_inv_date" readonly placeholder="Inv Date">
-        <input type="text" id="rem_c_name" readonly placeholder="Customer Name">
     </div>
 
-  <div class="form-row">
-    <input type="number" id="rem_total" readonly placeholder="Total Amount">
-    <input type="number" id="rem_gst" readonly placeholder="GST Amount">
-    <input type="number" id="rem_paid" placeholder="Amount Paid ₹" oninput="processReminderOutput()">
-</div>
+    <!-- ROW 2 -->
+    <div class="form-row">
+        <input type="text" id="rem_c_name" readonly placeholder="Customer Name">
+        <input type="number" id="rem_total" readonly placeholder="Total Amount">
+    </div>
 
+    <!-- ROW 3 -->
+    <div class="form-row">
+        <input type="number" id="rem_gst" readonly placeholder="GST Amount">
+        <input type="number" id="rem_paid" placeholder="Amount Paid ₹" oninput="processReminderOutput()">
+    </div>
 
-
-
-
-
-
-
+    <!-- ROW 4 -->
     <div class="form-row">
         <input type="text" id="rem_wa" placeholder="WhatsApp (10 Digits)">
         <input type="email" id="rem_email" placeholder="Customer Email">
     </div>
 
+    <!-- ROW 5 -->
     <div class="form-row">
         <select id="rem_status">
             <option value="NO">Payment Received: NO</option>
@@ -657,7 +652,6 @@
 
     <div id="reminder-output-msg" style="margin-top:20px; padding:15px; border:2px dashed black; font-weight:700; font-size:0.85rem; min-height:40px; display:none;"></div>
 </div>
-
 
 
 
@@ -13382,7 +13376,7 @@ async function onGoogleLogin(response) {
 
     const remSec = document.getElementById('reminder-section');
     if(remSec) remSec.style.setProperty('display', 'block', 'important');
-    document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
+    //document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
 }
 // Replace End
 
@@ -14232,24 +14226,29 @@ async function saveReminderRecord() {
     if(!invNo) return alert("Fetch an invoice first!");
     
     const status = document.getElementById('rem_status').value;
-    const taxable = parseFloat(document.getElementById('rem_total').value) || 0;
+    
+    // Read values from the screen
+    const grandTotalLimit = parseFloat(document.getElementById('rem_total').value) || 0; 
     const gstAmt = parseFloat(document.getElementById('rem_gst').value) || 0;
     const paidAmt = parseFloat(document.getElementById('rem_paid').value) || 0;
-    const grandTotalLimit = taxable + gstAmt;
 
+    // Safety Validations
     if (status === 'NO' && paidAmt > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'.");
-    if (status === 'YES' && paidAmt > grandTotalLimit) return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
+    if (status === 'YES' && paidAmt > grandTotalLimit) {
+        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
+    }
 
+    // Payload for Supabase - ONLY total_amount is removed. gst_amount and amount_paid are kept.
     const data = {
         user_id: currentUserId,
         whatsapp_no: document.getElementById('rem_wa').value,
         customer_email: document.getElementById('rem_email').value,
         payment_received: status,
         remarks: document.getElementById('rem_remarks').value,
+total_amount: grandTotalLimit,
         amount_paid: paidAmt,
         inv_no: invNo,
-        total_amount: grandTotalLimit,
-        gst_amount: gstAmt,
+        gst_amount: gstAmt,  // GST is kept
         customer_name: document.getElementById('rem_c_name').value
     };
     
@@ -14266,6 +14265,11 @@ async function saveReminderRecord() {
     processReminderOutput();
 }
 
+
+
+
+
+
 async function deleteReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
     if(confirm("Delete this reminder record?")) {
@@ -14276,12 +14280,73 @@ async function deleteReminderRecord() {
 
 
 
+
+
+
+
+function processReminderOutput() {
+    const status = document.getElementById('rem_status').value;
+
+    if (!new Error().stack.includes('saveReminderRecord')) {
+        document.getElementById('reminder-output-msg').style.display = 'none'; 
+        return;
+    } 
+
+    const total = parseFloat(document.getElementById('rem_total').value) || 0; 
+    const paid = parseFloat(document.getElementById('rem_paid').value) || 0; 
+    const bal = (total - paid).toFixed(2);
+
+    const invDate = new Date(document.getElementById('rem_inv_date').value);
+    const today = new Date();
+    const diffDays = Math.ceil((today - invDate) / (1000 * 60 * 60 * 24));
+    
+    const output = document.getElementById('reminder-output-msg');
+    const sName = document.getElementById('s_name').value || "Your Business";
+    const cName = document.getElementById('rem_c_name').value;
+    const invNo = document.getElementById('rem_inv_no').value;
+    const remarks = document.getElementById('rem_remarks').value.toLowerCase();
+    
+    const hrs = new Date().getHours();
+    const greet = hrs < 12 ? "Good Morning" : hrs < 17 ? "Good Afternoon" : "Good Evening";
+    
+    output.style.display = 'block';
+
+    if (status === 'NO') {
+        output.style.color = 'red';
+        output.innerText = "STATUS: PENDING. The payment message will be sent after 3 days.";
+        if (diffDays >= 3) {
+            const msg = `Dear sir/madam, ${greet} to you. I hope you are doing well. This is just a polite reminder to make the payment of ₹${bal} for invoice no ${invNo} at the earliest. Thank you. Regards: ${sName}`;
+            sendComm(msg);
+        }
+    } else {
+        output.style.color = 'green';
+        const todayStr = new Date().toISOString().split('T')[0]; // Replaces the deleted rem_today field
+        
+        if (remarks.includes('part')) {
+            output.innerText = `The part payment of ₹${paid} is received from ${cName} via ${invNo}. BALANCE AMOUNT IS ₹${bal}. Next message in 7 days.`;
+        } else {
+            output.innerText = `The payment of ₹${paid} is received from ${cName} via ${invNo} on ${todayStr}.`;
+        }
+        
+        const msg = `Dear sir/madam, ${greet} to you. I hope you are doing well. This is a confirmation message that the payment of ₹${paid} for invoice no ${invNo} has been received. Thank you. Regards: ${sName}`;
+        sendComm(msg);
+    }
+}
+
+
 function sendComm(msg) {
+    if (!new Error().stack.includes('saveReminderRecord')) return;
+    
     const wa = document.getElementById('rem_wa').value;
-if (!new Error().stack.includes('saveReminderRecord')) return;
     const email = document.getElementById('rem_email').value;
-    if(wa) window.open(`https://wa.me/91${wa}?text=${encodeURIComponent(msg)}`, '_blank');
-    if(email) window.open(`mailto:${email}?subject=Payment Update&body=${encodeURIComponent(msg)}`, '_blank');
+    const invNo = document.getElementById('rem_inv_no').value;
+    
+    if (wa) {
+        window.open(`https://wa.me/91${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    if (email) {
+        window.open(`mailto:${email}?subject=Payment Update - ${invNo}&body=${encodeURIComponent(msg)}`, '_blank');
+    }
 }
 
 
@@ -14291,18 +14356,20 @@ if (!new Error().stack.includes('saveReminderRecord')) return;
 
 
 
-
-
-
+// --- SYNC LOGIC: AUTO-FILL TOTAL WHEN PAID IS YES ---
 // --- SYNC LOGIC: AUTO-FILL TOTAL WHEN PAID IS YES ---
 document.getElementById('rem_status').addEventListener('change', function() {
     const status = this.value;
-    const total = document.getElementById('rem_total').value;
-    const remarks = document.getElementById('rem_remarks').value.toLowerCase();
+    const currentPaid = parseFloat(document.getElementById('rem_paid').value) || 0;
     
-    // If Payment is YES and not a "part" payment, auto-fill the full amount
-    if (status === 'YES' && !remarks.includes('part')) {
-      document.getElementById('rem_paid').value = document.getElementById('rem_total').value;
+    // Only auto-fill the full amount if the user hasn't typed anything yet (if it is 0 or empty)
+    if (status === 'YES' && currentPaid === 0) {
+        document.getElementById('rem_paid').value = document.getElementById('rem_total').value;
+        processReminderOutput();
+    } 
+    // If they change back to NO, clear the amount paid
+    else if (status === 'NO') {
+        document.getElementById('rem_paid').value = '';
         processReminderOutput();
     }
 });
