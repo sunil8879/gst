@@ -14238,11 +14238,9 @@ function fetchInvoiceData() {
     
     if(!record) return alert("Invoice Number not found in history!");
     
-// Rounding off to the next number (Math.ceil) 
-    // And setting 'Total' as the amount excluding GST (Taxable Value)
-    document.getElementById('rem_inv_date').value = record.date;
+document.getElementById('rem_inv_date').value = record.date;
     document.getElementById('rem_c_name').value = record.customer;
-    document.getElementById('rem_total').value = Math.ceil(record.taxable); 
+    document.getElementById('rem_total').value = Math.ceil(record.taxable);
     document.getElementById('rem_gst').value = Math.ceil(record.gst);
     
     // Check if reminder already exists to fill WA/Email
@@ -14285,6 +14283,33 @@ function saveReminderRecord() {
 
     const invNo = document.getElementById('rem_inv_no').value;
     if(!invNo) return alert("Fetch an invoice first!");
+
+
+
+
+// 1. Get Values and Round up to the next whole number (Math.ceil)
+    const status = document.getElementById('rem_status').value;
+    const taxable = Math.ceil(parseFloat(document.getElementById('rem_total').value) || 0);
+    const gstAmt = Math.ceil(parseFloat(document.getElementById('rem_gst').value) || 0);
+    let paidAmt = Math.ceil(parseFloat(document.getElementById('rem_paid').value) || 0);
+    
+    // Update the UI field to show the rounded number
+    document.getElementById('rem_paid').value = paidAmt;
+
+    // 2. Validation: If NO, Amount Paid must be 0
+    if (status === 'NO' && paidAmt > 0) {
+        return alert("INVALID: Amount Paid cannot be greater than 0 if Status is 'NO'.");
+    }
+
+    // 3. Validation: If YES, Paid must be <= (Taxable + GST)
+    const grandTotalLimit = taxable + gstAmt;
+    if (status === 'YES' && paidAmt > grandTotalLimit) {
+        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot be greater than the Grand Total (₹" + grandTotalLimit + ").");
+    }
+
+
+
+
     
     const data = {
         wa: document.getElementById('rem_wa').value,
