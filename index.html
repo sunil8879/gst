@@ -13455,26 +13455,27 @@ const balance = item.total - amtPaid;
         } else {
        
 history.reverse().forEach((item, index) => {
-const remData = (JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {})[item.invNo] || { paid: 0, remarks: '--' };
-const amtPaid = parseFloat(remData.paid) || 0;
-const bal = parseFloat(item.total) - amtPaid;
-                html += `
-                    <tr>
-                        <td style="padding:10px; border:1px solid black;">${item.date}</td>
-                        <td style="padding:10px; border:1px solid black;">${item.customer}</td>
-                        <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
-                    <td style="padding:10px; border:1px solid black; font-weight:bold;">${item.total}</td>
-<td style="padding:10px; border:1px solid black;">${amtPaid.toFixed(2)}</td>
-<td style="padding:10px; border:1px solid black;">${bal.toFixed(2)}</td>
-<td style="padding:10px; border:1px solid black;">${remData.remarks}</td>
-<td style="padding:10px; border:1px solid black;">${item.products}</td>
-<td style="padding:10px; border:1px solid black; text-align:center;">
+    // Single clean logic to fetch data from reminders
+    const rD = (JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {})[item.invNo] || {paid:0, remarks:'--'}; 
+    const p = parseFloat(rD.paid) || 0; 
+    const b = parseFloat(item.total) - p;
 
-<i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem(${index})"></i>
-</td>
-                    </tr>
-                `;
-            });
+    html += `
+        <tr>
+            <td style="padding:10px; border:1px solid black;">${item.date}</td>
+            <td style="padding:10px; border:1px solid black;">${item.customer}</td>
+            <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
+            <td style="padding:10px; border:1px solid black; font-weight:bold;">${item.total}</td>             
+            <td style="padding:10px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
+            <td style="padding:10px; border:1px solid black; color:red;">${b.toFixed(2)}</td>
+            <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
+            <td style="padding:10px; border:1px solid black;">${item.products}</td>
+            <td style="padding:10px; border:1px solid black; text-align:center;">
+                <i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem(${index})"></i>
+            </td>
+        </tr>
+    `;
+});
         }
 
         html += `</tbody></table>`;
