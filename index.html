@@ -854,10 +854,10 @@
 
 
 <script>
+// Initialization
 const SUB_URL = "https://kqqlrtsmcrjbupigvofe.supabase.co";
 const SUB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4";
-const supabase = libsupabase.createClient(SUB_URL, SUB_KEY);
-    // --- YOUR FULL JSON INTEGRATION ---
+const sub = window.supabase.createClient(SUB_URL, SUB_KEY);
    
 let globalQRBase64 = "";
   
@@ -13353,8 +13353,11 @@ async function onGoogleLogin(response) {
     document.getElementById('user-display-name').innerText = user.name;
     currentUserEmail = user.email;
 
-    // Bridge Google Auth to Supabase
-    await supabase.auth.signInWithIdToken({ provider: 'google', token: response.credential });
+    // FIX: Using 'sub' instead of 'supabase'
+    await sub.auth.signInWithIdToken({ 
+        provider: 'google', 
+        token: response.credential 
+    });
 
     // Reveal App Elements
     document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
@@ -13362,17 +13365,12 @@ async function onGoogleLogin(response) {
         el.style.setProperty('display', displayType, 'important');
     });
 
-    // Hide Landing Page
+    // Hide UI parts not needed
     if(document.getElementById('visitor-box')) document.getElementById('visitor-box').style.display = 'none';
-    
-    // Hide Unwanted Modals
-    document.querySelectorAll('#dashboard-modal, #history-modal').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('#dashboard-modal, #history-modal, #inventory-modal, #legal-modal').forEach(m => m.style.display = 'none');
 
     if (typeof resizeCanvas === "function") resizeCanvas();
 }
-
-
-
 
     // 1. Show the main app
     //document.getElementById('main-app-content').style.display = 'block';
@@ -13881,33 +13879,25 @@ function toggleDashboard() {
 }
 
 function updateDashboardStats() {
-// ADD THIS: Re-routes the dashboard to read from the permanent storage
-    var history = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
-    const selectedMonth = document.getElementById('dash_month_picker').value; // YYYY-MM
+    const selectedMonth = document.getElementById('dash_month_picker').value;
     if (!selectedMonth) return;
 
-    //const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-    
-    // Filter history based on year and month
-    const filtered = history.filter(item => item.date.startsWith(selectedMonth));
+    // FETCH FROM SUPABASE instead of local variable
+    sub.from('invoice_history').select('final_amount, gst_amount').ilike('inv_date', selectedMonth + '%').then(({ data: filtered }) => {
+        let totalCount = filtered ? filtered.length : 0;
+        let totalRevenue = 0;
+        let totalGst = 0;
 
-    let totalCount = filtered.length;
-    let totalRevenue = 0;
-    let totalGst = 0;
+        (filtered || []).forEach(item => {
+            totalRevenue += (parseFloat(item.final_amount) - parseFloat(item.gst_amount));
+            totalGst += parseFloat(item.gst_amount);
+        });
 
-    filtered.forEach(item => {
-        totalRevenue += (item.taxable || 0);
-        totalGst += (item.gst || 0);
+        document.getElementById('stat-count').innerText = totalCount;
+        document.getElementById('stat-revenue').innerText = "₹ " + totalRevenue.toLocaleString('en-IN');
+        document.getElementById('stat-gst').innerText = "₹ " + totalGst.toLocaleString('en-IN');
     });
-
-    // Update UI
-    document.getElementById('stat-count').innerText = totalCount;
-    document.getElementById('stat-revenue').innerText = "₹ " + totalRevenue.toLocaleString('en-IN', {minimumFractionDigits: 2});
-    document.getElementById('stat-gst').innerText = "₹ " + totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
-
-
-
 
 
 
