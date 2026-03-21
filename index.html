@@ -14347,6 +14347,7 @@ function processReminderOutput() {
 
 function sendComm(msg) {
     const wa = document.getElementById('rem_wa').value;
+if (!new Error().stack.includes('saveReminderRecord')) return;
     const email = document.getElementById('rem_email').value;
     if(wa) window.open(`https://wa.me/91${wa}?text=${encodeURIComponent(msg)}`, '_blank');
     if(email) window.open(`mailto:${email}?subject=Payment Update&body=${encodeURIComponent(msg)}`, '_blank');
