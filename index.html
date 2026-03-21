@@ -13452,17 +13452,19 @@ function toggleHistory() {
         } else {
        
 history.reverse().forEach((item, index) => {
-    // Single clean logic to fetch data from reminders
-    const rD = (JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {})[item.invNo] || {paid:0, remarks:'--'}; 
+    // This part pulls directly from the reminders you just saved
+    const remindersObj = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+    const rD = remindersObj[item.invNo] || { paid: 0, remarks: '--' };
+    
     const p = parseFloat(rD.paid) || 0; 
-    const b = parseFloat(item.total) - p;
+    const b = parseFloat(item.total) - p; // Calculates the remaining balance
 
     html += `
         <tr>
             <td style="padding:10px; border:1px solid black;">${item.date}</td>
             <td style="padding:10px; border:1px solid black;">${item.customer}</td>
             <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
-            <td style="padding:10px; border:1px solid black; font-weight:bold;">${item.total}</td>             
+            <td style="padding:10px; border:1px solid black; font-weight:bold;">${parseFloat(item.total).toFixed(2)}</td>             
             <td style="padding:10px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
             <td style="padding:10px; border:1px solid black; color:red;">${b.toFixed(2)}</td>
             <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
@@ -14326,6 +14328,61 @@ function deleteReminderRecord() {
         localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
         location.reload();
     }
+}
+
+
+
+
+
+
+
+
+
+// --- SYNC LOGIC: AUTO-FILL TOTAL WHEN PAID IS YES ---
+document.getElementById('rem_status').addEventListener('change', function() {
+    const status = this.value;
+    const total = document.getElementById('rem_total').value;
+    const remarks = document.getElementById('rem_remarks').value.toLowerCase();
+    
+    // If Payment is YES and not a "part" payment, auto-fill the full amount
+    if (status === 'YES' && !remarks.includes('part')) {
+        document.getElementById('rem_paid').value = total;
+        processReminderOutput();
+    }
+});
+
+// --- UPDATED SAVE FUNCTION TO ENSURE DATA INTEGRITY ---
+function saveReminderRecord() {
+    const invNo = document.getElementById('rem_inv_no').value;
+    if(!invNo) return alert("Fetch an invoice first!");
+    
+    let paidVal = parseFloat(document.getElementById('rem_paid').value) || 0;
+    const status = document.getElementById('rem_status').value;
+    const total = parseFloat(document.getElementById('rem_total').value) || 0;
+
+    // Safety: If status is YES and paid is 0, assume full payment was intended
+    if (status === 'YES' && paidVal === 0) {
+        paidVal = total;
+        document.getElementById('rem_paid').value = total;
+    }
+
+    const data = {
+        wa: document.getElementById('rem_wa').value,
+        email: document.getElementById('rem_email').value,
+        status: status,
+        remarks: document.getElementById('rem_remarks').value,
+        paid: paidVal,
+        invDate: document.getElementById('rem_inv_date').value,
+        total: total,
+        cName: document.getElementById('rem_c_name').value
+    };
+    
+    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+    reminders[invNo] = data;
+    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
+    
+    alert("Payment Record Synced with History!");
+    processReminderOutput();
 }
 </script>
 </body>
