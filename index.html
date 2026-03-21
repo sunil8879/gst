@@ -14257,26 +14257,7 @@ document.getElementById('rem_paid').value = r.paid || 0;
 }
 
 function saveReminderRecord() {
-// 1. Get current values and round the Paid amount
-    const status = document.getElementById('rem_status').value;
-    const totalExclGst = Math.ceil(parseFloat(document.getElementById('rem_total').value) || 0);
-    let paidVal = Math.ceil(parseFloat(document.getElementById('rem_paid').value) || 0);
-    document.getElementById('rem_paid').value = paidVal; // Update UI to show rounded number
 
-    // 2. Validation Rule 1: If NO, Paid must be 0
-    if (status === 'NO' && paidVal > 0) {
-        return alert("INVALID: Amount Paid cannot be greater than 0 if Payment Received is set to 'NO'.");
-    }
-
-    // 3. Validation Rule 2: If YES, Paid must be > 0 and <= Total (Excl GST)
-    if (status === 'YES') {
-        if (paidVal <= 0) {
-            return alert("INVALID: Please enter the amount received.");
-        }
-        if (paidVal > totalExclGst) {
-            return alert("INVALID: Amount Paid cannot exceed the Total Amount (₹" + totalExclGst + ").");
-        }
-    }
 
 
 
