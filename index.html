@@ -13410,18 +13410,16 @@ function saveToHistory() {
  entry.gst = entry.total - entry.taxable;
 
     // SAVE TO SUPABASE CLOUD
-    const cloudEntry = {
-        inv_date: entry.date,
-        customer_name: entry.customer,
-        inv_no: entry.invNo,
-        final_amount: entry.total,
-        product_sold: entry.products,
-        taxable_amount: entry.taxable,
-        gst_amount: entry.gst
+ const cloudEntry = {
+        inv_date: document.getElementById('inv_date').value || new Date().toISOString().split('T')[0],
+        customer_name: document.getElementById('c_name').value,
+        inv_no: document.getElementById('inv_no').value,
+        final_amount: cleanNum('prev_total'),
+        product_sold: products.join(", "),
+        taxable_amount: cleanNum('prev_taxable'),
+        gst_amount: cleanNum('prev_total') - cleanNum('prev_taxable')
     };
-    supabase.from('invoice_history').insert([cloudEntry]).then(() => {
-        console.log("Invoice synced to cloud");
-    });
+    sub.from('invoice_history').insert([cloudEntry]).then(() => console.log("Cloud Saved"));
 
 // ADD THIS: Saves a permanent copy for the dashboard
     let permData = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
@@ -13433,50 +13431,30 @@ function saveToHistory() {
 // Function to display history
 function toggleHistory() {
     const modal = document.getElementById('history-modal');
-    if (!currentUserEmail) return alert("Login required.");
-
     if (modal.style.display === 'none') {
-        // Fetch Invoices and Payment data simultaneously
         Promise.all([
-            supabase.from('invoice_history').select('*').order('inv_date', { ascending: false }),
-            supabase.from('invoice_reminders').select('*')
+            sub.from('invoice_history').select('*').order('inv_date', { ascending: false }),
+            sub.from('invoice_reminders').select('*')
         ]).then(([invRes, remRes]) => {
             const history = invRes.data || [];
             const remMap = Object.fromEntries((remRes.data || []).map(r => [r.inv_no, r]));
-
             let html = `<table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
                 <thead><tr style="background:var(--aqua); border:2px solid black;">
-                    <th style="padding:8px; border:1px solid black;">Date</th>
-                    <th style="padding:8px; border:1px solid black;">Customer</th>
-                    <th style="padding:8px; border:1px solid black;">Inv #</th>
-                    <th style="padding:8px; border:1px solid black;">Total</th>
-                    <th style="padding:8px; border:1px solid black;">Paid</th>
-                    <th style="padding:8px; border:1px solid black;">Balance</th>
-                    <th style="padding:8px; border:1px solid black;">Remarks</th>
-                    <th style="padding:8px; border:1px solid black;">Products</th>
-                    <th style="padding:8px; border:1px solid black;">Action</th>
+                    <th>Date</th><th>Customer</th><th>Inv #</th><th>Total</th><th>Paid</th><th>Balance</th><th>Remarks</th><th>Products</th><th>Action</th>
                 </tr></thead><tbody>`;
-
             history.forEach((item) => {
                 const rD = remMap[item.inv_no] || { amount_paid: 0, remarks: '--' };
                 const p = parseFloat(rD.amount_paid) || 0;
                 const b = (parseFloat(item.final_amount) - p).toFixed(2);
-
                 html += `<tr>
-                    <td style="padding:8px; border:1px solid black;">${item.inv_date}</td>
-                    <td style="padding:8px; border:1px solid black;">${item.customer_name}</td>
-                    <td style="padding:8px; border:1px solid black;">${item.inv_no}</td>
-                    <td style="padding:8px; border:1px solid black; font-weight:bold;">${parseFloat(item.final_amount).toFixed(2)}</td>             
-                    <td style="padding:8px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
-                    <td style="padding:8px; border:1px solid black; color:${b > 0 ? 'red' : 'black'};">${b}</td>
-                    <td style="padding:8px; border:1px solid black;">${rD.remarks}</td>
-                    <td style="padding:8px; border:1px solid black;">${item.product_sold}</td>
-                    <td style="padding:8px; border:1px solid black; text-align:center;">
-                        <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteHistoryItem('${item.id}')"></i>
-                    </td>
+                    <td>${item.inv_date}</td><td>${item.customer_name}</td><td>${item.inv_no}</td>
+                    <td>${parseFloat(item.final_amount).toFixed(2)}</td>
+                    <td style="color:green;">${p.toFixed(2)}</td>
+                    <td style="color:red;">${b}</td>
+                    <td>${rD.remarks}</td><td>${item.product_sold}</td>
+                    <td><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteHistoryItem('${item.id}')"></i></td>
                 </tr>`;
             });
-
             document.getElementById('history-content').innerHTML = html + `</tbody></table>`;
             modal.style.display = 'block';
         });
@@ -14094,62 +14072,36 @@ function addNewInventoryRow() {
     });
 
 function renderInventory() {
-    const selectedMonth = document.getElementById('inv_filter_month').value;
-    
-    // FETCH FROM SUPABASE CLOUD
-    supabase.from('inventory_tracker').select('*').ilike('date', selectedMonth + '%').then(({ data: filtered }) => {
-        if (!filtered) filtered = [];
+    const month = document.getElementById('inv_filter_month').value;
+    sub.from('inventory_tracker').select('*').ilike('date', month + '%').then(({ data: filtered }) => {
         const tbody = document.getElementById('inventory-items-body');
-    tbody.innerHTML = '';
-
-    filtered.forEach((r, idx) => {
-        const isLow = r.balance < 10;
-        const row = `
-            <tr style="border-bottom:1px solid black; ${isLow ? 'background:#fffafa;' : ''}">
-                <td style="padding:10px; border:1px solid black;">${r.date}</td>
-                <td style="padding:10px; border:1px solid black;">${r.vName}</td>
-                <td style="padding:10px; border:1px solid black; text-align:center;">
-                    <a href="https://wa.me/91${r.vPhone}" target="_blank" style="color:#25D366; font-size:1.2rem;"><i class="fab fa-whatsapp"></i></a>
-                </td>
-                <td style="padding:10px; border:1px solid black; ${isLow ? 'color:red; font-weight:bold;' : ''}">${r.iName} ${isLow ? '(LOW STOCK)' : ''}</td>
-                <td style="padding:10px; border:1px solid black;">${r.itemCode}</td>
-                <td style="padding:10px; border:1px solid black; background:#eee;">${r.opening}</td>
-                <td style="padding:10px; border:1px solid black;">${r.utilised}</td>
-                <td style="padding:10px; border:1px solid black;">${r.added}</td>
-                <td style="padding:10px; border:1px solid black; background:#eee; font-weight:bold;">${r.balance}</td>
-                <td style="padding:10px; border:1px solid black; text-align:center;">
-                    <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteInv(${idx})"></i>
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
+        tbody.innerHTML = '';
+        (filtered || []).forEach((r) => {
+            const isLow = r.balance < 10;
+            tbody.innerHTML += `<tr style="${isLow ? 'background:#fffafa;' : ''}">
+                <td>${r.date}</td><td>${r.vendor}</td>
+                <td align="center"><a href="https://wa.me/91${r.whatsapp}" target="_blank" style="color:#25D366;"><i class="fab fa-whatsapp"></i></a></td>
+                <td style="${isLow ? 'color:red; font-weight:bold;' : ''}">${r.item_name}</td>
+                <td>${r.item_code}</td><td>${r.opening_balance}</td><td>${r.utilised}</td><td>${r.added}</td><td>${r.balance}</td>
+                <td align="center"><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteInv('${r.id}')"></i></td>
+            </tr>`;
+        });
     });
 }
 
-function deleteInv(displayIndex) {
-    if(!confirm("Delete this inventory record?")) return;
-    const selectedMonth = document.getElementById('inv_filter_month').value;
-    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
+async function deleteInv(rowId) {
+    if(!confirm("Delete this inventory record from Cloud?")) return;
     
-    // Find the actual index in the main array
-    let realIndex = -1;
-    let count = 0;
-    for(let i=0; i<history.length; i++) {
-        if(history[i].date.startsWith(selectedMonth)) {
-            if(count === displayIndex) { realIndex = i; break; }
-            count++;
-        }
-    }
+    // DELETE FROM SUPABASE CLOUD
+    const { error } = await supabase.from('inventory_tracker').delete().eq('id', rowId);
     
-    if(realIndex > -1) {
-        history.splice(realIndex, 1);
-        localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
+    if(!error) {
+        alert("Record Deleted!");
         renderInventory();
+    } else {
+        alert("Error deleting record.");
     }
 }
-
-
-
 
 
 
@@ -14417,14 +14369,12 @@ document.getElementById('rem_status').addEventListener('change', function() {
 // --- UPDATED SAVE FUNCTION TO ENSURE DATA INTEGRITY ---
 async function saveReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
-    if(!invNo) return alert("Fetch invoice first");
-    
     const paidVal = parseFloat(document.getElementById('rem_paid').value) || 0;
     const totalVal = parseFloat(document.getElementById('rem_total').value) || 0;
     const status = document.getElementById('rem_status').value;
 
-    if (status === 'NO' && paidVal > 0) return alert("Paid must be 0 if Status is NO");
-    if (paidVal > totalVal) return alert("Paid cannot exceed Total");
+    if (status === 'NO' && paidVal > 0) return alert("Paid must be 0 if NO");
+    if (paidVal > totalVal) return alert("Paid exceeds Total");
 
     const cloudData = {
         inv_no: invNo,
@@ -14436,11 +14386,24 @@ async function saveReminderRecord() {
         payment_received: status,
         remarks: document.getElementById('rem_remarks').value
     };
+    await sub.from('invoice_reminders').upsert([cloudData], { onConflict: 'inv_no' });
+    alert("Synced!");
+    processReminderOutput();
+}
 
-    const { error } = await supabase.from('invoice_reminders').upsert([cloudData], { onConflict: 'inv_no' });
-    if(!error) {
-        alert("Synced to Cloud!");
-        processReminderOutput();
+
+
+
+async function deleteHistoryItem(id) {
+    if(confirm("Delete Invoice?")) {
+        await sub.from('invoice_history').delete().eq('id', id);
+        toggleHistory(); toggleHistory();
+    }
+}
+async function deleteInv(id) {
+    if(confirm("Delete Stock Record?")) {
+        await sub.from('inventory_tracker').delete().eq('id', id);
+        renderInventory();
     }
 }
 </script>
