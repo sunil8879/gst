@@ -619,15 +619,15 @@
         <input type="text" id="rem_c_name" readonly placeholder="Customer Name">
     </div>
 
-    <div class="form-row">
-        <input type="number" id="rem_total" readonly placeholder="Total Amount">
-        <input type="number" id="rem_gst" readonly placeholder="GST Amount">
-<input type="number" id="rem_paid" placeholder="Amount Paid ₹">
-    </div>
+  <div class="form-row">
+    <input type="number" id="rem_total" readonly placeholder="Total Amount">
+    <input type="number" id="rem_gst" readonly placeholder="GST Amount">
+    <input type="number" id="rem_paid" placeholder="Amount Paid ₹" oninput="processReminderOutput()">
+</div>
 
 
 
-<div class="form-row"><input type="number" id="rem_paid" placeholder="Amount Paid ₹" oninput="processReminderOutput()"></div>
+
 
 
 
@@ -14238,10 +14238,12 @@ function fetchInvoiceData() {
     
     if(!record) return alert("Invoice Number not found in history!");
     
+// Rounding off to the next number (Math.ceil) 
+    // And setting 'Total' as the amount excluding GST (Taxable Value)
     document.getElementById('rem_inv_date').value = record.date;
     document.getElementById('rem_c_name').value = record.customer;
-    document.getElementById('rem_total').value = record.total;
-    document.getElementById('rem_gst').value = record.gst;
+    document.getElementById('rem_total').value = Math.ceil(record.taxable); 
+    document.getElementById('rem_gst').value = Math.ceil(record.gst);
     
     // Check if reminder already exists to fill WA/Email
     const reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
@@ -14257,6 +14259,30 @@ document.getElementById('rem_paid').value = r.paid || 0;
 }
 
 function saveReminderRecord() {
+// 1. Get current values and round the Paid amount
+    const status = document.getElementById('rem_status').value;
+    const totalExclGst = Math.ceil(parseFloat(document.getElementById('rem_total').value) || 0);
+    let paidVal = Math.ceil(parseFloat(document.getElementById('rem_paid').value) || 0);
+    document.getElementById('rem_paid').value = paidVal; // Update UI to show rounded number
+
+    // 2. Validation Rule 1: If NO, Paid must be 0
+    if (status === 'NO' && paidVal > 0) {
+        return alert("INVALID: Amount Paid cannot be greater than 0 if Payment Received is set to 'NO'.");
+    }
+
+    // 3. Validation Rule 2: If YES, Paid must be > 0 and <= Total (Excl GST)
+    if (status === 'YES') {
+        if (paidVal <= 0) {
+            return alert("INVALID: Please enter the amount received.");
+        }
+        if (paidVal > totalExclGst) {
+            return alert("INVALID: Amount Paid cannot exceed the Total Amount (₹" + totalExclGst + ").");
+        }
+    }
+
+
+
+
     const invNo = document.getElementById('rem_inv_no').value;
     if(!invNo) return alert("Fetch an invoice first!");
     
