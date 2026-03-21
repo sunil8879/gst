@@ -14388,14 +14388,18 @@ function saveReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
     if(!invNo) return alert("Fetch an invoice first!");
     
-    let paidVal = parseFloat(document.getElementById('rem_paid').value) || 0;
+    // VALIDATION LOGIC
     const status = document.getElementById('rem_status').value;
-    const total = parseFloat(document.getElementById('rem_total').value) || 0;
+    const taxable = parseFloat(document.getElementById('rem_total').value) || 0;
+    const gstAmt = parseFloat(document.getElementById('rem_gst').value) || 0;
+    const paidAmt = parseFloat(document.getElementById('rem_paid').value) || 0;
+    const grandTotalLimit = taxable + gstAmt;
 
-    // Safety: If status is YES and paid is 0, assume full payment was intended
-    if (status === 'YES' && paidVal === 0) {
-        paidVal = total;
-        document.getElementById('rem_paid').value = total;
+    if (status === 'NO' && paidAmt > 0) {
+        return alert("INVALID: Amount Paid must be 0 if Status is 'NO'.");
+    }
+    if (status === 'YES' && paidAmt > grandTotalLimit) {
+        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
     }
 
     const data = {
@@ -14403,9 +14407,9 @@ function saveReminderRecord() {
         email: document.getElementById('rem_email').value,
         status: status,
         remarks: document.getElementById('rem_remarks').value,
-        paid: paidVal,
+        paid: paidAmt,
         invDate: document.getElementById('rem_inv_date').value,
-        total: total,
+        total: grandTotalLimit, // Syncs full total for history balance math
         cName: document.getElementById('rem_c_name').value
     };
     
@@ -14413,7 +14417,7 @@ function saveReminderRecord() {
     reminders[invNo] = data;
     localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
     
-    alert("Payment Record Synced with History!");
+    alert("Payment Record Validated & Saved!");
     processReminderOutput();
 }
 </script>
