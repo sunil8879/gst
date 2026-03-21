@@ -14312,6 +14312,12 @@ paid: document.getElementById('rem_paid').value || 0,
 
 function processReminderOutput() {
     const status = document.getElementById('rem_status').value;
+
+
+if (!new Error().stack.includes('saveReminderRecord')) return document.getElementById('reminder-output-msg').style.display = 'none'; const total = (parseFloat(document.getElementById('rem_total').value) + parseFloat(document.getElementById('rem_gst').value)).toFixed(2); const paid = parseFloat(document.getElementById('rem_paid').value) || 0; const bal = (total - paid).toFixed(2);
+
+
+
     const invDate = new Date(document.getElementById('rem_inv_date').value);
     const today = new Date();
     const diffDays = Math.ceil((today - invDate) / (1000 * 60 * 60 * 24));
