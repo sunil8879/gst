@@ -13424,12 +13424,12 @@ async function saveToHistory() {
         final_amount: cleanNum('prev_total'),
         product_sold: products.join(", ")
     };
-    entry.gst_amount = entry.final_amount - entry.taxable_amount;
+ entry.gst_amount = entry.final_amount - entry.taxable_amount;
 
-    const { error: histError } = await supabaseClient.from('Invoice_history').insert([entry]);
+    const { error: histError } = await supabaseClient.from('invoice_history').insert([entry]);
     if (histError) {
         console.error("History Error:", histError);
-        alert("Supabase Error (Invoice_history): " + histError.message);
+        alert("Supabase Error (invoice_history): " + histError.message);
         return; // Stop execution if this fails
     }
 
@@ -13470,7 +13470,7 @@ async function toggleHistory() {
     if (!currentUserId) return alert("ACCESS DENIED: Please login with Google to view your invoice history.");
 
     if (modal.style.display === 'none') {
-        const { data: history } = await supabaseClient.from('Invoice_history').select('*').eq('user_id', currentUserId).order('inv_date', { ascending: false });
+        const { data: history } = await supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).order('inv_date', { ascending: false });
         const { data: reminders } = await supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId);
         
         const remindersObj = {};
@@ -13530,7 +13530,7 @@ async function toggleHistory() {
 
 async function deleteHistoryItem(id) {
     if(confirm("Delete this record permanently?")) {
-        await supabaseClient.from('Invoice_history').delete().eq('id', id);
+        await supabaseClient.from('invoice_history').delete().eq('id', id);
         toggleHistory(); toggleHistory();
     }
 }
@@ -14048,7 +14048,7 @@ async function toggleInventory() {
 }
 
 async function getOpeningStock(itemCode, currentMonth) {
-    const { data } = await supabaseClient.from('Inventory_tracker')
+    const { data } = await supabaseClient.from('inventory_tracker')
         .select('balance').eq('user_id', currentUserId).eq('item_code', itemCode)
         .lt('date', currentMonth + '-01').order('date', { ascending: false }).limit(1);
     if (data && data.length > 0) return data[0].balance;
@@ -14076,13 +14076,13 @@ async function addNewInventoryRow() {
         utilised: utilised, added: added, balance: balance 
     };
     
-    await supabaseClient.from('Inventory_tracker').insert([record]);
+    await supabaseClient.from('inventory_tracker').insert([record]);
     await renderInventory();
 }
 
 async function renderInventory() {
     const selectedMonth = document.getElementById('inv_filter_month').value;
-    const { data: filtered } = await supabaseClient.from('Inventory_tracker')
+    const { data: filtered } = await supabaseClient.from('inventory_tracker')
         .select('*').eq('user_id', currentUserId).gte('date', `${selectedMonth}-01`).lte('date', `${selectedMonth}-31`);
 
     const tbody = document.getElementById('inventory-items-body');
@@ -14116,10 +14116,9 @@ async function renderInventory() {
 
 async function deleteInv(id) {
     if(!confirm("Delete this inventory record?")) return;
-    await supabaseClient.from('Inventory_tracker').delete().eq('id', id);
+    await supabaseClient.from('inventory_tracker').delete().eq('id', id);
     await renderInventory();
 }
-
 
 
 
@@ -14204,7 +14203,7 @@ window.addEventListener('load', function() {
 // Replace Start
 async function fetchInvoiceData() {
     const invNo = document.getElementById('rem_inv_no').value;
-    const { data: record } = await supabaseClient.from('Invoice_history')
+    const { data: record } = await supabaseClient.from('invoice_history')
         .select('*').eq('user_id', currentUserId).eq('inv_no', invNo).single();
     
     if(!record) return alert("Invoice Number not found in history!");
@@ -14226,6 +14225,7 @@ async function fetchInvoiceData() {
     }
     processReminderOutput();
 }
+
 
 async function saveReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
