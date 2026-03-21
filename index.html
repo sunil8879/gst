@@ -18,6 +18,11 @@
     <title>SMART INVOICE PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
  <style>
@@ -849,8 +854,11 @@
 
 
 <script>
-    // --- YOUR FULL JSON INTEGRATION ---
-   
+const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUserId = null;
+    let currentUserEmail = null;
 let globalQRBase64 = "";
   
     const gstDatabase = [
@@ -13332,44 +13340,44 @@ function googleLogout() {
 //if (typeof resizeCanvas === "function") resizeCanvas();
 //}
 
-// REPLACE BOTH PREVIOUS onGoogleLogin FUNCTIONS WITH THIS ONE:
-// Updated Google Login to capture the user ID
-function onGoogleLogin(response) {
-    const base64Url = response.credential.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const user = JSON.parse(window.atob(base64));
+async function onGoogleLogin(response) {
+    const { data, error } = await supabaseClient.auth.signInWithIdToken({
+        provider: 'google',
+        token: response.credential,
+    });
+    
+    if (error) return alert("Login Failed: " + error.message);
+
+    currentUserId = data.user.id;
+    currentUserEmail = data.user.email;
+
+    await supabaseClient.from('profiles').upsert({
+        id: currentUserId,
+        email: currentUserEmail,
+        last_login: new Date().toISOString()
+    });
 
     document.getElementById('login-view').style.display = 'none';
     document.getElementById('logout-view').style.display = 'flex';
-    document.getElementById('user-photo').src = user.picture;
-    document.getElementById('user-display-name').innerText = user.name;
+    document.getElementById('user-photo').src = data.user.user_metadata.avatar_url;
+    document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
 
-
-
-    currentUserEmail = user.email; // Store email to filter history
-
-// 1. Reveal invoice components BUT exclude the Modals
     document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
         let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
         el.style.setProperty('display', displayType, 'important');
     });
 
-    // 2. Hide the Visitor Landing Box
     const visitorBox = document.getElementById('visitor-box');
     if(visitorBox) visitorBox.style.display = 'none';
 
     if (typeof resizeCanvas === "function") resizeCanvas();
 
-
-
-
-const remSec = document.getElementById('reminder-section');
+    const remSec = document.getElementById('reminder-section');
     if(remSec) remSec.style.setProperty('display', 'block', 'important');
     document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
 }
-
-
-
+    // 1. Show the main app
+    //document.getElementById('main-app-content').style.display = 'block';
     // 1. Show the main app
     //document.getElementById('main-app-content').style.display = 'block';
 
@@ -13383,98 +13391,110 @@ const remSec = document.getElementById('reminder-section');
 
 
 // Function to save current invoice to local storage
-function saveToHistory() {
-    if (!currentUserEmail) return;
+// Replace Start
+async function saveToHistory() {
+    if (!currentUserId) return;
 
     const products = [];
     document.querySelectorAll('[id^="name-"]').forEach(input => {
         if(input.value) products.push(input.value);
     });
 
-    // Helper to clean currency strings into numbers (₹ 50.00 -> 50.00)
     const cleanNum = (id) => parseFloat(document.getElementById(id).innerText.replace(/[^\d.-]/g, '')) || 0;
 
     const entry = {
-        date: document.getElementById('inv_date').value || new Date().toISOString().split('T')[0],
-        customer: document.getElementById('c_name').value || "--",
-        invNo: document.getElementById('inv_no').value || "--",
-        taxable: cleanNum('prev_taxable'), // Revenue
-        total: cleanNum('prev_total'),    // Grand Total
-        products: products.join(", ")
+        user_id: currentUserId,
+        inv_date: document.getElementById('inv_date').value || new Date().toISOString().split('T')[0],
+        customer_name: document.getElementById('c_name').value || "--",
+        inv_no: document.getElementById('inv_no').value || "--",
+        taxable_amount: cleanNum('prev_taxable'),
+        final_amount: cleanNum('prev_total'),
+        product_sold: products.join(", ")
     };
-    // GST = Total - Taxable
-    entry.gst = entry.total - entry.taxable;
+    entry.gst_amount = entry.final_amount - entry.taxable_amount;
 
-    let history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-    history.push(entry);
-    localStorage.setItem('invoice_history_' + currentUserEmail, JSON.stringify(history));
+    await supabaseClient.from('Invoice_history').insert([entry]);
 
-// ADD THIS: Saves a permanent copy for the dashboard
-    let permData = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
-    permData.push(entry);
-    localStorage.setItem('perm_analytics_' + currentUserEmail, JSON.stringify(permData));
+    const monthYear = entry.inv_date.substring(0, 7);
+    const { data: dashData } = await supabaseClient.from('business_dashboard')
+        .select('*').eq('user_id', currentUserId).eq('month_year', monthYear).single();
+
+    if (dashData) {
+        await supabaseClient.from('business_dashboard').update({
+            total_invoices: dashData.total_invoices + 1,
+            total_revenue: dashData.total_revenue + entry.taxable_amount,
+            total_gst_collected: dashData.total_gst_collected + entry.gst_amount
+        }).eq('id', dashData.id);
+    } else {
+        await supabaseClient.from('business_dashboard').insert([{
+            user_id: currentUserId,
+            month_year: monthYear,
+            total_invoices: 1,
+            total_revenue: entry.taxable_amount,
+            total_gst_collected: entry.gst_amount
+        }]);
+    }
 }
 
+// Function to display history
 
 // Function to display history
-function toggleHistory() {
+// Function to display history
+// Replace Start
+async function toggleHistory() {
     const modal = document.getElementById('history-modal');
     
-    if (!currentUserEmail) {
-        alert("ACCESS DENIED: Please login with Google to view your invoice history.");
-        return;
-    }
+    if (!currentUserId) return alert("ACCESS DENIED: Please login with Google to view your invoice history.");
 
     if (modal.style.display === 'none') {
-        const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
+        const { data: history } = await supabaseClient.from('Invoice_history').select('*').eq('user_id', currentUserId).order('inv_date', { ascending: false });
+        const { data: reminders } = await supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId);
+        
+        const remindersObj = {};
+        if (reminders) reminders.forEach(r => remindersObj[r.inv_no] = { paid: r.amount_paid, remarks: r.remarks });
 
         let html = `
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                 <thead>
                     <tr style="background:var(--aqua); border:2px solid black;">
-
                         <th style="padding:10px; border:1px solid black;">Date</th>
                         <th style="padding:10px; border:1px solid black;">Customer Name</th>
                         <th style="padding:10px; border:1px solid black;">Invoice No</th>
                         <th style="padding:10px; border:1px solid black;">Final Amount</th>
-<th style="padding:10px; border:1px solid black;">Paid</th>
-<th style="padding:10px; border:1px solid black;">Balance</th>
-<th style="padding:10px; border:1px solid black;">Remarks</th>
+                        <th style="padding:10px; border:1px solid black;">Paid</th>
+                        <th style="padding:10px; border:1px solid black;">Balance</th>
+                        <th style="padding:10px; border:1px solid black;">Remarks</th>
                         <th style="padding:10px; border:1px solid black;">Product Sold</th>
-<th style="padding:10px; border:1px solid black;">Action</th>
+                        <th style="padding:10px; border:1px solid black;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
 
-        if (history.length === 0) {
-            html += `<tr><td colspan="5" style="padding:20px; text-align:center;">No records found. Generate an invoice to see history.</td></tr>`;
+        if (!history || history.length === 0) {
+            html += `<tr><td colspan="9" style="padding:20px; text-align:center;">No records found. Generate an invoice to see history.</td></tr>`;
         } else {
-       
-history.reverse().forEach((item, index) => {
-    // This part pulls directly from the reminders you just saved
-    const remindersObj = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    const rD = remindersObj[item.invNo] || { paid: 0, remarks: '--' };
-    
-    const p = parseFloat(rD.paid) || 0; 
-const b = (parseFloat(item.total) - p).toFixed(2);// Calculates the remaining balance
+            history.forEach((item) => {
+                const rD = remindersObj[item.inv_no] || { paid: 0, remarks: '--' };
+                const p = parseFloat(rD.paid) || 0; 
+                const b = (parseFloat(item.final_amount) - p).toFixed(2);
 
-    html += `
-        <tr>
-            <td style="padding:10px; border:1px solid black;">${item.date}</td>
-            <td style="padding:10px; border:1px solid black;">${item.customer}</td>
-            <td style="padding:10px; border:1px solid black;">${item.invNo}</td>
-            <td style="padding:10px; border:1px solid black; font-weight:bold;">${parseFloat(item.total).toFixed(2)}</td>             
-            <td style="padding:10px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
-         <td style="padding:10px; border:1px solid black; color:red;">${b}</td>
-            <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
-            <td style="padding:10px; border:1px solid black;">${item.products}</td>
-            <td style="padding:10px; border:1px solid black; text-align:center;">
-                <i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem(${index})"></i>
-            </td>
-        </tr>
-    `;
-});
+                html += `
+                    <tr>
+                        <td style="padding:10px; border:1px solid black;">${item.inv_date}</td>
+                        <td style="padding:10px; border:1px solid black;">${item.customer_name}</td>
+                        <td style="padding:10px; border:1px solid black;">${item.inv_no}</td>
+                        <td style="padding:10px; border:1px solid black; font-weight:bold;">${parseFloat(item.final_amount).toFixed(2)}</td>             
+                        <td style="padding:10px; border:1px solid black; color:green;">${p.toFixed(2)}</td>
+                        <td style="padding:10px; border:1px solid black; color:red;">${b}</td>
+                        <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
+                        <td style="padding:10px; border:1px solid black;">${item.product_sold}</td>
+                        <td style="padding:10px; border:1px solid black; text-align:center;">
+                            <i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem('${item.id}')"></i>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
         html += `</tbody></table>`;
@@ -13485,52 +13505,12 @@ const b = (parseFloat(item.total) - p).toFixed(2);// Calculates the remaining ba
     }
 }
 
-
-
-
-
-//function deleteHistoryItem(index) {
-    //if(confirm("Are you sure you want to delete this invoice record?")) {
-        //const key = 'invoice_history_' + currentUserEmail;
-       // let history = JSON.parse(localStorage.getItem(key)) || [];
-        // The index comes from the original array, so we remove it directly
-       // history.splice(index, 1);
-       // localStorage.setItem(key, JSON.stringify(history));
-        // Refresh the modal content
-       // toggleHistory(); 
-       // toggleHistory();
-    //}
-//}
-
-
-
-
-function deleteHistoryItem(displayIndex) {
+async function deleteHistoryItem(id) {
     if(confirm("Delete this record permanently?")) {
-        const key = 'invoice_history_' + currentUserEmail;
-        let history = JSON.parse(localStorage.getItem(key)) || [];
-        
-        // Because we reversed the list for the display, 
-        // we need to reverse it here to find the real item to delete
-        history.reverse(); 
-        history.splice(displayIndex, 1); // Delete it
-        history.reverse(); // Put it back to normal
-        
-        localStorage.setItem(key, JSON.stringify(history));
-        
-        // Refresh the view
-        toggleHistory(); 
-        toggleHistory();
+        await supabaseClient.from('Invoice_history').delete().eq('id', id);
+        toggleHistory(); toggleHistory();
     }
 }
-
-
-
-
-
-
-
-
 
 function applyTemplate() {
     const selected = document.getElementById('template_select').value;
@@ -13888,49 +13868,36 @@ let hint = hsnHints[singleHsn] || hsnHints[singleHsn.substring(0, 2)] || "";
 
 
 
-function toggleDashboard() {
+async function toggleDashboard() {
     const modal = document.getElementById('dashboard-modal');
-    if (!currentUserEmail) return alert("Please login with Google to access the Dashboard.");
+    if (!currentUserId) return alert("Please login with Google to access the Dashboard.");
     
     if (modal.style.display === 'none') {
-        // Set picker to current month by default
         const now = new Date();
         const monthStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
         document.getElementById('dash_month_picker').value = monthStr;
-        updateDashboardStats();
+        await updateDashboardStats();
         modal.style.display = 'block';
     } else {
         modal.style.display = 'none';
     }
 }
 
-function updateDashboardStats() {
-// ADD THIS: Re-routes the dashboard to read from the permanent storage
-    var history = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
-    const selectedMonth = document.getElementById('dash_month_picker').value; // YYYY-MM
-    if (!selectedMonth) return;
+async function updateDashboardStats() {
+    const selectedMonth = document.getElementById('dash_month_picker').value; 
+    if (!selectedMonth || !currentUserId) return;
 
-    //const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-    
-    // Filter history based on year and month
-    const filtered = history.filter(item => item.date.startsWith(selectedMonth));
+    const { data, error } = await supabaseClient.from('business_dashboard')
+        .select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single();
 
-    let totalCount = filtered.length;
-    let totalRevenue = 0;
-    let totalGst = 0;
+    const totalCount = data ? data.total_invoices : 0;
+    const totalRevenue = data ? data.total_revenue : 0;
+    const totalGst = data ? data.total_gst_collected : 0;
 
-    filtered.forEach(item => {
-        totalRevenue += (item.taxable || 0);
-        totalGst += (item.gst || 0);
-    });
-
-    // Update UI
     document.getElementById('stat-count').innerText = totalCount;
-    document.getElementById('stat-revenue').innerText = "₹ " + totalRevenue.toLocaleString('en-IN', {minimumFractionDigits: 2});
-    document.getElementById('stat-gst').innerText = "₹ " + totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('stat-revenue').innerText = "₹ " + Number(totalRevenue).toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('stat-gst').innerText = "₹ " + Number(totalGst).toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
-
-
 
 
 
@@ -14044,35 +14011,28 @@ installBtn.addEventListener('click', async () => {
 
 
 
-function toggleInventory() {
-    if (!currentUserEmail) return alert("ACCESS DENIED: Please login with Google first.");
+async function toggleInventory() {
+    if (!currentUserId) return alert("ACCESS DENIED: Please login with Google first.");
     const modal = document.getElementById('inventory-modal');
     if (modal.style.display === 'none') {
         const now = new Date();
         document.getElementById('inv_filter_month').value = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
-        renderInventory();
+        await renderInventory();
         modal.style.display = 'block';
     } else {
         modal.style.display = 'none';
     }
 }
 
-function getOpeningStock(itemCode, currentMonth) {
-    const history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    // Get previous month string
-    const d = new Date(currentMonth + "-01");
-    d.setMonth(d.getMonth() - 1);
-    const prevMonthStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
-
-    // Find the LAST record for this item code in the PREVIOUS month
-    const prevMonthRecords = history.filter(r => r.itemCode === itemCode && r.date.startsWith(prevMonthStr));
-    if (prevMonthRecords.length > 0) {
-        return prevMonthRecords[prevMonthRecords.length - 1].balance;
-    }
-    return 100; // Default if no previous history
+async function getOpeningStock(itemCode, currentMonth) {
+    const { data } = await supabaseClient.from('Inventory_tracker')
+        .select('balance').eq('user_id', currentUserId).eq('item_code', itemCode)
+        .lt('date', currentMonth + '-01').order('date', { ascending: false }).limit(1);
+    if (data && data.length > 0) return data[0].balance;
+    return 100;
 }
 
-function addNewInventoryRow() {
+async function addNewInventoryRow() {
     const date = new Date().toISOString().split('T')[0];
     const month = date.substring(0, 7);
     const vName = prompt("Enter Vendor Name:");
@@ -14082,74 +14042,60 @@ function addNewInventoryRow() {
     const iName = prompt("Enter Item Name:");
     const iCode = prompt("Enter Item Code:");
     
-    const opening = getOpeningStock(iCode, month);
+    const opening = await getOpeningStock(iCode, month);
     const utilised = parseInt(prompt("Stock Utilised:") || 0);
     const added = parseInt(prompt("Stock Added:") || 0);
     const balance = opening - utilised + added;
 
-    const record = { date, vName, vPhone, iName, itemCode: iCode, opening, utilised, added, balance };
+    const record = { 
+        user_id: currentUserId, date: date, vendor: vName, whatsapp: vPhone, 
+        item_name: iName, item_code: iCode, opening_balance: opening, 
+        utilised: utilised, added: added, balance: balance 
+    };
     
-    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    history.push(record);
-    localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
-    renderInventory();
+    await supabaseClient.from('Inventory_tracker').insert([record]);
+    await renderInventory();
 }
 
-function renderInventory() {
+async function renderInventory() {
     const selectedMonth = document.getElementById('inv_filter_month').value;
-    const history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    const filtered = history.filter(r => r.date.startsWith(selectedMonth));
+    const { data: filtered } = await supabaseClient.from('Inventory_tracker')
+        .select('*').eq('user_id', currentUserId).gte('date', `${selectedMonth}-01`).lte('date', `${selectedMonth}-31`);
+
     const tbody = document.getElementById('inventory-items-body');
     tbody.innerHTML = '';
 
-    filtered.forEach((r, idx) => {
-        const isLow = r.balance < 10;
-        const row = `
-            <tr style="border-bottom:1px solid black; ${isLow ? 'background:#fffafa;' : ''}">
-                <td style="padding:10px; border:1px solid black;">${r.date}</td>
-                <td style="padding:10px; border:1px solid black;">${r.vName}</td>
-                <td style="padding:10px; border:1px solid black; text-align:center;">
-                    <a href="https://wa.me/91${r.vPhone}" target="_blank" style="color:#25D366; font-size:1.2rem;"><i class="fab fa-whatsapp"></i></a>
-                </td>
-                <td style="padding:10px; border:1px solid black; ${isLow ? 'color:red; font-weight:bold;' : ''}">${r.iName} ${isLow ? '(LOW STOCK)' : ''}</td>
-                <td style="padding:10px; border:1px solid black;">${r.itemCode}</td>
-                <td style="padding:10px; border:1px solid black; background:#eee;">${r.opening}</td>
-                <td style="padding:10px; border:1px solid black;">${r.utilised}</td>
-                <td style="padding:10px; border:1px solid black;">${r.added}</td>
-                <td style="padding:10px; border:1px solid black; background:#eee; font-weight:bold;">${r.balance}</td>
-                <td style="padding:10px; border:1px solid black; text-align:center;">
-                    <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteInv(${idx})"></i>
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
-    });
+    if (filtered) {
+        filtered.forEach((r) => {
+            const isLow = r.balance < 10;
+            const row = `
+                <tr style="border-bottom:1px solid black; ${isLow ? 'background:#fffafa;' : ''}">
+                    <td style="padding:10px; border:1px solid black;">${r.date}</td>
+                    <td style="padding:10px; border:1px solid black;">${r.vendor}</td>
+                    <td style="padding:10px; border:1px solid black; text-align:center;">
+                        <a href="https://wa.me/91${r.whatsapp}" target="_blank" style="color:#25D366; font-size:1.2rem;"><i class="fab fa-whatsapp"></i></a>
+                    </td>
+                    <td style="padding:10px; border:1px solid black; ${isLow ? 'color:red; font-weight:bold;' : ''}">${r.item_name} ${isLow ? '(LOW STOCK)' : ''}</td>
+                    <td style="padding:10px; border:1px solid black;">${r.item_code}</td>
+                    <td style="padding:10px; border:1px solid black; background:#eee;">${r.opening_balance}</td>
+                    <td style="padding:10px; border:1px solid black;">${r.utilised}</td>
+                    <td style="padding:10px; border:1px solid black;">${r.added}</td>
+                    <td style="padding:10px; border:1px solid black; background:#eee; font-weight:bold;">${r.balance}</td>
+                    <td style="padding:10px; border:1px solid black; text-align:center;">
+                        <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteInv('${r.id}')"></i>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
 }
 
-function deleteInv(displayIndex) {
+async function deleteInv(id) {
     if(!confirm("Delete this inventory record?")) return;
-    const selectedMonth = document.getElementById('inv_filter_month').value;
-    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    
-    // Find the actual index in the main array
-    let realIndex = -1;
-    let count = 0;
-    for(let i=0; i<history.length; i++) {
-        if(history[i].date.startsWith(selectedMonth)) {
-            if(count === displayIndex) { realIndex = i; break; }
-            count++;
-        }
-    }
-    
-    if(realIndex > -1) {
-        history.splice(realIndex, 1);
-        localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
-        renderInventory();
-    }
+    await supabaseClient.from('Inventory_tracker').delete().eq('id', id);
+    await renderInventory();
 }
-
-
-
 
 
 
@@ -14231,138 +14177,81 @@ window.addEventListener('load', function() {
 
 
 
-function fetchInvoiceData() {
+
+
+// Replace Start
+async function fetchInvoiceData() {
     const invNo = document.getElementById('rem_inv_no').value;
-    const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-    const record = history.find(r => r.invNo === invNo);
+    const { data: record } = await supabaseClient.from('Invoice_history')
+        .select('*').eq('user_id', currentUserId).eq('inv_no', invNo).single();
     
     if(!record) return alert("Invoice Number not found in history!");
     
-document.getElementById('rem_inv_date').value = record.date;
-    document.getElementById('rem_c_name').value = record.customer;
-  document.getElementById('rem_total').value = parseFloat(record.total).toFixed(2);
-    document.getElementById('rem_gst').value = Math.ceil(record.gst);
+    document.getElementById('rem_inv_date').value = record.inv_date;
+    document.getElementById('rem_c_name').value = record.customer_name;
+    document.getElementById('rem_total').value = parseFloat(record.final_amount).toFixed(2);
+    document.getElementById('rem_gst').value = Math.ceil(record.gst_amount);
     
-    // Check if reminder already exists to fill WA/Email
-    const reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    if(reminders[invNo]) {
-        const r = reminders[invNo];
-        document.getElementById('rem_wa').value = r.wa;
-        document.getElementById('rem_email').value = r.email;
-        document.getElementById('rem_status').value = r.status;
+    const { data: r } = await supabaseClient.from('invoice_reminders')
+        .select('*').eq('user_id', currentUserId).eq('inv_no', invNo).single();
+
+    if(r) {
+        document.getElementById('rem_wa').value = r.whatsapp_no;
+        document.getElementById('rem_email').value = r.customer_email;
+        document.getElementById('rem_status').value = r.payment_received;
         document.getElementById('rem_remarks').value = r.remarks;
-document.getElementById('rem_paid').value = r.paid || 0;
+        document.getElementById('rem_paid').value = r.amount_paid || 0;
     }
     processReminderOutput();
 }
 
-function saveReminderRecord() {
-
-
-
-
-
+async function saveReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
     if(!invNo) return alert("Fetch an invoice first!");
-
-
-
-const s = document.getElementById('rem_status').value; const t = parseFloat(document.getElementById('rem_total').value) || 0; const p = parseFloat(document.getElementById('rem_paid').value) || 0; if (s === 'NO' && p > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'."); if (s === 'YES' && p > t) return alert("INVALID: Amount Paid cannot exceed Total Amount (₹" + t + ")");
-
-
-
-
-
-// 1. Get Values and Round up to the next whole number (Math.ceil)
+    
     const status = document.getElementById('rem_status').value;
-    const taxable = Math.ceil(parseFloat(document.getElementById('rem_total').value) || 0);
-    const gstAmt = Math.ceil(parseFloat(document.getElementById('rem_gst').value) || 0);
-    let paidAmt = Math.ceil(parseFloat(document.getElementById('rem_paid').value) || 0);
-    
-    // Update the UI field to show the rounded number
-    document.getElementById('rem_paid').value = paidAmt;
+    const taxable = parseFloat(document.getElementById('rem_total').value) || 0;
+    const gstAmt = parseFloat(document.getElementById('rem_gst').value) || 0;
+    const paidAmt = parseFloat(document.getElementById('rem_paid').value) || 0;
+    const grandTotalLimit = taxable + gstAmt;
 
+    if (status === 'NO' && paidAmt > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'.");
+    if (status === 'YES' && paidAmt > grandTotalLimit) return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
 
-
-if (status === 'NO' && paidAmt > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'."); if (status === 'YES' && paidAmt > taxable) return alert("INVALID: Amount Paid cannot exceed Total Amount (₹" + taxable + ")");
-
-
-
-    // 2. Validation: If NO, Amount Paid must be 0
-   // if (status === 'NO' && paidAmt > 0) {
-        //return alert("INVALID: Amount Paid cannot be greater than 0 if Status is 'NO'.");
-    //}
-
-    // 3. Validation: If YES, Paid must be <= (Taxable + GST)
-    //const grandTotalLimit = taxable + gstAmt;
-    //if (status === 'YES' && paidAmt > grandTotalLimit) {
-        //return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot be greater than the Grand Total (₹" + grandTotalLimit + ").");
-   //}
-
-
-
-
-    
     const data = {
-        wa: document.getElementById('rem_wa').value,
-        email: document.getElementById('rem_email').value,
-        status: document.getElementById('rem_status').value,
+        user_id: currentUserId,
+        whatsapp_no: document.getElementById('rem_wa').value,
+        customer_email: document.getElementById('rem_email').value,
+        payment_received: status,
         remarks: document.getElementById('rem_remarks').value,
-paid: document.getElementById('rem_paid').value || 0,
-        invDate: document.getElementById('rem_inv_date').value,
-        total: document.getElementById('rem_total').value,
-        cName: document.getElementById('rem_c_name').value
+        amount_paid: paidAmt,
+        inv_no: invNo,
+        total_amount: grandTotalLimit,
+        gst_amount: gstAmt,
+        customer_name: document.getElementById('rem_c_name').value
     };
     
-    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    reminders[invNo] = data;
-    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
-    alert("Record Saved!");
+    const { data: existing } = await supabaseClient.from('invoice_reminders')
+        .select('id').eq('user_id', currentUserId).eq('inv_no', invNo).single();
+
+    if (existing) {
+        await supabaseClient.from('invoice_reminders').update(data).eq('id', existing.id);
+    } else {
+        await supabaseClient.from('invoice_reminders').insert([data]);
+    }
+    
+    alert("Payment Record Validated & Saved!");
     processReminderOutput();
 }
 
-function processReminderOutput() {
-    const status = document.getElementById('rem_status').value;
-
-
-
-
-if (!new Error().stack.includes('saveReminderRecord')) return document.getElementById('reminder-output-msg').style.display = 'none'; const total = parseFloat(document.getElementById('rem_total').value) || 0; const paid = parseFloat(document.getElementById('rem_paid').value) || 0; const bal = (total - paid).toFixed(2);
-
-
-
-    const invDate = new Date(document.getElementById('rem_inv_date').value);
-    const today = new Date();
-    const diffDays = Math.ceil((today - invDate) / (1000 * 60 * 60 * 24));
-    const output = document.getElementById('reminder-output-msg');
-    const sName = document.getElementById('s_name').value || "Your Business";
-    const cName = document.getElementById('rem_c_name').value;
-   //const total = document.getElementById('rem_total').value;
+async function deleteReminderRecord() {
     const invNo = document.getElementById('rem_inv_no').value;
-    const remarks = document.getElementById('rem_remarks').value.toLowerCase();
-    
-    const hrs = new Date().getHours();
-    const greet = hrs<12?"GM":hrs<17?"GA":"GE";
-    output.style.display = 'block';
-
-    if(status === 'NO') {
-        output.style.color = 'red';
-        output.innerText = "STATUS: PENDING. The payment message will be sent after 3 days.";
-        if(diffDays >= 3) {
-            const msg = `Dear sir, ${greet} to you. I hope you are good. This is just a polite reminder to make the payment of ₹${total} for invoice no ${invNo} at the earliest. Thank you. Regards: ${sName}`;
-            sendComm(msg);
-        }
-    } else {
-        output.style.color = 'green';
-      if(remarks.includes('part')) {
-            output.innerText = `The part payment of ₹${paid} is received from ${cName} via ${invNo}. BALANCE AMOUNT IS ₹${bal}. Next message in 7 days.`;
-        } else {
-            output.innerText = `The payment of ₹${paid} is received from ${cName} via ${invNo} on ${document.getElementById('rem_today').value}.`;
-        }
-        const msg = `Dear sir, ${greet} to you. I hope you are good. This is a confirmation message that the payment of ₹${paid} for invoice no ${invNo} has been received. Thank you. Regards: ${sName}`;
-        sendComm(msg);
-        }
+    if(confirm("Delete this reminder record?")) {
+        await supabaseClient.from('invoice_reminders').delete().eq('user_id', currentUserId).eq('inv_no', invNo);
+        location.reload();
     }
+}
+
 
 
 function sendComm(msg) {
@@ -14373,15 +14262,7 @@ if (!new Error().stack.includes('saveReminderRecord')) return;
     if(email) window.open(`mailto:${email}?subject=Payment Update&body=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function deleteReminderRecord() {
-    const invNo = document.getElementById('rem_inv_no').value;
-    if(confirm("Delete this reminder record?")) {
-        let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-        delete reminders[invNo];
-        localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
-        location.reload();
-    }
-}
+
 
 
 
@@ -14404,43 +14285,6 @@ document.getElementById('rem_status').addEventListener('change', function() {
     }
 });
 
-// --- UPDATED SAVE FUNCTION TO ENSURE DATA INTEGRITY ---
-function saveReminderRecord() {
-    const invNo = document.getElementById('rem_inv_no').value;
-    if(!invNo) return alert("Fetch an invoice first!");
-    
-    // VALIDATION LOGIC
-    const status = document.getElementById('rem_status').value;
-    const taxable = parseFloat(document.getElementById('rem_total').value) || 0;
-    const gstAmt = parseFloat(document.getElementById('rem_gst').value) || 0;
-    const paidAmt = parseFloat(document.getElementById('rem_paid').value) || 0;
-    const grandTotalLimit = taxable + gstAmt;
-
-    if (status === 'NO' && paidAmt > 0) {
-        return alert("INVALID: Amount Paid must be 0 if Status is 'NO'.");
-    }
-    if (status === 'YES' && paidAmt > grandTotalLimit) {
-        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
-    }
-
-    const data = {
-        wa: document.getElementById('rem_wa').value,
-        email: document.getElementById('rem_email').value,
-        status: status,
-        remarks: document.getElementById('rem_remarks').value,
-        paid: paidAmt,
-        invDate: document.getElementById('rem_inv_date').value,
-        total: grandTotalLimit, // Syncs full total for history balance math
-        cName: document.getElementById('rem_c_name').value
-    };
-    
-    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    reminders[invNo] = data;
-    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
-    
-    alert("Payment Record Validated & Saved!");
-    processReminderOutput();
-}
 </script>
 </body>
 </html>
