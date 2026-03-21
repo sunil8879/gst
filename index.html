@@ -14267,6 +14267,11 @@ function saveReminderRecord() {
 
 
 
+const s = document.getElementById('rem_status').value; const t = parseFloat(document.getElementById('rem_total').value) || 0; const p = parseFloat(document.getElementById('rem_paid').value) || 0; if (s === 'NO' && p > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'."); if (s === 'YES' && p > t) return alert("INVALID: Amount Paid cannot exceed Total Amount (₹" + t + ")");
+
+
+
+
 
 // 1. Get Values and Round up to the next whole number (Math.ceil)
     const status = document.getElementById('rem_status').value;
@@ -14277,16 +14282,22 @@ function saveReminderRecord() {
     // Update the UI field to show the rounded number
     document.getElementById('rem_paid').value = paidAmt;
 
+
+
+if (status === 'NO' && paidAmt > 0) return alert("INVALID: Amount Paid must be 0 if Status is 'NO'."); if (status === 'YES' && paidAmt > taxable) return alert("INVALID: Amount Paid cannot exceed Total Amount (₹" + taxable + ")");
+
+
+
     // 2. Validation: If NO, Amount Paid must be 0
-    if (status === 'NO' && paidAmt > 0) {
-        return alert("INVALID: Amount Paid cannot be greater than 0 if Status is 'NO'.");
-    }
+   // if (status === 'NO' && paidAmt > 0) {
+        //return alert("INVALID: Amount Paid cannot be greater than 0 if Status is 'NO'.");
+    //}
 
     // 3. Validation: If YES, Paid must be <= (Taxable + GST)
-    const grandTotalLimit = taxable + gstAmt;
-    if (status === 'YES' && paidAmt > grandTotalLimit) {
-        return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot be greater than the Grand Total (₹" + grandTotalLimit + ").");
-    }
+    //const grandTotalLimit = taxable + gstAmt;
+    //if (status === 'YES' && paidAmt > grandTotalLimit) {
+        //return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot be greater than the Grand Total (₹" + grandTotalLimit + ").");
+   //}
 
 
 
