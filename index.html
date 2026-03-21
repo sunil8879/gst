@@ -15,6 +15,11 @@
 
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
     <title>SMART INVOICE PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -849,6 +854,9 @@
 
 
 <script>
+const SUB_URL = "https://kqqlrtsmcrjbupigvofe.supabase.co";
+const SUB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4";
+const supabase = libsupabase.createClient(SUB_URL, SUB_KEY);
     // --- YOUR FULL JSON INTEGRATION ---
    
 let globalQRBase64 = "";
@@ -13347,6 +13355,8 @@ function onGoogleLogin(response) {
 
 
     currentUserEmail = user.email; // Store email to filter history
+// Sync Google Login with Supabase Auth
+    supabase.auth.signInWithIdToken({ provider: 'google', token: response.credential });
 
 // 1. Reveal invoice components BUT exclude the Modals
     document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
@@ -13403,11 +13413,21 @@ function saveToHistory() {
         products: products.join(", ")
     };
     // GST = Total - Taxable
-    entry.gst = entry.total - entry.taxable;
+ entry.gst = entry.total - entry.taxable;
 
-    let history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-    history.push(entry);
-    localStorage.setItem('invoice_history_' + currentUserEmail, JSON.stringify(history));
+    // SAVE TO SUPABASE CLOUD
+    const cloudEntry = {
+        inv_date: entry.date,
+        customer_name: entry.customer,
+        inv_no: entry.invNo,
+        final_amount: entry.total,
+        product_sold: entry.products,
+        taxable_amount: entry.taxable,
+        gst_amount: entry.gst
+    };
+    supabase.from('invoice_history').insert([cloudEntry]).then(() => {
+        console.log("Invoice synced to cloud");
+    });
 
 // ADD THIS: Saves a permanent copy for the dashboard
     let permData = JSON.parse(localStorage.getItem('perm_analytics_' + currentUserEmail)) || [];
@@ -13425,10 +13445,12 @@ function toggleHistory() {
         return;
     }
 
-    if (modal.style.display === 'none') {
-        const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
-
-        let html = `
+ if (modal.style.display === 'none') {
+        // FETCH FROM SUPABASE CLOUD
+        supabase.from('invoice_history').select('*').order('inv_date', { ascending: false }).then(({ data: history }) => {
+            if (!history) history = [];
+            
+            let html = `
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                 <thead>
                     <tr style="background:var(--aqua); border:2px solid black;">
@@ -14087,19 +14109,21 @@ function addNewInventoryRow() {
     const added = parseInt(prompt("Stock Added:") || 0);
     const balance = opening - utilised + added;
 
-    const record = { date, vName, vPhone, iName, itemCode: iCode, opening, utilised, added, balance };
+   const record = { date, vendor: vName, whatsapp: vPhone, item_name: iName, item_code: iCode, opening_balance: opening, utilised, added, balance };
     
-    let history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    history.push(record);
-    localStorage.setItem('inv_data_' + currentUserEmail, JSON.stringify(history));
-    renderInventory();
-}
+    // SAVE TO SUPABASE CLOUD
+    supabase.from('inventory_tracker').insert([record]).then(() => {
+        alert("Stock Record Cloud-Synced!");
+        renderInventory();
+    });
 
 function renderInventory() {
     const selectedMonth = document.getElementById('inv_filter_month').value;
-    const history = JSON.parse(localStorage.getItem('inv_data_' + currentUserEmail)) || [];
-    const filtered = history.filter(r => r.date.startsWith(selectedMonth));
-    const tbody = document.getElementById('inventory-items-body');
+    
+    // FETCH FROM SUPABASE CLOUD
+    supabase.from('inventory_tracker').select('*').ilike('date', selectedMonth + '%').then(({ data: filtered }) => {
+        if (!filtered) filtered = [];
+        const tbody = document.getElementById('inventory-items-body');
     tbody.innerHTML = '';
 
     filtered.forEach((r, idx) => {
@@ -14314,10 +14338,20 @@ paid: document.getElementById('rem_paid').value || 0,
         cName: document.getElementById('rem_c_name').value
     };
     
-    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
-    reminders[invNo] = data;
-    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
-    alert("Record Saved!");
+// SAVE TO SUPABASE (Upsert handles both Insert and Update)
+    const cloudRem = {
+        inv_no: invNo,
+        customer_name: data.cName,
+        total_amount: data.total,
+        amount_paid: data.paid,
+        whatsapp_no: data.wa,
+        customer_email: data.email,
+        payment_received: data.status,
+        remarks: data.remarks
+    };
+    supabase.from('invoice_reminders').upsert([cloudRem], { onConflict: 'inv_no' }).then(() => {
+        alert("Payment Data Cloud-Synced!");
+    });
     processReminderOutput();
 }
 
