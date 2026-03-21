@@ -360,7 +360,8 @@
 @media (max-width: 768px) { .visitor-grid { grid-template-columns: repeat(2, 1fr); } }
 
 
-
+/* Hides Reminder button and section for visitors */
+#btn-reminder, #reminder-section { display: none !important; }
 
 
 
@@ -593,6 +594,59 @@
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
     <i class="fas fa-history"></i> View Invoice History
 </button>
+
+
+
+
+
+
+<!-- INVOICE REMINDER SECTION -->
+<div id="reminder-section" style="margin-top: 25px; padding: 20px; border: 3px solid black; background: #fff; box-shadow: 8px 8px 0px black;">
+    <div class="section-header"><i class="fas fa-clock"></i> Invoice Payment Reminder</div>
+    
+    <div class="form-row">
+        <div><label style="font-size:0.7rem; font-weight:800;">TODAY</label><input type="date" id="rem_today" readonly></div>
+        <div><label style="font-size:0.7rem; font-weight:800;">FETCH INV #</label>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="rem_inv_no" placeholder="INV-XXXX">
+                <button onclick="fetchInvoiceData()" style="background:var(--aqua); border:2px solid black; cursor:pointer; font-weight:800; padding:0 10px;">GO</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <input type="date" id="rem_inv_date" readonly placeholder="Inv Date">
+        <input type="text" id="rem_c_name" readonly placeholder="Customer Name">
+    </div>
+
+    <div class="form-row">
+        <input type="number" id="rem_total" readonly placeholder="Total Amount">
+        <input type="number" id="rem_gst" readonly placeholder="GST Amount">
+    </div>
+
+    <div class="form-row">
+        <input type="text" id="rem_wa" placeholder="WhatsApp (10 Digits)">
+        <input type="email" id="rem_email" placeholder="Customer Email">
+    </div>
+
+    <div class="form-row">
+        <select id="rem_status">
+            <option value="NO">Payment Received: NO</option>
+            <option value="YES">Payment Received: YES</option>
+        </select>
+        <input type="text" id="rem_remarks" placeholder="Remarks (e.g. Part Payment)">
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:15px;">
+        <button onclick="saveReminderRecord()" style="flex:1; background:black; color:white; padding:10px; font-weight:800; cursor:pointer;">ADD / UPDATE</button>
+        <button onclick="deleteReminderRecord()" style="background:#ff4757; color:white; border:2px solid black; padding:10px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+    </div>
+
+    <div id="reminder-output-msg" style="margin-top:20px; padding:15px; border:2px dashed black; font-weight:700; font-size:0.85rem; min-height:40px; display:none;"></div>
+</div>
+
+
+
 
 
 <div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
@@ -13298,6 +13352,12 @@ function onGoogleLogin(response) {
 
     if (typeof resizeCanvas === "function") resizeCanvas();
 
+
+
+
+const remSec = document.getElementById('reminder-section');
+    if(remSec) remSec.style.setProperty('display', 'block', 'important');
+    document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
 }
 
 
@@ -14136,6 +14196,116 @@ window.addEventListener('load', function() {
         footerDiv.style.pointerEvents = 'auto';
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function fetchInvoiceData() {
+    const invNo = document.getElementById('rem_inv_no').value;
+    const history = JSON.parse(localStorage.getItem('invoice_history_' + currentUserEmail)) || [];
+    const record = history.find(r => r.invNo === invNo);
+    
+    if(!record) return alert("Invoice Number not found in history!");
+    
+    document.getElementById('rem_inv_date').value = record.date;
+    document.getElementById('rem_c_name').value = record.customer;
+    document.getElementById('rem_total').value = record.total;
+    document.getElementById('rem_gst').value = record.gst;
+    
+    // Check if reminder already exists to fill WA/Email
+    const reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+    if(reminders[invNo]) {
+        const r = reminders[invNo];
+        document.getElementById('rem_wa').value = r.wa;
+        document.getElementById('rem_email').value = r.email;
+        document.getElementById('rem_status').value = r.status;
+        document.getElementById('rem_remarks').value = r.remarks;
+    }
+    processReminderOutput();
+}
+
+function saveReminderRecord() {
+    const invNo = document.getElementById('rem_inv_no').value;
+    if(!invNo) return alert("Fetch an invoice first!");
+    
+    const data = {
+        wa: document.getElementById('rem_wa').value,
+        email: document.getElementById('rem_email').value,
+        status: document.getElementById('rem_status').value,
+        remarks: document.getElementById('rem_remarks').value,
+        invDate: document.getElementById('rem_inv_date').value,
+        total: document.getElementById('rem_total').value,
+        cName: document.getElementById('rem_c_name').value
+    };
+    
+    let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+    reminders[invNo] = data;
+    localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
+    alert("Record Saved!");
+    processReminderOutput();
+}
+
+function processReminderOutput() {
+    const status = document.getElementById('rem_status').value;
+    const invDate = new Date(document.getElementById('rem_inv_date').value);
+    const today = new Date();
+    const diffDays = Math.ceil((today - invDate) / (1000 * 60 * 60 * 24));
+    const output = document.getElementById('reminder-output-msg');
+    const sName = document.getElementById('s_name').value || "Your Business";
+    const cName = document.getElementById('rem_c_name').value;
+    const total = document.getElementById('rem_total').value;
+    const invNo = document.getElementById('rem_inv_no').value;
+    const remarks = document.getElementById('rem_remarks').value.toLowerCase();
+    
+    const hrs = new Date().getHours();
+    const greet = hrs<12?"GM":hrs<17?"GA":"GE";
+    output.style.display = 'block';
+
+    if(status === 'NO') {
+        output.style.color = 'red';
+        output.innerText = "STATUS: PENDING. The payment message will be sent after 3 days.";
+        if(diffDays >= 3) {
+            const msg = `Dear sir, ${greet} to you. I hope you are good. This is just a polite reminder to make the payment of ₹${total} for invoice no ${invNo} at the earliest. Thank you. Regards: ${sName}`;
+            sendComm(msg);
+        }
+    } else {
+        output.style.color = 'green';
+        if(remarks.includes('part')) {
+            output.innerText = `The part payment of ₹${total} is received from ${cName} via ${invNo}. The next message will go after 7 days.`;
+        } else {
+            output.innerText = `The payment of ₹${total} is received from ${cName} via ${invNo} on ${document.getElementById('rem_today').value}.`;
+            const msg = `Dear sir, ${greet} to you. I hope you are good. This is a confirmation message that the payment of ₹${total} for invoice no ${invNo} has been received. Thank you. Regards: ${sName}`;
+            sendComm(msg);
+        }
+    }
+}
+
+function sendComm(msg) {
+    const wa = document.getElementById('rem_wa').value;
+    const email = document.getElementById('rem_email').value;
+    if(wa) window.open(`https://wa.me/91${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    if(email) window.open(`mailto:${email}?subject=Payment Update&body=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function deleteReminderRecord() {
+    const invNo = document.getElementById('rem_inv_no').value;
+    if(confirm("Delete this reminder record?")) {
+        let reminders = JSON.parse(localStorage.getItem('reminders_' + currentUserEmail)) || {};
+        delete reminders[invNo];
+        localStorage.setItem('reminders_' + currentUserEmail, JSON.stringify(reminders));
+        location.reload();
+    }
+}
 </script>
 </body>
 </html>
