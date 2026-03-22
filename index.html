@@ -579,6 +579,15 @@
 </select>
         </div>
 
+
+<div class="form-row" style="margin-top:10px">
+            <input type="text" id="c_phone" placeholder="Customer WhatsApp / Phone No" oninput="liveUpdate()">
+            <input type="email" id="c_email" placeholder="Customer Email" oninput="liveUpdate()">
+        </div>
+
+
+
+
         <div class="section-header">
             <span><i class="fas fa-list"></i> Itemized List</span>
             <button class="btn-add" onclick="addItem()" style="margin-left:auto">+ Add Item</button>
@@ -782,6 +791,13 @@
                     <strong id="prev_c_name" style="font-size:1.1rem">Client Name</strong>
                     <p id="prev_c_addr" style="font-size:0.85rem; color:#555; white-space:pre-wrap; margin:5px 0;">Client Address</p>
                     <strong>GSTIN: <span id="prev_c_gstin">--</span></strong>
+
+<div style="font-size:0.85rem; color:#555; margin-top:5px;">
+            <span id="prev_c_phone_wrap" style="display:none;"><i class="fas fa-phone"></i> <span id="prev_c_phone"></span><br></span>
+            <span id="prev_c_email_wrap" style="display:none;"><i class="fas fa-envelope"></i> <span id="prev_c_email"></span></span>
+        </div>
+
+
                 </div>
                 <div style="text-align:right">
                     <h4 style="margin:0; color:#888; text-transform:uppercase; font-size:0.7rem;">Supply State:</h4>
@@ -13051,6 +13067,17 @@ const sPhone = document.getElementById('s_phone').value;
         document.getElementById('prev_c_name').innerText = document.getElementById('c_name').value || "Client Name";
         document.getElementById('prev_c_addr').innerText = document.getElementById('c_addr').value || "Client Address";
         document.getElementById('prev_c_gstin').innerText = document.getElementById('c_gstin').value || "--";
+
+const cPhone = document.getElementById('c_phone').value;
+        const cEmail = document.getElementById('c_email').value;
+        
+        if(cPhone) { document.getElementById('prev_c_phone_wrap').style.display = 'inline'; document.getElementById('prev_c_phone').innerText = cPhone; } 
+        else { document.getElementById('prev_c_phone_wrap').style.display = 'none'; }
+        
+        if(cEmail) { document.getElementById('prev_c_email_wrap').style.display = 'inline'; document.getElementById('prev_c_email').innerText = cEmail; } 
+        else { document.getElementById('prev_c_email_wrap').style.display = 'none'; }
+
+
         document.getElementById('prev_inv_no').innerText = document.getElementById('inv_no').value || "--";
         document.getElementById('prev_inv_date').innerText = document.getElementById('inv_date').value || "--";
         document.getElementById('prev_supply_state').innerText = cState || "--";
@@ -13127,6 +13154,12 @@ const sPhone = document.getElementById('s_phone').value ? `Phone: ${document.get
     const cName = getVal('c_name');
     const cAddr = getVal('c_addr');
     const cGst = getVal('c_gstin');
+
+
+const cPhone = document.getElementById('c_phone').value ? `Phone: ${document.getElementById('c_phone').value}<br>` : '';
+    const cEmail = document.getElementById('c_email').value ? `Email: ${document.getElementById('c_email').value}<br>` : '';
+
+
     const tableItems = document.getElementById('prev_table_body').innerHTML;
     const taxableVal = getVal('prev_taxable');
     const taxBreakup = document.getElementById('prev_gst_breakup').innerHTML;
@@ -13217,7 +13250,7 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
                 <tr>
                     <td style="text-align: left;">
                         <strong>BILL TO:</strong><br>${cName}<br>${cAddr}<br>
-                        GSTIN: ${cGst}<br>Date: ${invDate}
+                     GSTIN: ${cGst}<br>${cPhone}${cEmail}Date: ${invDate}
                     </td>
                     <td style="text-align: right;">
                         <strong>FROM:</strong><br>${sName}<br>${sAddr}<br>
@@ -14431,7 +14464,7 @@ function clearAllFields() {
     if(!confirm("Are you sure you want to clear all invoice details?")) return;
     
     // Clear text and select fields
-   const fields = ['s_name','s_addr','s_gstin','s_state','s_phone','s_email','c_name','c_addr','c_gstin','c_state','inv_date'];
+   const fields = ['s_name','s_addr','s_gstin','s_state','s_phone','s_email','c_name','c_addr','c_gstin','c_state','c_phone','c_email','inv_date'];
     fields.forEach(id => { 
         if(document.getElementById(id)) document.getElementById(id).value = ''; 
     });
