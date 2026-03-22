@@ -13616,7 +13616,7 @@ function googleLogout() {
 
 async function fetchFinanceNews() {
     const ticker = document.getElementById('ticker-content');
-    const sources = [
+   const sources = [
         "https://www.moneycontrol.com/rss/economy.xml",
         "https://www.business-standard.com/rss/economy-policy-102.rss",
         "https://economictimes.indiatimes.com/news/economy/policy/rssfeedmsid-13143936.cms",
@@ -13630,35 +13630,33 @@ async function fetchFinanceNews() {
         "https://taxguru.in/category/goods-and-services-tax/feed/"
     ];
 
-    ticker.innerHTML = 'REFRESHING LIVE FINANCE & GST STREAM...'; 
-    let allNewsHTML = "";
+    ticker.innerHTML = ''; // Clear previous
+    let totalNews = 0;
 
     for (let rssUrl of sources) {
         try {
-            // Added timestamp to URL to bypass proxy cache and get fresh news every time
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}&cachebuster=${Date.now()}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
             const response = await fetch(proxyUrl);
             const xmlText = await response.text();
             const xmlDoc = new DOMParser().parseFromString(xmlText, "text/xml");
             const items = xmlDoc.querySelectorAll("item");
 
             items.forEach((item, index) => {
-                if (index < 5) { // Take top 5 news from each of the 11 sources
+                if (index < 6) { // Take top 6 from each source
                     const title = item.querySelector("title").textContent.toUpperCase();
                     const link = item.querySelector("link").textContent;
-                    allNewsHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-university"></i> ${title}</a>`;
+                    ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-university"></i> ${title}</a>`;
+                    totalNews++;
                 }
             });
-        } catch (e) { console.warn("Source connectivity issue, moving to next..."); }
+        } catch (e) { console.warn("One source failed, skipping..."); }
     }
-    ticker.innerHTML = allNewsHTML || "GST UPDATES: CONNECTING TO SECURE FINANCE SERVERS...";
+
+    if (totalNews === 0) {
+        ticker.innerHTML = "LIVE GST UPDATES: PLEASE CHECK YOUR INTERNET CONNECTION TO STREAM FINANCE NEWS";
+    }
 }
-
-// 1. Load news immediately when page opens
 window.addEventListener('DOMContentLoaded', fetchFinanceNews);
-
-// 2. AUTO-REFRESH: Automatically fetch new headlines every 5 minutes (300,000ms)
-setInterval(fetchFinanceNews, 300000);
 
 
 
