@@ -344,7 +344,7 @@
 /* --- VISITOR VIEW STYLING --- */
 /* Hide the invoice sections by default, but keep the container visible */
 /* Hides EVERYTHING in the input panel except the login and the landing cards */
-.input-panel > *:not(#google-auth-container):not(#visitor-box) {
+.input-panel > *:not(#google-auth-container):not(#visitor-box):not(#finance-ticker-wrap) {
     display: none !important;
 }
 
@@ -487,15 +487,6 @@
 }
 
 
-
-
-
-.finance-ticker { background: #000; color: #7FFFD4; padding: 12px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 20px; display: flex; box-shadow: 6px 6px 0px #000; }
-    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-scroll 50s linear infinite; font-weight: 900; font-family: 'Courier New', monospace; font-size: 0.85rem; }
-    .news-link { color: #7FFFD4 !important; text-decoration: none !important; margin-right: 80px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
-    .news-link:hover { color: #fff !important; background: #222; }
-    @keyframes finance-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-    .finance-ticker:hover #ticker-content { animation-play-state: paused; }
 </style>
 </head>
 <body>
@@ -528,9 +519,15 @@
 
 
 <!-- --- ADD THIS DYNAMIC TICKER BLOCK --- -->
-
-<div class="finance-ticker">
-    <div id="ticker-content">CONNECTING TO LIVE FINANCE & GST FEED...</div>
+<div id="finance-ticker-wrap" style="background: #000; color: #7FFFD4; padding: 12px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 20px; display: flex; box-shadow: 6px 6px 0px #000;">
+    <style>
+        #ticker-content { display: inline-block; white-space: nowrap; animation: finance-scroll 60s linear infinite; font-weight: 900; font-family: 'Courier New', monospace; font-size: 0.85rem; }
+        .news-link { color: #7FFFD4 !important; text-decoration: none !important; margin-right: 80px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
+        .news-link:hover { color: #fff !important; text-decoration: underline !important; }
+        @keyframes finance-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+        #finance-ticker-wrap:hover #ticker-content { animation-play-state: paused; }
+    </style>
+    <div id="ticker-content">STREAMING LIVE GST & FINANCE NEWS...</div>
 </div>
 
 
@@ -13619,9 +13616,8 @@ function googleLogout() {
 
 async function fetchFinanceNews() {
     const ticker = document.getElementById('ticker-content');
-    // Using Economic Times Economy/Policy RSS via a Raw Proxy
-    const rssUrl = "https://economictimes.indiatimes.com/news/economy/policy/rssfeedmsid-13143936.cms";
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
+    const rssUrl = "https://www.moneycontrol.com/rss/economy.xml";
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
 
     try {
         const response = await fetch(proxyUrl);
@@ -13631,20 +13627,18 @@ async function fetchFinanceNews() {
         const items = xmlDoc.querySelectorAll("item");
 
         if (items.length > 0) {
-            ticker.innerHTML = ''; // Clear loading text
+            ticker.innerHTML = ''; 
             items.forEach(item => {
                 const title = item.querySelector("title").textContent.toUpperCase();
                 const link = item.querySelector("link").textContent;
-                ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-chart-line"></i> ${title}</a>`;
+                ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-landmark"></i> ${title}</a>`;
             });
         }
     } catch (e) {
-        ticker.innerHTML = "LIVE UPDATE: GST PORTAL UPDATES & FINANCE NEWS CURRENTLY STREAMING...";
-        console.error("News Error:", e);
+        ticker.innerHTML = "LIVE GST UPDATES: PLEASE CHECK YOUR INTERNET CONNECTION TO STREAM FINANCE NEWS";
     }
 }
 window.addEventListener('DOMContentLoaded', fetchFinanceNews);
-
 
 
 
