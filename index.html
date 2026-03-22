@@ -14347,6 +14347,27 @@ async function fetchInvoiceData() {
         document.getElementById('rem_remarks').value = r.remarks;
         document.getElementById('rem_paid').value = r.amount_paid || 0;
     }
+
+
+
+
+const fetchedPaid = parseFloat(document.getElementById('rem_paid').value) || 0;
+    const grandTot = parseFloat(document.getElementById('rem_total').value) || 0;
+    const bal = grandTot - fetchedPaid;
+    
+    // Store values secretly in the input element & clear box for new entry
+    document.getElementById('rem_paid').dataset.oldPaid = fetchedPaid;
+    document.getElementById('rem_paid').dataset.balance = bal;
+    document.getElementById('rem_paid').value = ''; 
+
+    // Show popup
+    if (fetchedPaid > 0 && bal > 0) {
+        alert(`Previously Paid: ₹${fetchedPaid}\nPending Balance: ₹${bal}\n\nPlease enter the NEW installment amount.`);
+    } else if (bal <= 0 && fetchedPaid > 0) {
+        alert(`This invoice is already FULLY PAID.`);
+    }
+
+
     processReminderOutput();
 }
 
@@ -14368,6 +14389,18 @@ async function saveReminderRecord() {
         return alert("INVALID: Amount Paid (₹" + paidAmt + ") cannot exceed the Grand Total (₹" + grandTotalLimit + ")");
     }
 
+
+
+const oldPaid = parseFloat(document.getElementById('rem_paid').dataset.oldPaid) || 0;
+    const maxAllowed = parseFloat(document.getElementById('rem_paid').dataset.balance) || grandTotalLimit;
+    
+    if (status === 'YES' && paidAmt > maxAllowed) {
+        return alert(`INVALID: The pending balance is only ₹${maxAllowed}. You cannot enter more than this.`);
+    }
+
+
+
+
     // Payload for Supabase - ONLY total_amount is removed. gst_amount and amount_paid are kept.
     const data = {
         user_id: currentUserId,
@@ -14381,6 +14414,11 @@ total_amount: grandTotalLimit,
         gst_amount: gstAmt,  // GST is kept
         customer_name: document.getElementById('rem_c_name').value
     };
+
+
+data.amount_paid = oldPaid + paidAmt; // Adds the new installment to the previous total before saving
+
+
     
     const { data: existing } = await supabaseClient.from('invoice_reminders')
         .select('id').eq('user_id', currentUserId).eq('inv_no', invNo).single();
@@ -14495,6 +14533,8 @@ document.getElementById('rem_status').addEventListener('change', function() {
     // Only auto-fill the full amount if the user hasn't typed anything yet (if it is 0 or empty)
     if (status === 'YES' && currentPaid === 0) {
         document.getElementById('rem_paid').value = document.getElementById('rem_total').value;
+const pBal = document.getElementById('rem_paid').dataset.balance;
+        if (pBal !== undefined) document.getElementById('rem_paid').value = pBal;
         processReminderOutput();
     } 
     // If they change back to NO, clear the amount paid
