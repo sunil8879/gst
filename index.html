@@ -485,6 +485,17 @@
     .title-3d-custom::after { text-shadow: 1px 1px 0px #ccc, 3px 3px 0px #777 !important; }
     .logo-gst { width: 70px !important; }
 }
+
+
+
+
+
+   .finance-ticker { background: #000; color: var(--aqua); padding: 10px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 15px; display: flex; align-items: center; box-shadow: 5px 5px 0px #ccc; cursor: pointer; }
+    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-run 40s linear infinite; font-weight: 800; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 0.8rem; }
+    .news-item { text-decoration: none; color: var(--aqua); margin-right: 60px; display: inline-flex; align-items: center; gap: 8px; }
+    .news-item:hover { color: #fff; text-decoration: underline; }
+    @keyframes finance-run { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .finance-ticker:hover #ticker-content { animation-play-state: paused; }
 </style>
 </head>
 <body>
@@ -510,6 +521,21 @@
 <div class="main-container">
     <!-- INPUT AREA -->
     <div class="input-panel">
+
+
+
+
+
+
+<!-- --- ADD THIS DYNAMIC TICKER BLOCK --- -->
+
+<div class="finance-ticker" title="Click news to read full article">
+    <div id="ticker-content">Fetching Live GST & Finance Updates...</div>
+</div>
+
+
+
+
 <!-- AUTH SECTION -->
 <div id="google-auth-container" style="text-align: center; margin-bottom: 25px; padding: 20px; border: 2px solid black; border-radius: 15px; box-shadow: var(--input-shadow); background: white;">
     
@@ -1050,6 +1076,43 @@
 const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+
+
+
+
+
+async function fetchFinanceNews() {
+    const ticker = document.getElementById('ticker-content');
+    try {
+        // Fetching from TaxGuru (GST category) via RSS-to-JSON API
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=https://taxguru.in/category/goods-and-services-tax/feed/`);
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+            ticker.innerHTML = ''; // Clear loading text
+            data.items.forEach(item => {
+                // We filter for safety to ensure words like 'GST', 'Tax', 'Finance', 'RBI' exist
+                const cleanTitle = item.title.replace(/&nbsp;/g, ' ').toUpperCase();
+                ticker.innerHTML += `
+                    <a href="${item.link}" target="_blank" class="news-item">
+                        <i class="fas fa- university"></i> ${cleanTitle}
+                    </a>`;
+            });
+        }
+    } catch (e) {
+        ticker.innerText = "GST UPDATES: CONNECT TO INTERNET TO VIEW LIVE FINANCE NEWS";
+    }
+}
+window.addEventListener('load', fetchFinanceNews);
+
+
+
+
+
+
+
     let currentUserId = null;
     let currentUserEmail = null;
 let globalQRBase64 = "";
