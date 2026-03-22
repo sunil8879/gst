@@ -13456,7 +13456,7 @@ async function onGoogleLogin(response) {
     if(remSec) remSec.style.setProperty('display', 'block', 'important');
     //document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
 
-
+document.querySelectorAll('input:not([type="file"]):not(#inv_no), textarea').forEach(el => el.value = '');
 
 
 // Fetch and auto-fill Seller details
@@ -14399,7 +14399,7 @@ const oldPaid = parseFloat(document.getElementById('rem_paid').dataset.oldPaid) 
     }
 
 
-
+if (status === 'YES' && parseFloat(document.getElementById('rem_paid').dataset.balance) <= 0) return alert("This invoice is already FULLY PAID. No further payments can be added.");
 
     // Payload for Supabase - ONLY total_amount is removed. gst_amount and amount_paid are kept.
     const data = {
