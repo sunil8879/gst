@@ -14336,6 +14336,27 @@ async function fetchInvoiceData() {
     document.getElementById('rem_c_name').value = record.customer_name;
     document.getElementById('rem_total').value = parseFloat(record.final_amount).toFixed(2);
     document.getElementById('rem_gst').value = Math.ceil(record.gst_amount);
+
+
+
+
+
+// --- AUTO-FILL WHATSAPP & EMAIL FROM CUSTOMER DATABASE ---
+    const { data: custRecord } = await supabaseClient.from('customer_details')
+        .select('whatsapp_no, email')
+        .eq('user_id', currentUserId)
+        .eq('business_name', record.customer_name)
+        .single();
+    
+    if (custRecord) {
+        document.getElementById('rem_wa').value = custRecord.whatsapp_no || '';
+        document.getElementById('rem_email').value = custRecord.email || '';
+    }
+
+
+
+
+
     
     const { data: r } = await supabaseClient.from('invoice_reminders')
         .select('*').eq('user_id', currentUserId).eq('inv_no', invNo).single();
