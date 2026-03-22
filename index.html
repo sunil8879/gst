@@ -571,36 +571,43 @@ button[onclick="deleteReminderRecord()"] {
 .input-panel { max-width: 80% !important; width: 80% !important; margin: 0 auto !important; }
 #btn-dashboard, #btn-history, #btn-charts, #btn-inventory, #install-pwa { display: flex !important; margin: 15px auto !important; }
 
-/* --- ADD THIS BLOCK --- */
 #google-auth-container { 
-    background: var(--aqua) !important; 
-    border: 12px outset #a4ffe4 !important; 
-    box-shadow: none !important; 
-    width: fit-content !important; 
-    margin: 25px auto !important; 
-    padding: 20px !important; 
-    border-radius: 0px !important; 
-}
-
-
-
-
-
-#google-auth-container { 
-    background: var(--aqua) !important; 
-    box-shadow: none !important; 
-    width: fit-content !important; 
-    margin: 40px auto !important; 
-    padding: 30px !important; 
-    border-radius: 5px !important;
+    background: linear-gradient(to bottom, #000000 50%, #7FFFD4 50%) !important;
+    width: fit-content !important;
+    margin: 50px auto !important;
+    padding: 60px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
     display: flex !important;
     justify-content: center !important;
-    /* HIGH INTENSITY 3D BEVEL */
-    border-top: 12px solid #ccffee !important;   /* Light Highlight Edge */
-    border-left: 12px solid #ccffee !important;  /* Light Highlight Edge */
-    border-bottom: 12px solid #00cca3 !important; /* Deep Recessed Edge */
-    border-right: 12px solid #00cca3 !important;  /* Deep Recessed Edge */
+    align-items: center !important;
+    /* HIGH INTENSITY 3D BEVEL & DEPTH LAYERS */
+    border-top: 15px solid #555 !important;    /* Top highlight edge */
+    border-left: 15px solid #333 !important;   /* Left highlight edge */
+    border-bottom: 45px solid #000 !important; /* Massive Bottom 3D Depth Layer */
+    border-right: 35px solid #1a1a1a !important; /* Thick Side 3D Depth Layer */
+    transform: perspective(1000px) rotateX(10deg) !important; /* Industrial tilt */
 }
+
+
+
+
+
+#google-auth-container { 
+    background: var(--aqua) !important; 
+    box-shadow: none !important; /* No shadows as requested */
+    border-radius: 4px !important;
+    padding: 50px 80px !important; 
+    margin: 40px auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    /* HIGH INTENSITY 3D DASHBOARD BEVEL (Using Borders) */
+    border-top: 15px solid #ccffee !important;   /* Brightest top highlight */
+    border-left: 15px solid #a4ffe4 !important;  /* Left highlight */
+    border-right: 30px solid #00b38f !important; /* Deep side depth */
+    border-bottom: 50px solid #006652 !important; /* Massive bottom extrusion layer */
+}
+.g_id_signin { transform: scale(1.3) !important; } /* Make the actual button prominent */
 </style>
 </head>
 <body>
