@@ -521,7 +521,86 @@ button[onclick="deleteReminderRecord()"] {
 
 
 #google-auth-container { width: fit-content !important; margin: 20px auto !important; }
-.g_id_signin { transform: scale(0.85); display: flex !important; justify-content: center !important; }
+.g_id_signin { transform: scale(1.15) !important; display: flex !important; justify-content: center !important; }
+
+
+
+
+
+#process-box { border: 3px solid #000; background: #fff; margin: 30px auto; padding: 0; box-shadow: 10px 10px 0px var(--aqua); max-width: 600px; overflow: hidden; display: none; }
+.proc-nav { background: #000; color: var(--aqua); padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+.proc-body { padding: 25px; min-height: 120px; color: #000; text-align: left; font-size: 0.95rem; line-height: 1.5; }
+.proc-btn { background: var(--aqua); border: 2px solid #000; color: #000; padding: 5px 15px; cursor: pointer; font-weight: 900; transition: 0.2s; }
+.proc-btn:hover { background: #fff; transform: scale(1.1); }
+
+
+
+
+
+
+
+
+
+/* --- ADD THIS BLOCK --- */
+#glossary-box { border: 4px solid #000; background: #fff; margin: 30px auto 60px auto; padding: 0; box-shadow: 15px 15px 0px #000; max-width: 1000px; display: none; text-align: left; }
+.gloss-nav { background: #000; color: var(--aqua); padding: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000; }
+.gloss-body { padding: 40px; min-height: 500px; overflow-y: auto; color: #000; }
+.gloss-title { font-size: 1.8rem; font-weight: 900; color: #000; border-bottom: 6px solid var(--aqua); padding-bottom: 10px; margin-bottom: 25px; text-transform: uppercase; }
+.gloss-theory { font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; text-align: justify; font-weight: 500; }
+.gloss-example-box { background: #f8f9fa; border: 3px solid #000; padding: 25px; position: relative; }
+.gloss-example-box::before { content: "PRACTICAL EXAMPLE & CALCULATION"; position: absolute; top: -15px; left: 20px; background: #000; color: var(--aqua); padding: 2px 15px; font-size: 0.8rem; font-weight: 900; }
+.gloss-calc-text { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 700; white-space: pre-wrap; line-height: 1.5; color: #000; }
+
+
+#google-auth-container { 
+    background: var(--aqua) !important; 
+    border: 12px outset #a4ffe4 !important; 
+    box-shadow: none !important; 
+    width: fit-content !important; 
+    margin: 25px auto !important; 
+    padding: 20px !important; 
+    border-radius: 0px !important; 
+}
+
+
+
+
+
+
+.gloss-calc-text { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 700; white-space: pre-wrap; line-height: 1.5; color: #000; }
+.input-panel { max-width: 80% !important; width: 80% !important; margin: 0 auto !important; }
+#btn-dashboard, #btn-history, #btn-charts, #btn-inventory, #install-pwa { display: flex !important; margin: 15px auto !important; }
+
+/* --- ADD THIS BLOCK --- */
+#google-auth-container { 
+    background: var(--aqua) !important; 
+    border: 12px outset #a4ffe4 !important; 
+    box-shadow: none !important; 
+    width: fit-content !important; 
+    margin: 25px auto !important; 
+    padding: 20px !important; 
+    border-radius: 0px !important; 
+}
+
+
+
+
+
+#google-auth-container { 
+    background: var(--aqua) !important; 
+    box-shadow: none !important; 
+    width: fit-content !important; 
+    margin: 40px auto !important; 
+    padding: 30px !important; 
+    border-radius: 5px !important;
+    display: flex !important;
+    justify-content: center !important;
+    /* HIGH INTENSITY 3D BEVEL */
+    border-top: 12px solid #ccffee !important;   /* Light Highlight Edge */
+    border-left: 12px solid #ccffee !important;  /* Light Highlight Edge */
+    border-bottom: 12px solid #00cca3 !important; /* Deep Recessed Edge */
+    border-right: 12px solid #00cca3 !important;  /* Deep Recessed Edge */
+}
 </style>
 </head>
 <body>
@@ -575,8 +654,7 @@ button[onclick="deleteReminderRecord()"] {
              data-client_id="68135849389-j91ihmh5ser165q8rgudsstb1c1e6ctt.apps.googleusercontent.com"
              data-callback="onGoogleLogin">
         </div>
-        <div class="g_id_signin" data-type="standard"></div>
-
+      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="rectangular"></div>
 
 <!-- LANDING PAGE FOR VISITORS -->
 <div id="visitor-box" style="text-align:center; margin-top:10px;">
@@ -948,7 +1026,38 @@ button[onclick="deleteReminderRecord()"] {
     <i class="fas fa-download"></i> Install App
 </button>
 
+
  </div>
+
+<div id="process-box">
+    <div class="proc-nav">
+        <button class="proc-btn" onclick="moveStep(-1)"><i class="fas fa-arrow-left"></i></button>
+        <span id="step-title">OPERATING PROCESS</span>
+        <button class="proc-btn" onclick="moveStep(1)"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <div id="proc-text" class="proc-body"></div>
+</div>
+
+
+
+<div id="glossary-box">
+    <div class="gloss-nav">
+        <button class="proc-btn" onclick="moveGlossary(-1)"><i class="fas fa-arrow-left"></i> PREV</button>
+        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/50</span>)</span>
+        <button class="proc-btn" onclick="moveGlossary(1)">NEXT <i class="fas fa-arrow-right"></i></button>
+    </div>
+    <div class="gloss-body">
+        <div id="gloss-title" class="gloss-title"></div>
+        <div id="gloss-theory" class="gloss-theory"></div>
+        <div class="gloss-example-box">
+            <div id="gloss-calc" class="gloss-calc-text"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 <div  id="mobile-legal-wrap"style="text-align: center; margin-top: 30px; width: 100%;">
 
@@ -15072,6 +15181,345 @@ window.addEventListener('resize', () => {
         loadAllCharts();
     }
 });
+
+
+
+
+
+
+
+
+const steps = [
+    { t: "1. OPERATIONAL FLOW - NEWS TICKER", d: "<b>Visitor View & Logged in view:</b> Browse live, professional Finance and GST news. Click any headline to read the full report on official news portals." },
+    { t: "2. OPERATIONAL FLOW - GOOGLE LOGIN", d: "Secure your workspace. Logging in enables <b>Cloud Storage</b>, allowing you to access your history and dashboard from any device." },
+    { t: "3. OPERATIONAL FLOW - BUSINESS DASHBOARD", d: "Analyze performance. View monthly summaries of total invoices generated, gross revenue, and total GST collected." },
+    { t: "4. OPERATIONAL FLOW - SELLER DETAILS", d: "Enter your business info. Once entered, these details are saved to your profile automatically for all future invoices." },
+    { t: "5. OPERATIONAL FLOW - CUSTOMER DETAILS", d: "Add client info. Typing a city name automatically detects the <b>State</b> to determine if CGST/SGST or IGST should be applied." },
+    { t: "6. OPERATIONAL FLOW - ITEMIZED LIST", d: "Add products. Use the <b>Smart Search</b> to automatically find the correct HSN codes and GST rates from the built-in legal database." },
+    { t: "7. OPERATIONAL FLOW - CLEAR ALL DETAILS", d: "Starting fresh? Use this to wipe the current form clean without refreshing the page, ready for a brand new entry." },
+    { t: "8. OPERATIONAL FLOW - DRAW SIGNATURE", d: "Sign digitally using your mouse or finger. This signature is captured as a high-resolution image and embedded into the Word file." },
+    { t: "9. OPERATIONAL FLOW - INVOICE HISTORY", d: "Access previous records. Filter by month/year to review amounts, products sold, and payment balances for past clients." },
+    { t: "10. OPERATIONAL FLOW - CHARTS SECTION", d: "Visual Analytics. Use Bar, Line, and Pie charts to track customer dues, growth trends, and your Revenue-to-GST ratio." },
+    { t: "11. OPERATIONAL FLOW - INVOICE REMINDER", d: "Enter an Invoice ID to fetch real-time data. It tracks exactly how much the customer has paid and what balance is pending." },
+    { t: "12. OPERATIONAL FLOW- ADD/UPDATE REMINDER", d: "Save payment status. Once saved, it triggers an <b>Auto-Message</b> generator for polite WhatsApp or Email reminders." },
+    { t: "13. OPERATIONAL FLOW - WORD TEMPLATES", d: "Choose from 5 styles: <b>Modern, Simple, Professional, Retail, or Service</b> to match your specific business branding." },
+    { t: "14. OPERATIONAL FLOW - QR CODE", d: "Upload your UPI/GPay QR code. It will be printed at the bottom of the invoice, allowing customers to scan and pay you instantly." },
+    { t: "15. OPERATIONAL FLOW - GENERATE WORD INVOICE", d: "The final step. Exports a professionally formatted .doc file compatible with Microsoft Word and Google Docs." },
+    { t: "16. OPERATIONAL FLOW - INSTALL APP", d: "Add to Home Screen. Transform this tool into a standalone app on your Phone or Desktop for faster, one-click access." }
+];
+
+let currentStep = 0;
+function moveStep(dir) {
+    currentStep += dir;
+    if (currentStep < 0) currentStep = steps.length - 1;
+    if (currentStep >= steps.length) currentStep = 0;
+    document.getElementById('step-title').innerText = steps[currentStep].t;
+    document.getElementById('proc-text').innerHTML = steps[currentStep].d;
+}
+
+// Reveal step box only after login
+const oldLogin = onGoogleLogin;
+onGoogleLogin = async (resp) => {
+    await oldLogin(resp);
+    document.getElementById('process-box').style.display = 'block';
+    moveStep(0);
+
+
+
+ document.getElementById('glossary-box').style.display = 'block';
+    moveGlossary(0);
+};
+
+const glossaryData = [
+    {
+        n: "1. GST (Goods and Services Tax)",
+        t: "GST is a single indirect tax applied on goods and services in India. Earlier India had multiple taxes like excise duty, VAT, and service tax which made taxation complicated and caused tax on tax. GST removed that cascading effect. GST works on the principle of value addition at each stage of the supply chain. Every seller collects GST and claims input tax credit on purchases. The final consumer bears the tax burden because they cannot claim ITC.",
+        c: `Product Manufacturing Cost = ₹100\nGST Rate = 18%\n\nStage 1: Manufacturer → Wholesaler\nValue = 100\nGST = 18% of 100 = ₹18\nInvoice = 100 + 18 = ₹118\n\nManufacturer pays to government = ₹18\n\nStage 2: Wholesaler adds margin ₹30\n\nNew value = 130\nGST = 18% of 130 = ₹23.4\n\nInvoice to retailer = 130 + 23.4 = ₹153.4\n\nITC calculation\nGST collected = 23.4\nInput GST = 18\n\nTax payable = 23.4 − 18 = ₹5.4\n\nStage 3: Retailer adds margin ₹20\n\nNew value = 150\nGST = 18% of 150 = ₹27\n\nFinal customer price = 150 + 27 = ₹177\n\nITC calculation\nGST collected = 27\nInput GST = 23.4\n\nRetailer pays = 27 − 23.4 = ₹3.6\n\nTotal tax collected by government\n18 + 5.4 + 3.6 = ₹27\n\nWhich equals 18% of final value ₹150.`
+    },
+    {
+        n: "2. Supply",
+        t: "GST is charged when a supply of goods or services occurs. Supply includes selling goods, transferring goods, renting goods, or providing services for consideration. Without supply, GST does not apply. Even some transfers between branches of the same company are treated as supply under GST law. The concept of supply ensures taxation happens only when economic activity takes place.",
+        c: `Company produces goods costing ₹200.\n\nStage 1 Manufacturer sells to distributor\nValue = 200\nGST 12% = 24\nInvoice value = 224\nManufacturer pays tax = 24\n\nStage 2 Distributor adds margin ₹50\nNew value = 250\nGST = 12% of 250 = 30\nInvoice = 280\nDistributor ITC = 24\nTax payable = 30 − 24 = 6\n\nStage 3 Retailer adds margin ₹50\nNew value = 300\nGST = 36\nCustomer pays = ₹336\nRetailer ITC = 30\nTax payable = 36 − 30 = 6\n\nTotal GST collected = ₹36`
+    },
+    {
+        n: "3. Goods",
+        t: "Goods are physical items that can be bought or sold. GST applies to most goods except some exempt items like fresh vegetables. Goods are classified using HSN codes which determine the GST rate. Goods pass through multiple stages like manufacturing, wholesaling, and retailing before reaching the consumer.",
+        c: `Manufacturing cost of product = ₹500\nGST rate = 18%\n\nManufacturer → Distributor\nValue = 500\nGST = 90\nInvoice = 590\nManufacturer tax paid = 90\n\nDistributor adds margin ₹100\nNew value = 600\nGST = 108\nInvoice = 708\nDistributor tax payable = 108 − 90 = 18\n\nRetailer adds margin ₹200\nNew value = 800\nGST = 144\nFinal price = ₹944\nRetailer tax payable = 144 − 108 = 36\n\nTotal GST collected = ₹144`
+    },
+    {
+        n: "4. Services",
+        t: "Services are intangible activities like consulting, telecom services, internet services, hotel stays, or professional advice. Under GST, services are taxed similar to goods. Services use SAC codes instead of HSN codes. GST simplified taxation by combining goods and services taxation under one system.",
+        c: `Consulting firm charges service fee = ₹50,000\nGST rate = 18%\n\nFirm purchases office services costing ₹10,000\nGST paid on input = ₹1,800\n\nNow consulting service sold\nOutput GST = 18% of 50,000 = ₹9,000\nITC available = ₹1,800\nFirm pays government\n9,000 − 1,800 = ₹7,200\n\nClient pays total\n50,000 + 9,000 = ₹59,000`
+    },
+    {
+        n: "5. Taxable Person",
+        t: "A taxable person is a business registered under GST and required to collect and pay GST. Businesses must register once their turnover crosses a certain threshold. Once registered, they must issue GST invoices and file returns regularly.",
+        c: `Trader purchases goods worth ₹1,00,000\nGST paid = 18,000\n\nLater sells goods worth ₹1,40,000\nGST charged = 25,200\nInvoice value = ₹1,65,200\n\nITC calculation\nGST collected = 25,200\nInput GST = 18,000\nTax payable = ₹7,200`
+    },
+    {
+        n: "6. Input Tax Credit (ITC)",
+        t: "Input Tax Credit allows businesses to reduce the GST they already paid on purchases from the GST collected on sales. This prevents double taxation and ensures tax is paid only on value addition.",
+        c: `Business buys raw materials worth ₹50,000\nGST paid = ₹9,000\n\nBusiness sells finished goods worth ₹80,000\nGST charged = ₹14,400\n\nNow tax payable\n14,400 − 9,000 = ₹5,400\n\nSo government receives tax only on value added.`
+    },
+    {
+        n: "7. Output Tax",
+        t: "Output tax is the GST a business collects from customers on sales. Businesses must report this tax and pay it after adjusting ITC.",
+        c: `Retailer purchases goods worth ₹20,000\nGST paid = ₹3,600\n\nRetailer sells goods worth ₹30,000\nGST charged = ₹5,400\n\nTax payable\n5,400 − 3,600 = ₹1,800\n\nCustomer pays total\n30,000 + 5,400 = ₹35,400`
+    },
+    {
+        n: "8. Value Addition",
+        t: "Value addition means increasing the value of a product at each stage of the supply chain. GST ensures tax is effectively applied only on this added value.",
+        c: `Manufacturer cost = ₹1000\nWholesaler sells = ₹1300\nRetailer sells = ₹1600\n\nGST rate = 18%\n\nTax collected from final consumer\n18% of 1600 = ₹288\n\nGovernment receives ₹288 total through the supply chain.`
+    },
+    {
+        n: "9. Reverse Charge Mechanism (RCM)",
+        t: "Under reverse charge, the buyer pays GST instead of the seller. This happens when the supplier is not registered or in special cases notified by the government.",
+        c: `Company hires transporter\nTransport charges = ₹20,000\nGST rate = 5%\n\nGST payable = ₹1,000\n\nCompany pays this ₹1,000 directly to government.\nLater ITC can be claimed.`
+    },
+    {
+        n: "10. Composition Scheme",
+        t: "Composition scheme is designed for small businesses to simplify taxation. Instead of complex GST calculations, businesses pay a fixed percentage of turnover.",
+        c: `Small trader turnover = ₹40,00,000\nTax rate under scheme = 1%\n\nTax payable = ₹40,000\n\nTrader cannot charge GST separately from customers and cannot claim ITC.`
+    },
+
+
+
+
+
+
+
+
+
+{
+        n: "11. CGST (Central Goods and Services Tax)",
+        t: "CGST is the portion of GST that goes to the Central Government when a transaction happens within the same state. In India, GST is usually split equally between the central government and the state government. For example, if GST rate is 18%, it is divided as 9% CGST and 9% SGST. This system ensures that both central and state governments receive revenue from local transactions. CGST applies only in intrastate supply (within the same state). Businesses collect CGST from customers and pay it to the central government after adjusting ITC.",
+        c: `Product Cost = ₹1,000\nGST Rate = 18% (9% CGST + 9% SGST)\n\nManufacturer → Wholesaler\nValue = 1,000\nCGST = 9% of 1,000 = 90\nSGST = 9% of 1,000 = 90\nInvoice value = 1,000 + 180 = ₹1,180\n\nManufacturer pays\nCGST to central govt = ₹90\nSGST to state govt = ₹90\n\nWholesaler adds margin ₹500\nNew value = 1,500\nCGST = 135\nSGST = 135\nInvoice = ₹1,770\n\nITC adjustment\nCGST payable = 135 − 90 = ₹45\nSGST payable = 135 − 90 = ₹45`
+    },
+    {
+        n: "12. SGST (State Goods and Services Tax)",
+        t: "SGST is the portion of GST that goes to the State Government when a transaction occurs within the same state. It works together with CGST. The idea is to ensure states continue receiving tax revenue after GST replaced earlier taxes like VAT. Whenever a business sells goods locally within the same state, SGST applies along with CGST. Businesses collect SGST from buyers and deposit it with the state government.",
+        c: `Retail price before tax = ₹2,000\nGST rate = 18%\n\nCGST = 9% of 2,000 = ₹180\nSGST = 9% of 2,000 = ₹180\nTotal GST = ₹360\n\nCustomer pays\n2,000 + 360 = ₹2,360\n\nNow assume retailer had input GST earlier\nInput CGST = ₹120\nInput SGST = ₹120\n\nTax payable\nCGST payable = 180 − 120 = ₹60\nSGST payable = 180 − 120 = ₹60`
+    },
+    {
+        n: "13. IGST (Integrated GST)",
+        t: "IGST is charged when goods or services move from one state to another state. Instead of dividing tax into CGST and SGST, the entire tax is collected as IGST by the central government. Later, the government distributes it to the destination state. IGST simplifies interstate trade and avoids complicated tax calculations.",
+        c: `Company in Maharashtra sells goods to Karnataka.\nProduct value = ₹10,000\nGST rate = 18%\n\nIGST = 18% of 10,000 = ₹1,800\nInvoice value = ₹11,800\nSeller pays IGST = ₹1,800 to government.\n\nNow buyer sells further\nBuyer adds margin ₹5,000\nNew value = ₹15,000\nGST = ₹2,700\nITC available = ₹1,800\nTax payable\n2,700 − 1,800 = ₹900`
+    },
+    {
+        n: "14. Place of Supply",
+        t: "Place of supply determines which state receives the GST revenue. It is important because GST is a destination-based tax. The place of supply rules help decide whether CGST+SGST or IGST should apply. Incorrect place of supply can lead to tax disputes and penalties.",
+        c: `Seller location = Delhi\nBuyer location = Mumbai\nGoods value = ₹50,000\nGST rate = 18%\n\nSince states are different → IGST applies.\nIGST = 9,000\nCustomer pays = ₹59,000\n\nIf both were in Delhi\nThen CGST = 4,500\nSGST = 4,500\nTotal tax remains same but distribution changes.`
+    },
+    {
+        n: "15. Destination-Based Tax",
+        t: "GST is called a destination-based tax because tax revenue goes to the state where the goods are consumed. This is different from the old system where producing states sometimes received more tax benefits. Under GST, the consuming state receives the tax revenue.",
+        c: `Factory in Gujarat manufactures product = ₹20,000\nProduct sold to buyer in Tamil Nadu.\nGST rate = 18%\nIGST = ₹3,600\n\nBuyer sells locally in Tamil Nadu\nValue = ₹25,000\nGST = ₹4,500\nITC = ₹3,600\nTax payable in Tamil Nadu\n4,500 − 3,600 = ₹900\n\nSo final tax revenue goes to Tamil Nadu.`
+    },
+    {
+        n: "16. HSN Code (Harmonized System of Nomenclature)",
+        t: "HSN codes are used to classify goods under GST. Each product has a specific code that determines the GST rate. This system helps standardize taxation across the country and internationally. Businesses must mention HSN codes on invoices depending on their turnover.",
+        c: `Suppose HSN code of a product falls under 18% GST category.\nProduct price = ₹5,000\nGST = 18% = ₹900\nInvoice value = ₹5,900\n\nDistributor buys and sells further\nDistributor price = ₹7,000\nGST = ₹1,260\nITC = ₹900\nTax payable\n1,260 − 900 = ₹360`
+    },
+    {
+        n: "17. SAC Code (Service Accounting Code)",
+        t: "SAC codes are similar to HSN codes but used for services instead of goods. These codes help the government categorize different services and apply the correct GST rate. Businesses providing services must include SAC codes in their invoices.",
+        c: `Consulting service fee = ₹1,00,000\nGST rate = 18%\nGST = ₹18,000\nCustomer pays = ₹1,18,000\n\nNow assume business had expenses\nOffice rent GST = ₹5,000\nITC = ₹5,000\nTax payable\n18,000 − 5,000 = ₹13,000`
+    },
+    {
+        n: "18. E-Way Bill",
+        t: "E-way bill is an electronic document required when goods above a certain value are transported. It helps the government track movement of goods and reduce tax evasion. Usually required when goods exceed ₹50,000 in value.",
+        c: `Company transports goods worth ₹80,000.\nGST rate = 18%\nGST = ₹14,400\nInvoice value = ₹94,400\nE-way bill generated before transport.\n\nLater retailer sells goods\nValue = ₹1,00,000\nGST = ₹18,000\nITC = ₹14,400\nTax payable\n18,000 − 14,400 = ₹3,600`
+    },
+    {
+        n: "19. Zero Rated Supply",
+        t: "Zero-rated supply refers mainly to exports where GST rate is 0%, but businesses can still claim ITC. This encourages exports because exporters do not bear the burden of tax. It ensures Indian products remain competitive in international markets.",
+        c: `Exporter sells goods worth ₹2,00,000 abroad.\nGST rate = 0%\nCustomer pays = ₹2,00,000\nBut exporter had input tax earlier\nInput GST = ₹20,000\nExporter claims refund = ₹20,000 from government.`
+    },
+    {
+        n: "20. Exempt Supply",
+        t: "Exempt supply refers to goods or services that are completely free from GST. In this case, businesses cannot charge GST and also cannot claim ITC on related purchases.",
+        c: `Seller sells fresh vegetables worth ₹10,000.\nGST rate = 0%\nCustomer pays = ₹10,000\nNow assume seller purchased packaging material earlier\nGST paid = ₹500\nBut ITC cannot be claimed because product is exempt.\nSo ₹500 becomes business cost.`
+    },
+    {
+        n: "21. Mixed Supply",
+        t: "Mixed supply means two or more different goods or services are sold together for a single price, but those items are not naturally bundled. In such cases, GST is applied based on the highest tax rate among the items. This rule prevents businesses from reducing tax by combining high-tax items with low-tax items. Mixed supply usually occurs in gift hampers, combo offers, and promotional packages. Under GST law, identifying mixed supply is important because the tax calculation changes significantly. Businesses must check whether items can be sold separately. If yes, it is usually mixed supply. The highest GST rate among the items becomes applicable to the entire bundle.",
+        c: `Gift hamper contains\nChocolate (GST 18%)\nJuice (GST 12%)\nPerfume (GST 28%)\n\nTotal price of hamper = ₹2,000\nHighest GST rate = 28%\n\nGST calculation\nGST = 28% of 2,000 = ₹560\nCustomer pays\n2,000 + 560 = ₹2,560\n\nBusiness had earlier paid GST on purchases\nChocolate GST = ₹120\nJuice GST = ₹80\nPerfume GST = ₹200\nTotal input GST = ₹400\nTax payable\n560 − 400 = ₹160`
+    },
+    {
+        n: "22. Composite Supply",
+        t: "Composite supply occurs when two or more goods or services are naturally bundled together and supplied in the normal course of business. In this case, GST is charged based on the tax rate of the main product or service. A common example is restaurant service or hotel accommodation including breakfast. Since these items are naturally bundled, the GST rate of the principal supply applies to the entire package.",
+        c: `Hotel package includes\nRoom rent + breakfast + service\nTotal package price = ₹5,000\nGST rate for hotel service = 18%\n\nGST = 18% of 5,000 = ₹900\nCustomer pays\n₹5,900\n\nHotel expenses earlier\nFood purchase GST = ₹200\nElectricity services GST = ₹300\nTotal input GST = ₹500\nTax payable\n900 − 500 = ₹400`
+    },
+    {
+        n: "23. GST Return",
+        t: "GST return is a document that businesses must file periodically with the government. It includes details of sales, purchases, input tax credit, and tax paid. Filing returns is mandatory for registered businesses even if there are no transactions. Returns help the government track tax flow across the supply chain. If businesses fail to file returns on time, penalties and interest may apply.",
+        c: `Business monthly data\nTotal sales = ₹5,00,000\nGST collected (18%) = ₹90,000\n\nPurchases = ₹3,00,000\nGST paid = ₹54,000\n\nNow return calculation\nOutput GST = ₹90,000\nInput GST = ₹54,000\nTax payable\n90,000 − 54,000 = ₹36,000\nBusiness pays ₹36,000 while filing GST return.`
+    },
+    {
+        n: "24. GSTR-1",
+        t: "GSTR-1 is a return where businesses report all their sales (outward supplies). It contains invoice details issued to customers. This helps the government match transactions between buyers and sellers. The data from GSTR-1 is used by buyers to claim input tax credit. Therefore, accurate reporting in GSTR-1 is extremely important.",
+        c: `Business sold goods to three customers\nCustomer A purchase = ₹1,00,000 | GST = ₹18,000\nCustomer B purchase = ₹50,000 | GST = ₹9,000\nCustomer C purchase = ₹30,000 | GST = ₹5,400\n\nTotal sales = ₹1,80,000\nTotal GST collected = ₹32,400\n\nThese invoices are reported in GSTR-1.\nLater ITC adjustments happen in other returns.`
+    },
+    {
+        n: "25. GSTR-3B",
+        t: "GSTR-3B is a summary return where businesses declare total tax liability and pay the tax. Unlike GSTR-1 which contains detailed invoices, GSTR-3B contains summarized figures. Businesses must file this monthly. This return includes output GST, input tax credit, and final tax payable.",
+        c: `Monthly sales\nTotal value = ₹10,00,000 | GST collected = ₹1,80,000\n\nPurchases\nTotal value = ₹6,00,000 | GST paid = ₹1,08,000\n\nTax calculation\nOutput GST = ₹1,80,000\nInput GST = ₹1,08,000\nTax payable\n1,80,000 − 1,08,000 = ₹72,000\nBusiness pays ₹72,000 in GSTR-3B.`
+    },
+    {
+        n: "26. Electronic Credit Ledger",
+        t: "Electronic Credit Ledger is like a digital wallet where input tax credit is stored. Businesses use this credit to pay GST liability. Whenever a business purchases goods and pays GST, that amount is added to the credit ledger. This system ensures transparency and prevents misuse of tax credit.",
+        c: `Input GST received\nPurchase 1 GST = ₹10,000\nPurchase 2 GST = ₹5,000\nPurchase 3 GST = ₹8,000\nTotal ITC in ledger = ₹23,000\n\nNow output GST on sales\nGST collected = ₹30,000\nTax payable\n30,000 − 23,000 = ₹7,000\nBusiness pays only ₹7,000 in cash.`
+    },
+    {
+        n: "27. Electronic Cash Ledger",
+        t: "Electronic Cash Ledger is another digital account on the GST portal where businesses deposit money to pay tax. When ITC is not sufficient, businesses must add money to the cash ledger. The system automatically deducts tax from this ledger when filing returns.",
+        c: `Output GST = ₹50,000\nITC available = ₹30,000\nRemaining tax payable\n50,000 − 30,000 = ₹20,000\n\nBusiness deposits ₹20,000 in cash ledger.\nGovernment receives tax from cash ledger payment.`
+    },
+    {
+        n: "28. Cess",
+        t: "Cess is an additional tax applied on certain luxury or harmful products. The purpose of cess is often to discourage consumption or fund special government programs. Examples include tobacco products, luxury cars, and aerated drinks.",
+        c: `Luxury car price = ₹10,00,000\nGST rate = 28% | Cess = 15%\n\nGST calculation\nGST = ₹2,80,000\nCess = ₹1,50,000\n\nCustomer pays\n10,00,000 + 2,80,000 + 1,50,000 = ₹14,30,000\nTotal tax = ₹4,30,000`
+    },
+    {
+        n: "29. Anti-Profiteering",
+        t: "Anti-profiteering rules ensure businesses pass the benefit of tax reduction to consumers. If GST rates decrease, businesses must reduce prices accordingly. Authorities monitor pricing to ensure companies do not increase profit unfairly.",
+        c: `Before GST reduction\nProduct price = ₹1,000 | GST rate = 28%\nCustomer price: 1,000 + 280 = ₹1,280\n\nAfter GST reduction to 18%\nNew price should be: 1,000 + 180 = ₹1,180\n\nIf seller continues selling at ₹1,280\nGovernment may investigate.`
+    },
+    {
+        n: "30. Tax Evasion",
+        t: "Tax evasion occurs when businesses intentionally avoid paying taxes illegally. Common methods include not issuing invoices, underreporting sales, or using fake invoices to claim ITC. GST system uses digital tracking to reduce such practices.",
+        c: `Actual sales = ₹5,00,000 | GST should be = ₹90,000\nBut business reports sales = ₹3,00,000\nGST paid = ₹54,000\n\nTax evaded\n90,000 − 54,000 = ₹36,000\nIf detected, business must pay tax + penalty + interest.`
+    },
+
+
+
+
+
+
+
+
+{
+        n: "31. Tax Invoice",
+        t: "A tax invoice is the official document issued by a registered seller when goods or services are sold. It shows the taxable value, GST rate, and GST amount separately. This invoice is very important because the buyer can claim Input Tax Credit using it. Without a proper tax invoice, ITC cannot usually be claimed. A valid invoice must include GSTIN, invoice number, date, HSN/SAC code, and tax details. This system ensures transparency and helps track the movement of goods and services in the economy.",
+        c: `Seller sells goods worth ₹25,000 | GST rate = 18%\nGST = 18% of 25,000 = ₹4,500\nInvoice total: 25,000 + 4,500 = ₹29,500\n\nBuyer records input tax: ₹4,500\nLater buyer sells goods worth ₹40,000\nGST = ₹7,200\nTax payable: 7,200 − 4,500 = ₹2,700`
+    },
+    {
+        n: "32. Bill of Supply",
+        t: "Bill of supply is issued when GST is not charged. This happens in two main cases: when the seller deals in exempt goods or when the seller is under the composition scheme. Since GST is not charged, tax details are not included in the bill. This document still records the transaction for accounting and legal purposes.",
+        c: `Composition dealer sells goods worth ₹15,000\nGST not charged to customer.\nCustomer pays = ₹15,000\n\nDealer pays composition tax separately\nSuppose composition rate = 1%\nTax payable: 1% of 15,000 = ₹150\nGovernment receives ₹150.`
+    },
+    {
+        n: "33. GST Registration",
+        t: "GST registration is the process through which a business gets recognized under GST law and receives a GSTIN number. Once registered, the business must collect GST, file returns, and maintain records. Businesses must register when turnover crosses the threshold or when interstate supply happens. Registration allows businesses to claim ITC and operate legally in the GST system.",
+        c: `Business sales = ₹60,00,000 | GST rate = 18%\nOutput GST collected: 18% of 60,00,000 = ₹10,80,000\n\nInput GST from purchases\nPurchases = ₹40,00,000 | GST paid = ₹7,20,000\nTax payable: 10,80,000 − 7,20,000 = ₹3,60,000`
+    },
+    {
+        n: "34. GST Cancellation",
+        t: "GST registration can be cancelled if a business closes, turnover falls below the threshold, or the business violates GST rules. Once registration is cancelled, the business cannot collect GST from customers. However, final tax liability must be settled before cancellation is approved.",
+        c: `Business closing stock value = ₹5,00,000 | GST rate = 18%\nTax payable on stock: 18% of 5,00,000 = ₹90,000\nBusiness must pay ₹90,000 before cancellation.`
+    },
+    {
+        n: "35. Late Fee for GST Return",
+        t: "If a business fails to file GST returns on time, a late fee is charged per day until the return is filed. This rule encourages timely compliance and ensures regular tax reporting.",
+        c: `Return delayed by 10 days\nLate fee = ₹50 per day\nLate fee: 50 × 10 = ₹500\n\nIf GST payable earlier was ₹20,000\nTotal payment: 20,000 + 500 = ₹20,500`
+    },
+    {
+        n: "36. Interest on Delayed Tax Payment",
+        t: "If a business collects GST but delays paying it to the government, interest is charged. This ensures businesses do not hold government tax money for too long.",
+        c: `Tax payable = ₹1,00,000 | Interest rate = 18% per year\nDelay = 60 days\nInterest: (1,00,000 × 18% × 60) ÷ 365 = ₹2,959 approx\nTotal payment: 1,00,00,0 + 2,959 = ₹1,02,959`
+    },
+    {
+        n: "37. GST Audit",
+        t: "GST audit is a review of a company’s financial records to verify whether GST was correctly calculated and paid. Large businesses must undergo audits to ensure compliance. The audit compares invoices, returns, and tax payments.",
+        c: `Reported sales = ₹1,00,00,000 | GST paid = ₹18,00,000\nAudit finds actual sales: ₹1,10,00,000\n\nCorrect GST: 18% of 1,10,00,000 = ₹19,80,000\nAdditional tax payable: 19,80,000 − 18,00,000 = ₹1,80,000`
+    },
+    {
+        n: "38. Input Tax Credit Reversal",
+        t: "Sometimes businesses must reverse ITC if goods are used for exempt supplies or personal use. This ensures that ITC is claimed only for business purposes.",
+        c: `Input GST claimed = ₹20,000\nLater found: Goods used for exempt supply = 40%\n\nITC to be reversed: 40% of 20,000 = ₹8,000\nTax payable = ₹8,000`
+    },
+    {
+        n: "39. Import of Goods under GST",
+        t: "Imports are treated as interstate supplies and IGST is charged. The importer must pay IGST along with customs duty. However, ITC can be claimed on the IGST paid.",
+        c: `Imported goods value = ₹1,00,000 | IGST rate = 18%\nIGST payable: 18% of 1,00,000 = ₹18,000\n\nImporter sells goods\nSelling price = ₹1,50,000 | GST = ₹27,000\nITC = ₹18,000\nTax payable: 27,000 − 18,000 = ₹9,000`
+    },
+    {
+        n: "40. Export Refund Mechanism",
+        t: "Exports are zero-rated supplies. Businesses do not charge GST to foreign buyers but can claim refund of GST paid on inputs.",
+        c: `Raw materials purchase = ₹5,00,000 | GST paid = ₹90,000\nFinished goods exported = ₹8,00,000\nGST charged to foreign buyer = 0%\nExporter claims refund: ₹90,000`
+    },
+    {
+        n: "41. Working Capital Impact",
+        t: "Under GST, businesses often pay tax before receiving payment from customers. This affects working capital because cash gets blocked temporarily.",
+        c: `Business sells goods worth ₹10,00,000\nGST collected = ₹1,80,000\n\nCustomer payment delay = 60 days\nBut GST must be paid next month.\nSo business pays ₹1,80,000 first and recovers later.`
+    },
+    {
+        n: "42. Input vs Output Reconciliation",
+        t: "Businesses must match purchase data with supplier returns to claim ITC correctly. If invoices do not match, ITC may be denied.",
+        c: `Business claimed ITC = ₹50,000\nBut supplier reported: ₹45,000\nDifference: ₹5,000\n\nITC reversed | Tax payable = ₹5,000`
+    },
+    {
+        n: "43. GST Fraud using Fake Invoices",
+        t: "Some businesses generate fake invoices to claim ITC without actual goods movement. GST authorities monitor such fraud using data analytics.",
+        c: `Fake purchase invoice value = ₹10,00,000\nGST claimed = ₹1,80,000\nNo actual goods purchased.\n\nIf detected:\nTax to repay = ₹1,80,000\nPenalty may equal tax amount.\nTotal liability ≈ ₹3,60,000`
+    },
+    {
+        n: "44. GST Compliance Rating",
+        t: "The government tracks how regularly businesses file returns and pay taxes. Good compliance improves credibility with other businesses.",
+        c: `Company A files returns on time and pays ₹50,00,000 GST yearly.\nCompany B delays payments but pays same amount.\nBuyers prefer Company A because ITC is safer.`
+    },
+    {
+        n: "45. Advance Payment under GST",
+        t: "GST may apply when advance payment is received for services. Businesses must report tax even before completing the service.",
+        c: `Service advance received = ₹1,00,000 | GST rate = 18%\nGST payable immediately: ₹18,000\nLater final service invoice adjusted.`
+    },
+    {
+        n: "46. Debit Note",
+        t: "Debit note is issued when the taxable value increases after issuing an invoice. This increases the tax liability.",
+        c: `Original invoice = ₹50,000 | GST = ₹9,000\nLater price increased: New value = ₹60,000\nAdditional GST: 18% of 10,000 = ₹1,80,000\nCustomer pays extra ₹11,800.`
+    },
+    {
+        n: "47. Credit Note",
+        t: "Credit note is issued when goods are returned or price decreases. This reduces GST liability.",
+        c: `Original sale = ₹40,000 | GST = ₹7,200\nGoods returned = ₹10,000\nGST reduction: 18% of 10,000 = ₹1,800\nNew GST liability: 7,200 − 1,800 = ₹5,400`
+    },
+    {
+        n: "48. GST on Discounts",
+        t: "Discounts given before or after supply affect taxable value if properly recorded.",
+        c: `Product price = ₹10,000 | Discount = ₹1,000\nTaxable value: 10,000 − 1,000 = ₹9,000\nGST = 18% of 9,000 = ₹1,620\nCustomer pays: ₹10,620`
+    },
+    {
+        n: "49. GST on Free Samples",
+        t: "Free samples given without consideration usually do not allow ITC claims on inputs used to produce them.",
+        c: `Product cost = ₹1,000 | GST paid on input = ₹180\nProduct given free to customers.\nITC reversal: ₹180 must be reversed.`
+    },
+    {
+        n: "50. GST Demand Notice",
+        t: "If the government finds unpaid tax during inspection, a demand notice is issued requiring payment.",
+        c: `Unpaid GST found = ₹2,00,000\nInterest = ₹30,000 | Penalty = ₹2,00,000\nTotal demand: ₹4,30,000\nBusiness must pay this amount.`
+    }
+];
+
+
+
+
+
+let gIndex = 0;
+function moveGlossary(dir) {
+    gIndex += dir;
+    if (gIndex < 0) gIndex = glossaryData.length - 1;
+    if (gIndex >= glossaryData.length) gIndex = 0;
+    
+    document.getElementById('gloss-count').innerText = (gIndex + 1) + "/50";
+    document.getElementById('gloss-title').innerText = glossaryData[gIndex].n;
+    document.getElementById('gloss-theory').innerText = glossaryData[gIndex].t;
+    document.getElementById('gloss-calc').innerText = glossaryData[gIndex].c;
+    
+    // Auto scroll glossary body to top when term changes
+    document.querySelector('.gloss-body').scrollTop = 0;
+
+
+};
 </script>
 </body>
 </html>
