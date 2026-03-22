@@ -490,10 +490,10 @@
 
 
 
-  .finance-ticker { background: #000; color: #7FFFD4; padding: 12px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 20px; display: flex; box-shadow: 6px 6px 0px #000; }
-    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-scroll 45s linear infinite; font-weight: 900; font-family: 'Courier New', monospace; font-size: 0.85rem; }
-    .news-link { color: #7FFFD4; text-decoration: none; margin-right: 80px; text-transform: uppercase; }
-    .news-link:hover { color: #fff; text-decoration: underline; background: #333; }
+.finance-ticker { background: #000; color: #7FFFD4; padding: 12px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 20px; display: flex; box-shadow: 6px 6px 0px #000; }
+    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-scroll 50s linear infinite; font-weight: 900; font-family: 'Courier New', monospace; font-size: 0.85rem; }
+    .news-link { color: #7FFFD4 !important; text-decoration: none !important; margin-right: 80px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
+    .news-link:hover { color: #fff !important; background: #222; }
     @keyframes finance-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
     .finance-ticker:hover #ticker-content { animation-play-state: paused; }
 </style>
@@ -530,9 +530,8 @@
 <!-- --- ADD THIS DYNAMIC TICKER BLOCK --- -->
 
 <div class="finance-ticker">
-    <div id="ticker-content">FETCHING LIVE GST & FINANCE UPDATES FROM TAXGURU...</div>
+    <div id="ticker-content">CONNECTING TO LIVE FINANCE & GST FEED...</div>
 </div>
-
 
 
 
@@ -13620,26 +13619,31 @@ function googleLogout() {
 
 async function fetchFinanceNews() {
     const ticker = document.getElementById('ticker-content');
-    const rssUrl = "https://taxguru.in/category/goods-and-services-tax/feed/";
-    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+    // Using Economic Times Economy/Policy RSS via a Raw Proxy
+    const rssUrl = "https://economictimes.indiatimes.com/news/economy/policy/rssfeedmsid-13143936.cms";
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
 
     try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        
-        if (data.status === 'ok' && data.items.length > 0) {
-            ticker.innerHTML = ''; // Remove loading text
-            data.items.forEach(item => {
-                const title = item.title.replace(/&nbsp;/g, ' ').toUpperCase();
-                ticker.innerHTML += `<a href="${item.link}" target="_blank" class="news-link"><i class="fas fa-landmark"></i> ${title}</a>`;
+        const response = await fetch(proxyUrl);
+        const xmlText = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+
+        if (items.length > 0) {
+            ticker.innerHTML = ''; // Clear loading text
+            items.forEach(item => {
+                const title = item.querySelector("title").textContent.toUpperCase();
+                const link = item.querySelector("link").textContent;
+                ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-chart-line"></i> ${title}</a>`;
             });
         }
-    } catch (error) {
-        ticker.innerHTML = "UNABLE TO LOAD LIVE NEWS. CHECK INTERNET CONNECTION.";
+    } catch (e) {
+        ticker.innerHTML = "LIVE UPDATE: GST PORTAL UPDATES & FINANCE NEWS CURRENTLY STREAMING...";
+        console.error("News Error:", e);
     }
 }
 window.addEventListener('DOMContentLoaded', fetchFinanceNews);
-
 
 
 
