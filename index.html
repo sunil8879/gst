@@ -15,6 +15,7 @@
 
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>SMART INVOICE PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -734,6 +735,53 @@
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
     <i class="fas fa-history"></i> View Invoice History
 </button>
+
+
+
+
+
+<!-- Charts Button -->
+<button id="btn-charts" onclick="toggleCharts()" style="background: var(--black); color: var(--aqua); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--aqua); text-transform: uppercase;">
+    <i class="fas fa-chart-bar"></i> Charts Section
+</button>
+
+<!-- Charts Modal -->
+<div id="charts-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:40000; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:1000px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative;">
+        <button onclick="toggleCharts()" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        
+        <h2 style="border-bottom:5px solid black; padding-bottom:10px; text-transform:uppercase; text-align:center;">Business Analytics Charts</h2>
+        
+        <!-- Filter -->
+        <div style="text-align:center; margin-bottom:30px; background:#f0f0f0; padding:15px; border:2px solid black;">
+            <label style="font-weight:800;">SELECT MONTH & YEAR FOR ANALYSIS: </label>
+            <input type="month" id="chart_month_picker" onchange="loadAllCharts()" style="width:200px; box-shadow:3px 3px 0px black;">
+        </div>
+
+        <!-- Chart Grid -->
+        <div style="display:flex; flex-direction:column; gap:40px;">
+            <!-- 1. Bar Chart -->
+            <div style="border:3px solid black; padding:15px;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0;">1. Customer Dues (Total vs Pending)</h3>
+                <div id="bar_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+
+            <!-- 2. Line Chart -->
+            <div style="border:3px solid black; padding:15px;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0;">2. Growth Trends (Customers & Invoices)</h3>
+                <div id="line_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+
+            <!-- 3. Pie Chart -->
+            <div style="border:3px solid black; padding:15px;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0;">3. Revenue vs GST Distribution</h3>
+                <div id="pie_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 
@@ -14704,6 +14752,129 @@ function clearAllFields() {
     // Update the visual preview
     liveUpdate();
 }
+
+
+
+
+
+
+
+
+// --- GOOGLE CHARTS LOGIC ---
+google.charts.load('current', {'packages':['corechart', 'bar']});
+
+async function toggleCharts() {
+    const modal = document.getElementById('charts-modal');
+    if (!currentUserId) return alert("Please login with Google to access Charts.");
+    
+    if (modal.style.display === 'none') {
+        const now = new Date();
+        document.getElementById('chart_month_picker').value = now.toISOString().slice(0, 7);
+        modal.style.display = 'block';
+        // Wait a tiny bit for the modal to render so Google Charts can calculate width
+        setTimeout(loadAllCharts, 200);
+    } else {
+        modal.style.display = 'none';
+    }
+}
+
+async function loadAllCharts() {
+    const selectedMonth = document.getElementById('chart_month_picker').value;
+    
+    // 1. Fetch Data
+    const { data: history } = await supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', `${selectedMonth}-01`).lte('inv_date', `${selectedMonth}-31`);
+    const { data: reminders } = await supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId);
+    const { data: dashboard } = await supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single();
+
+    // Map Reminders for Pending Amount lookup
+    const reminderMap = {};
+    if(reminders) reminders.forEach(r => reminderMap[r.inv_no] = r.amount_paid);
+
+    // --- CHART 1: STACKED BAR CHART (Customer wise Total vs Pending) ---
+    const barDataArray = [['Customer', 'Paid Amount', 'Pending Amount']];
+    if (history) {
+        history.forEach(inv => {
+            const paid = parseFloat(reminderMap[inv.inv_no] || 0);
+            const total = parseFloat(inv.final_amount);
+            const pending = total - paid;
+            barDataArray.push([inv.customer_name, paid, pending]);
+        });
+    }
+    if(barDataArray.length === 1) barDataArray.push(['No Data', 0, 0]);
+    
+    const barData = google.visualization.arrayToDataTable(barDataArray);
+    const barOptions = {
+        isStacked: true,
+        colors: ['#7FFFD4', '#000000'],
+        legend: { position: 'top' },
+        vAxis: { title: 'Amount (₹)', format: 'currency' },
+        hAxis: { title: 'Customers' }
+    };
+    new google.visualization.ColumnChart(document.getElementById('bar_chart_div')).draw(barData, barOptions);
+
+    // --- CHART 2: LINE CHART (Month Progress) ---
+    // Note: To show trends, we fetch all months for the current year
+    const currentYear = selectedMonth.split('-')[0];
+    const { data: yearHistory } = await supabaseClient.from('invoice_history').select('inv_date, customer_name').eq('user_id', currentUserId).gte('inv_date', `${currentYear}-01-01`);
+    
+    const lineMap = {}; // Group by YYYY-MM
+    if(yearHistory){
+        yearHistory.forEach(row => {
+            const m = row.inv_date.substring(0, 7);
+            if(!lineMap[m]) lineMap[m] = { invs: 0, custs: new Set() };
+            lineMap[m].invs++;
+            lineMap[m].custs.add(row.customer_name);
+        });
+    }
+
+    const lineDataArray = [['Month', 'Invoices', 'Unique Customers']];
+    Object.keys(lineMap).sort().forEach(m => {
+        lineDataArray.push([m, lineMap[m].invs, lineMap[m].custs.size]);
+    });
+    if(lineDataArray.length === 1) lineDataArray.push(['No Data', 0, 0]);
+
+    const lineData = google.visualization.arrayToDataTable(lineDataArray);
+    const lineOptions = {
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        colors: ['#000', '#7FFFD4'],
+        pointSize: 10,
+        lineWidth: 4,
+        hAxis: { title: 'Timeline' },
+        vAxis: { title: 'Count' }
+    };
+    new google.visualization.LineChart(document.getElementById('line_chart_div')).draw(lineData, lineOptions);
+
+    // --- CHART 3: PIE CHART (Revenue vs GST) ---
+    const pieDataArray = [['Category', 'Amount']];
+    if(dashboard) {
+        pieDataArray.push(['Total Revenue (Taxable)', parseFloat(dashboard.total_revenue)]);
+        pieDataArray.push(['Total GST Collected', parseFloat(dashboard.total_gst_collected)]);
+    } else {
+        pieDataArray.push(['No Data', 1]);
+    }
+
+    const pieData = google.visualization.arrayToDataTable(pieDataArray);
+    const pieOptions = {
+        pieHole: 0.4,
+        colors: ['#000', '#7FFFD4'],
+        chartArea: {width: '90%', height: '80%'},
+        legend: { position: 'right' }
+    };
+    new google.visualization.PieChart(document.getElementById('pie_chart_div')).draw(pieData, pieOptions);
+}
+
+
+
+
+
+
+// Redraw charts when window is resized so they stay responsive
+window.addEventListener('resize', () => {
+    if (document.getElementById('charts-modal').style.display !== 'none') {
+        loadAllCharts();
+    }
+});
 </script>
 </body>
 </html>
