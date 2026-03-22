@@ -577,6 +577,16 @@
         </div>
         <div id="items-list"></div>
 
+
+
+<div style="text-align: center; margin: 25px 0 15px 0;">
+    <button onclick="clearAllFields()" style="background: #ff4757; color: white; border: 2px solid black; padding: 10px 30px; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px black; text-transform: uppercase; transition: 0.2s;">
+        <i class="fas fa-eraser"></i> Clear All Details
+    </button>
+</div>
+
+
+
         <div class="section-header"><i class="fas fa-file-invoice"></i> Invoice Settings</div>
         <div class="form-row">
           <input type="text" id="inv_no" readonly style="background: #f9f9f9; color: black; border: 2px solid black; font-weight: bold; box-shadow: var(--input-shadow);">
@@ -14374,6 +14384,37 @@ document.getElementById('rem_status').addEventListener('change', function() {
     }
 });
 
+
+
+
+
+
+
+
+
+function clearAllFields() {
+    if(!confirm("Are you sure you want to clear all invoice details?")) return;
+    
+    // Clear text and select fields
+    const fields = ['s_name','s_addr','s_gstin','s_state','c_name','c_addr','c_gstin','c_state','inv_date'];
+    fields.forEach(id => { 
+        if(document.getElementById(id)) document.getElementById(id).value = ''; 
+    });
+
+    // Reset items list
+    document.getElementById('items-list').innerHTML = '';
+    rowCount = 0;
+    addItem(); // Adds back one blank row
+
+    // Clear signature and QR
+    if(typeof clearSig === "function") clearSig();
+    const qrUpload = document.getElementById('qr_upload');
+    if(qrUpload) qrUpload.value = '';
+    globalQRBase64 = "";
+
+    // Update the visual preview
+    liveUpdate();
+}
 </script>
 </body>
 </html>
