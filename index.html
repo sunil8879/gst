@@ -13616,25 +13616,35 @@ function googleLogout() {
 
 async function fetchFinanceNews() {
     const ticker = document.getElementById('ticker-content');
-    const rssUrl = "https://www.moneycontrol.com/rss/economy.xml";
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
+    const sources = [
+        "https://www.moneycontrol.com/rss/economy.xml",
+        "https://www.business-standard.com/rss/economy-policy-102.rss",
+        "https://economictimes.indiatimes.com/news/economy/policy/rssfeedmsid-13143936.cms"
+    ];
 
-    try {
-        const response = await fetch(proxyUrl);
-        const xmlText = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
+    ticker.innerHTML = ''; // Clear previous
+    let totalNews = 0;
 
-        if (items.length > 0) {
-            ticker.innerHTML = ''; 
-            items.forEach(item => {
-                const title = item.querySelector("title").textContent.toUpperCase();
-                const link = item.querySelector("link").textContent;
-                ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-landmark"></i> ${title}</a>`;
+    for (let rssUrl of sources) {
+        try {
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
+            const response = await fetch(proxyUrl);
+            const xmlText = await response.text();
+            const xmlDoc = new DOMParser().parseFromString(xmlText, "text/xml");
+            const items = xmlDoc.querySelectorAll("item");
+
+            items.forEach((item, index) => {
+                if (index < 6) { // Take top 6 from each source
+                    const title = item.querySelector("title").textContent.toUpperCase();
+                    const link = item.querySelector("link").textContent;
+                    ticker.innerHTML += `<a href="${link}" target="_blank" class="news-link"><i class="fas fa-university"></i> ${title}</a>`;
+                    totalNews++;
+                }
             });
-        }
-    } catch (e) {
+        } catch (e) { console.warn("One source failed, skipping..."); }
+    }
+
+    if (totalNews === 0) {
         ticker.innerHTML = "LIVE GST UPDATES: PLEASE CHECK YOUR INTERNET CONNECTION TO STREAM FINANCE NEWS";
     }
 }
