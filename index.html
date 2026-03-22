@@ -395,7 +395,7 @@
 <body>
 
 <div class="navbar">
-    <h1>SMART INVOICE PRO</h1>
+    <h1>SMART INVOICE PRO - Invoice right, Business bright</h1>
 </div>
 
 <div class="main-container">
@@ -524,6 +524,14 @@
     <option value="West Bengal">West Bengal</option>
 </select>
         </div>
+
+
+<div class="form-row" style="margin-top:10px">
+            <input type="text" id="s_phone" placeholder="WhatsApp / Phone No" oninput="liveUpdate()">
+            <input type="email" id="s_email" placeholder="Business Email" oninput="liveUpdate()">
+        </div>
+
+
 
         <div class="section-header"><i class="fas fa-user-tie"></i> Customer Details</div>
         <input type="text" id="c_name" placeholder="Customer Name" oninput="liveUpdate()">
@@ -751,6 +759,15 @@
                     <h2 id="prev_s_name" style="color:var(--modern-blue); margin:0; font-size: 2rem;">YOUR BUSINESS</h2>
                     <p id="prev_s_addr" style="font-size:0.85rem; color:#555; white-space:pre-wrap; margin:5px 0;">Address Line</p>
                     <strong>GSTIN: <span id="prev_s_gstin">--</span></strong>
+
+
+<div style="font-size:0.85rem; color:#555; margin-top:5px;">
+            <span id="prev_s_phone_wrap" style="display:none;"><i class="fas fa-phone"></i> <span id="prev_s_phone"></span><br></span>
+            <span id="prev_s_email_wrap" style="display:none;"><i class="fas fa-envelope"></i> <span id="prev_s_email"></span></span>
+        </div>
+
+
+
                 </div>
                 <div style="text-align:right">
                     <h1 style="color:#eee; margin:0; font-size: 2.8rem;">TAX INVOICE</h1>
@@ -13020,6 +13037,17 @@ function searchJson(id) {
         document.getElementById('p_watermark').innerText = sName;
         document.getElementById('prev_s_addr').innerText = document.getElementById('s_addr').value || "Address Line";
         document.getElementById('prev_s_gstin').innerText = document.getElementById('s_gstin').value || "--";
+
+const sPhone = document.getElementById('s_phone').value;
+        const sEmail = document.getElementById('s_email').value;
+        
+        if(sPhone) { document.getElementById('prev_s_phone_wrap').style.display = 'inline'; document.getElementById('prev_s_phone').innerText = sPhone; } 
+        else { document.getElementById('prev_s_phone_wrap').style.display = 'none'; }
+        
+        if(sEmail) { document.getElementById('prev_s_email_wrap').style.display = 'inline'; document.getElementById('prev_s_email').innerText = sEmail; } 
+        else { document.getElementById('prev_s_email_wrap').style.display = 'none'; }
+
+
         document.getElementById('prev_c_name').innerText = document.getElementById('c_name').value || "Client Name";
         document.getElementById('prev_c_addr').innerText = document.getElementById('c_addr').value || "Client Address";
         document.getElementById('prev_c_gstin').innerText = document.getElementById('c_gstin').value || "--";
@@ -13087,6 +13115,13 @@ if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c
     const sName = getVal('s_name');
     const sAddr = getVal('s_addr');
     const sGst = getVal('s_gstin');
+
+
+
+const sPhone = document.getElementById('s_phone').value ? `Phone: ${document.getElementById('s_phone').value}<br>` : '';
+    const sEmail = document.getElementById('s_email').value ? `Email: ${document.getElementById('s_email').value}<br>` : '';
+
+
     const invNo = getVal('inv_no');
     const invDate = getVal('inv_date');
     const cName = getVal('c_name');
@@ -13186,7 +13221,7 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
                     </td>
                     <td style="text-align: right;">
                         <strong>FROM:</strong><br>${sName}<br>${sAddr}<br>
-                        GSTIN: ${sGst}<br>Invoice No: ${invNo}
+                        GSTIN: ${sGst}<br>${sPhone}${sEmail}Invoice No: ${invNo}
                     </td>
                 </tr>
             </table>
@@ -14396,7 +14431,7 @@ function clearAllFields() {
     if(!confirm("Are you sure you want to clear all invoice details?")) return;
     
     // Clear text and select fields
-    const fields = ['s_name','s_addr','s_gstin','s_state','c_name','c_addr','c_gstin','c_state','inv_date'];
+   const fields = ['s_name','s_addr','s_gstin','s_state','s_phone','s_email','c_name','c_addr','c_gstin','c_state','inv_date'];
     fields.forEach(id => { 
         if(document.getElementById(id)) document.getElementById(id).value = ''; 
     });
