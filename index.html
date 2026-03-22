@@ -13599,8 +13599,12 @@ async function onGoogleLogin(response) {
     document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
 
 document.querySelectorAll('.input-panel > *').forEach(el => {
-        let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
-        el.style.setProperty('display', displayType, 'important');
+        if (el.id.endsWith('-modal')) {
+            el.style.setProperty('display', 'none', 'important');
+        } else {
+            let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+            el.style.setProperty('display', displayType, 'important');
+        }
     });
 
     const visitorBox = document.getElementById('visitor-box');
@@ -13749,15 +13753,31 @@ async function toggleHistory() {
     
     if (!currentUserId) return alert("ACCESS DENIED: Please login with Google to view your invoice history.");
 
-    if (modal.style.display === 'none') {
-        const { data: history } = await supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).order('inv_date', { ascending: false });
+if (modal.style.display === 'none' || arguments[0] === true) {
+        const selMonth = document.getElementById('hist_month_picker')?.value || new Date().toISOString().slice(0, 7);
+        
+        const { data: history } = await supabaseClient.from('invoice_history')
+            .select('*')
+            .eq('user_id', currentUserId)
+            .gte('inv_date', selMonth + '-01')
+            .lte('inv_date', selMonth + '-31')
+            .order('inv_date', { ascending: false });
+
         const { data: reminders } = await supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId);
         
         const remindersObj = {};
         if (reminders) reminders.forEach(r => remindersObj[r.inv_no] = { paid: r.amount_paid, remarks: r.remarks });
 
         let html = `
+
+
+        <div style="margin-bottom:20px; background:#f9f9f9; padding:15px; border:2px solid black; text-align:center;">
+                <label style="font-weight:800;">FILTER BY MONTH: </label>
+                <input type="month" id="hist_month_picker" value="${selMonth}" onchange="toggleHistory(true)" style="box-shadow:3px 3px 0px black; padding:8px; border:2px solid black; font-weight:800;">
+            </div>
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+
+
                 <thead>
                     <tr style="background:var(--aqua); border:2px solid black;">
                         <th style="padding:10px; border:1px solid black;">Date</th>
@@ -14854,20 +14874,25 @@ async function loadAllCharts() {
 
         // --- CHART 2: LINE CHART ---
         const currentYear = selectedMonth.split('-')[0];
-        const { data: yearHistory } = await supabaseClient.from('invoice_history')
-            .select('inv_date, customer_name')
-            .eq('user_id', currentUserId)
-            .gte('inv_date', `${currentYear}-01-01`);
+        const { data: yearHistory } = await supabaseClient.from('invoice_history').select('inv_date, customer_name').eq('user_id', currentUserId).gte('inv_date', `${currentYear}-01-01`);
+        
+        // ADDED: Fetch actual invoice counts from business_dashboard
+        const { data: dashTrend } = await supabaseClient.from('business_dashboard').select('month_year, total_invoices').eq('user_id', currentUserId).gte('month_year', `${currentYear}-01`);
 
         const lineMap = {};
-        if(yearHistory){
-            yearHistory.forEach(row => {
-                const m = row.inv_date.substring(0, 7);
-                if(!lineMap[m]) lineMap[m] = { invs: 0, custs: new Set() };
-                lineMap[m].invs++;
-                lineMap[m].custs.add(row.customer_name);
-            });
-        }
+        
+        // First, get unique customers from history
+        if(yearHistory) yearHistory.forEach(row => {
+            const m = row.inv_date.substring(0, 7);
+            if(!lineMap[m]) lineMap[m] = { invs: 0, custs: new Set() };
+            lineMap[m].custs.add(row.customer_name);
+        });
+
+        // Second, get correct Invoice Counts from dashboard table
+        if(dashTrend) dashTrend.forEach(d => {
+            if(!lineMap[d.month_year]) lineMap[d.month_year] = { invs: 0, custs: new Set() };
+            lineMap[d.month_year].invs = d.total_invoices;
+        });
 
         const lineDataArray = [['Month', 'Invoices', 'Customers']];
         const sortedMonths = Object.keys(lineMap).sort();
@@ -14882,7 +14907,7 @@ async function loadAllCharts() {
             curveType: 'function',
             colors: ['#000', '#7FFFD4'],
             pointSize: 7,
-            vAxis: { minValue: 0 }
+            vAxis: { viewWindow: { min: 0, max: 100 }, gridlines: { count: 10 }, title: 'Count' }
         });
 
         // --- CHART 3: PIE CHART ---
