@@ -13455,6 +13455,25 @@ async function onGoogleLogin(response) {
     const remSec = document.getElementById('reminder-section');
     if(remSec) remSec.style.setProperty('display', 'block', 'important');
     //document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
+
+
+
+
+// Fetch and auto-fill Seller details
+    const { data: sellerData } = await supabaseClient.from('seller_details')
+        .select('*').eq('user_id', currentUserId).single();
+        
+    if (sellerData) {
+        document.getElementById('s_name').value = sellerData.business_name || '';
+        document.getElementById('s_addr').value = sellerData.address || '';
+        document.getElementById('s_gstin').value = sellerData.gstin || '';
+        document.getElementById('s_state').value = sellerData.state || '';
+        if(document.getElementById('s_phone')) document.getElementById('s_phone').value = sellerData.whatsapp_no || '';
+        if(document.getElementById('s_email')) document.getElementById('s_email').value = sellerData.email || '';
+        
+        // Refresh preview panel
+        if (typeof liveUpdate === "function") liveUpdate();
+    }
 }
 // Replace End
 
@@ -13486,6 +13505,39 @@ async function saveToHistory() {
     });
 
     const cleanNum = (id) => parseFloat(document.getElementById(id).innerText.replace(/[^\d.-]/g, '')) || 0;
+
+
+
+// Save Seller Details
+    const sellerData = {
+        user_id: currentUserId,
+        business_name: document.getElementById('s_name').value,
+        address: document.getElementById('s_addr').value,
+        gstin: document.getElementById('s_gstin').value,
+        state: document.getElementById('s_state').value,
+        whatsapp_no: document.getElementById('s_phone').value,
+        email: document.getElementById('s_email').value
+    };
+    if (sellerData.business_name) {
+        await supabaseClient.from('seller_details').upsert(sellerData);
+    }
+
+    // Save Customer Details
+    const customerData = {
+        user_id: currentUserId,
+        business_name: document.getElementById('c_name').value,
+        address: document.getElementById('c_addr').value,
+        gstin: document.getElementById('c_gstin').value,
+        state: document.getElementById('c_state').value,
+        whatsapp_no: document.getElementById('c_phone').value,
+        email: document.getElementById('c_email').value
+    };
+    if (customerData.business_name) {
+        await supabaseClient.from('customer_details').upsert(customerData, { onConflict: 'user_id, business_name' });
+    }
+
+
+
 
     const entry = {
         user_id: currentUserId,
