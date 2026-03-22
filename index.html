@@ -13598,7 +13598,7 @@ async function onGoogleLogin(response) {
     document.getElementById('user-photo').src = data.user.user_metadata.avatar_url;
     document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
 
-    document.querySelectorAll('.input-panel > *:not([id$="-modal"])').forEach(el => {
+document.querySelectorAll('.input-panel > *').forEach(el => {
         let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
         el.style.setProperty('display', displayType, 'important');
     });
@@ -14761,108 +14761,154 @@ function clearAllFields() {
 
 
 // --- GOOGLE CHARTS LOGIC ---
-google.charts.load('current', {'packages':['corechart', 'bar']});
+// --- IMPROVED GOOGLE CHARTS LOGIC ---
+// 1. Load the library immediately
+if (typeof google !== 'undefined') {
+    google.charts.load('current', {'packages':['corechart']});
+}
 
 async function toggleCharts() {
-    const modal = document.getElementById('charts-modal');
-    if (!currentUserId) return alert("Please login with Google to access Charts.");
+    console.log("Charts button clicked. Current User ID:", currentUserId);
     
-    if (modal.style.display === 'none') {
+    const modal = document.getElementById('charts-modal');
+    if (!modal) return console.error("Charts modal HTML not found!");
+
+    // Check if user is logged in
+    if (!currentUserId) {
+        alert("AUTH ERROR: You are not logged in. \n\nYour console shows 'Origin not allowed'. This means you need to add your current URL to the Google Cloud Console authorized origins.");
+        return;
+    }
+if (modal.style.getPropertyValue('display') === 'none' || modal.style.display === '') {
+        modal.style.setProperty('display', 'block', 'important');
+
+        document.body.style.overflow = 'hidden'; // Stop background scrolling
+        
+        // Pick current month
         const now = new Date();
-        document.getElementById('chart_month_picker').value = now.toISOString().slice(0, 7);
-        modal.style.display = 'block';
-        // Wait a tiny bit for the modal to render so Google Charts can calculate width
-        setTimeout(loadAllCharts, 200);
+        const monthInput = document.getElementById('chart_month_picker');
+        if (monthInput && !monthInput.value) {
+            monthInput.value = now.toISOString().slice(0, 7);
+        }
+
+        // Small delay to ensure modal is visible before drawing
+        setTimeout(() => {
+            if (typeof google !== 'undefined' && google.visualization) {
+                loadAllCharts();
+            } else {
+                alert("Google Charts library is still loading. Please try again in 2 seconds.");
+            }
+        }, 300);
     } else {
-        modal.style.display = 'none';
+         modal.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = 'auto';
     }
 }
 
 async function loadAllCharts() {
     const selectedMonth = document.getElementById('chart_month_picker').value;
-    
-    // 1. Fetch Data
-    const { data: history } = await supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', `${selectedMonth}-01`).lte('inv_date', `${selectedMonth}-31`);
-    const { data: reminders } = await supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId);
-    const { data: dashboard } = await supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single();
+    if(!selectedMonth) return;
 
-    // Map Reminders for Pending Amount lookup
-    const reminderMap = {};
-    if(reminders) reminders.forEach(r => reminderMap[r.inv_no] = r.amount_paid);
+    try {
+        // 1. Fetch Data from Supabase
+        const { data: history, error: hErr } = await supabaseClient.from('invoice_history')
+            .select('*')
+            .eq('user_id', currentUserId)
+            .gte('inv_date', `${selectedMonth}-01`)
+            .lte('inv_date', `${selectedMonth}-31`);
 
-    // --- CHART 1: STACKED BAR CHART (Customer wise Total vs Pending) ---
-    const barDataArray = [['Customer', 'Paid Amount', 'Pending Amount']];
-    if (history) {
-        history.forEach(inv => {
-            const paid = parseFloat(reminderMap[inv.inv_no] || 0);
-            const total = parseFloat(inv.final_amount);
-            const pending = total - paid;
-            barDataArray.push([inv.customer_name, paid, pending]);
+        const { data: reminders, error: rErr } = await supabaseClient.from('invoice_reminders')
+            .select('*')
+            .eq('user_id', currentUserId);
+
+        const { data: dashboard, error: dErr } = await supabaseClient.from('business_dashboard')
+            .select('*')
+            .eq('user_id', currentUserId)
+            .eq('month_year', selectedMonth)
+            .single();
+
+        if (hErr || rErr) console.warn("Data fetch issues:", hErr, rErr);
+
+        const reminderMap = {};
+        if(reminders) reminders.forEach(r => reminderMap[r.inv_no] = r.amount_paid);
+
+        // --- CHART 1: BAR CHART ---
+        const barDataArray = [['Customer', 'Paid', 'Pending']];
+        if (history && history.length > 0) {
+            history.forEach(inv => {
+                const paid = parseFloat(reminderMap[inv.inv_no] || 0);
+                const total = parseFloat(inv.final_amount) || 0;
+                const pending = Math.max(0, total - paid);
+                barDataArray.push([inv.customer_name, paid, pending]);
+            });
+        } else {
+            barDataArray.push(['No Data', 0, 0]);
+        }
+        
+        const barData = google.visualization.arrayToDataTable(barDataArray);
+        new google.visualization.ColumnChart(document.getElementById('bar_chart_div')).draw(barData, {
+            isStacked: true,
+            colors: ['#7FFFD4', '#000000'],
+            chartArea: {width: '70%', height: '70%'},
+            vAxis: { title: 'Amount (₹)' }
         });
-    }
-    if(barDataArray.length === 1) barDataArray.push(['No Data', 0, 0]);
-    
-    const barData = google.visualization.arrayToDataTable(barDataArray);
-    const barOptions = {
-        isStacked: true,
-        colors: ['#7FFFD4', '#000000'],
-        legend: { position: 'top' },
-        vAxis: { title: 'Amount (₹)', format: 'currency' },
-        hAxis: { title: 'Customers' }
-    };
-    new google.visualization.ColumnChart(document.getElementById('bar_chart_div')).draw(barData, barOptions);
 
-    // --- CHART 2: LINE CHART (Month Progress) ---
-    // Note: To show trends, we fetch all months for the current year
-    const currentYear = selectedMonth.split('-')[0];
-    const { data: yearHistory } = await supabaseClient.from('invoice_history').select('inv_date, customer_name').eq('user_id', currentUserId).gte('inv_date', `${currentYear}-01-01`);
-    
-    const lineMap = {}; // Group by YYYY-MM
-    if(yearHistory){
-        yearHistory.forEach(row => {
-            const m = row.inv_date.substring(0, 7);
-            if(!lineMap[m]) lineMap[m] = { invs: 0, custs: new Set() };
-            lineMap[m].invs++;
-            lineMap[m].custs.add(row.customer_name);
+        // --- CHART 2: LINE CHART ---
+        const currentYear = selectedMonth.split('-')[0];
+        const { data: yearHistory } = await supabaseClient.from('invoice_history')
+            .select('inv_date, customer_name')
+            .eq('user_id', currentUserId)
+            .gte('inv_date', `${currentYear}-01-01`);
+
+        const lineMap = {};
+        if(yearHistory){
+            yearHistory.forEach(row => {
+                const m = row.inv_date.substring(0, 7);
+                if(!lineMap[m]) lineMap[m] = { invs: 0, custs: new Set() };
+                lineMap[m].invs++;
+                lineMap[m].custs.add(row.customer_name);
+            });
+        }
+
+        const lineDataArray = [['Month', 'Invoices', 'Customers']];
+        const sortedMonths = Object.keys(lineMap).sort();
+        if(sortedMonths.length > 0) {
+            sortedMonths.forEach(m => lineDataArray.push([m, lineMap[m].invs, lineMap[m].custs.size]));
+        } else {
+            lineDataArray.push(['None', 0, 0]);
+        }
+
+        const lineData = google.visualization.arrayToDataTable(lineDataArray);
+        new google.visualization.LineChart(document.getElementById('line_chart_div')).draw(lineData, {
+            curveType: 'function',
+            colors: ['#000', '#7FFFD4'],
+            pointSize: 7,
+            vAxis: { minValue: 0 }
         });
+
+        // --- CHART 3: PIE CHART ---
+        const pieDataArray = [['Type', 'Value']];
+        if(dashboard && (dashboard.total_revenue > 0 || dashboard.total_gst_collected > 0)) {
+            pieDataArray.push(['Revenue', parseFloat(dashboard.total_revenue)]);
+            pieDataArray.push(['GST', parseFloat(dashboard.total_gst_collected)]);
+        } else {
+            pieDataArray.push(['No Data', 1]);
+        }
+
+        const pieData = google.visualization.arrayToDataTable(pieDataArray);
+        new google.visualization.PieChart(document.getElementById('pie_chart_div')).draw(pieData, {
+            pieHole: 0.4,
+            colors: ['#000', '#7FFFD4']
+        });
+
+    } catch (e) {
+        console.error("Chart Drawing Error:", e);
     }
-
-    const lineDataArray = [['Month', 'Invoices', 'Unique Customers']];
-    Object.keys(lineMap).sort().forEach(m => {
-        lineDataArray.push([m, lineMap[m].invs, lineMap[m].custs.size]);
-    });
-    if(lineDataArray.length === 1) lineDataArray.push(['No Data', 0, 0]);
-
-    const lineData = google.visualization.arrayToDataTable(lineDataArray);
-    const lineOptions = {
-        curveType: 'function',
-        legend: { position: 'bottom' },
-        colors: ['#000', '#7FFFD4'],
-        pointSize: 10,
-        lineWidth: 4,
-        hAxis: { title: 'Timeline' },
-        vAxis: { title: 'Count' }
-    };
-    new google.visualization.LineChart(document.getElementById('line_chart_div')).draw(lineData, lineOptions);
-
-    // --- CHART 3: PIE CHART (Revenue vs GST) ---
-    const pieDataArray = [['Category', 'Amount']];
-    if(dashboard) {
-        pieDataArray.push(['Total Revenue (Taxable)', parseFloat(dashboard.total_revenue)]);
-        pieDataArray.push(['Total GST Collected', parseFloat(dashboard.total_gst_collected)]);
-    } else {
-        pieDataArray.push(['No Data', 1]);
-    }
-
-    const pieData = google.visualization.arrayToDataTable(pieDataArray);
-    const pieOptions = {
-        pieHole: 0.4,
-        colors: ['#000', '#7FFFD4'],
-        chartArea: {width: '90%', height: '80%'},
-        legend: { position: 'right' }
-    };
-    new google.visualization.PieChart(document.getElementById('pie_chart_div')).draw(pieData, pieOptions);
 }
+
+// Redraw on resize
+window.addEventListener('resize', () => {
+    if (document.getElementById('charts-modal').style.display === 'block') loadAllCharts();
+});
 
 
 
