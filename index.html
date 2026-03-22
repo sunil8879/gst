@@ -490,11 +490,11 @@
 
 
 
-   .finance-ticker { background: #000; color: var(--aqua); padding: 10px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 15px; display: flex; align-items: center; box-shadow: 5px 5px 0px #ccc; cursor: pointer; }
-    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-run 40s linear infinite; font-weight: 800; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 0.8rem; }
-    .news-item { text-decoration: none; color: var(--aqua); margin-right: 60px; display: inline-flex; align-items: center; gap: 8px; }
-    .news-item:hover { color: #fff; text-decoration: underline; }
-    @keyframes finance-run { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+  .finance-ticker { background: #000; color: #7FFFD4; padding: 12px 0; overflow: hidden; border: 3px solid #000; margin-bottom: 20px; display: flex; box-shadow: 6px 6px 0px #000; }
+    #ticker-content { display: inline-block; white-space: nowrap; animation: finance-scroll 45s linear infinite; font-weight: 900; font-family: 'Courier New', monospace; font-size: 0.85rem; }
+    .news-link { color: #7FFFD4; text-decoration: none; margin-right: 80px; text-transform: uppercase; }
+    .news-link:hover { color: #fff; text-decoration: underline; background: #333; }
+    @keyframes finance-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
     .finance-ticker:hover #ticker-content { animation-play-state: paused; }
 </style>
 </head>
@@ -529,8 +529,8 @@
 
 <!-- --- ADD THIS DYNAMIC TICKER BLOCK --- -->
 
-<div class="finance-ticker" title="Click news to read full article">
-    <div id="ticker-content">Fetching Live GST & Finance Updates...</div>
+<div class="finance-ticker">
+    <div id="ticker-content">FETCHING LIVE GST & FINANCE UPDATES FROM TAXGURU...</div>
 </div>
 
 
@@ -1083,29 +1083,7 @@ const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
 
 
 
-async function fetchFinanceNews() {
-    const ticker = document.getElementById('ticker-content');
-    try {
-        // Fetching from TaxGuru (GST category) via RSS-to-JSON API
-        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=https://taxguru.in/category/goods-and-services-tax/feed/`);
-        const data = await response.json();
-        
-        if (data.status === 'ok') {
-            ticker.innerHTML = ''; // Clear loading text
-            data.items.forEach(item => {
-                // We filter for safety to ensure words like 'GST', 'Tax', 'Finance', 'RBI' exist
-                const cleanTitle = item.title.replace(/&nbsp;/g, ' ').toUpperCase();
-                ticker.innerHTML += `
-                    <a href="${item.link}" target="_blank" class="news-item">
-                        <i class="fas fa- university"></i> ${cleanTitle}
-                    </a>`;
-            });
-        }
-    } catch (e) {
-        ticker.innerText = "GST UPDATES: CONNECT TO INTERNET TO VIEW LIVE FINANCE NEWS";
-    }
-}
-window.addEventListener('load', fetchFinanceNews);
+
 
 
 
@@ -13633,6 +13611,40 @@ function googleLogout() {
 // REPLACE BOTH PREVIOUS onGoogleLogin FUNCTIONS WITH THIS ONE:
 // Updated Google Login to capture the user ID
 // Replace Start
+
+
+
+
+
+
+
+async function fetchFinanceNews() {
+    const ticker = document.getElementById('ticker-content');
+    const rssUrl = "https://taxguru.in/category/goods-and-services-tax/feed/";
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.items.length > 0) {
+            ticker.innerHTML = ''; // Remove loading text
+            data.items.forEach(item => {
+                const title = item.title.replace(/&nbsp;/g, ' ').toUpperCase();
+                ticker.innerHTML += `<a href="${item.link}" target="_blank" class="news-link"><i class="fas fa-landmark"></i> ${title}</a>`;
+            });
+        }
+    } catch (error) {
+        ticker.innerHTML = "UNABLE TO LOAD LIVE NEWS. CHECK INTERNET CONNECTION.";
+    }
+}
+window.addEventListener('DOMContentLoaded', fetchFinanceNews);
+
+
+
+
+
+
 async function onGoogleLogin(response) {
     const { data, error } = await supabaseClient.auth.signInWithIdToken({
         provider: 'google',
