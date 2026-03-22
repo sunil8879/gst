@@ -629,6 +629,19 @@ body div#google-auth-container { border-width: 20px 20px 40px 20px !important; b
 
 
 body .input-panel, body div#google-auth-container { width: 85% !important; max-width: 100% !important; box-sizing: border-box !important; } body .main-container { padding: 15px 5px !important; }
+
+
+
+
+
+@media (max-width: 768px) {
+    #google-auth-container:has(#login-view:not([style*="none"])) { max-width: 90% !important; padding: 10px !important; border-right-width: 8px !important; border-bottom-width: 15px !important; }
+    .g_id_signin { transform: scale(0.7) !important; width: 100% !important; }
+    #visitor-box img { max-width: 100% !important; width: 100% !important; height: auto !important; transform: scale(1.1); margin-top: 15px; }
+    .visitor-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+    .feature-card { font-size: 0.55rem !important; padding: 8px 4px !important; min-height: 70px !important; }
+    .feature-card i { font-size: 1rem !important; margin-bottom: 4px !important; }
+}
 </style>
 </head>
 <body>
