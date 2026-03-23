@@ -14346,7 +14346,7 @@ const hsnHints = {
     "0714": "(Manioc/Arrowroot/Salep/Sweet Potatoes)",
     "0801": "(Coconuts/Brazil Nuts/Cashew Nuts)",
     "0802": "(Other Nuts/Almonds/Hazelnuts/Walnuts/Chestnuts/Pistachios)",
-    "0803": "(Bananas/Plantains)",
+    "0803": "(Bananas/Plantains/Kela)",
     "0804": "(Dates/Figs/Pineapples/Avocados/Guavas/Mangoes)",
     "0805": "(Citrus Fruit/Oranges/Lemons/Limes)",
     "0806": "(Grapes fresh or dried/Raisins)",
@@ -16588,8 +16588,7 @@ function moveGlossary(dir) {
 
 
 
-// --- ULTIMATE RELEVANCE-BASED DYNAMIC SEARCH ENGINE ---
-// --- FINAL RELEVANCE-ONLY SEARCH ENGINE (STRICT MATCH) ---
+// --- THE FINAL DYNAMIC SEARCH BRAIN: SENTENCES + BRANDS + PLURALS ---
 window.searchJson = function(id) {
     const input = document.getElementById(`name-${id}`);
     const drop = document.getElementById(`res-${id}`);
@@ -16598,38 +16597,47 @@ window.searchJson = function(id) {
     let rawInput = input.value.toLowerCase().trim();
     drop.innerHTML = '';
     
-    if (rawInput.length < 2) { drop.style.display = 'none'; return; }
+    // Works instantly for any length - No 3-letter limit
+    if (rawInput.length < 1) { drop.style.display = 'none'; return; }
 
-    // 1. EXTRACT CORE PRODUCT (Ignore all sentence filler)
+    // 1. DYNAMIC NOISE & KEYWORD EXTRACTOR
     const noise = ["what", "is", "the", "hsn", "code", "for", "find", "please", "tell", "me", "of", "and", "a", "an", "at", "give", "show", "items", "list"];
-    const keywords = rawInput.replace(/[^\w\s]/g, "").split(/\s+/).filter(k => k.length > 2 && !noise.includes(k));
-    
-    // If user types only one word like "milk", use it.
+    const allWords = rawInput.replace(/[^\w\s]/g, "").split(/\s+/);
+    const keywords = allWords.filter(w => !noise.includes(w) && w.length > 1);
     const searchTerms = keywords.length > 0 ? keywords : [rawInput];
 
-    // 2. SEARCH & RANKING
+    // 2. PLURAL/SINGULAR NORMALIZER
+    const stem = (w) => w.replace(/ies$/i, "y").replace(/es$/i, "").replace(/s$/i, "");
+
+    // 3. SEARCH & SCORING ENGINE
     let matches = [];
     gstDatabase.forEach(item => {
-        if (!item || !item.goods_name) return; // Crash protection
+        if (!item || !item.goods_name) return; // Crash Protection
 
         let name = item.goods_name.toLowerCase();
         let hsn = String(item.hsn_code || "").toLowerCase();
         
-        // Use hsnHints for Synonyms (Four wheelers -> HSN 87)
-        let hPrefix = hsn.substring(0, 4);
-        let category = (hsnHints[hPrefix] || hsnHints[hsn.substring(0,2)] || "").toLowerCase();
+        // Dynamic Bridge: Scans hsnHints for Synonyms (Pepsi, Coca Cola, Mango, etc.)
+        let hPrefix4 = hsn.substring(0, 4);
+        let hPrefix2 = hsn.substring(0, 2);
+        let category = (hsnHints[hPrefix4] || hsnHints[hPrefix2] || "").toLowerCase();
 
         let score = 0;
-
-        // Scoring: Only give points for REAL keywords
         searchTerms.forEach(k => {
-            if (name.includes(k)) score += 50; 
-            if (category.includes(k)) score += 40; // Synonym Match
-            if (name.startsWith(k)) score += 20; // Bonus for starting match
+            let kStem = stem(k);
+            let nameStem = stem(name);
+            let catStem = stem(category);
+
+            // Points for matching the Name (High Priority)
+            if (name.includes(k) || nameStem.includes(kStem)) score += 100;
+            // Points for matching the Category/Synonym (High Priority)
+            if (category.includes(k) || catStem.includes(kStem)) score += 85;
+            // Points for HSN match
+            if (hsn.includes(k)) score += 50;
         });
 
-        // STRICT THRESHOLD: If the item doesn't match the core product, don't show it
-        if (score >= 40) { 
+        // Threshold: Only show meaningful matches
+        if (score >= 50) { 
             matches.push({
                 score: score,
                 full: item.goods_name,
@@ -16640,17 +16648,17 @@ window.searchJson = function(id) {
         }
     });
 
-    // 3. SORT (Best result always at index 0)
+    // 4. RANKING (Highest score first)
     matches.sort((a, b) => b.score - a.score);
-    const uniqueMatches = matches.filter((v, i, a) => a.findIndex(t => t.full === v.full) === i).slice(0, 12);
+    const uniqueMatches = matches.filter((v, i, a) => a.findIndex(t => t.full === v.full) === i).slice(0, 15);
 
-    // 4. RENDER UI
+    // 5. RENDER UI
     if (uniqueMatches.length > 0) {
         drop.style.setProperty('display', 'block', 'important');
         uniqueMatches.forEach(res => {
             const div = document.createElement('div');
             div.style = "color:black; padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; text-align:left; border-left: 6px solid #1B3E85; font-family: sans-serif;";
-            div.innerHTML = `<div style="font-weight:900; font-size:0.9rem;">${res.full}</div>
+            div.innerHTML = `<div style="font-weight:900; font-size:0.85rem;">${res.full}</div>
                              <div style="font-size:0.75rem; color:#666;">HSN: ${res.hsn} | GST: <strong>${res.gst}</strong></div>`;
             
             div.onclick = () => {
@@ -16661,26 +16669,20 @@ window.searchJson = function(id) {
                 document.getElementById(`sgst-${id}`).value = res.data.sgst;
                 document.getElementById(`igst-${id}`).value = res.data.igst;
                 drop.style.display = 'none';
-                if (window.liveUpdate) liveUpdate();
+                if (typeof liveUpdate === "function") liveUpdate();
             };
             drop.appendChild(div);
         });
-    } else {
-        drop.style.display = 'none';
-    }
+    } else { drop.style.display = 'none'; }
 };
 
-// --- CORRECT ENTER KEY HANDLER ---
-// This ensures that hitting Enter selects the TOP (Most Relevant) item only
+// --- GLOBAL ENTER KEY HANDLER: PICKS TOP RESULT ---
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('name-')) {
-        e.preventDefault(); // Stop page refresh
+        e.preventDefault(); // Stops local server refresh
         const id = e.target.id.split('-')[1];
-        // Select the very first div in the result box (the one with highest score)
-        const bestMatch = document.querySelector(`#res-${id} div`);
-        if (bestMatch) {
-            bestMatch.click(); 
-        }
+        const topResult = document.querySelector(`#res-${id} div`);
+        if (topResult) topResult.click();
     }
 });
 </script>
