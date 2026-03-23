@@ -13559,7 +13559,7 @@ const cPhone = document.getElementById('c_phone').value;
         return res.trim().toUpperCase();
     }
 async function exportToWord() {
-if ([...document.querySelectorAll('.input-panel input:not([type=file]):not([id=c_gstin]):not([id^="rem_"]), .input-panel textarea, .input-panel select:not([id^="rem_"])')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
+if ([...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id^="rem_"], [id^="fetch_"])')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
     
     // 1. Save to history first
     await saveToHistory();
@@ -16833,45 +16833,7 @@ function pushHsnToInvoice() {
 
 
 
-// --- FIX: TELL THE GENERATOR TO IGNORE HSN FETCH BOXES ---
-window.exportToWord = (function() {
-    const originalFunc = window.exportToWord;
-    return function() {
-        // Find all inputs that are NOT the HSN fetch boxes
-        const validFields = [...document.querySelectorAll('.input-panel input:not([id^="fetch_"]):not([type=file]):not([id=c_gstin]):not([id^="rem_"]), .input-panel textarea, .input-panel select:not([id^="fetch_"]):not([id^="rem_"])')];
-        
-        // Check only those fields
-        if (validFields.some(el => !el.value.trim())) {
-            return alert("PLEASE FILL IN ALL THE MANDATORY FIELDS (Seller, Customer, and Items)");
-        }
 
-        // If everything is okay, it runs the original export code
-        // To ensure it doesn't crash, we manually trigger the original logic here
-        const invNo = document.getElementById('inv_no').value || "000";
-        // We call the original function logic by skipping its first internal validation line
-        // By re-defining the export here, we solve the "Blank" and "Validation" conflict
-        
-        // Final fallback: If the standard function is too stubborn, we trigger the click
-        // but we temporarily empty the HSN boxes and put them back.
-        const hsnVal = document.getElementById('fetch_hsn_input').value;
-        document.getElementById('fetch_hsn_input').value = "Fixed"; // Dummy data to pass validation
-        
-        // This is the user-friendly "Safe Run"
-        try {
-            // We strip the validation line and run the rest
-            const oldCode = originalFunc.toString();
-            const fixedCode = oldCode.substring(oldCode.indexOf("const getVal"));
-            new Function(fixedCode)();
-        } catch(e) {
-            // If the above is too complex, we use the "Rename ID" trick instantly
-            document.getElementById('fetch_hsn_input').id = "rem_fixed_hsn";
-            originalFunc();
-            document.getElementById('rem_fixed_hsn').id = "fetch_hsn_input";
-        }
-        
-        document.getElementById('fetch_hsn_input').value = hsnVal; // Restore original value
-    };
-})();
 </script>
 </body>
 </html>
