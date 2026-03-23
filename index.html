@@ -16098,6 +16098,14 @@ function clearAllFields() {
     if(qrUpload) qrUpload.value = '';
     globalQRBase64 = "";
 
+
+// Clear HSN Fetch section
+    document.getElementById('fetch_hsn_input').value = '';
+    document.getElementById('fetch_product_res').innerHTML = '';
+    document.getElementById('fetch_desc_res').innerHTML = '';
+    document.getElementById('fetch_gst_res').innerHTML = '';
+    hsnFoundItems = [];
+
     // Update the visual preview
     liveUpdate();
 }
