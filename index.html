@@ -16588,71 +16588,86 @@ function moveGlossary(dir) {
 
 
 
-// --- DYNAMIC SEARCH ENGINE: NO LIMITS + SENTENCE PARSING + SYNONYMS ---
+// --- ULTIMATE RELEVANCE-BASED DYNAMIC SEARCH ENGINE ---
 window.searchJson = function(id) {
     const input = document.getElementById(`name-${id}`);
     const drop = document.getElementById(`res-${id}`);
     if (!input || !drop) return;
 
-    // We remove ALL length conditions. It works for 1 letter, 3 letters, or 100 letters.
-    let rawValue = input.value.toLowerCase().trim();
+    let rawInput = input.value.toLowerCase().trim();
     drop.innerHTML = '';
-    if (!rawValue) { drop.style.display = 'none'; return; }
-
-    // 1. EXTRACT KEYWORDS (Your requested logic)
-    // Turns "what is the hsn code for water" into ["water"]
-    const noise = ["what", "is", "the", "hsn", "code", "for", "find", "please", "tell", "me", "of", "and", "give", "at"];
-    let keywords = rawValue.replace(/[^\w\s]/g, "").split(/\s+/).filter(k => !noise.includes(k));
     
-    // If user types only noise words, use the whole sentence as search
-    if (keywords.length === 0) keywords = [rawValue];
+    // Works for any length, no 3-letter limit
+    if (rawInput.length < 1) { drop.style.display = 'none'; return; }
 
-    // 2. SEARCH HINTS FOR SYNONYMS (Category Mapping)
-    // If keywords contain "four" or "wheeler", it finds HSN 8701
-    let categoryPrefixes = [];
-    for (let hsnKey in hsnHints) {
-        let categoryText = hsnHints[hsnKey].toLowerCase();
-        if (keywords.some(k => categoryText.includes(k))) {
-            categoryPrefixes.push(hsnKey.substring(0, 2)); 
-        }
-    }
-
-    // 3. SECURE DATABASE FILTERING (Stops the "Blanking" Crash)
-    let matches = gstDatabase.filter(item => {
-        // Safety: Ensure item is valid to prevent code from stopping/blanking
-        if (!item || !item.goods_name || !item.hsn_code) return false;
+    // 1. DYNAMIC NOISE FILTERING
+    const noise = ["what", "is", "the", "hsn", "code", "for", "find", "please", "tell", "me", "of", "and", "a", "an", "at", "give", "show"];
+    const allWords = rawInput.replace(/[^\w\s]/g, "").split(/\s+/);
+    // Core keywords are words that are NOT noise (e.g., "water", "milk", "four", "wheeler")
+    const coreKeywords = allWords.filter(w => !noise.includes(w) && w.length > 1);
+    
+    // 2. SEARCH & SCORE ENGINE
+    let matches = [];
+    gstDatabase.forEach(item => {
+        if (!item || !item.goods_name) return; // Anti-crash protection
 
         let name = item.goods_name.toLowerCase();
-        let hsn = String(item.hsn_code).toLowerCase();
+        let hsn = String(item.hsn_code || "").toLowerCase();
+        
+        // Find category from hsnHints for Synonym matching (e.g. "Four wheelers")
+        let hPrefix = hsn.substring(0, 4);
+        let category = (hsnHints[hPrefix] || hsnHints[hsn.substring(0,2)] || "").toLowerCase();
 
-        // MATCH LOGIC:
-        // Match if Name contains any keyword OR HSN matches OR Category Synonym matches
-        const textMatch = keywords.some(k => name.includes(k) || hsn.includes(k));
-        const synonymMatch = categoryPrefixes.some(pref => hsn.startsWith(pref));
+        let score = 0;
+        let combinedText = name + " " + category + " " + hsn;
 
-        return textMatch || synonymMatch;
+        // SCORING LOGIC
+        // a) Highest Priority: Whole core phrase is in the name (e.g. "Mineral Water")
+        if (coreKeywords.length > 0 && name.includes(coreKeywords.join(" "))) score += 100;
+        
+        // b) High Priority: Individual core keywords match the name
+        coreKeywords.forEach(k => {
+            if (name.includes(k)) score += 20;
+            if (category.includes(k)) score += 15; // Synonym Match
+            if (hsn.includes(k)) score += 10;
+        });
+
+        // c) Penalty: If user typed "hsn code of...", match the words but give low weight
+        allWords.forEach(w => {
+            if (combinedText.includes(w)) score += 1;
+        });
+
+        if (score > 5) { // Only show items with a meaningful match
+            matches.push({
+                score: score,
+                full: item.goods_name,
+                hsn: hsn.split(/[\/,]/)[0].trim(),
+                gst: item.igst,
+                data: item
+            });
+        }
     });
 
-    // 4. RENDER UI (Unlimited Length Display)
-    if (matches.length > 0) {
+    // 3. RANKING & RENDERING
+    // Sort by score (highest first)
+    matches.sort((a, b) => b.score - a.score);
+    const uniqueMatches = matches.filter((v, i, a) => a.findIndex(t => t.full === v.full) === i).slice(0, 15);
+
+    if (uniqueMatches.length > 0) {
         drop.style.setProperty('display', 'block', 'important');
-        // Unique results only
-        const unique = matches.filter((v, i, a) => a.findIndex(t => t.goods_name === v.goods_name) === i).slice(0, 20);
-        
-        unique.forEach(res => {
-            const hsnVal = String(res.hsn_code).split(/[\/,]/)[0].trim();
+        uniqueMatches.forEach(res => {
             const div = document.createElement('div');
-            div.style = "color:black; padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; text-align:left; border-left: 6px solid #1B3E85; font-family: sans-serif;";
-            div.innerHTML = `<div style="font-weight:900; font-size:0.85rem;">${res.goods_name}</div>
-                             <div style="font-size:0.7rem; color:#666;">HSN: ${hsnVal} | GST: <strong>${res.igst}</strong></div>`;
+            div.style = "color:black; padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; text-align:left; border-left: 6px solid #7FFFD4; font-family: sans-serif;";
+            div.innerHTML = `<div style="font-weight:900; font-size:0.9rem;">${res.full}</div>
+                             <div style="font-size:0.75rem; color:#666;">HSN: ${res.hsn} | GST: <strong>${res.gst}</strong></div>`;
             
             div.onclick = () => {
-                input.value = res.goods_name;
-                document.getElementById(`hsn-${id}`).value = hsnVal;
-                document.getElementById(`gst-str-${id}`).value = res.igst;
-                document.getElementById(`cgst-${id}`).value = res.cgst;
-                document.getElementById(`sgst-${id}`).value = res.sgst;
-                document.getElementById(`igst-${id}`).value = res.igst;
+                input.value = res.full;
+                document.getElementById(`hsn-${id}`).value = res.hsn;
+                document.getElementById(`gst-str-${id}`).value = res.gst;
+                document.getElementById(`cgst-${id}`).value = res.data.cgst;
+                document.getElementById(`sgst-${id}`).value = res.data.sgst;
+                document.getElementById(`igst-${id}`).value = res.data.igst;
                 drop.style.display = 'none';
                 if (window.liveUpdate) liveUpdate();
             };
@@ -16663,13 +16678,13 @@ window.searchJson = function(id) {
     }
 };
 
-// --- ENTER KEY HANDLER: PREVENTS REFRESH & SELECTS ITEM ---
+// --- GLOBAL ENTER KEY HANDLER ---
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('name-')) {
-        e.preventDefault(); 
+        e.preventDefault();
         const id = e.target.id.split('-')[1];
-        const first = document.querySelector(`#res-${id} div`);
-        if (first) first.click();
+        const topResult = document.querySelector(`#res-${id} div`);
+        if (topResult) topResult.click();
     }
 });
 </script>
