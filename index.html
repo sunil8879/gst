@@ -879,12 +879,6 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <div class="section-header">
-            <span><i class="fas fa-list"></i> Itemized List</span>
-            <button class="btn-add" onclick="addItem()" style="margin-left:auto">+ Add Item</button>
-        </div>
-        <div id="items-list"></div>
-
 
 
 
@@ -918,6 +912,25 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
         <button onclick="pushHsnToInvoice()" style="align-self: flex-end; background: black; color:var(--aqua); padding:12px; font-weight:800; border:none; cursor:pointer; height:45px; text-transform:uppercase;">+ Add to Invoice</button>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="section-header">
+            <span><i class="fas fa-list"></i> Itemized List</span>
+            <button class="btn-add" onclick="addItem()" style="margin-left:auto">+ Add Item</button>
+        </div>
+        <div id="items-list"></div>
 
 
 
@@ -13559,7 +13572,7 @@ const cPhone = document.getElementById('c_phone').value;
         return res.trim().toUpperCase();
     }
 async function exportToWord() {
-if ([...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id^="rem_"], [id^="fetch_"])')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
+if ([...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id^="rem_"], [id^="chart_"], [id^="fetch_"])')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
     
     // 1. Save to history first
     await saveToHistory();
