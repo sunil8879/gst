@@ -344,7 +344,7 @@
 /* --- VISITOR VIEW STYLING --- */
 /* Hide the invoice sections by default, but keep the container visible */
 /* Hides EVERYTHING in the input panel except the login and the landing cards */
-.input-panel > *:not(#google-auth-container):not(#visitor-box):not(#finance-ticker-wrap) {
+.input-panel > *:not(#google-auth-container):not(#visitor-box):not(#finance-ticker-wrap):not(#flow-wrap) {
     display: none !important;
 }
 
@@ -1072,9 +1072,14 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <button id="install-pwa" style="display:none; background: #007BFF; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-download"></i> Install App
 </button>
-
-
  </div>
+
+
+
+<details id="flow-wrap" style="display:none; width:100%; margin:20px auto;">
+    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">Manual & Glossary</summary>
+
+
 
 <div id="process-box">
     <div class="proc-nav">
@@ -1103,7 +1108,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 </div>
 
 
-
+</details>
 
 
 <div  id="mobile-legal-wrap"style="text-align: center; margin-top: 30px; width: 100%;">
@@ -15269,6 +15274,7 @@ const oldLogin = onGoogleLogin;
 onGoogleLogin = async (resp) => {
     await oldLogin(resp);
     document.getElementById('process-box').style.display = 'block';
+document.getElementById('flow-wrap').style.setProperty('display', 'block', 'important');
     moveStep(0);
 
 
