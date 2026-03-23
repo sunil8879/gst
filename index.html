@@ -16589,6 +16589,7 @@ function moveGlossary(dir) {
 
 
 // --- ULTIMATE RELEVANCE-BASED DYNAMIC SEARCH ENGINE ---
+// --- FINAL RELEVANCE-ONLY SEARCH ENGINE (STRICT MATCH) ---
 window.searchJson = function(id) {
     const input = document.getElementById(`name-${id}`);
     const drop = document.getElementById(`res-${id}`);
@@ -16597,47 +16598,38 @@ window.searchJson = function(id) {
     let rawInput = input.value.toLowerCase().trim();
     drop.innerHTML = '';
     
-    // Works for any length, no 3-letter limit
-    if (rawInput.length < 1) { drop.style.display = 'none'; return; }
+    if (rawInput.length < 2) { drop.style.display = 'none'; return; }
 
-    // 1. DYNAMIC NOISE FILTERING
-    const noise = ["what", "is", "the", "hsn", "code", "for", "find", "please", "tell", "me", "of", "and", "a", "an", "at", "give", "show"];
-    const allWords = rawInput.replace(/[^\w\s]/g, "").split(/\s+/);
-    // Core keywords are words that are NOT noise (e.g., "water", "milk", "four", "wheeler")
-    const coreKeywords = allWords.filter(w => !noise.includes(w) && w.length > 1);
+    // 1. EXTRACT CORE PRODUCT (Ignore all sentence filler)
+    const noise = ["what", "is", "the", "hsn", "code", "for", "find", "please", "tell", "me", "of", "and", "a", "an", "at", "give", "show", "items", "list"];
+    const keywords = rawInput.replace(/[^\w\s]/g, "").split(/\s+/).filter(k => k.length > 2 && !noise.includes(k));
     
-    // 2. SEARCH & SCORE ENGINE
+    // If user types only one word like "milk", use it.
+    const searchTerms = keywords.length > 0 ? keywords : [rawInput];
+
+    // 2. SEARCH & RANKING
     let matches = [];
     gstDatabase.forEach(item => {
-        if (!item || !item.goods_name) return; // Anti-crash protection
+        if (!item || !item.goods_name) return; // Crash protection
 
         let name = item.goods_name.toLowerCase();
         let hsn = String(item.hsn_code || "").toLowerCase();
         
-        // Find category from hsnHints for Synonym matching (e.g. "Four wheelers")
+        // Use hsnHints for Synonyms (Four wheelers -> HSN 87)
         let hPrefix = hsn.substring(0, 4);
         let category = (hsnHints[hPrefix] || hsnHints[hsn.substring(0,2)] || "").toLowerCase();
 
         let score = 0;
-        let combinedText = name + " " + category + " " + hsn;
 
-        // SCORING LOGIC
-        // a) Highest Priority: Whole core phrase is in the name (e.g. "Mineral Water")
-        if (coreKeywords.length > 0 && name.includes(coreKeywords.join(" "))) score += 100;
-        
-        // b) High Priority: Individual core keywords match the name
-        coreKeywords.forEach(k => {
-            if (name.includes(k)) score += 20;
-            if (category.includes(k)) score += 15; // Synonym Match
-            if (hsn.includes(k)) score += 10;
+        // Scoring: Only give points for REAL keywords
+        searchTerms.forEach(k => {
+            if (name.includes(k)) score += 50; 
+            if (category.includes(k)) score += 40; // Synonym Match
+            if (name.startsWith(k)) score += 20; // Bonus for starting match
         });
 
-        // c) Penalty: If user typed "hsn code of...", match the words but give low weight
-        allWords.forEach(w => {
-            if (combinedText.includes(w)) score += 1;
-        });
-
-        if (score > 5) { // Only show items with a meaningful match
+        // STRICT THRESHOLD: If the item doesn't match the core product, don't show it
+        if (score >= 40) { 
             matches.push({
                 score: score,
                 full: item.goods_name,
@@ -16648,16 +16640,16 @@ window.searchJson = function(id) {
         }
     });
 
-    // 3. RANKING & RENDERING
-    // Sort by score (highest first)
+    // 3. SORT (Best result always at index 0)
     matches.sort((a, b) => b.score - a.score);
-    const uniqueMatches = matches.filter((v, i, a) => a.findIndex(t => t.full === v.full) === i).slice(0, 15);
+    const uniqueMatches = matches.filter((v, i, a) => a.findIndex(t => t.full === v.full) === i).slice(0, 12);
 
+    // 4. RENDER UI
     if (uniqueMatches.length > 0) {
         drop.style.setProperty('display', 'block', 'important');
         uniqueMatches.forEach(res => {
             const div = document.createElement('div');
-            div.style = "color:black; padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; text-align:left; border-left: 6px solid #7FFFD4; font-family: sans-serif;";
+            div.style = "color:black; padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; text-align:left; border-left: 6px solid #1B3E85; font-family: sans-serif;";
             div.innerHTML = `<div style="font-weight:900; font-size:0.9rem;">${res.full}</div>
                              <div style="font-size:0.75rem; color:#666;">HSN: ${res.hsn} | GST: <strong>${res.gst}</strong></div>`;
             
@@ -16678,13 +16670,17 @@ window.searchJson = function(id) {
     }
 };
 
-// --- GLOBAL ENTER KEY HANDLER ---
+// --- CORRECT ENTER KEY HANDLER ---
+// This ensures that hitting Enter selects the TOP (Most Relevant) item only
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('name-')) {
-        e.preventDefault();
+        e.preventDefault(); // Stop page refresh
         const id = e.target.id.split('-')[1];
-        const topResult = document.querySelector(`#res-${id} div`);
-        if (topResult) topResult.click();
+        // Select the very first div in the result box (the one with highest score)
+        const bestMatch = document.querySelector(`#res-${id} div`);
+        if (bestMatch) {
+            bestMatch.click(); 
+        }
     }
 });
 </script>
