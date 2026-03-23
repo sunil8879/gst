@@ -658,38 +658,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-/* --- STYLISH BLACK & WHITE CARDS --- */
-.input-card {
-    background: #ffffff !important;
-    border: 3px solid #000000 !important;
-    box-shadow: 10px 10px 0px #000000 !important;
-    padding: 30px !important;
-    margin-top: 45px !important;
-    margin-bottom: 10px !important;
-    text-align: left !important;
-    transition: transform 0.2s;
-}
 
-.input-card:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 12px 12px 0px #000000 !important;
-}
-
-.input-card .section-header {
-    background: #000000 !important;
-    color: #ffffff !important;
-    margin: -30px -30px 20px -30px !important;
-    padding: 15px !important;
-    border-bottom: 3px solid #000000 !important;
-    display: flex !important;
-    align-items: center;
-    font-size: 1rem !important;
-}
-
-.input-card .section-header i {
-    color: #7FFFD4 !important; /* Keeping the icon aquamarine for a sharp look */
-    margin-right: 15px;
-}
 </style>
 </head>
 <body>
@@ -16888,50 +16857,7 @@ function pushHsnToInvoice() {
 
 
 
-// --- DYNAMIC CARD WRAPPER ENGINE ---
-function applyStylishCards() {
-    const panel = document.querySelector('.input-panel');
-    const headers = Array.from(panel.querySelectorAll('.section-header'));
-    
-    headers.forEach(header => {
-        // Create the card container
-        const card = document.createElement('div');
-        card.className = 'input-card';
-        
-        // Place the card before the header
-        header.parentNode.insertBefore(card, header);
-        
-        // Move the header and its following elements into the card
-        let next = header;
-        while (next && next.tagName !== 'BUTTON' && !next.classList.contains('section-header')) {
-            let toMove = next;
-            next = next.nextElementSibling;
-            card.appendChild(toMove);
-            
-            // Stop if we hit specific IDs or sections
-            if (next && (next.id === 'items-list' || next.id === 'reminder-section')) {
-                card.appendChild(next);
-                break;
-            }
-        }
-    });
 
-    // Special case for Fetch, Reminder, Template, and QR sections
-    const idsToCardify = ['reminder-section', 'qr_upload', 'template_select', 'btn-inventory'];
-    idsToCardify.forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el.parentElement.classList.contains('input-panel')) {
-             // We wrap these manually if they aren't caught by the header loop
-        }
-    });
-}
-
-// Run the card engine after login or on load
-const cardLoginBackup = onGoogleLogin;
-onGoogleLogin = async (resp) => {
-    await cardLoginBackup(resp);
-    setTimeout(applyStylishCards, 100); 
-};
 </script>
 </body>
 </html>
