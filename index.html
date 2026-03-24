@@ -1138,6 +1138,45 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
+
+
+
+
+
+
+<!-- --- REPORTS SECTION CARD --- -->
+<div id="reports-section-card" style="display:none; background:white; border:3px solid black; box-shadow:10px 10px 0px black; padding:30px; margin-top:45px; text-align:left;">
+    <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; display:flex; align-items:center;">
+        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> REPORTS SECTION
+    </div>
+    <div class="form-row">
+        <select id="report_type_select" style="border:2px solid black; font-weight:800;">
+            <option value="state">1. State Wise Sales Report</option>
+        </select>
+        <input type="month" id="report_month_picker" style="border:2px solid black; font-weight:800;">
+    </div>
+    <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; border:none; box-shadow:6px 6px 0px #7FFFD4; cursor:pointer; text-transform:uppercase;">
+        GENERATE REPORT
+    </button>
+</div>
+
+<!-- --- REPORT DISPLAY MODAL --- -->
+<div id="report-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:900px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px #7FFFD4; position:relative;">
+        <button onclick="document.getElementById('report-modal').style.display='none'" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        <h2 id="report-title" style="text-transform:uppercase; border-bottom:5px solid black; padding-bottom:10px; text-align:center; font-weight:900;"></h2>
+        <div id="report-container" style="margin-top:20px; overflow-x:auto;"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
 <details id="flow-wrap" style="display:none; width:100%; margin:20px auto;">
     <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">Manual & Glossary</summary>
 
@@ -16857,7 +16896,108 @@ function pushHsnToInvoice() {
 
 
 
+// --- DYNAMIC STATEWISE REPORTING ENGINE (ADD-ON) ---
 
+// 1. Reveal reports and set default date after login
+const originalLogin = onGoogleLogin;
+onGoogleLogin = async (resp) => {
+    await originalLogin(resp);
+    const reportCard = document.getElementById('reports-section-card');
+    if(reportCard) {
+        reportCard.style.setProperty('display', 'block', 'important');
+        document.getElementById('report_month_picker').value = new Date().toISOString().slice(0, 7);
+    }
+};
+
+// 2. The Smart Statewise Report Logic
+async function generateBusinessReport() {
+    const selectedMonth = document.getElementById('report_month_picker').value;
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+    
+    if (!currentUserId) return alert("Please login with Google first.");
+
+    // Fetch Dashboard (Target Total), History (Individual rows), and Customer States
+    const [dashRes, histRes, custRes] = await Promise.all([
+        supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single(),
+        supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31'),
+        supabaseClient.from('customer_details').select('business_name, state').eq('user_id', currentUserId)
+    ]);
+
+    const dashboard = dashRes.data;
+    const history = histRes.data || [];
+    const customers = custRes.data || [];
+
+    if (!dashboard) return alert("No dashboard data found for this month. Generate an invoice first.");
+
+    title.innerText = "State Wise Sales Report (" + selectedMonth + ")";
+
+    // Map Customer Names to States
+    const nameToState = {};
+    customers.forEach(c => nameToState[c.business_name.toLowerCase().trim()] = c.state);
+
+    let stats = {};
+    let historyRev = 0;
+    let historyGst = 0;
+
+    // Process records that still exist in history
+    history.forEach(item => {
+        let cleanName = (item.customer_name || "").toLowerCase().trim();
+        let st = nameToState[cleanName] || "OTHERS";
+        let rev = parseFloat(item.taxable_amount) || 0;
+        let gst = parseFloat(item.gst_amount) || 0;
+
+        if (!stats[st]) stats[st] = { rev: 0, gst: 0 };
+        stats[st].rev += rev;
+        stats[st].gst += gst;
+        historyRev += rev;
+        historyGst += gst;
+    });
+
+    // CALCULATE DELETED RECORDS (Gap between Dashboard and History)
+    const targetRev = parseFloat(dashboard.total_revenue) || 0;
+    const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+    const gapRev = targetRev - historyRev;
+    const gapGst = targetGst - historyGst;
+
+    if (Math.abs(gapRev) > 0.5) {
+        stats["DELETED RECORDS"] = { rev: gapRev, gst: gapGst };
+    }
+
+    // Build the Table
+    let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+        <thead><tr style="background:black; color:white; text-align:left;">
+            <th style="padding:15px; border:1px solid white;">STATE NAME</th>
+            <th style="padding:15px; border:1px solid white;">TOTAL REVENUE (EXCL. GST)</th>
+            <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
+        </tr></thead><tbody>`;
+
+    // Sort Descending by Revenue
+    Object.entries(stats).sort((a, b) => b[1].rev - a[1].rev).forEach(([stName, val]) => {
+        table += `<tr style="border-bottom:1px solid black;">
+            <td style="padding:15px; font-weight:800; text-transform:uppercase;">${stName}</td>
+            <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr>`;
+    });
+
+    // 3. THE TOTAL ROW (Matches Dashboard exactly)
+    table += `<tr style="background:#f0f0f0; font-weight:900; border-top:3px solid black;">
+        <td style="padding:15px;">TOTAL</td>
+        <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+    </tr>`;
+
+    // 4. THE FINAL GRAND TOTAL (Revenue + GST)
+    const finalTotalValue = targetRev + targetGst;
+    table += `<tr style="background:#7FFFD4; font-weight:900;">
+        <td colspan="2" style="padding:15px; text-align:right;">FINAL TOTAL (REV + GST):</td>
+        <td style="padding:15px; font-size:1.2rem;">₹ ${finalTotalValue.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+    </tr></tbody></table>`;
+
+    container.innerHTML = table;
+    document.getElementById('report-modal').style.display = 'block';
+}
 </script>
 </body>
 </html>
