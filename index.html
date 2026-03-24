@@ -18,9 +18,7 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>SMART INVOICE PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
@@ -1131,44 +1129,44 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-<!-- --- PROFIT & EXPENSES SECTION --- -->
-<button id="btn-profit-toggle" onclick="toggleProfitSection()" style="background:var(--white); color:var(--black); border: 2px solid var(--black); width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; margin: 45px auto 10px auto; box-shadow: 4px 4px 0px #000; text-transform: uppercase; display: flex; align-items: center; justify-content: center;">
-    <i class="fas fa-hand-holding-usd"></i> Profit & Expenses
+<!-- --- PROFIT AND EXPENSES SECTION --- -->
+<button id="btn-profit-toggle" onclick="toggleProfitSection()" style="display:none; background:white; color:black; border: 2px solid black; width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; margin: 45px auto 10px auto; box-shadow: 4px 4px 0px #000; text-transform: uppercase; align-items: center; justify-content: center;">
+    <i class="fas fa-hand-holding-usd"></i> Profit and Expenses
 </button>
 
 <div id="profit-section" class="input-card" style="display:none; text-align: center;">
-    <div class="section-header" style="background:black; color:white; justify-content: center;"><i class="fas fa-calculator" style="color:#7FFFD4;"></i> PROFIT & LOSS TRACKER</div>
+    <div class="section-header" style="background:black; color:white; justify-content: center;"><i class="fas fa-calculator" style="color:#7FFFD4;"></i> PROFIT AND LOSS TRACKER</div>
     
     <div class="form-row">
         <div style="text-align:left;">
             <label style="font-size:0.7rem; font-weight:800;">SELECT DATE:</label>
-            <input type="date" id="exp_date" onchange="fetchRevenueForProfit()">
+            <input type="date" id="exp_date" onchange="fetchRevenueForProfit()" />
         </div>
         <div style="text-align:left;">
             <label style="font-size:0.7rem; font-weight:800;">TOTAL REVENUE (MONTHLY):</label>
-            <input type="text" id="exp_revenue" readonly style="background:#eee;">
+            <input type="text" id="exp_revenue" readonly="readonly" style="background:#eee;" />
         </div>
     </div>
 
     <div class="form-row" style="margin-top:15px;">
-        <input type="number" id="exp_salary" placeholder="Salary" value="0" oninput="calcProfit()">
-        <input type="number" id="exp_marketing" placeholder="Marketing" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_salary" placeholder="Salary" value="0" oninput="calcProfit()" />
+        <input type="number" id="exp_marketing" placeholder="Marketing" value="0" oninput="calcProfit()" />
     </div>
     <div class="form-row">
-        <input type="number" id="exp_electricity" placeholder="Electricity" value="0" oninput="calcProfit()">
-        <input type="number" id="exp_maintenance" placeholder="Maintenance" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_electricity" placeholder="Electricity" value="0" oninput="calcProfit()" />
+        <input type="number" id="exp_maintenance" placeholder="Maintenance" value="0" oninput="calcProfit()" />
     </div>
     <div class="form-row">
-        <input type="number" id="exp_internet" placeholder="Internet" value="0" oninput="calcProfit()">
-        <input type="number" id="exp_rent" placeholder="Rent" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_internet" placeholder="Internet" value="0" oninput="calcProfit()" />
+        <input type="number" id="exp_rent" placeholder="Rent" value="0" oninput="calcProfit()" />
     </div>
     <div class="form-row">
-        <input type="number" id="exp_vendor" placeholder="Vendor Costs" value="0" oninput="calcProfit()">
-        <input type="number" id="exp_transport" placeholder="Transport" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_vendor" placeholder="Vendor Costs" value="0" oninput="calcProfit()" />
+        <input type="number" id="exp_transport" placeholder="Transport" value="0" oninput="calcProfit()" />
     </div>
     <div class="form-row">
-        <input type="number" id="exp_misc" placeholder="Miscellaneous (Tea/Paper)" value="0" oninput="calcProfit()">
-        <input type="text" id="exp_note" placeholder="Expense Note (e.g. Bought A4 Paper)">
+        <input type="number" id="exp_misc" placeholder="Miscellaneous (Tea/Paper)" value="0" oninput="calcProfit()" />
+        <input type="text" id="exp_note" placeholder="Expense Note" />
     </div>
 
     <div style="background:#f0f0f0; padding:15px; border:2px solid black; margin-top:20px; text-align:left;">
@@ -1190,8 +1188,6 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
         <button onclick="clearProfitFields()" style="background:#ff4757; color:white; border:none; padding:10px 15px; font-size:0.7rem; font-weight:800; cursor:pointer;">CLEAR OFF</button>
     </div>
 </div>
-
-
 
 
 
@@ -18188,80 +18184,69 @@ function filterMapping() {
 
 
 
-// --- PROFIT & EXPENSES LOGIC ---
+// --- PROFIT AND EXPENSES MASTER ENGINE ---
+
+// Bridge to existing login function
+const profitLoginBridge = onGoogleLogin;
+onGoogleLogin = async function(resp) {
+    await profitLoginBridge(resp);
+    const pBtn = document.getElementById('btn-profit-toggle');
+    if(pBtn) pBtn.style.setProperty('display', 'flex', 'important');
+    document.getElementById('exp_date').value = new Date().toISOString().split('T')[0];
+};
 
 function toggleProfitSection() {
     const sec = document.getElementById('profit-section');
-    sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
-    if(sec.style.display === 'block') {
-        document.getElementById('exp_date').value = new Date().toISOString().split('T')[0];
-        fetchRevenueForProfit();
-    }
+    sec.style.display = (sec.style.display === 'none') ? 'block' : 'none';
+    if(sec.style.display === 'block') fetchRevenueForProfit();
 }
 
 async function fetchRevenueForProfit() {
-    const dateVal = document.getElementById('exp_date').value;
-    if(!dateVal) return;
-    const monthYear = dateVal.substring(0, 7); // YYYY-MM
-    
+    const dVal = document.getElementById('exp_date').value;
+    if(!dVal || !currentUserId) return;
     const { data } = await supabaseClient.from('business_dashboard')
-        .select('total_revenue').eq('user_id', currentUserId).eq('month_year', monthYear).single();
-    
+        .select('total_revenue').eq('user_id', currentUserId).eq('month_year', dVal.substring(0, 7)).single();
     document.getElementById('exp_revenue').value = data ? parseFloat(data.total_revenue).toFixed(2) : "0.00";
     calcProfit();
 }
 
 function calcProfit() {
-    const getNum = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const getN = (id) => parseFloat(document.getElementById(id).value) || 0;
     const rev = parseFloat(document.getElementById('exp_revenue').value) || 0;
-    
-    const totalExp = getNum('exp_salary') + getNum('exp_marketing') + getNum('exp_electricity') + 
-                     getNum('exp_maintenance') + getNum('exp_internet') + getNum('exp_rent') + 
-                     getNum('exp_vendor') + getNum('exp_transport') + getNum('exp_misc');
-    
+    const totalExp = getN('exp_salary') + getN('exp_marketing') + getN('exp_electricity') + getN('exp_maintenance') + getN('exp_internet') + getN('exp_rent') + getN('exp_vendor') + getN('exp_transport') + getN('exp_misc');
     const profit = rev - totalExp;
     const perc = rev > 0 ? (totalExp / rev) * 100 : 0;
-
-    document.getElementById('disp_total_exp').innerText = "₹ " + totalExp.toLocaleString();
+    document.getElementById('disp_total_exp').innerText = "₹ " + totalExp.toLocaleString('en-IN');
     document.getElementById('disp_exp_perc').innerText = perc.toFixed(2) + "%";
-    document.getElementById('disp_total_profit').innerText = "₹ " + profit.toLocaleString();
+    document.getElementById('disp_total_profit').innerText = "₹ " + profit.toLocaleString('en-IN');
 }
 
 async function saveProfitRecord(mode) {
-    const dateVal = document.getElementById('exp_date').value;
-    if(!dateVal) return alert("Select Date");
-    
-    const getNum = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const dVal = document.getElementById('exp_date').value;
+    const getN = (id) => parseFloat(document.getElementById(id).value) || 0;
     const rev = parseFloat(document.getElementById('exp_revenue').value) || 0;
-    const totalExp = getNum('exp_salary') + getNum('exp_marketing') + getNum('exp_electricity') + 
-                     getNum('exp_maintenance') + getNum('exp_internet') + getNum('exp_rent') + 
-                     getNum('exp_vendor') + getNum('exp_transport') + getNum('exp_misc');
-
+    const totalExp = getN('exp_salary') + getN('exp_marketing') + getN('exp_electricity') + getN('exp_maintenance') + getN('exp_internet') + getN('exp_rent') + getN('exp_vendor') + getN('exp_transport') + getN('exp_misc');
+    
     const entry = {
-        user_id: currentUserId, record_date: dateVal,
-        salary: getNum('exp_salary'), marketing: getNum('exp_marketing'),
-        electricity: getNum('exp_electricity'), maintenance: getNum('exp_maintenance'),
-        internet: getNum('exp_internet'), rent: getNum('exp_rent'),
-        vendor_costs: getNum('exp_vendor'), transport: getNum('exp_transport'),
-        misc: getNum('exp_misc'), note: document.getElementById('exp_note').value,
-        total_expenses: totalExp, expense_percent: (rev > 0 ? (totalExp/rev*100) : 0),
-        total_profit: (rev - totalExp)
+        user_id: currentUserId, record_date: dVal, salary: getN('exp_salary'), marketing: getN('exp_marketing'),
+        electricity: getN('exp_electricity'), maintenance: getN('exp_maintenance'), internet: getN('exp_internet'),
+        rent: getN('exp_rent'), vendor_costs: getN('exp_vendor'), transport: getN('exp_transport'),
+        misc: getN('exp_misc'), note: document.getElementById('exp_note').value,
+        total_expenses: totalExp, expense_percent: (rev > 0 ? (totalExp/rev*100) : 0), total_profit: (rev - totalExp)
     };
 
     if(mode === 'ADD') {
         const { error } = await supabaseClient.from('profit_expenses').insert([entry]);
-        alert(error ? "Error: " + error.message : "Record Added!");
+        alert(error ? error.message : "Saved!");
     } else {
-        const { error } = await supabaseClient.from('profit_expenses').update(entry).eq('user_id', currentUserId).eq('record_date', dateVal);
-        alert(error ? "Error: " + error.message : "Record Updated!");
+        const { error } = await supabaseClient.from('profit_expenses').update(entry).eq('user_id', currentUserId).eq('record_date', dVal);
+        alert(error ? error.message : "Updated!");
     }
 }
 
 async function fetchProfitByDate() {
-    const dateVal = document.getElementById('exp_date').value;
-    const { data, error } = await supabaseClient.from('profit_expenses')
-        .select('*').eq('user_id', currentUserId).eq('record_date', dateVal).single();
-    
+    const dVal = document.getElementById('exp_date').value;
+    const { data } = await supabaseClient.from('profit_expenses').select('*').eq('user_id', currentUserId).eq('record_date', dVal).single();
     if(data) {
         document.getElementById('exp_salary').value = data.salary;
         document.getElementById('exp_marketing').value = data.marketing;
@@ -18272,18 +18257,72 @@ async function fetchProfitByDate() {
         document.getElementById('exp_vendor').value = data.vendor_costs;
         document.getElementById('exp_transport').value = data.transport;
         document.getElementById('exp_misc').value = data.misc;
-        document.getElementById('exp_note').value = data.note;
+        document.getElementById('exp_note').value = data.note || "";
         calcProfit();
-    } else { alert("No record found for this date."); }
+    } else alert("No record found");
 }
 
 function clearProfitFields() {
     ['exp_salary','exp_marketing','exp_electricity','exp_maintenance','exp_internet','exp_rent','exp_vendor','exp_transport','exp_misc','exp_note'].forEach(id => {
         const el = document.getElementById(id);
-        if(el) el.value = el.tagName === 'INPUT' && el.type === 'number' ? '0' : '';
+        if(el) el.value = (el.type === 'number') ? '0' : '';
     });
     calcProfit();
 }
+
+// --- FIXED PROFIT AND LOSS ENGINE (OVERRIDE) ---
+
+// 1. Initialize visibility and default date
+const profitFixBridge = onGoogleLogin;
+onGoogleLogin = async function(resp) {
+    await profitFixBridge(resp);
+    const sec = document.getElementById('profit-section');
+    if(sec) sec.style.setProperty('display', 'none', 'important'); // Ensure hidden on load
+    
+    const pBtn = document.getElementById('btn-profit-toggle');
+    if(pBtn) pBtn.style.setProperty('display', 'flex', 'important');
+    
+    // Set default date to today
+    const dateInput = document.getElementById('exp_date');
+    if(dateInput) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+        fetchRevenueForProfit(); // Pre-fetch revenue for the current month
+    }
+};
+
+// 2. Robust Toggle Logic
+window.toggleProfitSection = function() {
+    const sec = document.getElementById('profit-section');
+    if(!sec) return;
+    
+    if (sec.style.display === 'none' || sec.style.display === '') {
+        sec.style.setProperty('display', 'block', 'important');
+        fetchRevenueForProfit(); // Refresh revenue when opening
+    } else {
+        sec.style.setProperty('display', 'none', 'important');
+    }
+};
+
+// 3. Dynamic Revenue Autofill from Business Dashboard
+window.fetchRevenueForProfit = async function() {
+    const dVal = document.getElementById('exp_date').value;
+    if(!dVal || !currentUserId) return;
+    
+    const monthYear = dVal.substring(0, 7); // Extracts YYYY-MM
+    
+    // Pulls data directly from the Business Dashboard table
+    const { data, error } = await supabaseClient.from('business_dashboard')
+        .select('total_revenue')
+        .eq('user_id', currentUserId)
+        .eq('month_year', monthYear)
+        .single();
+    
+    const revField = document.getElementById('exp_revenue');
+    if(revField) {
+        revField.value = data ? parseFloat(data.total_revenue).toFixed(2) : "0.00";
+    }
+    calcProfit(); // Update the P&L calculation
+};
 </script>
 </body>
 </html>
