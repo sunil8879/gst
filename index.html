@@ -666,6 +666,46 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 .section-header, button, summary, .proc-btn, .btn-download, .btn-add { font-size: 0.85rem !important; }
 
 #reminder-section .section-header, div:has(#fetch_hsn_input) .section-header { justify-content: center !important; }
+
+
+
+
+
+
+
+
+
+@media print {
+    /* Hide absolutely everything except the receipt */
+    body > *:not(#thermal-receipt-area) { display: none !important; }
+    
+    #thermal-receipt-area { 
+        display: block !important; 
+        width: 58mm; /* Standard 2-inch thermal width */
+        margin: 0;
+        padding: 0;
+        position: static;
+    }
+
+    @page { 
+        size: auto; 
+        margin: 0mm; /* Removes the header/footer (date/url) from the print */
+    }
+}
+
+/* Reset for screen view */
+#thermal-receipt-area { 
+    font-family: 'Courier New', Courier, monospace; 
+    line-height: 1.2; 
+    font-size: 12px; 
+    display: none; 
+    color: black;
+}
+
+
+#thermal-receipt-area, #thermal-receipt-area * { text-align: center !important; justify-content: center !important; }
+
+#thermal-receipt-area { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; width: 100% !important; } .receipt-row { justify-content: center !important; gap: 20px !important; width: 100% !important; }
 </style>
 </head>
 <body>
@@ -1131,7 +1171,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- --- PROFIT AND EXPENSES SECTION --- -->
 <button id="btn-profit-toggle" onclick="toggleProfitSection()" style="display:none; background:white; color:black; border: 2px solid black; width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; margin: 45px auto 10px auto; box-shadow: 4px 4px 0px #000; text-transform: uppercase; align-items: center; justify-content: center;">
-    <i class="fas fa-hand-holding-usd"></i> Profit and Expenses
+    <i class="fas fa-hand-holding-usd"></i> 13. Profit and Expenses
 </button>
 
 <div id="profit-section" class="input-card" style="display:none; text-align: center;">
@@ -1193,7 +1233,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-<div class="section-header"><i class="fas fa-qrcode"></i> 13. Payment QR Code</div>
+<div class="section-header"><i class="fas fa-qrcode"></i> 14. Payment QR Code</div>
 <div style="background: var(--aqua); border: 3px solid black; box-shadow: 8px 8px 0px #000; padding: 15px; margin-bottom: 20px; text-align: center;">
     <input type="file" id="qr_upload" accept="image/*" onchange="processQR(this)" style="font-weight: 800; cursor: pointer; width: 100%;">
     <p style="font-size: 0.7rem; color: black; margin-top: 5px; font-weight: 600;">Upload GPay/UPI QR Code to show on invoice.</p>
@@ -1202,7 +1242,26 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> 14. GENERATE MS WORD INVOICE</button>
+        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> 15. GENERATE MS WORD INVOICE</button>
+
+
+
+<!-- --- THERMAL RECEIPT SECTION --- -->
+<div class="input-card" style="text-align: center; border-style: dashed !important;">
+    <div class="section-header" style="background:black; color:white; justify-content: center;">
+        <i class="fas fa-print" style="color:#7FFFD4;"></i>16.  RETAIL THERMAL PRINT
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="text" id="manual_payment_mode" placeholder="Enter Payment Mode (e.g. Cash, UPI)" style="border:2px solid black; text-align:center;">
+    </div>
+    <button onclick="printThermalReceipt()" style="background:var(--aqua); color:var(--black); border: 2px solid var(--black); width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; text-transform: uppercase;">
+        <i class="fas fa-receipt"></i> Print Thermal Receipt
+    </button>
+    <p style="font-size:0.6rem; margin-top:10px; font-weight:700;">* Optimized for 2-inch and 3-inch roll printers.</p>
+</div>
+
+
+
    
 <button id="install-pwa" style="display:none; background: #007BFF; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-download"></i> Install App
@@ -1220,7 +1279,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <!-- --- REPORTS SECTION CARD --- -->
 <div id="reports-section-card" style="display:none; background:white; border:3px solid black; box-shadow:10px 10px 0px black; padding:30px; margin-top:45px; text-align:left;">
     <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; display:flex; align-items:center;">
-        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> 15. REPORTS SECTION
+        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> 17. REPORTS SECTION
     </div>
     <div class="form-row">
         <select id="report_type_select" style="border:2px solid black; font-weight:800;">
@@ -1256,7 +1315,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 <details id="flow-wrap" style="display:none; width:100%; margin:20px auto;">
-    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">16. Manual & Glossary</summary>
+    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">18. Manual & Glossary</summary>
 
 
 
@@ -1297,7 +1356,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <!-- --- DATABASE MAPPING SECTION --- -->
 <div style="text-align: center; margin-top: 20px;">
     <button onclick="toggleMappingModal()" style="background:var(--black); color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
-        <i class="fas fa-database"></i> 17. Database Mapping
+        <i class="fas fa-database"></i> 19. Database Mapping
     </button>
 </div>
 
@@ -16489,10 +16548,13 @@ const steps = [
     { t: "16. MASTER REPORTS SECTION", d: "Generate deep-dive reports like State-wise sales, GST-tier summaries, or HSN reports. These are essential for your CA when it's time to file your GST returns." },
     { t: "17. DIGITAL INVENTORY TRACKER", d: "Keep track of your stock. Enter your items once, and the tracker will show you your 'Opening Balance' and 'Current Balance.' It even highlights items that are running low." },
     { t: "18. VENDOR WHATSAPP CONNECT", d: "Inside the Inventory tracker, you can click a green WhatsApp icon next to a low-stock item to instantly message your supplier and order more goods." },
-    { t: "19. UPI PAYMENT QR CODE", d: "Upload a photo of your GooglePay or PhonePe QR code. The app will print it on the bottom of every invoice so your customers can scan and pay you instantly." },
-    { t: "20. GENERATE MS WORD INVOICE", d: "The final step! This button creates a professional .doc file. It is compatible with Microsoft Word and Google Docs, allowing you to print it or send it as a PDF." },
-    { t: "21. DATABASE MAPPING DICTIONARY", d: "This is a master list that helps you find items. It translates 'Legal Names' into 'Common Names' (for example: it tells you that 'Pepsi' is legally called 'Aerated Water')." },
-    { t: "22. ONE-CLICK APP INSTALL", d: "You can install this tool as a standalone app on your Phone or Laptop Home Screen. It gives you a shortcut icon for faster access, just like a regular mobile app." }
+{ t: "19. PROFIT AND EXPENSES TRACKER", d: "This is a digital ledger for your business costs. You can record daily outgoings like salaries, rent, and electricity. The app automatically calculates your total expenses and subtracts them from your revenue to show your actual 'Net Profit' and expense percentage for the month." },
+    { t: "20. UPI PAYMENT QR CODE", d: "Upload a photo of your GooglePay or PhonePe QR code. The app will print it on the bottom of every invoice so your customers can scan and pay you instantly." },
+    { t: "21. GENERATE MS WORD INVOICE", d: "The final step! This button creates a professional .doc file. It is compatible with Microsoft Word and Google Docs, allowing you to print it or send it as a PDF." },
+    { t: "22. DATABASE MAPPING DICTIONARY", d: "This is a master list that helps you find items. It translates 'Legal Names' into 'Common Names' (for example: it tells you that 'Pepsi' is legally called 'Aerated Water')." },
+{ t: "23. RETAIL THERMAL PRINTER", d: "Designed for fast, paper-saving billing in small shops. To use this, you simply have to fill up the 2. Seller Details, 3. Customer Details, 5. Itemised List, enter the mode of payment, and then directly hit the Print Thermal Receipt button. It creates a compact slip specially formatted for 2-inch and 3-inch thermal roll printers." },
+
+    { t: "24. ONE-CLICK APP INSTALL", d: "You can install this tool as a standalone app on your Phone or Laptop Home Screen. It gives you a shortcut icon for faster access, just like a regular mobile app." }
 ];
 
 let currentStep = 0;
@@ -18323,6 +18385,105 @@ window.fetchRevenueForProfit = async function() {
     }
     calcProfit(); // Update the P&L calculation
 };
+
+
+
+
+
+
+
+
+
+
+
+// --- THERMAL RECEIPT LOGIC ---
+function printThermalReceipt() {
+    // 1. Collect Data
+    const sName = document.getElementById('s_name').value || "OUR SHOP";
+    const sAddr = document.getElementById('s_addr').value || "";
+    const sPhone = document.getElementById('s_phone').value || "";
+    const sGst = document.getElementById('s_gstin').value || "";
+    const invNo = document.getElementById('inv_no').value || "";
+    const payMode = document.getElementById('manual_payment_mode').value || "CASH";
+    const dateTime = new Date().toLocaleString();
+
+    // 2. Prepare Items Table
+    let itemRows = "";
+    let subtotal = 0;
+    let totalGst = 0;
+
+    document.querySelectorAll('.item-row-box').forEach(box => {
+        const id = box.id.replace('item-row-', '');
+        const name = document.getElementById(`name-${id}`).value;
+        const qty = parseFloat(document.getElementById(`qty-${id}`).value) || 0;
+        const rate = parseFloat(document.getElementById(`rate-${id}`).value) || 0;
+        const igstStr = document.getElementById(`igst-${id}`).value || "0%";
+        const igstRate = parseFloat(igstStr) || 0;
+
+        if (name) {
+            const amt = qty * rate;
+            const gst = amt * (igstRate / 100);
+            subtotal += amt;
+            totalGst += gst;
+            itemRows += `
+                <div class="receipt-row">
+                    <span>${name.substring(0, 15)} (x${qty})</span>
+                    <span>${amt.toFixed(2)}</span>
+                </div>`;
+        }
+    });
+
+    const grandTotal = subtotal + totalGst;
+
+    // 3. Construct Receipt HTML
+    const receiptHtml = `
+        <div id="thermal-receipt-area">
+            <center>
+                <div class="receipt-bold" style="font-size:16px;">${sName}</div>
+                <div style="font-size:10px;">${sAddr}</div>
+                <div style="font-size:10px;">PH: ${sPhone}</div>
+                <div style="font-size:10px;">GSTIN: ${sGst}</div>
+            </center>
+            <div class="receipt-hr"></div>
+            <div style="font-size:10px;">
+                <div>INV: ${invNo}</div>
+                <div>DATE: ${dateTime}</div>
+            </div>
+            <div class="receipt-hr"></div>
+            <div class="receipt-bold">Items          Amount</div>
+            ${itemRows}
+            <div class="receipt-hr"></div>
+            <div class="receipt-row"><span>Sub-Total:</span> <span>${subtotal.toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Tax (GST):</span> <span>${totalGst.toFixed(2)}</span></div>
+            <div class="receipt-bold" style="font-size:14px; margin-top:5px;">
+                <div class="receipt-row"><span>TOTAL:</span> <span>₹${grandTotal.toFixed(2)}</span></div>
+            </div>
+            <div class="receipt-hr"></div>
+            <div style="text-align:center;">
+                <div class="receipt-bold">Paid Via: ${payMode}</div>
+                <div style="margin-top:10px;">THANK YOU! VISIT AGAIN</div>
+            </div>
+            <br><br>
+        </div>
+    `;
+
+
+// 4. FIXED PRINT PROCESS (Bypasses 15-page error)
+    const old = document.getElementById('thermal-receipt-area');
+    if(old) old.remove();
+
+    document.body.insertAdjacentHTML('afterbegin', receiptHtml);
+    const receiptDiv = document.getElementById('thermal-receipt-area');
+    receiptDiv.style.display = 'block';
+    
+    setTimeout(() => {
+        window.print();
+        receiptDiv.remove();
+    }, 250);
+    window.print();
+    
+    receiptDiv.style.display = 'none';
+}
 </script>
 </body>
 </html>
