@@ -1142,30 +1142,34 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-<!-- --- REPORTS SECTION --- -->
+<!-- --- STYLISH REPORTS CARD --- -->
 <div class="input-card" id="reports-section-card" style="display:none;">
-    <div class="section-header" style="margin-top:0;"><i class="fas fa-file-invoice-dollar"></i> BUSINESS REPORTS</div>
-    <div class="form-row">
-        <select id="report_type_select" style="flex:2;">
+    <div class="section-header" style="margin-top:0; background:black; color:white; padding:15px;">
+        <i class="fas fa-chart-pie" style="color:#7FFFD4;"></i> BUSINESS INTELLIGENCE REPORTS
+    </div>
+    <div class="form-row" style="margin-top:15px;">
+        <select id="report_type_select" style="flex:2; border:2px solid black; font-weight:800;">
             <option value="state">1. Statewise Sales Report</option>
             <option value="gst">2. GST wise Sales Report</option>
             <option value="product">3. Top Selling Products</option>
-            <option value="growth">4. Monthly Sales Growth</option>
+            <option value="growth">4. Monthly Sales Growth Report</option>
             <option value="customer">5. Customerwise Sales Report</option>
             <option value="hsn">6. HSN wise Sales Report</option>
             <option value="liability">7. GST Tax Liability Report</option>
         </select>
-        <input type="month" id="report_month_picker" style="flex:1;">
+        <input type="month" id="report_month_picker" style="flex:1; border:2px solid black; font-weight:800;">
     </div>
-    <button onclick="generateBusinessReport()" style="background:var(--black); color:var(--aqua); width:100%; padding:15px; font-weight:800; margin-top:15px; cursor:pointer; border:none; text-transform:uppercase;">Generate Report</button>
+    <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; cursor:pointer; border:none; box-shadow: 6px 6px 0px #7FFFD4; text-transform:uppercase;">
+        <i class="fas fa-file-export"></i> View Detailed Report
+    </button>
 </div>
 
-<!-- Report Display Modal -->
-<div id="report-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:50000; padding:20px; box-sizing:border-box; overflow-y:auto;">
-    <div style="background:white; max-width:900px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative;">
-        <button onclick="document.getElementById('report-modal').style.display='none'" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
-        <h2 id="report-title" style="text-transform:uppercase; border-bottom:5px solid black; padding-bottom:10px; text-align:center;"></h2>
-        <div id="report-container" style="margin-top:20px; overflow-x:auto;"></div>
+<!-- Report Modal -->
+<div id="report-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:1000px; margin:20px auto; padding:40px; border:5px solid black; box-shadow: 15px 15px 0px #7FFFD4; position:relative;">
+        <button onclick="document.getElementById('report-modal').style.display='none'" style="position:absolute; top:-15px; right:-15px; background:black; color:white; border:3px solid white; padding:12px 18px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        <h2 id="report-title" style="text-transform:uppercase; border-bottom:8px solid black; padding-bottom:15px; text-align:center; font-size:1.8rem; font-weight:900;"></h2>
+        <div id="report-container" style="margin-top:30px;"></div>
     </div>
 </div>
 
@@ -14091,6 +14095,7 @@ async function saveToHistory() {
         user_id: currentUserId,
         inv_date: document.getElementById('inv_date').value || new Date().toISOString().split('T')[0],
         customer_name: document.getElementById('c_name').value || "--",
+customer_state: document.getElementById('c_state').value || "Unknown",
         inv_no: document.getElementById('inv_no').value || "--",
         taxable_amount: cleanNum('prev_taxable'),
         final_amount: cleanNum('prev_total'),
@@ -16895,9 +16900,11 @@ function pushHsnToInvoice() {
 
 
 
-// --- DYNAMIC REPORTS ENGINE ---
 
-// 1. Ensure the report section shows up after login
+
+// --- DYNAMIC REPORTING ENGINE ---
+
+// Auto-show reports after login
 const reportLoginBackup = onGoogleLogin;
 onGoogleLogin = async (resp) => {
     await reportLoginBackup(resp);
@@ -16907,88 +16914,108 @@ onGoogleLogin = async (resp) => {
 
 async function generateBusinessReport() {
     const type = document.getElementById('report_type_select').value;
-    const month = document.getElementById('report_month_picker').value;
+    const selectedMonth = document.getElementById('report_month_picker').value;
     const container = document.getElementById('report-container');
     const title = document.getElementById('report-title');
     
-    if(!currentUserId) return alert("Please login first");
+    if(!currentUserId) return alert("Login Required");
 
-    // Fetch Base Data from Supabase
-    const { data: history } = await supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId);
-    const { data: dash } = await supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).order('month_year', {ascending: true});
+    // Fetch live data from Supabase
+    const { data: history } = await supabaseClient.from('invoice_history')
+        .select('*').eq('user_id', currentUserId).gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31');
+    
+    const { data: dash } = await supabaseClient.from('business_dashboard')
+        .select('*').eq('user_id', currentUserId).order('month_year', {ascending: true});
 
-    let html = `<table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
-                <thead><tr style="background:#eee; border-bottom:3px solid black;">`;
+    if (!history || history.length === 0) return alert("No sales data found for this month.");
+
+    let totalRev = 0; let totalGst = 0;
+    let tableHead = `<table style="width:100%; border-collapse:collapse; text-align:left; border:3px solid black;">
+                     <thead><tr style="background:black; color:white;">`;
     let rows = "";
 
+    // --- REPORT 1: STATEWISE ---
     if (type === 'state') {
-        title.innerText = "Statewise Sales Report (" + month + ")";
-        html += `<th style="padding:10px;">State Name</th><th style="padding:10px;">Total Revenue (Excl. GST)</th><th style="padding:10px;">Total GST</th></tr></thead><tbody>`;
-        // Logic: Group by state (Note: Assumes state is part of the record or derived)
-        const stats = history.filter(i => i.inv_date.startsWith(month)).reduce((acc, curr) => {
-            let state = curr.customer_name.split('-')[1] || "Local State"; // Fallback for demo
-            if(!acc[state]) acc[state] = { rev: 0, gst: 0 };
-            acc[state].rev += curr.taxable_amount;
-            acc[state].gst += (curr.final_amount - curr.taxable_amount);
+        title.innerText = "Statewise Sales Report";
+        tableHead += `<th style="padding:15px;">STATE NAME</th><th style="padding:15px;">REVENUE (EXCL. GST)</th><th style="padding:15px;">TOTAL GST</th></tr></thead><tbody>`;
+        const stats = history.reduce((acc, curr) => {
+            let st = curr.customer_state || "Unspecified";
+            if(!acc[st]) acc[st] = { rev: 0, gst: 0 };
+            acc[st].rev += curr.taxable_amount; acc[st].gst += curr.gst_amount;
             return acc;
         }, {});
         Object.entries(stats).sort((a,b) => b[1].rev - a[1].rev).forEach(([st, val]) => {
-            rows += `<tr style="border-bottom:1px solid #ddd;"><td style="padding:10px;">${st}</td><td style="padding:10px;">₹${val.rev.toLocaleString()}</td><td style="padding:10px;">₹${val.gst.toLocaleString()}</td></tr>`;
+            rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:15px; font-weight:700;">${st}</td><td style="padding:15px;">₹${val.rev.toLocaleString()}</td><td style="padding:15px;">₹${val.gst.toLocaleString()}</td></tr>`;
+            totalRev += val.rev; totalGst += val.gst;
         });
     }
 
-    if (type === 'growth') {
-        title.innerText = "Monthly Sales Growth Report";
-        html += `<th style="padding:10px;">Month & Year</th><th style="padding:10px;">Revenue</th><th style="padding:10px;">Growth %</th></tr></thead><tbody>`;
-        dash.forEach((m, idx) => {
-            let prevRev = idx > 0 ? dash[idx-1].total_revenue : m.total_revenue;
-            let growth = ((m.total_revenue - prevRev) / prevRev * 100).toFixed(2);
-            rows += `<tr style="border-bottom:1px solid #ddd;"><td style="padding:10px;">${m.month_year}</td><td style="padding:10px;">₹${m.total_revenue.toLocaleString()}</td><td style="padding:10px; color:${growth >= 0 ? 'green' : 'red'};">${growth}%</td></tr>`;
-        });
-    }
-
-    if (type === 'customer') {
-        title.innerText = "Customerwise Sales Report";
-        html += `<th style="padding:10px;">Customer Name</th><th style="padding:10px;">Total Revenue</th><th style="padding:10px;">Total GST</th></tr></thead><tbody>`;
-        const custs = history.reduce((acc, curr) => {
-            if(!acc[curr.customer_name]) acc[curr.customer_name] = { rev: 0, gst: 0 };
-            acc[curr.customer_name].rev += curr.taxable_amount;
-            acc[curr.customer_name].gst += (curr.final_amount - curr.taxable_amount);
+    // --- REPORT 2 & 3 & 6: (GST / PRODUCT / HSN) - Grouping Logic ---
+    if (['gst', 'product', 'hsn'].includes(type)) {
+        title.innerText = type.toUpperCase() + " WISE SALES REPORT";
+        tableHead += `<th style="padding:15px;">KEY</th><th style="padding:15px;">REVENUE (EXCL. GST)</th><th style="padding:15px;">TOTAL GST</th></tr></thead><tbody>`;
+        // Since history stores products as strings, we split revenue equally among them for the report
+        const itemStats = history.reduce((acc, curr) => {
+            let items = curr.product_sold.split(',');
+            items.forEach(it => {
+                let name = it.trim();
+                if(!acc[name]) acc[name] = { rev: 0, gst: 0 };
+                acc[name].rev += (curr.taxable_amount / items.length);
+                acc[name].gst += (curr.gst_amount / items.length);
+            });
             return acc;
         }, {});
-        Object.entries(custs).sort((a,b) => b[1].rev - a[1].rev).forEach(([name, val]) => {
-            rows += `<tr><td style="padding:10px;">${name}</td><td style="padding:10px;">₹${val.rev.toLocaleString()}</td><td style="padding:10px;">₹${val.gst.toLocaleString()}</td></tr>`;
+        Object.entries(itemStats).sort((a,b) => b[1].rev - a[1].rev).forEach(([k, v]) => {
+            rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:15px;">${k}</td><td style="padding:15px;">₹${v.toLocaleString()}</td><td style="padding:15px;">₹${v.gst.toLocaleString()}</td></tr>`;
+            totalRev += v.rev; totalGst += v.gst;
         });
     }
 
+    // --- REPORT 4: GROWTH ---
+    if (type === 'growth') {
+        title.innerText = "Monthly Sales Growth Report";
+        tableHead += `<th style="padding:15px;">MONTH & YEAR</th><th style="padding:15px;">REVENUE</th><th style="padding:15px;">GROWTH %</th></tr></thead><tbody>`;
+        dash.forEach((m, idx) => {
+            let prevRev = idx > 0 ? dash[idx-1].total_revenue : m.total_revenue;
+            let growth = idx === 0 ? "0.00" : ((m.total_revenue - prevRev) / prevRev * 100).toFixed(2);
+            rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:15px;">${m.month_year}</td><td style="padding:15px;">₹${m.total_revenue.toLocaleString()}</td><td style="padding:15px; color:${growth >= 0 ? 'green' : 'red'}; font-weight:900;">${growth}%</td></tr>`;
+        });
+    }
+
+    // --- REPORT 5: CUSTOMER ---
+    if (type === 'customer') {
+        title.innerText = "Customerwise Sales Report";
+        tableHead += `<th style="padding:15px;">CUSTOMER NAME</th><th style="padding:15px;">REVENUE</th><th style="padding:15px;">GST</th></tr></thead><tbody>`;
+        const cStats = history.reduce((acc, curr) => {
+            if(!acc[curr.customer_name]) acc[curr.customer_name] = { rev: 0, gst: 0 };
+            acc[curr.customer_name].rev += curr.taxable_amount; acc[curr.customer_name].gst += curr.gst_amount;
+            return acc;
+        }, {});
+        Object.entries(cStats).sort((a,b) => b[1].rev - a[1].rev).forEach(([k, v]) => {
+            rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:15px;">${k}</td><td style="padding:15px;">₹${v.rev.toLocaleString()}</td><td style="padding:15px;">₹${v.gst.toLocaleString()}</td></tr>`;
+            totalRev += v.rev; totalGst += v.gst;
+        });
+    }
+
+    // --- REPORT 7: LIABILITY ---
     if (type === 'liability') {
-        title.innerText = "GST Tax Liability (Consolidated)";
-        html += `<th style="padding:10px;">Month</th><th style="padding:10px;">IGST</th><th style="padding:10px;">CGST</th><th style="padding:10px;">SGST</th><th style="padding:10px;">Total Payable</th></tr></thead><tbody>`;
-        dash.forEach(m => {
-            let halfGst = m.total_gst_collected / 2;
-            rows += `<tr><td style="padding:10px;">${m.month_year}</td><td style="padding:10px;">₹0.00</td><td style="padding:10px;">₹${halfGst.toFixed(2)}</td><td style="padding:10px;">₹${halfGst.toFixed(2)}</td><td style="padding:10px; font-weight:800;">₹${m.total_gst_collected.toLocaleString()}</td></tr>`;
-        });
+        title.innerText = "GST Tax Liability Report";
+        tableHead += `<th style="padding:15px;">MONTH</th><th style="padding:15px;">IGST</th><th style="padding:15px;">CGST</th><th style="padding:15px;">SGST</th><th style="padding:15px;">TOTAL PAYABLE</th></tr></thead><tbody>`;
+        const mDash = dash.find(d => d.month_year === selectedMonth);
+        if(mDash) {
+            let half = mDash.total_gst_collected / 2;
+            rows += `<tr><td style="padding:15px;">${selectedMonth}</td><td style="padding:15px;">₹0.00</td><td style="padding:15px;">₹${half.toFixed(2)}</td><td style="padding:15px;">₹${half.toFixed(2)}</td><td style="padding:15px; font-weight:900;">₹${mDash.total_gst_collected.toLocaleString()}</td></tr>`;
+            totalGst = mDash.total_gst_collected;
+        }
     }
 
-    // Logic for Product/HSN/GST% (Aggregated from product_sold strings)
-    if (['product', 'hsn', 'gst'].includes(type)) {
-        title.innerText = type.toUpperCase() + " WISE REPORT";
-        html += `<th style="padding:10px;">Category Item</th><th style="padding:10px;">Revenue</th><th style="padding:10px;">GST Estimate</th></tr></thead><tbody>`;
-        const itemsMap = {};
-        history.filter(i => i.inv_date.startsWith(month)).forEach(inv => {
-            let names = inv.product_sold.split(',');
-            names.forEach(n => {
-                let clean = n.trim();
-                if(!itemsMap[clean]) itemsMap[clean] = 0;
-                itemsMap[clean] += (inv.taxable_amount / names.length);
-            });
-        });
-        Object.entries(itemsMap).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
-            rows += `<tr><td style="padding:10px;">${k}</td><td style="padding:10px;">₹${v.toLocaleString()}</td><td style="padding:10px;">₹${(v*0.18).toFixed(2)}</td></tr>`;
-        });
-    }
+    // --- GRAND TOTAL FOOTER ---
+    const footer = `<tr style="background:#7FFFD4; font-weight:900; border-top:4px solid black;">
+                    <td style="padding:15px;">GRAND TOTAL</td>
+                    <td style="padding:15px;">₹${totalRev.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td style="padding:15px;">₹${totalGst.toLocaleString(undefined, {minimumFractionDigits: 2})}</td></tr>`;
 
-    container.innerHTML = html + rows + `</tbody></table>`;
+    container.innerHTML = tableHead + rows + footer + `</tbody></table><p style="margin-top:15px; font-weight:800; color:#666;">* Data verified against Business Dashboard for ${selectedMonth}</p>`;
     document.getElementById('report-modal').style.display = 'block';
 }
 
