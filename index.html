@@ -1142,38 +1142,30 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-<!-- --- STYLISH REPORTS CARD --- -->
-<div class="input-card" id="reports-section-card" style="display:none;">
-    <div class="section-header" style="margin-top:0; background:black; color:white; padding:15px;">
-        <i class="fas fa-chart-pie" style="color:#7FFFD4;"></i> BUSINESS INTELLIGENCE REPORTS
+<!-- --- REPORTS SECTION CARD --- -->
+<div id="reports-section-card" style="display:none; background:white; border:3px solid black; box-shadow:10px 10px 0px black; padding:30px; margin-top:45px; text-align:left;">
+    <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; display:flex; align-items:center;">
+        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> REPORTS SECTION
     </div>
-    <div class="form-row" style="margin-top:15px;">
-        <select id="report_type_select" style="flex:2; border:2px solid black; font-weight:800;">
+    <div class="form-row">
+        <select id="report_type_select" style="border:2px solid black; font-weight:800;">
             <option value="state">1. Statewise Sales Report</option>
-            <option value="gst">2. GST wise Sales Report</option>
-            <option value="product">3. Top Selling Products</option>
-            <option value="growth">4. Monthly Sales Growth Report</option>
-            <option value="customer">5. Customerwise Sales Report</option>
-            <option value="hsn">6. HSN wise Sales Report</option>
-            <option value="liability">7. GST Tax Liability Report</option>
         </select>
-        <input type="month" id="report_month_picker" style="flex:1; border:2px solid black; font-weight:800;">
+        <input type="month" id="report_month_picker" style="border:2px solid black; font-weight:800;">
     </div>
-    <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; cursor:pointer; border:none; box-shadow: 6px 6px 0px #7FFFD4; text-transform:uppercase;">
-        <i class="fas fa-file-export"></i> View Detailed Report
+    <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; border:none; box-shadow:6px 6px 0px #7FFFD4; cursor:pointer; text-transform:uppercase;">
+        GENERATE REPORT
     </button>
 </div>
 
-<!-- Report Modal -->
-<div id="report-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; padding:20px; box-sizing:border-box; overflow-y:auto;">
-    <div style="background:white; max-width:1000px; margin:20px auto; padding:40px; border:5px solid black; box-shadow: 15px 15px 0px #7FFFD4; position:relative;">
-        <button onclick="document.getElementById('report-modal').style.display='none'" style="position:absolute; top:-15px; right:-15px; background:black; color:white; border:3px solid white; padding:12px 18px; cursor:pointer; font-weight:900;">X CLOSE</button>
-        <h2 id="report-title" style="text-transform:uppercase; border-bottom:8px solid black; padding-bottom:15px; text-align:center; font-size:1.8rem; font-weight:900;"></h2>
-        <div id="report-container" style="margin-top:30px;"></div>
+<!-- --- REPORT DISPLAY MODAL --- -->
+<div id="report-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:900px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px #7FFFD4; position:relative;">
+        <button onclick="document.getElementById('report-modal').style.display='none'" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        <h2 id="report-title" style="text-transform:uppercase; border-bottom:5px solid black; padding-bottom:10px; text-align:center; font-weight:900;"></h2>
+        <div id="report-container" style="margin-top:20px; overflow-x:auto;"></div>
     </div>
 </div>
-
-
 
 
 
@@ -14004,6 +13996,9 @@ document.querySelectorAll('.input-panel > *').forEach(el => {
 
     if (typeof resizeCanvas === "function") resizeCanvas();
 
+ document.getElementById('reports-section-card').style.setProperty('display', 'block', 'important');
+    document.getElementById('report_month_picker').value = new Date().toISOString().slice(0, 7);
+
     const remSec = document.getElementById('reminder-section');
     if(remSec) remSec.style.setProperty('display', 'block', 'important');
     //document.getElementById('rem_today').value = new Date().toISOString().split('T')[0];
@@ -16905,89 +16900,58 @@ function pushHsnToInvoice() {
 // --- DYNAMIC REPORTING ENGINE ---
 
 async function generateBusinessReport() {
-    const type = document.getElementById('report_type_select').value;
-    const selectedMonth = document.getElementById('report_month_picker').value; // Format: YYYY-MM
+    const selectedMonth = document.getElementById('report_month_picker').value;
     const container = document.getElementById('report-container');
     const title = document.getElementById('report-title');
     
-    if (type !== 'state') return alert("Currently only Statewise Report is active.");
     if (!currentUserId) return alert("Please login first.");
 
-    // 1. Fetch live history for the selected month
-    const { data: history, error } = await supabaseClient.from('invoice_history')
-        .select('*')
-        .eq('user_id', currentUserId)
-        .gte('inv_date', selectedMonth + '-01')
-        .lte('inv_date', selectedMonth + '-31');
+    // 1. Fetch history for the selected month
+    const { data: history } = await supabaseClient.from('invoice_history')
+        .select('*').eq('user_id', currentUserId)
+        .gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31');
 
-    if (!history || history.length === 0) {
-        return alert("No records found for " + selectedMonth);
-    }
+    if (!history || history.length === 0) return alert("No data found for this month.");
 
-    title.innerText = "Statewise Sales Report - " + selectedMonth;
+    title.innerText = "Statewise Sales Report (" + selectedMonth + ")";
 
-    // 2. Process Data (Summing by State)
-    let stateData = {};
-    let grandRevenue = 0;
-    let grandGst = 0;
-
+    // 2. Aggregate Data by State
+    let stats = {}; let totalRev = 0; let totalGst = 0;
     history.forEach(item => {
-        let st = item.customer_state || "Not Mentioned";
-        // Ensure values are numbers (fixes the [object] error)
+        let st = item.customer_state || "Not Specified";
         let rev = parseFloat(item.taxable_amount) || 0;
         let gst = parseFloat(item.gst_amount) || 0;
-
-        if (!stateData[st]) {
-            stateData[st] = { totalRev: 0, totalGst: 0 };
-        }
-
-        stateData[st].totalRev += rev;
-        stateData[st].totalGst += gst;
-        grandRevenue += rev;
-        grandGst += gst;
+        if (!stats[st]) stats[st] = { rev: 0, gst: 0 };
+        stats[st].rev += rev; stats[st].gst += gst;
+        totalRev += rev; totalGst += gst;
     });
 
-    // 3. Convert to Array and Sort Descending
-    const sortedStates = Object.entries(stateData).sort((a, b) => b[1].totalRev - a[1].totalRev);
+    // 3. Create Table
+    let table = `<table style="width:100%; border-collapse:collapse; border:2px solid black;">
+        <thead><tr style="background:black; color:white; text-align:left;">
+            <th style="padding:12px; border:1px solid white;">STATE NAME</th>
+            <th style="padding:12px; border:1px solid white;">REVENUE (EXCL. GST)</th>
+            <th style="padding:12px; border:1px solid white;">TOTAL GST</th>
+        </tr></thead><tbody>`;
 
-    // 4. Generate HTML Table
-    let html = `
-        <table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
-            <thead>
-                <tr style="background:black; color:white; text-align:left;">
-                    <th style="padding:15px; border:1px solid white;">STATE NAME</th>
-                    <th style="padding:15px; border:1px solid white;">REVENUE (EXCL. GST)</th>
-                    <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    sortedStates.forEach(([name, val]) => {
-        html += `
-            <tr style="border-bottom:1px solid black;">
-                <td style="padding:15px; font-weight:800;">${name.toUpperCase()}</td>
-                <td style="padding:15px;">₹ ${val.totalRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                <td style="padding:15px;">₹ ${val.totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            </tr>
-        `;
+    Object.entries(stats).sort((a,b) => b[1].rev - a[1].rev).forEach(([st, val]) => {
+        table += `<tr style="border-bottom:1px solid black;">
+            <td style="padding:12px; font-weight:800;">${st.toUpperCase()}</td>
+            <td style="padding:12px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:12px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr>`;
     });
 
-    // 5. Add Grand Total Footer
-    html += `
-            <tr style="background:#7FFFD4; font-weight:900; border-top:4px solid black;">
-                <td style="padding:15px;">GRAND TOTAL</td>
-                <td style="padding:15px;">₹ ${grandRevenue.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                <td style="padding:15px;">₹ ${grandGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            </tr>
-        </tbody>
-    </table>
-    `;
+    // 4. Add Total Row
+    table += `<tr style="background:#7FFFD4; font-weight:900; border-top:3px solid black;">
+        <td style="padding:12px;">TOTAL</td>
+        <td style="padding:12px;">₹ ${totalRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td style="padding:12px;">₹ ${totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+    </tr></tbody></table>`;
 
-    container.innerHTML = html;
+    container.innerHTML = table;
     document.getElementById('report-modal').style.display = 'block';
 }
-
 </script>
 </body>
 </html>
