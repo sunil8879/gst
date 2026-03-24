@@ -1226,6 +1226,41 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 </details>
 
 
+
+
+
+
+<!-- --- DATABASE MAPPING SECTION --- -->
+<div style="text-align: center; margin-top: 20px;">
+    <button onclick="toggleMappingModal()" style="background:var(--black); color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
+        <i class="fas fa-database"></i> Database Mapping
+    </button>
+</div>
+
+<!-- Mapping Modal -->
+<div id="mapping-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:60000; padding:10px; box-sizing:border-box; overflow-y:auto;">
+    <div style="background:white; max-width:1100px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative;">
+        <button onclick="toggleMappingModal()" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:8px 12px; cursor:pointer; font-weight:900;">X CLOSE</button>
+        
+        <h2 style="text-align:center; text-transform:uppercase; border-bottom:5px solid black; padding-bottom:10px; font-weight:900;">GST Database Mapping for DAILY ESSENTIALS ONLY</h2>
+        
+        <!-- Search within mapping -->
+        <div style="margin-bottom:20px; text-align:center;">
+            <input type="text" id="mapping_search" oninput="filterMapping()" placeholder="Search Generic Name (e.g. Pepsi, Laptop)..." style="width:100%; max-width:500px; border:3px solid black; padding:15px; font-weight:800;">
+        </div>
+
+        <div id="mapping-content-area">
+            <!-- Tables will be injected here -->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 <div  id="mobile-legal-wrap"style="text-align: center; margin-top: 30px; width: 100%;">
 
     <button onclick="showLegal('privacy')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Privacy</button>
@@ -17323,6 +17358,755 @@ async function generateBusinessReport() {
 
     container.innerHTML = table;
     document.getElementById('report-modal').style.display = 'block';
+}
+
+
+
+
+
+
+
+
+
+
+
+// --- DATABASE MAPPING ENGINE ---
+const mappingParts = [
+    { t: "PART 1: Food, Beverages, and Daily Essentials ", d: [
+        ["Cold Drinks / Pepsi / Coke", "Aerated waters, containing added sugar or flavour", "2202 10"],
+        ["Fruit Juices / Maaza / Frooti", "Fruit pulp or fruit juice based drinks", "2202 99 20"],
+        ["Mineral Water (Bottled)", "Waters, including natural or artificial mineral waters", "2201"],
+        ["Water (20 Litre Cans)", "Drinking water packed in 20 litre bottles", "2201"],
+        ["Milk (Fresh)", "Fresh milk and pasteurised milk", "0401"],
+        ["Milk (Amul Taaza/UHT)", "Ultra High Temperature (UHT) milk", "0401"],
+        ["Milk Powder", "Milk and cream. including skimmed milk powder", "0402"],
+        ["Paneer", "Chena or paneer pre-packaged and labelled", "0406"],
+        ["Cheese", "Cheese", "0406"],
+        ["Curd / Lassi / Buttermilk", "Curd, Lassi, Butter milk, pre-packaged", "0403"],
+        ["Ghee / Butter Oil", "Butter and other fats (i.e. ghee, butter oil)", "0405"],
+        ["Tea Leaves", "Tea, whether or not flavoured", "0902"],
+        ["Coffee", "Coffee roasted... or coffee substitutes", "0901"],
+        ["Biscuits / Cookies", "Pastry, cakes, biscuits and other bakers’ wares", "1905"],
+        ["Bread / Pav", "Bread (branded or otherwise)", "1905"],
+        ["Pizza Base", "Pizza bread", "1905"],
+        ["Pappad", "Pappad", "1905"],
+        ["Rice", "Rice pre-packaged and labelled", "1006"],
+        ["Atta / Wheat Flour", "Wheat or meslin flour pre-packaged", "1101"],
+        ["Sugar", "Beet sugar, cane sugar", "1701"],
+        ["Jaggery / Gur", "Jaggery of all types including Cane Jaggery", "1701 / 1702"],
+        ["Honey", "Natural honey pre-packaged and labelled", "0409"],
+        ["Salt", "Salt (including table salt and denatured salt)", "2501"],
+        ["Ice Cream", "Ice cream and other edible ice", "2105 00 00"],
+        ["Chocolate / Candy", "Sugar boiled confectionery / Cocoa preparations", "1704 / 1806"],
+        ["Namkeen / Bhujia", "Namkeens, bhujia, mixture, chabena", "2106 90"],
+        ["Noodles / Pasta", "Pasta, whether or not cooked or stuffed", "1902"],
+        ["Corn Flakes", "Prepared foods obtained from cereal flakes", "1904"]
+    ]},
+    { t: "PART 2: Electronics, Software, and Machinery", d: [
+        ["Mobile / Smartphone", "Telephone sets, smartphones... radio-telephony", "8517"],
+        ["Laptop / PC / Desktop", "Automatic data processing machines (Computers)", "8471"],
+        ["Software / SaaS / License", "Information Technology Software / Software Licenses", "9973 / 8523"],
+        ["TV (LED/LCD < 32\")", "Television set (screen size not exceeding 32 inches)", "8528"],
+        ["TV (LED/LCD > 32\")", "Monitors and projectors... for television", "8528"],
+        ["Computer Monitor", "Computer monitors not exceeding 32 inches", "8528"],
+        ["Printer / Xerox Machine", "Printing machinery... printers, copying machines", "8443"],
+        ["Power Bank / Battery", "Lithium-ion accumulators / power bank", "8507"],
+        ["CCTV Camera", "Closed-circuit television (CCTV)", "8525"],
+        ["Fridge / Freezer", "Refrigerators, freezers... heat pumps", "8418"],
+        ["Washing Machine", "Household or laundry-type washing machines", "8450"],
+        ["Air Conditioner (AC)", "Air-conditioning machines... motor-driven fan", "8415"],
+        ["Vacuum Cleaner", "Vacuum cleaners", "8508"],
+        ["Electric Iron", "Smoothing irons", "8516"],
+        ["Hair Dryer", "Hairdressing apparatus (dryers, curlers)", "8516"],
+        ["Speakers / Headphones", "Microphones... loudspeakers; headphones", "8518"]
+    ]},
+    { t: "PART 3: Vehicles and Transport", d: [
+        ["Cars / SUVs / Luxury Cars", "Motor cars and other motor vehicles (Passenger)", "8703"],
+        ["Tractor", "Tractors (except road tractors)", "8701"],
+        ["Bicycle", "Bicycles and other cycles... not motorised", "8712"],
+        ["Motorcycle / Scooter", "Motorcycles (including mopeds)", "8711"],
+        ["Buses", "Motor vehicles for transport of ten or more persons", "8702"],
+        ["Trucks / Tempos", "Motor vehicles for the transport of goods", "8704"],
+        ["Helicopter / Plane", "Other aircraft (for example, helicopters, aeroplanes)", "8802 / 8806"],
+        ["Boat / Yacht", "Yachts and other vessels for pleasure or sports", "8903"]
+    ]},
+    { t: "PART 4: Services and Miscellaneous", d: [
+        ["Consultancy / Labour", "Service/Labour/Consultancy", "9901"],
+        ["Hotel Room", "Hotel accommodation including breakfast", "9963"],
+        ["Gold Jewelry", "Articles of jewellery... of precious metal", "7113"],
+        ["Silver Jewelry", "Silver... unwrought or in semi-manufactured forms", "7106"],
+        ["Diamond", "Rough diamonds or simply sawn diamonds", "7102"],
+        ["Clothing (Under ₹1000)", "Apparel... sale value not exceeding Rs 1000", "61 / 62"],
+        ["Clothing (Above ₹1000)", "Apparel... sale value exceeding Rs 1000", "61 / 62"],
+        ["Shoes (Under ₹1000)", "Footwear of sale value not exceeding Rs 1000", "64"],
+        ["Shoes (Above ₹1000)", "Footwear of sale value exceeding Rs 1000", "64"],
+        ["Soap", "Soap; organic surface-active products", "3401"],
+        ["Detergent", "Washing and cleaning preparations", "3402"],
+        ["Cement", "Portland cement, aluminous cement", "2523"],
+        ["Paints", "Paints and varnishes (enamels and lacquers)", "3208 / 3209"],
+        ["Furniture (Wood/Steel)", "Other furniture and parts thereof", "9403"],
+        ["Mattress", "Mattress supports; articles of bedding", "9404"]
+    ]},
+    { t: "PART 5: Household, Personal Care, and Medical", d: [
+        ["Medicines (General)", "Medicaments... for therapeutic uses", "3004"],
+        ["Insulin", "Insulin", "30"],
+        ["Vaccines", "Animal or Human Blood Vaccines", "3002"],
+        ["First Aid Kits", "Pharmaceutical goods... [Note 4]", "3006"],
+        ["Bandages / Gauze", "Wadding, gauze, bandages", "3005"],
+        ["Homeopathic Medicine", "Medicaments... (homeopathic)", "3004"],
+        ["Ayurvedic Medicine", "Medicaments... (Ayurvedic)", "3004"],
+        ["ORS (Electral)", "Oral re-hydration salts", "30"],
+        ["Hearing Aids", "Hearing aids", "9021"],
+        ["BP Monitor / Medical Tools", "Instruments... in medical/surgical sciences", "9018"],
+        ["Lipstick / Makeup", "Beauty or make-up preparations", "3304"],
+        ["Perfume / Ittar", "Perfumes and toilet waters", "3303"],
+        ["Shampoo / Hair Oil", "Preparations for use on the hair", "3305"],
+        ["Toothpaste", "Preparations for oral or dental hygiene", "3306"],
+        ["Shaving Cream", "Pre-shave, shaving or after-shave", "3307"],
+        ["Sanitary Napkins / Pads", "Sanitary towels (pads) or sanitary napkins", "9619"],
+        ["Baby Diapers", "Diapers (under sanitary products)", "9619"],
+        ["Agarbatti / Dhoop", "Agarbatti, lobhan, dhoop batti", "3307 41"],
+        ["Bindi / Kumkum / Alta", "Kajal, Kumkum, Bindi, Sindur, Alta", "3304"],
+        ["Candles", "Candles, tapers and the like", "3406"],
+        ["Kitchen Utensils (Steel)", "Table, kitchen... household articles of iron & steel", "7323"],
+        ["Kitchen Utensils (Alu)", "Table, kitchen... household articles of aluminium", "7615"],
+        ["Brassware (Pooja items)", "Art ware of brass, copper alloys", "7419"],
+        ["Glass Tumblers / Jugs", "Glassware... for table, kitchen, toilet", "7013"],
+        ["Vacuum Flask (Thermos)", "Vacuum flasks and other vacuum vessels", "9617"]
+    ]},
+    { t: "PART 6: Hardware, Construction, and Tools", d: [
+        ["Coal / Charcoal", "Coal; briquettes / Wood charcoal", "2701 / 4402"],
+        ["Marble (Raw)", "Marble and travertine, crude", "2515 11"],
+        ["Marble (Slabs)", "Marble and travertine, other than blocks", "2515"],
+        ["Granite (Raw)", "Granite crude or roughly trimmed", "2516 11"],
+        ["Granite (Slabs)", "Granite, other than blocks", "2516"],
+        ["Fly Ash Bricks", "Fly ash bricks; Fly ash aggregates", "6815"],
+        ["Standard Bricks", "Building bricks", "6904 10"],
+        ["Roofing Tiles", "Earthen or roofing tiles", "6905 10"],
+        ["Ceramic Tiles", "Ceramic flags and paving, hearth or wall tiles", "6907"],
+        ["Sinks / Wash Basins", "Ceramic sinks, wash basins, wash basin pedestals", "6910"],
+        ["Plywood", "Plywood, veneered panels and similar laminated wood", "4412"],
+        ["Safety Pins", "Safety pins and other pins", "7319"],
+        ["Nails / Screws", "Screws, bolts, nuts, coach screws", "7318"],
+        ["Padlocks / Door Locks", "Padlocks and locks (key, combination)", "8301"],
+        ["Door Handles / Hinges", "Base metal mountings, fittings for furniture/doors", "8302"],
+        ["Tools (Pliers/Tweezers)", "Files, rasps, pliers, pincers, tweezers", "8203"],
+        ["Spanners / Wrenches", "Hand-operated spanners and wrenches", "8204"],
+        ["Saws (Hand)", "Hand saws; blades for saws of all kinds", "8202"],
+        ["Scissors", "Scissors, tailors' shears and similar shears", "8213"],
+        ["Pencil Sharpeners", "Pencil sharpeners", "8214"],
+        ["Water Pumps", "Power driven pumps designed for handling water", "8413"],
+        ["Hand Pumps", "Hand pumps and parts thereof", "8413"],
+        ["Welding Rods", "Electrodes and similar products of base metal", "8311"],
+        ["Stainless Steel (Raw)", "Stainless steel in ingots or other primary forms", "7218"],
+        ["Copper Wire", "Copper wire", "7408"]
+    ]},
+    { t: "PART 7: Stationery, Education, and Sports", d: [
+        ["Notebooks / Registers", "Registers, account books, notebooks", "4820"],
+        ["Exercise Books", "Exercise book, graph book", "4820"],
+        ["Pens (Ball/Gel)", "Ball point pens; felt tipped pens", "9608"],
+        ["Pencils / Crayons", "Pencils, crayons, pastels", "9609"],
+        ["Erasers", "Erasers", "4016"],
+        ["Slates / Chalk", "Slates / Chalk sticks", "9610 / 9609"],
+        ["Geometry Box", "Mathematical boxes, geometry boxes", "7310 / 7326"],
+        ["Printing Ink", "Printing ink, writing or drawing ink", "3215"],
+        ["Envelopes", "Envelopes, letter cards, plain postcards", "4817"],
+        ["Maps / Atlases", "Maps and hydrographic or similar charts", "4905"],
+        ["Newsprint (Paper)", "Newsprint, in rolls or sheets", "4801"],
+        ["Calendars", "Calendars of any kind, printed", "4910"],
+        ["Stamps (Postage)", "Postage or revenue stamps", "9704"],
+        ["Chess / Carrom Board", "Playing cards, chess board, carom board", "9504"],
+        ["Ludo / Board Games", "Other board games, like ludo, etc.", "9504"],
+        ["Video Games", "Video game consoles and machines", "9504"],
+        ["Toys (Electronic)", "Electronic Toys like tricycles, scooters", "9503"],
+        ["Dolls / Plastic Toys", "Dolls or other toys made of wood or metal", "9503"],
+        ["Balloons (Rubber)", "Toy ballons made of natural rubber latex", "9503"],
+        ["Cricket Bat / Sports Gear", "Sports goods other than exercise equipment", "9506"],
+        ["Gym Equipment", "Articles and equipment for general physical exercise", "9506"],
+        ["Fishing Rods", "Fishing rods, and other line fishing tackle", "9507"],
+        ["Trophies / Medals", "Statuettes and other ornaments of base metal", "8306"],
+        ["Musical Instruments (Hand)", "Indigenous handmade musical instruments", "92"],
+        ["Piano / Guitar", "Pianos / Other string musical instruments", "9201 / 9202"]
+    ]},
+    { t: "PART 8: Agriculture, Industrial, and Accessories", d: [
+        ["Fertilizers (Urea)", "Mineral or chemical fertilisers, nitrogenous", "3102"],
+        ["Fertilizers (Organic)", "Animal or vegetable fertilisers", "3101"],
+        ["Agriculture Tools (Hand)", "Agricultural implements manually operated", "8201"],
+        ["Sprayers (Agri)", "Mechanical sprayers (Agricultural)", "8424"],
+        ["Solar Heater", "Solar water heater and system", "8419 12"],
+        ["Bio-Gas Plant", "Bio-gas plant", "8401"],
+        ["Sewing Machines", "Sewing machines, other than book-sewing", "8452"],
+        ["Tyres (Car/Truck)", "New pneumatic tyres, of rubber", "4011"],
+        ["Tyres (Bicycle)", "Pneumatic tyres... used on bicycles", "4011"],
+        ["Rubber Bands", "Rubber bands", "4016"],
+        ["Leather Belts / Wallets", "Articles of apparel... of leather", "4203"],
+        ["Umbrellas", "Umbrellas and sun umbrellas", "6601"],
+        ["Walking Sticks", "Walking-sticks including seat sticks", "6602"],
+        ["Spectacle Lenses", "Contact lenses; Spectacle lenses", "9001"],
+        ["Spectacle Frames", "Frames and mountings for spectacles", "9003"],
+        ["Sun Glasses", "Spectacles... other than corrective", "9004"],
+        ["Wrist Watches", "Wrist-watches, pocket-watches", "9101 / 9102"],
+        ["Wall Clocks", "Other clocks", "9105"],
+        ["Helmet", "Other headgear (Safety Helmets)", "6506"],
+        ["Zippers (Chains)", "Slide fasteners and parts thereof", "9607"],
+        ["Buttons", "Buttons, of plastics... base metals", "9606"],
+        ["Hair Combs", "Combs, hair-slides and the like", "9615"],
+        ["Paintings / Art", "Paintings, drawings and pastels by hand", "9701"],
+        ["Antiques", "Antiques of an age exceeding one hundred years", "9706"],
+        ["Cotton Wool", "Absorbent cotton wool", "5601"]
+    ]},
+    { t: "PART 9: Spices, Oils, and Kitchen Staples", d: [
+        ["Turmeric (Haldi)", "Turmeric (curcuma) other than fresh", "0910 30"],
+        ["Ginger (Adrak)", "Ginger other than fresh ginger", "910"],
+        ["Cloves (Laung)", "Cloves (whole fruit, cloves and stems)", "907"],
+        ["Cardamom (Elaichi)", "Nutmeg, mace and cardamoms", "0908"],
+        ["Cinnamon (Dalchini)", "Cinnamon and cinnamon-tree flowers", "906"],
+        ["Pepper (Kali Mirch)", "Pepper of the genus Piper", "904"],
+        ["Vanilla Beans", "Vanilla", "905"],
+        ["Cumin / Fennel / Ajwain", "Seeds of anise, badian, fennel, coriander, cumin", "909"],
+        ["Mustard Oil", "Rape, colza or mustard oil", "1514"],
+        ["Sunflower Oil", "Sunflower-seed, safflower or cotton-seed oil", "1512"],
+        ["Coconut Oil (Edible)", "Coconut (copra), palm kernel or babassu oil", "1513"],
+        ["Soya Bean Oil", "Soya-bean oil and its fractions", "1507"],
+        ["Olive Oil", "Olive oil and its fractions", "1509"],
+        ["Groundnut Oil", "Ground-nut oil and its fractions", "1508"],
+        ["Vegetable Ghee (Dalda)", "Vegetable fats... partly or wholly hydrogenated", "1516"],
+        ["Wafers / Potato Chips", "Roasted Gram... similar edible preparations", "2106"],
+        ["Noodles / Vermicelli", "Seviyan (vermicelli)", "1902"],
+        ["Tapioca (Sabudana)", "Tapioca and substitutes therefor (sabudana)", "1903"],
+        ["Corn Flakes", "Prepared foods obtained from cereal flakes", "1904"],
+        ["Custard Powder", "Food preparations not elsewhere specified", "2106"],
+        ["Vinegar", "Vinegar and substitutes for vinegar", "2209"],
+        ["Yeast (Baking)", "Yeasts (active and inactive); baking powders", "2102"],
+        ["Mayonnaise / Salad Dressings", "Sauces... mayonnaise and salad dressings", "2103"],
+        ["Mixed Spices (Garam Masala)", "Ginger... curry and other spices", "910"],
+        ["Sugar Cubes", "Sugar cubes (other than those at 5%)", "1701"]
+    ]},
+    { t: "PART 10: Home Maintenance, Hardware, and Electrical", d: [
+        ["LED Bulbs / Tubelights", "Light-Emitting Diodes (LED)", "8541"],
+        ["Electric Switch / Plug", "Electrical apparatus for switching... < 1,000V", "8536"],
+        ["Door Bell (Electric)", "Electric sound or visual signalling apparatus", "8531"],
+        ["Ceiling Fan / Exhaust Fan", "Air or vacuum pumps, air compressors and fans", "8414"],
+        ["Battery (AA / AAA)", "Primary cells and primary batteries", "8506"],
+        ["Inverter Battery", "Electric accumulators... [other than Lithium]", "8507"],
+        ["Extension Cord / Wires", "Insulated wire, cable", "8544"],
+        ["Electric Heater", "Electric water heaters; space/soil heating", "8516"],
+        ["Glue Sticks / Adhesives", "Prepared glues and other prepared adhesives", "3506"],
+        ["M-Seal / Putty", "Glaziers’ putty, grafting putty, resin cements", "3214"],
+        ["Door Hinges / Castors", "Base metal mountings, fittings for furniture", "8302"],
+        ["Safe / Locker", "Armoured or reinforced safes, strong-boxes", "8303"],
+        ["Brass Pooja Bell", "Bells, gongs and the like, non-electric", "8306"],
+        ["Steel Sink", "Sanitary ware and parts thereof, of iron/steel", "7324"],
+        ["Hammer / Hand Tools", "Hand tools (glaziers' diamonds, blow lamps)", "8205"],
+        ["Files / Rasps", "Files, rasps, pliers (including cutting pliers)", "8203"],
+        ["Sandpaper", "Natural or artificial abrasive powder or grain", "6805"],
+        ["Floor Mats (Plastic)", "Floor coverings of plastics", "3918"],
+        ["Roofing Sheets (Asphalt)", "Asphaltic roofing sheets", "48"],
+        ["Plywood Sheets", "Plywood, veneered panels", "4412"],
+        ["Nylon Rope", "Knotted netting of twine, cordage or rope", "5608"],
+        ["Paint Brushes", "Brushes... [other than brooms/twigs]", "9603"],
+        ["Detergent Cake/Bar", "Soap; organic surface-active products", "3401"],
+        ["Liquid Soap", "Organic surface-active agents (other than soap)", "3402"],
+        ["Glass Mirror (Wall)", "Glass mirrors, whether or not framed", "7009"]
+    ]},
+    { t: "PART 11: Personal Grooming and Daily Accessories", d: [
+        ["Shaving Razor", "Razors and razor blades", "8212"],
+        ["Hair Trimmer / Shaver", "Shavers, hair clippers... self-contained motor", "8510"],
+        ["Hair Curler / Straightener", "Hairdressing apparatus (dryers, curlers)", "8516"],
+        ["Pocket Comb", "Combs, hair-slides and the like", "9615"],
+        ["Hair Pins / Clips", "Hairpins, curling pins, curling grips", "9615"],
+        ["Scent Spray / Atomizer", "Scent sprays and similar toilet sprays", "9616"],
+        ["Powder Puff", "Powder-puffs and pads for cosmetics", "9616"],
+        ["Talcum Powder", "Beauty or make-up preparations", "3304"],
+        ["Hand Towels", "Toilet paper, handkerchiefs, towels", "4818"],
+        ["Diapers (Adult/Baby)", "All goods (Sanitary products/Diapers)", "9619"],
+        ["Walking Stick", "Walking-sticks including seat sticks", "6602"],
+        ["Spectacle Case", "Trunks, suit-cases... [similar containers]", "4202"],
+        ["Wrist Watch (Steel/Leather)", "Wrist-watches, pocket-watches", "9102"],
+        ["Stop Watch", "Wrist-watches... including stop watches", "9102"],
+        ["Wall Clock", "Other clocks", "9105"],
+        ["Alarm Clock", "Clocks with watch movements", "9103"],
+        ["Umbrella", "Umbrellas and sun umbrellas", "6601"],
+        ["Raincoat", "Articles of apparel... not knitted/crocheted", "62"],
+        ["Leather Belt", "Articles of apparel... of leather", "4203"],
+        ["Leather Wallet", "Trunks, suit-cases... [similar containers]", "4202"],
+        ["Backpack / School Bag", "Trunks, suit-cases... school satchels", "4202"],
+        ["Handbag (Cotton)", "Hand bags and shopping bags, of cotton", "4202 22 20"],
+        ["Shopping Bag (Jute)", "Hand bags and shopping bags, of jute", "4202 22 30"],
+        ["Suitcase / Trolley", "Trunks, suit-cases, vanity-cases", "4202"],
+        ["Sunglasses", "Spectacles, goggles including vision correction", "9004"]
+    ]},
+    { t: "PART 12: Stationery and Office Essentials", d: [
+        ["Ball Pen / Gel Pen", "Ball point pens; felt tipped pens", "9608"],
+        ["Fountain Pen", "Fountain pens; stylos", "9608"],
+        ["Pencil Lead", "Pencils, crayons, pastels, drawing charcoals", "9609"],
+        ["Chalk Sticks", "Slate pencils and chalk sticks", "9609"],
+        ["Drawing Board / Slate", "Boards, with writing or drawing surface", "9610"],
+        ["Rubber Stamp", "Date, sealing or numbering stamps", "9611"],
+        ["Stapler Pins", "Fittings for loose-leaf binders... staples in strips", "8305"],
+        ["Paper Clips", "Fittings for loose-leaf binders... letter clips", "8305"],
+        ["Binder Clips", "Fittings for loose-leaf binders or files", "8305"],
+        ["Files / Folders", "Registers, account books, notebooks... folders", "4820"],
+        ["Sticky Notes / Memo Pads", "Registers, account books, memorandum pads", "4820"],
+        ["Labels (Stickers)", "Paper or paperboard labels of all kinds", "4821"],
+        ["Office Scissors", "Scissors, tailors' shears and similar shears", "8213"],
+        ["Paper Trays", "Filing cabinets, card-index cabinets, paper trays", "8304"],
+        ["Calculator", "Calculating machines and pocket-size data", "8470"],
+        ["Printer Ink / Toner", "All Goods, including printing ink", "3215"],
+        ["Copying Paper (A4)", "Uncoated paper... writing, printing", "4802"],
+        ["Envelopes", "Envelopes, letter cards, plain postcards", "4817"],
+        ["Calendars (Table/Wall)", "Calendars of any kind, printed", "4910"],
+        ["Greeting Cards", "Printed or illustrated postcards; cards", "4909"],
+        ["Postage Stamps", "Postage or revenue stamps", "9704"],
+        ["Maps / Atlases", "Maps and hydrographic or similar charts", "4905"],
+        ["Architectural Plans", "Plans and drawings for architectural/engineering", "4906"],
+        ["Dictionary / Journals", "Printed books, including Braille books", "4901"],
+        ["Newsprint", "Newsprint, in rolls or sheets", "4801"]
+    ]},
+    { t: "PART 13: Industrial Metals and Scraps", d: [
+        ["Iron / Steel Scrap", "Ferrous waste and scrap; remelting scrap ingots", "7204"],
+        ["Iron Rods / Bars", "All bars and rods, of iron or non-alloy steel", "7213 to 7215"],
+        ["Steel Sheets (Hot Rolled)", "All flat-rolled products of iron or non-alloy steel", "7208 to 7212"],
+        ["Stainless Steel Rods", "All bars and rods, of stainless steel", "7221 / 7222"],
+        ["Copper Scrap", "Copper waste and scrap", "7404"],
+        ["Copper Plates / Sheets", "Copper plates, sheets and strip (> 0.15 mm)", "7409"],
+        ["Copper Powder", "Copper powders and flakes", "7406"],
+        ["Aluminium Scrap", "Aluminium waste and scrap", "7602"],
+        ["Aluminium Ingots", "Unwrought Aluminium", "7601"],
+        ["Aluminium Foil", "Aluminium foil (thickness not exceeding 0.2 mm)", "7607"],
+        ["Lead Ingots", "Unwrought lead", "7801"],
+        ["Lead Sheets / Powder", "Lead plates, sheets, strip and foil; powders", "7804"],
+        ["Zinc Scrap / Dust", "Zinc waste and scrap / Zinc dust, powders", "7902 / 7903"],
+        ["Zinc Ingots", "Unwrought zinc", "7901"],
+        ["Tin Ingots", "Unwrought tin", "8001"],
+        ["Tin Scrap", "Tin waste and scrap", "8002"],
+        ["Nickel Ingots / Wire", "Unwrought nickel / Nickel bars, rods, wire", "7502 / 7505"],
+        ["Titanium / Cobalt", "Other base metals (Titanium, Cobalt, etc.)", "8101 to 8112"],
+        ["Metal Scaffolding", "Structures... pillars, and columns, of iron/steel", "7308"],
+        ["Metal Reservoirs", "Reservoirs, tanks... (capacity > 300 l)", "7309"]
+    ]},
+
+];
+const mappingPartsCont = [
+    { t: "PART 14: Fabrics, Yarn, and Textile Raw Materials", d: [
+        ["Silk Yarn", "Silk yarn", "5004 to 5006"],
+        ["Silk Fabric", "Woven fabrics of silk or of silk waste", "5007"],
+        ["Wool (Raw)", "Wool, not carded or combed", "5101"],
+        ["Woolen Yarn", "Yarn of wool or of animal hair", "5106 to 5110"],
+        ["Woolen Fabric", "Woven fabrics of wool or of animal hair", "5111 to 5113"],
+        ["Cotton (Raw)", "Cotton and Cotton waste", "5201 to 5203"],
+        ["Cotton Yarn", "Cotton yarn [other than khadi yarn]", "5205 to 5207"],
+        ["Cotton Fabric", "Woven fabrics of cotton", "5208 to 5212"],
+        ["Jute Fibre (Raw)", "Jute fibres, raw or processed but not spun", "5303"],
+        ["Jute Yarn / Twine", "Jute twine, coir cordage or ropes", "5607"],
+        ["Jute Fabric", "Woven fabrics of jute or other textile bast fibres", "5310"],
+        ["Nylon / Polyester Yarn", "Synthetic or artificial filament yarns", "5402 to 5406"],
+        ["Nylon / Polyester Fabric", "Woven fabrics of manmade textile materials", "5407 / 5408"],
+        ["Embroidery / Zari", "Embroidery or zari articles (Gota, Sitara, etc.)", "5809 / 5810"],
+        ["Lace / Net Fabric", "Tulles and other net fabrics; lace in the piece", "5804"],
+        ["Woven Labels", "Labels, badges... of textile materials", "5807"],
+        ["Braids / Tassels", "Braids in the piece; ornamental trimmings", "5808"],
+        ["Blankets", "Blankets and travelling rugs", "6301"],
+        ["Curtains / Linen", "Curtains, interior blinds; bed linen, table linen", "6303 / 6302"],
+        ["Used Clothing (Rags)", "Worn clothing and other worn articles; rags", "6309 / 6310"]
+    ]},
+    { t: "PART 15: Specialized Industry Machinery", d: [
+        ["Diesel Engines (< 15HP)", "Fixed Speed Diesel Engines... not exceeding 15HP", "8408"],
+        ["Industrial Furnaces", "Industrial or laboratory furnaces and ovens", "8417"],
+        ["Centrifuge Machine", "Centrifuges, including centrifugal dryers", "8421"],
+        ["Weighing Scales", "Weighing machinery (excluding balances of 5 cg)", "8423"],
+        ["Cranes / Forklifts", "Cranes; mobile lifting frames / Fork-lift trucks", "8426 / 8427"],
+        ["Escalators / Lifts", "Other lifting, handling, loading (lifts, escalators)", "8428"],
+        ["Bulldozers / Excavators", "Self-propelled bulldozers, excavators", "8429"],
+        ["Dairy Machinery", "Milking machines and dairy machinery", "8434"],
+        ["Printing Plates", "Machinery... for preparing or making plates", "8442"],
+        ["Textile Spinning Mc", "Machines for preparing textile fibres; spinning", "8445"],
+        ["Power Loom", "Weaving machines (looms)", "8446"],
+        ["Lathe Machine", "Lathes (including turning centres)", "8458"],
+        ["Drilling Machine", "Machine-tools for drilling, boring, milling", "8459"],
+        ["Grinding Machine", "Machine-tools for sharpening, grinding, honing", "8460"],
+        ["Hydraulic Press", "Machine-Tools... by forging, hammering", "8462"],
+        ["Woodworking Mc", "Machine-tools for working wood, cork, bone", "8465"],
+        ["Vending Machines", "Automatic goods-vending machines", "8476"],
+        ["Moulds (Metal/Glass)", "Moulds for metal, glass, rubber or plastics", "8480"],
+        ["Ball Bearings", "Ball bearing, Roller Bearings", "8482"],
+        ["Gear Boxes", "Transmission shafts, cranks... gear boxes", "8483"]
+    ]},
+    { t: "PART 16: Scientific, Professional, and Niche Items", d: [
+        ["Binoculars / Telescope", "Binoculars, monoculars, other optical telescopes", "9005"],
+        ["Digital Camera", "Television cameras, digital cameras", "8525"],
+        ["Microscope", "Compound optical microscopes", "9011"],
+        ["Lasers", "Lasers, other than Laser Diodes", "9013"],
+        ["Compass", "Direction finding compasses", "9014"],
+        ["Surveying Tools", "Surveying... hydrographic, meteorological", "9015"],
+        ["Thermometer", "Hydrometers... thermometers, pyrometers", "9025"],
+        ["Gas / Water Meters", "Gas, liquid or electricity supply or production meters", "9028"],
+        ["Speedometer", "Revolution counters... speed indicators", "9029"],
+        ["X-Ray Machines", "Apparatus based on the use of X-rays", "9022"],
+        ["Musical Box", "Musical boxes, fairground organs", "9208"],
+        ["Metronomes", "Parts... for musical instruments; metronomes", "9209"],
+        ["Military Weapons", "Military weapons other than revolvers, pistols", "9301"],
+        ["Ammunition / Bombs", "Bombs, grenades, torpedoes, missiles", "9306"],
+        ["Swords / Bayonets", "Swords, cut lasses, bayonets, lances", "9307"],
+        ["Bamboo Furniture", "Furniture wholly made of bamboo, cane or rattan", "9403"],
+        ["Prefab Cabins", "Prefabricated buildings", "9406"],
+        ["Festive Decors", "Festive, carnival or other entertainment articles", "9505"],
+        ["Antiques (> 100 yrs)", "Antiques of an age exceeding one hundred years", "9706"],
+        ["Zoological Samples", "Collections... zoological, botanical, mineralogical", "9705"]
+    ]},
+    { t: "PART 17: Vegetables (Fresh, Frozen, and Dried)", d: [
+        ["Potatoes (Fresh)", "Potatoes, fresh or chilled", "0701"],
+        ["Tomatoes (Fresh)", "Tomatoes, fresh or chilled", "0702"],
+        ["Onions / Garlic / Leeks", "Onions, shallots, garlic, leeks... fresh or chilled", "0703"],
+        ["Cabbage / Cauliflower", "Cabbages, cauliflowers, kohlrabi, kale... fresh", "0704"],
+        ["Spinach / Lettuce", "Lettuce (Lactuca sativa) and chicory... fresh", "0705"],
+        ["Carrots / Radish / Turnips", "Carrots, turnips, salad beetroot... fresh", "0706"],
+        ["Cucumbers / Gherkins", "Cucumbers and gherkins, fresh or chilled", "0707"],
+        ["Peas / Beans (Fresh)", "Leguminous vegetables, shelled or unshelled, fresh", "0708"],
+        ["Mushrooms (Fresh)", "Other vegetables (Mushrooms/Asparagus), fresh", "0709"],
+        ["Frozen Vegetables (Mix)", "Vegetables (uncooked/steamed), frozen", "0710"],
+        ["Pickled Veg (In Brine)", "Vegetables provisionally preserved... in brine", "0711"],
+        ["Dried Veg (Slices/Powder)", "Dried vegetables, whole, cut, sliced... or in powder", "0712"],
+        ["Dals / Pulses (Loose)", "Dried leguminous vegetables, shelled (Nil-Rated)", "0713"],
+        ["Dals / Pulses (Branded)", "Dried leguminous vegetables, shelled (Pre-packaged)", "0713"],
+        ["Sweet Potato / Arbi", "Manioc, arrowroot, salep, sweet potatoes... fresh", "0714"]
+    ]},
+    { t: "PART 18: Fruits and Nuts (Fresh and Processed)", d: [
+        ["Coconut (Fresh/Water)", "Coconuts, fresh or dried... (Nil-Rated)", "0801"],
+        ["Coconut (Desiccated)", "Cashew nuts... desiccated coconuts (Taxed)", "0801"],
+        ["Cashew Nuts", "Cashew nuts, whether or not shelled or peeled", "0801"],
+        ["Almonds / Walnuts / Pistachio", "Other nuts, fresh... [Almonds, Walnuts, Pistachios]", "0802"],
+        ["Areca Nut (Supari)", "Dried areca nuts, whether or not shelled or peeled", "0802"],
+        ["Banana (Kela)", "Bananas, including plantains, fresh or dried", "0803"],
+        ["Dates / Khajoor (Fresh)", "Dates, figs, pineapples... fresh", "0804"],
+        ["Dates / Khajoor (Dried)", "Dates (soft or hard), figs... dried", "0804"],
+        ["Mango / Aam (Fresh)", "Guavas, mangoes and mangosteens, fresh", "0804"],
+        ["Mango (Dried Slices)", "Mangoes sliced, dried", "0804"],
+        ["Orange / Kinnow", "Citrus fruit, such as Oranges, Mandarins, fresh", "0805"],
+        ["Lemon / Nimbu", "Lemons (Citrus limon) and limes, fresh", "0805"],
+        ["Grapes (Fresh)", "Grapes, fresh", "0806"],
+        ["Raisins (Kishmish)", "Grapes, dried, and raisins", "0806"],
+        ["Watermelon / Papaya", "Melons (including watermelons) and papaws, fresh", "0807"],
+        ["Apples / Pears", "Apples, pears and quinces, fresh", "0808"],
+        ["Apricots / Cherries / Peach", "Apricots, cherries, peaches... fresh", "0809"],
+        ["Strawberry / Blueberries", "Other fruit such as strawberries, raspberries... fresh", "0810"],
+        ["Pomegranate / Anar", "Other fruit... Pomegranates, fresh", "0810"],
+        ["Tamarind / Imli (Fresh)", "Other fruit... Tamarind, fresh", "0810"],
+        ["Tamarind (Dried)", "Tamarind dried", "0813"],
+        ["Frozen Fruits", "Fruit and nuts, uncooked... frozen", "0811"],
+        ["Preserved Fruit (Syrup)", "Fruit and nuts, provisionally preserved", "0812"],
+        ["Makhana (Fox Nuts)", "Dried makhana, whether or not shelled or peeled", "08"]
+    ]},
+    { t: "PART 19: Kitchen, Bakery, and Pantry Essentials", d: [
+        ["Maida / All-Purpose Flour", "Wheat or meslin flour", "1101"],
+        ["Rava / Suji / Semolina", "Cereal groats, meal and pellets (Suji)", "1103"],
+        ["Dalia / Broken Wheat", "Cereal groats, meal and pellets (Dalia)", "1103"],
+        ["Corn Flour", "Cereal flours other than of wheat or meslin (Maize)", "1102"],
+        ["Branded Lassi / Chaas", "Curd, Lassi, Butter milk, pre-packaged and labelled", "0403"],
+        ["Condensed Milk (Mithai Mate)", "Condensed milk", "0402 91"],
+        ["Whey Protein (Raw)", "Whey, whether or not concentrated", "0404"],
+        ["Dried Eggs", "Birds' eggs, not in shell, dried", "0408"],
+        ["Pork / Ham", "Meat of swine, fresh, chilled or frozen", "0203"],
+        ["Rabbit Meat", "Other meat (Rabbit)", "0208"],
+        ["Shrimp Seed (For Farming)", "Fish seeds, prawn / shrimp seeds", "03"],
+        ["Crab (Fresh)", "Crustaceans (Crab)", "0306"],
+        ["Snail (Escargot)", "Molluscs (Snail)", "0307"],
+        ["Dried Figs (Anjeer)", "Dates, figs, pineapples... dried", "0804"],
+        ["Mace (Javitri)", "Nutmeg, mace and cardamoms", "0908"],
+        ["Curry Powder", "Ginger... curry and other spices", "0910"],
+        ["Maize (Corn)", "Maize (corn) pre-packaged and labelled", "1005"],
+        ["Soya Beans", "Soya beans, whether or not broken", "1201"],
+        ["Dried Coconut (Khopra)", "Copra", "1203"],
+        ["Mustard Seeds", "Other oil seeds (Mustard seeds)", "1207"],
+        ["Sesame Seeds (Til)", "Other oil seeds (Sesamum seeds)", "1207"],
+        ["Poppy Seeds (Posta)", "Other oil seeds (Poppy seeds)", "1207"],
+        ["Heeng (Compound)", "Compounded asafoetida commonly known as heeng", "1301"],
+        ["Custard Powder", "Food preparations not elsewhere specified", "2106"],
+        ["Sugar Cubes", "Sugar cubes (other than those at 5%)", "1701"]
+    ]},
+    { t: "PART 20: Personal Care, Grooming, and Wellness", d: [
+        ["Petroleum Jelly (Vaseline)", "Petroleum jelly", "2712"],
+        ["Talcum Powder", "Beauty or make-up preparations", "3304"],
+        ["Dental Floss", "Preparations for oral or dental hygiene (Floss)", "3306"],
+        ["Mehendi Cones", "Mehendi paste in cones", "1404 / 3305"],
+        ["Sambraani / Lobhan", "Agarbatti, lobhan, dhoop batti", "3307 41"],
+        ["Aftershave Lotion", "Pre-shave, shaving or after-shave preparations", "3307"],
+        ["Hair Trimmer / Clipper", "Shavers, hair clippers... self-contained motor", "8510"],
+        ["Hair Straightener", "Hairdressing apparatus (dryers, curlers)", "8516"],
+        ["Shaving Razor (Manual)", "Razors and razor blades", "8212"],
+        ["Shaving Brush", "Brushes... [other than brooms/twigs]", "9603"],
+        ["Bath Salts", "Personal deodorants, bath preparations", "3307"],
+        ["Scent Spray / Perfume Bottle", "Scent sprays and similar toilet sprays", "9616"],
+        ["Powder Puffs", "Powder-puffs and pads for application of cosmetics", "9616"],
+        ["Adult Diapers", "Sanitary towels (pads) or sanitary napkins; tampons", "9619"],
+        ["Combs", "Combs, hair-slides and the like", "9615"],
+        ["Hair Clips / Grips", "Hairpins, curling pins, curling grips", "9615"],
+        ["Contact Lens Solution", "All diagnostic kits and reagents", "3822"],
+        ["First Aid Bandages", "Wadding, gauze, bandages", "3005"],
+        ["Adhesive Band-Aid", "Wadding, gauze, bandages (Adhesive)", "3005"],
+        ["BP Monitor (Digital)", "Instruments... in medical/surgical sciences", "9018"],
+        ["Thermometer", "Hydrometers... thermometers, pyrometers", "9025"],
+        ["Glucometer Strips", "Blood glucose monitoring system test strips", "90"],
+        ["Hot Water Bottle", "Hygienic or pharmaceutical articles of rubber", "4014"],
+        ["Ice Bag", "Hygienic or pharmaceutical articles of rubber", "4014"],
+        ["Orthopaedic Braces", "Orthopaedic appliances... surgical belts", "9021"]
+    ]},
+    { t: "PART 21: Household Utility, Safety, and Tools", d: [
+        ["AA / AAA Batteries", "Primary cells and primary batteries", "8506"],
+        ["Inverter / UPS", "Electrical transformers, static converters", "8504"],
+        ["Electric Extension Board", "Electrical apparatus for switching... < 1,000V", "8536"],
+        ["Door Bell", "Electric sound or visual signalling apparatus", "8531"],
+        ["Padlock (Brass/Steel)", "Padlocks and locks (key, combination)", "8301"],
+        ["Door Hinges", "Base metal mountings, fittings for furniture/doors", "8302"],
+        ["Curtain Rods / Brackets", "Base metal mountings, fittings for furniture/doors", "8302"],
+        ["Safe Deposit Locker", "Armoured or reinforced safes, strong-boxes", "8303"],
+        ["Stapler Pins", "Fittings for loose-leaf binders... staples in strips", "8305"],
+        ["Zippers (For Bags/Clothes)", "Slide fasteners and parts thereof", "9607"],
+        ["Tailor's Chalk", "drawing charcoals and tailor’s chalk", "9609"],
+        ["Pencil Lead", "Pencils, crayons, pastels, pencil leads", "9609"],
+        ["Erasers", "Erasers", "4016"],
+        ["A4 Photo Paper", "Photographic paper, paperboard", "3703"],
+        ["Glue Sticks", "Prepared glues and other prepared adhesives", "3506"],
+        ["M-Seal / Putty", "Glaziers’ putty, grafting putty, resin cements", "3214"],
+        ["Sandpaper", "Natural or artificial abrasive powder or grain", "6805"],
+        ["Hammer", "Hand tools (glaziers' diamonds, blow lamps)", "8205"],
+        ["Pliers", "Files, rasps, pliers (including cutting pliers)", "8203"],
+        ["Wrench / Spanner", "Hand-operated spanners and wrenches", "8204"],
+        ["Tweezers", "pincers, tweezers, metal cutting shears", "8203"],
+        ["Kitchen Scissors", "Scissors, tailors' shears and similar shears", "8213"],
+        ["Hand Sieve (Challni)", "Hand sieves and hand riddles", "9604"],
+        ["Copper Wire (Electric)", "Copper wire", "7408"],
+        ["Nylon Rope", "Knotted netting of twine, cordage or rope", "5608"]
+    ]},
+    { t: "PART 22: Leisure, Travel, and Miscellaneous", d: [
+        ["Playing Cards", "Playing cards", "9504"],
+        ["Chess Board", "chess board", "9504"],
+        ["Carrom Board", "carom board", "9504"],
+        ["Ludo / Board Games", "other board games, like ludo, etc.", "9504"],
+        ["Toy Cars / Tricycles", "Toys like tricycles, scooters, pedal cars", "9503"],
+        ["Rubber Balloons", "Toy ballons made of natural rubber latex", "9503"],
+        ["Fishing Hooks", "Fishing hooks", "9507"],
+        ["Cricket Pads / Sports Gear", "Sports goods other than exercise equipment", "9506"],
+        ["Compass", "Direction finding compasses", "9014"],
+        ["Magnifying Glass", "Binoculars, monoculars, other optical telescopes", "9005"],
+        ["Wall Clock", "Other clocks", "9105"],
+        ["Alarm Clock", "Clocks with watch movements", "9103"],
+        ["Stop Watch", "Wrist-watches... including stop watches", "9102"],
+        ["Harmonium / Flute", "Indigenous handmade musical instruments", "92"],
+        ["Guitar", "Other string musical instruments (Guitar)", "9202"],
+        ["Metronome", "metronomes (for music)", "9209"],
+        ["Keyring (Metal)", "Other articles of iron or steel", "7326"],
+        ["Sunglasses", "Spectacles, goggles including vision correction", "9004"],
+        ["Backpack / School Bag", "Trunks, suit-cases... school satchels", "4202"],
+        ["Trolley Bag", "Trunks, suit-cases, vanity-cases", "4202"],
+        ["A4 Office Paper", "Uncoated paper... writing, printing", "4802"],
+        ["Sticky Notes / Memos", "Registers, account books, memorandum pads", "4820"],
+        ["Stamp Pad", "ink-pads", "9612"],
+        ["Paint Brushes", "Brushes... [other than brooms/twigs]", "9603"],
+        ["Small Wall Mirror", "Glass mirrors, whether or not framed", "7009"]
+    ]},
+    { t: "PART 23: Cleaning, Laundry, and Home Hygiene", d: [
+        ["Broom (Jhadu / Phool Jhadu)", "Broomsticks [other than twigs]", "9603"],
+        ["Traditional Broom (Twigs)", "Brooms... consisting of twigs bound together", "9603"],
+        ["Mop / Floor Wiper", "Brushes, hand operated mechanical floor sweepers", "9603"],
+        ["Cleaning Pads / Scrub Pad", "Pot scourers and scouring or polishing pads", "7323"],
+        ["Mosquito Coils / Mats", "Insecticides, rodenticides... [household]", "3808"],
+        ["Phenyl / Disinfectant", "Insecticides... disinfectants", "3808"],
+        ["Handkerchiefs (Paper)", "Handkerchiefs, cleansing tissues", "4818"],
+        ["Paper Towel / Napkin", "Cleansing tissues, towels, table cloths", "4818"],
+        ["Toilet Paper Roll", "Toilet paper", "4818"],
+        ["Tampons", "Sanitary towels (pads) or sanitary napkins; tampons", "9619"]
+    ]},
+    { t: "PART 24: Traditional, Religious, and Eco-Friendly Items", d: [
+        ["Clay Diya / Earthen Lamps", "Earthen pot and clay lamps", "6912 00 40"],
+        ["Earthen Matka / Pots", "Earthen pot and clay lamps", "6912 00 40"],
+        ["Pooja Idols (Clay)", "Idols made of clay", "69"],
+        ["Pooja Idols (Wood/Stone)", "Deities made of stone, marble or wood", "44 or 68"],
+        ["Rakhi (Simple)", "Rakhi (other than those made of precious metals)", "Any Chapter"],
+        ["Hawan Samagri", "Rosaries, prayer beads or Hawan samagri", "Any Chapter"],
+        ["Kites (Patang)", "Kites", "4823"],
+        ["Donas / Pattal (Leaf Plates)", "Plates and cups made up of all kinds of leaves", "46"],
+        ["Bamboo Basket", "basketware and wickerwork", "4602"],
+        ["Coir Mat (Entrance)", "Coir mats, matting, floor covering", "5702 / 5703"]
+    ]},
+    { t: "PART 25: Kitchen Appliances and Hardware", d: [
+        ["Gas Stove (Burner)", "Kerosene burners, kerosene stoves", "7321"],
+        ["Pressure Cooker (Steel)", "Table, kitchen... household articles of iron & steel", "7323"],
+        ["Non-Stick Tawa / Pan", "Table, kitchen... household articles of iron & steel", "7323"],
+        ["Steel Bucket", "Tanks, casks, drums, cans, boxes", "7310"],
+        ["Mixer Grinder (Motor)", "Electro-mechanical domestic appliances", "8509"],
+        ["Phone / Laptop Charger", "Electrical transformers, static converters", "8504"],
+        ["Power Strip / Multi-Plug", "Electrical apparatus for switching... < 1,000V", "8536"],
+        ["Tongs (Chimta)", "pincers, tweezers, metal cutting shears", "8203"],
+        ["Hand Whisk / Egg Beater", "Hand-operated mechanical appliances < 10 kg", "8210"],
+        ["Spoons / Knives / Forks", "Spoons, forks, ladles, skimmers", "8215"]
+    ]},
+    { t: "PART 26: Travel, Personal Goods, and Hobby", d: [
+        ["Contact Lenses", "Contact lenses; Spectacle lenses", "9001"],
+        ["Raincoat", "Articles of apparel... not knitted/crocheted", "62"],
+        ["Safety Helmet", "Other headgear (Safety Helmets)", "6506"],
+        ["Knitting Needles", "knitting needles, bodkins, crochet hooks", "7319"],
+        ["Tailor's Scissors", "Scissors, tailors' shears and similar shears", "8213"],
+        ["Chess / Carrom Coins", "Playing cards, chess board, carom board", "9504"],
+        ["Chewing Gum", "Sugar confectionery [including chewing gum]", "1704"],
+        ["Cigarettes", "Cigars, cheroots, cigarillos and cigarettes", "2402"],
+        ["Bidi", "Other manufactured tobacco [including biris]", "2403"],
+        ["Matchbox", "Matches", "3605"]
+    ]},
+{ t: "PART 27: Packaging, Shipping, and Logistics", d: [
+        ["Corrugated Boxes (Cartons)", "Cartons, boxes, cases, bags of paper", "4819"],
+        ["Bubble Wrap", "Other plates, sheets, film of plastics", "3920"],
+        ["Packing Tape (BOPP)", "Self-adhesive plates, sheets, tape of plastics", "3919"],
+        ["Plastic Pallets", "Articles for the conveyance or packing of goods", "3923"],
+        ["Wooden Pallets", "Pallets, box pallets and other load boards", "4415"],
+        ["Stretch Film / Shrink Wrap", "Other plates, sheets, film of plastics", "3920"],
+        ["Gunny Bags (Jute)", "Sacks and bags, of a kind used for packing", "6305"],
+        ["Plastic Crates", "Carboys, bottles, flasks, jars, pots, phials", "3923"],
+        ["Courier Envelopes (Plastic)", "Articles for the conveyance or packing of goods", "3923"],
+        ["Paper Bags (Shopping)", "Cartons, boxes, cases, bags... of paper", "4819"],
+        ["Cable Ties (Plastic)", "Other articles of plastics", "3926"],
+        ["Strapping Roll (Pet/PP)", "Articles for the conveyance or packing of goods", "3923"],
+        ["Weighing Scale (Industrial)", "Weighing machinery (excluding balances of 5 cg)", "8423"],
+        ["Hand Pallet Truck", "Works trucks self-propelled... not fitted with lifting", "8709"],
+        ["Barcoding Ribbon / Thermal", "Typewriter or similar ribbons, inked", "9612"]
+    ]},
+    { t: "PART 28: Security, Safety, and Fire Protection", d: [
+        ["CCTV DVR / NVR", "Video recording or reproducing apparatus", "8521"],
+        ["Biometric Attendance Mc", "Electrical machines having individual functions", "8543"],
+        ["Fire Extinguisher (Gas/Dry)", "Preparations and charges for fire-extinguishers", "3813"],
+        ["Smoke Detectors", "Electric sound or visual signalling apparatus", "8531"],
+        ["Safety Shoes (Industrial)", "Other footwear with outer soles/uppers of rubber", "6402"],
+        ["Reflector Jacket", "Other made up textile articles (Safety wear)", "6307"],
+        ["Safety Gloves (Nitrile/Cut)", "Articles of apparel... of vulcanised rubber", "4015"],
+        ["Face Masks (3-Ply/N95)", "All goods (Sanitary products/Masks)", "9619"],
+        ["Hand Sanitizer", "Insecticides... disinfectants", "3808"],
+        ["First Aid Box (Empty)", "Trunks, suit-cases... [similar containers]", "4202"],
+        ["Burglar Alarm", "Electric sound or visual signalling apparatus", "8531"],
+        ["Metal Detector", "Electrical machines having individual functions", "8543"],
+        ["Safety Goggles", "Spectacles, goggles including vision correction", "9004"],
+        ["Traffic Cones", "Other articles of plastics", "3926"],
+        ["Security Uniform", "Articles of apparel... not knitted/crocheted", "62"]
+    ]},
+    { t: "PART 29: Automobile Spares and Maintenance", d: [
+        ["Spark Plugs", "Electrical ignition or starting equipment", "8511"],
+        ["Wiper Blades", "Electrical lighting or signalling equipment", "8512"],
+        ["Brake Pads / Linings", "Friction material and articles", "6813"],
+        ["Oil Filter / Air Filter", "Centrifuges... filtering or purifying machinery", "8421"],
+        ["Car Battery (Lead Acid)", "Electric accumulators... [other than Lithium]", "8507"],
+        ["Clutch Plate", "Transmission shafts, cranks... clutches", "8483"],
+        ["Shock Absorbers", "Parts and accessories of motor vehicles", "8708"],
+        ["Radiator Coolant", "Anti-freezing preparations and prepared de-icing", "3820"],
+        ["Engine Oil (Lubricant)", "Petroleum oils and oils from bituminous minerals", "2710"],
+        ["Grease (Industrial)", "Lubricating preparations (anti-rust, mould release)", "3403"],
+        ["Car Floor Mats", "Floor coverings of plastics", "3918"],
+        ["Seat Covers (Fabric)", "Other made up textile articles", "6307"],
+        ["Valve Seals / Gaskets", "Gaskets and similar joints of metal sheeting", "8484"],
+        ["Ball Joints / Tie Rods", "Parts and accessories of motor vehicles", "8708"],
+        ["Horn (Electric)", "Electrical lighting or signalling equipment", "8512"]
+    ]},
+    { t: "PART 30: Construction Chemicals and Sanitary Fittings", d: [
+        ["Waterproofing Liquid", "Prepared binders for foundry moulds/Chemical", "3824"],
+        ["White Cement", "Portland cement, aluminous cement", "2523"],
+        ["PVC Pipe Fittings", "Tubes, pipes and hoses, and fittings therefor", "3917"],
+        ["CP Taps / Bib Cock", "Taps, cocks, valves and similar appliances", "8481"],
+        ["Flush Tank (Cistern)", "Ceramic sinks, wash basins... flushing cisterns", "6910"],
+        ["Tile Adhesive", "Prepared binders for foundry moulds/Chemical", "3824"],
+        ["Glass Wool (Insulation)", "Glass fibres (including glass wool)", "7019"],
+        ["Silicon Sealant", "Glaziers’ putty, grafting putty, resin cements", "3214"],
+        ["Wall Putty", "Glaziers’ putty, grafting putty, resin cements", "3214"],
+        ["Paints (Oil Based)", "Paints and varnishes... non-aqueous", "3208"],
+        ["Paints (Water Based)", "Paints and varnishes... aqueous", "3209"],
+        ["Ball Valve (Brass)", "Taps, cocks, valves and similar appliances", "8481"],
+        ["Shower Head", "Taps, cocks, valves and similar appliances", "8481"],
+        ["Kitchen Chimney", "Air or vacuum pumps... ventilating hoods", "8414"],
+        ["Exhaust Fan", "Air or vacuum pumps, air compressors and fans", "8414"]
+    ]},
+    { t: "PART 31: General Fasteners and Hardware Consumables", d: [
+        ["Nut & Bolt (Steel)", "Screws, bolts, nuts, coach screws", "7318"],
+        ["Washers (Metal)", "Screws, bolts, nuts... washers", "7318"],
+        ["Rivets", "Screws, bolts, nuts... rivets", "7318"],
+        ["Wire Mesh / Jali", "Cloth (including endless bands), grill, netting", "7314"],
+        ["Welding Electrodes", "Wire, rods, tubes... for welding", "8311"],
+        ["Grinding Wheel / Disc", "Millstones, grindstones, grinding wheels", "6804"],
+        ["V-Belt (Industrial)", "Transmission or conveyor belts or belting", "4010"],
+        ["Springs (Coil/Leaf)", "Springs and leaves for springs, of iron/steel", "7320"],
+        ["Drawer Slides (Channels)", "Base metal mountings, fittings for furniture", "8302"],
+        ["Wardrobe Handles", "Base metal mountings, fittings for furniture", "8302"],
+        ["Curtain Track", "Base metal mountings, fittings for furniture", "8302"],
+        ["Door Closer", "Base metal mountings... automatic door closers", "8302"],
+        ["Soldering Wire", "Wire, rods, tubes... for welding", "8311"],
+        ["Gas Lighter (Kitchen)", "Cigarette lighters and other lighters", "9613"],
+        ["Torch / Flashlight", "Portable electric lamps... (dry batteries)", "8513"]
+    ]},
+    { t: "PART 32: Textile Accessories and Finishing", d: [
+        ["Sewing Thread (Polyester)", "Sewing thread of man-made staple fibres", "5508"],
+        ["Elastic Tape", "Narrow woven fabrics; narrow fabrics", "5806"],
+        ["Velcro (Hook & Loop)", "Slide fasteners and parts thereof", "9607"],
+        ["Woven Labels (Brand)", "Labels, badges and similar articles", "5807"],
+        ["Lace (Embroidery)", "Tulles and other net fabrics; lace", "5804"],
+        ["Shoulder Pads", "Other made up textile articles", "6307"],
+        ["Clothing Hangers", "Other articles of wood / Plastics", "4421 / 3926"],
+        ["Tailor’s Measuring Tape", "Drawing, marking-out or mathematical", "9017"],
+        ["Price Tag (Paper)", "Paper or paperboard labels of all kinds", "4821"],
+        ["Packaging Pouch (Zipper)", "Articles for the conveyance or packing of goods", "3923"]
+    ]}
+];
+
+// --- MODAL LOGIC ---
+function toggleMappingModal() {
+    const modal = document.getElementById('mapping-modal');
+    if(modal.style.display === 'none' || modal.style.display === '') {
+        renderMappingTables();
+        modal.style.display = 'block';
+    } else {
+        modal.style.display = 'none';
+    }
+}
+
+function renderMappingTables(filter = "") {
+    const container = document.getElementById('mapping-content-area');
+    let html = `
+    <div style="background:#f9f9f9; padding:15px; border:2px solid black; margin-bottom:20px; font-size:0.8rem; line-height:1.6;">
+        <b>HSN STRUCTURE (Harmonized System Of Nomenclature) / SAC (Services Accounting Code) :</b> 84 (Chapter) | 71 (Heading) | 30 (Sub-heading) | 10 (National Classification)<br>
+        <b>RULES:</b> Up to ₹5cr (4 digits) | Above ₹5cr (6 digits) | Imports/Exports (8 digits)
+    </div>`;
+
+    const fullData = [...mappingParts, ...mappingPartsCont];
+
+    fullData.forEach(part => {
+        const filteredRows = part.d.filter(row => 
+            row[0].toLowerCase().includes(filter.toLowerCase()) || 
+            row[1].toLowerCase().includes(filter.toLowerCase()) || 
+            row[2].toLowerCase().includes(filter.toLowerCase())
+        );
+
+        if (filteredRows.length > 0) {
+            html += `<h3 style="background:black; color:white; padding:10px; margin:20px 0 0 0; font-size:0.9rem;">${part.t}</h3>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:30px; border:2px solid black;">
+                <thead><tr style="background:#eee;">
+                    <th style="padding:10px; border:1px solid black; width:30%;">Generic Name</th>
+                    <th style="padding:10px; border:1px solid black; width:50%;">Database Name</th>
+                    <th style="padding:10px; border:1px solid black; width:20%;">HSN Code</th>
+                </tr></thead><tbody>`;
+
+            filteredRows.forEach(row => {
+                html += `<tr>
+                    <td style="padding:8px; border:1px solid black; font-weight:700;">${row[0]}</td>
+                    <td style="padding:8px; border:1px solid black; font-size:0.8rem;">${row[1]}</td>
+                    <td style="padding:8px; border:1px solid black; font-weight:800; color:#1B3E85;">${row[2]}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+        }
+    });
+
+    if(html === "") html = "<p style='text-align:center; padding:50px;'>No items found matching your search.</p>";
+    container.innerHTML = html;
+}
+
+function filterMapping() {
+    const q = document.getElementById('mapping_search').value;
+    renderMappingTables(q);
 }
 </script>
 </body>
