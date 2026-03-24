@@ -16906,7 +16906,7 @@ async function generateBusinessReport() {
     
     if (!currentUserId) return alert("Please login first.");
 
-    // 1. Fetch Dashboard (The Source of Truth for Totals), History (The Breakdown), and Customer States
+    // 1. Fetch Dashboard (The Total), History (The Breakdown), and Customer details (The States)
     const [dashRes, historyRes, customerRes] = await Promise.all([
         supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single(),
         supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31'),
@@ -16917,21 +16917,22 @@ async function generateBusinessReport() {
     const history = historyRes.data || [];
     const customers = customerRes.data || [];
 
-    if (!dashboard) return alert("No Dashboard data found for " + selectedMonth + ". Please generate an invoice first.");
+    if (!dashboard) return alert("No data found in Dashboard for " + selectedMonth);
 
     title.innerText = "Statewise Sales Report (" + selectedMonth + ")";
 
-    // 2. Map Customer Names to States
+    // 2. Map Customer Names to States for better lookup
     const nameToState = {};
     customers.forEach(c => nameToState[c.business_name] = c.state);
 
-    // 3. Calculate breakdown from History
+    // 3. Process History Data
     let stats = {};
     let historyTotalRev = 0;
     let historyTotalGst = 0;
 
     history.forEach(item => {
-        let st = nameToState[item.customer_name] || "OTHER STATES";
+        // FIX 1: Look for state in the invoice record first, then the customer map
+        let st = item.customer_state || nameToState[item.customer_name] || "MISC SALES";
         let rev = parseFloat(item.taxable_amount) || 0;
         let gst = parseFloat(item.gst_amount) || 0;
 
@@ -16943,19 +16944,19 @@ async function generateBusinessReport() {
         historyTotalGst += gst;
     });
 
-    // 4. Calculate the "Gap" (Deleted records or manual dashboard entries)
+    // 4. FIX 2: Calculate the "Deleted Records" gap
     const targetRev = parseFloat(dashboard.total_revenue) || 0;
     const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
     
     const gapRev = targetRev - historyTotalRev;
     const gapGst = targetGst - historyTotalGst;
 
-    // Add the gap as a separate row if it exists
-    if (Math.abs(gapRev) > 1) {
-        stats["ADJUSTMENTS / DELETED RECORDS"] = { rev: gapRev, gst: gapGst };
+    // If there is a difference, show it as Recovered Deleted Records
+    if (Math.abs(gapRev) > 0.1) {
+        stats["RECOVERED DELETED RECORDS"] = { rev: gapRev, gst: gapGst };
     }
 
-    // 5. Generate HTML Table
+    // 5. Build HTML Table
     let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
         <thead>
             <tr style="background:black; color:white; text-align:left;">
@@ -16966,7 +16967,7 @@ async function generateBusinessReport() {
         </thead>
         <tbody>`;
 
-    // Sort states by revenue descending
+    // Sort by revenue descending
     Object.entries(stats).sort((a, b) => b[1].rev - a[1].rev).forEach(([stName, val]) => {
         table += `<tr style="border-bottom:1px solid black;">
             <td style="padding:15px; font-weight:800;">${stName.toUpperCase()}</td>
@@ -16975,13 +16976,12 @@ async function generateBusinessReport() {
         </tr>`;
     });
 
-    // 6. THE TOTAL ROW (Matches Dashboard exactly)
+    // 6. FINAL TOTAL ROW (Matches Dashboard 100%)
     table += `<tr style="background:#7FFFD4; font-weight:900; border-top:4px solid black;">
         <td style="padding:15px;">TOTAL</td>
         <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
         <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-    </tr></tbody></table>
-    <p style="margin-top:10px; font-size:0.75rem; color:#666;">* Data strictly reconciled with Business Dashboard totals.</p>`;
+    </tr></tbody></table>`;
 
     container.innerHTML = table;
     document.getElementById('report-modal').style.display = 'block';
