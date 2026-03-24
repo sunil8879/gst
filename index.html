@@ -662,6 +662,12 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 #reports-section-card .section-header { justify-content: center; } #reports-section-card button { width: 220px !important; height: 45px !important; font-size: 0.75rem !important; margin: 20px auto !important; display: flex !important; align-items: center; justify-content: center; }
+
+
+
+.section-header, button, summary, .proc-btn, .btn-download, .btn-add { font-size: 0.85rem !important; }
+
+#reminder-section .section-header, div:has(#fetch_hsn_input) .section-header { justify-content: center !important; }
 </style>
 </head>
 <body>
@@ -749,7 +755,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- Dashboard Button -->
 <button id="btn-dashboard" onclick="toggleDashboard()" style="background: var(--aqua); color: var(--black); border: 3px solid var(--black); width: 100%; padding: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 20px; box-shadow: 8px 8px 0px var(--black); text-transform: uppercase;">
-    <i class="fas fa-chart-line"></i> Open Business Dashboard
+    <i class="fas fa-chart-line"></i> 1. Open Business Dashboard
 </button>
 
 <!-- Dashboard Modal -->
@@ -784,7 +790,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <div class="section-header"><i class="fas fa-store"></i> Seller Details</div>
+        <div class="section-header"><i class="fas fa-store"></i> 2. Seller Details</div>
         <input type="text" id="s_name" placeholder="Your Business Name" oninput="liveUpdate()">
         <textarea id="s_addr" placeholder="Address" oninput="liveUpdate()" style="margin-top:10px; height: 60px;"></textarea>
         <div class="form-row" style="margin-top:10px">
@@ -838,7 +844,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <div class="section-header"><i class="fas fa-user-tie"></i> Customer Details</div>
+        <div class="section-header"><i class="fas fa-user-tie"></i> 3. Customer Details</div>
         <input type="text" id="c_name" placeholder="Customer Name" oninput="liveUpdate()">
         <textarea id="c_addr" placeholder="Customer Address" oninput="liveUpdate()" style="margin-top:10px; height: 60px;"></textarea>
         <div class="form-row" style="margin-top:10px">
@@ -898,7 +904,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- --- HSN QUICK-FETCH TOOL --- -->
 <div style="background: #fdfdfd; border: 3px solid black; padding: 20px; margin-bottom: 25px; box-shadow: 8px 8px 0px #000; text-align: left;">
-    <div class="section-header" style="margin-top:0;"><i class="fas fa-search-dollar"></i> FETCH FROM HSN</div>
+    <div class="section-header" style="margin-top:0;"><i class="fas fa-search-dollar"></i>4.  FETCH FROM HSN</div>
     
     <div style="display:flex; gap:10px; margin-bottom:15px;">
         <input type="text" id="fetch_hsn_input" placeholder="Enter HSN (e.g. 0804)" style="flex:2;">
@@ -941,7 +947,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
         <div class="section-header">
-            <span><i class="fas fa-list"></i> Itemized List</span>
+            <span><i class="fas fa-list"></i> 5. Itemized List</span>
             <button class="btn-add" onclick="addItem()" style="margin-left:auto">+ Add Item</button>
         </div>
         <div id="items-list"></div>
@@ -960,7 +966,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <div class="section-header"><i class="fas fa-file-invoice"></i> Invoice Settings</div>
+        <div class="section-header"><i class="fas fa-file-invoice"></i> 6. Invoice Settings</div>
         <div class="form-row">
           <input type="text" id="inv_no" readonly style="background: #f9f9f9; color: black; border: 2px solid black; font-weight: bold; box-shadow: var(--input-shadow);">
             <input type="date" id="inv_date" oninput="liveUpdate()">
@@ -969,7 +975,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 <!-- DIGITAL SIGNATURE PAD -->
-<div class="section-header"><i class="fas fa-pen-nib"></i> Draw Signature</div>
+<div class="section-header"><i class="fas fa-pen-nib"></i> 7. Draw Signature</div>
 <div style="border: 2px dashed black; background: white; position: relative; width: 100%; height: 150px; box-shadow: var(--input-shadow);">
     <canvas id="sig-canvas" style="width: 100%; height: 100%; cursor: crosshair; touch-action: none;"></canvas>
     <button onclick="clearSig()" style="position: absolute; top: 5px; right: 5px; background: #ff4757; color: white; border: none; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; font-weight: 800;">CLEAR</button>
@@ -980,7 +986,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- History Button -->
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
-    <i class="fas fa-history"></i> View Invoice History
+    <i class="fas fa-history"></i> 8. View Invoice History
 </button>
 
 
@@ -989,7 +995,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- Charts Button -->
 <button id="btn-charts" onclick="toggleCharts()" style="background: var(--black); color: var(--aqua); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--aqua); text-transform: uppercase;">
-    <i class="fas fa-chart-bar"></i> Charts Section
+    <i class="fas fa-chart-bar"></i> 9. Charts Section
 </button>
 
 <!-- Charts Modal -->
@@ -1037,7 +1043,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- INVOICE REMINDER SECTION -->
 <div id="reminder-section" style="margin-top: 25px; padding: 20px; border: 3px solid black; background: #fff; box-shadow: 8px 8px 0px black;">
-    <div class="section-header"><i class="fas fa-clock"></i> Invoice Payment Reminder</div>
+    <div class="section-header"><i class="fas fa-clock"></i> 10. Invoice Payment Reminder</div>
     
     <!-- ROW 1 -->
     <div class="form-row">
@@ -1086,7 +1092,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-<div class="section-header"><i class="fas fa-paint-brush"></i> Select Word Template</div>
+<div class="section-header"><i class="fas fa-paint-brush"></i> 11. Select Word Template</div>
 <select id="template_select" style="margin-bottom: 20px; box-shadow: 5px 5px 0px #000;">
     <option value="modern">Modern (Default)</option>
     <option value="simple">Simple & Clean</option>
@@ -1102,7 +1108,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <div id="history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; padding:20px; box-sizing:border-box;">
     <div style="background:white; max-width:900px; margin:40px auto; padding:30px; border:4px solid black; box-shadow: 15px 15px 0px var(--aqua); max-height:80vh; overflow-y:auto; position:relative;">
         <button onclick="toggleHistory()" style="position:absolute; top:10px; right:10px; background:black; color:white; border:none; padding:5px 10px; cursor:pointer; font-weight:800;">X CLOSE</button>
-        <h2 style="border-bottom:4px solid var(--aqua); padding-bottom:10px; margin-bottom:20px;">INVOICE HISTORY</h2>
+        <h2 style="border-bottom:4px solid var(--aqua); padding-bottom:10px; margin-bottom:20px;"> INVOICE HISTORY</h2>
         <div id="history-content">
             <!-- Table will be injected here -->
         </div>
@@ -1117,13 +1123,13 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 <!-- Inventory Tracker Button -->
 <button id="btn-inventory" onclick="toggleInventory()" style="background: var(--aqua); color: var(--black); border: 3px solid var(--black); width: 100%; padding: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 8px 8px 0px var(--black); text-transform: uppercase;">
-    <i class="fas fa-boxes"></i> Inventory Tracker
+    <i class="fas fa-boxes"></i> 12. Inventory Tracker
 </button>
 
 
 
 
-<div class="section-header"><i class="fas fa-qrcode"></i> Payment QR Code</div>
+<div class="section-header"><i class="fas fa-qrcode"></i> 13. Payment QR Code</div>
 <div style="background: var(--aqua); border: 3px solid black; box-shadow: 8px 8px 0px #000; padding: 15px; margin-bottom: 20px; text-align: center;">
     <input type="file" id="qr_upload" accept="image/*" onchange="processQR(this)" style="font-weight: 800; cursor: pointer; width: 100%;">
     <p style="font-size: 0.7rem; color: black; margin-top: 5px; font-weight: 600;">Upload GPay/UPI QR Code to show on invoice.</p>
@@ -1132,7 +1138,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
-        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> GENERATE MS WORD INVOICE</button>
+        <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> 14. GENERATE MS WORD INVOICE</button>
    
 <button id="install-pwa" style="display:none; background: #007BFF; color: white; border: 2px solid black; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-bottom: 15px; box-shadow: 10px 10px 0px #000; text-transform: uppercase;">
     <i class="fas fa-download"></i> Install App
@@ -1150,7 +1156,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <!-- --- REPORTS SECTION CARD --- -->
 <div id="reports-section-card" style="display:none; background:white; border:3px solid black; box-shadow:10px 10px 0px black; padding:30px; margin-top:45px; text-align:left;">
     <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; display:flex; align-items:center;">
-        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> REPORTS SECTION
+        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> 15. REPORTS SECTION
     </div>
     <div class="form-row">
         <select id="report_type_select" style="border:2px solid black; font-weight:800;">
@@ -1186,7 +1192,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 <details id="flow-wrap" style="display:none; width:100%; margin:20px auto;">
-    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">Manual & Glossary</summary>
+    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">16. Manual & Glossary</summary>
 
 
 
