@@ -14176,7 +14176,7 @@ if (modal.style.display === 'none' || arguments[0] === true) {
                         <th style="padding:10px; border:1px solid black;">Balance</th>
                         <th style="padding:10px; border:1px solid black;">Remarks</th>
                         <th style="padding:10px; border:1px solid black;">Product Sold</th>
-                        <th style="padding:10px; border:1px solid black;">Action</th>
+                        //<th style="padding:10px; border:1px solid black;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -14200,9 +14200,11 @@ if (modal.style.display === 'none' || arguments[0] === true) {
                         <td style="padding:10px; border:1px solid black; color:red;">${b}</td>
                         <td style="padding:10px; border:1px solid black; font-size:0.7rem;">${rD.remarks}</td>
                         <td style="padding:10px; border:1px solid black;">${item.product_sold}</td>
-                        <td style="padding:10px; border:1px solid black; text-align:center;">
+/*                        
+<td style="padding:10px; border:1px solid black; text-align:center;">
                             <i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="deleteHistoryItem('${item.id}')"></i>
                         </td>
+*/
                     </tr>
                 `;
             });
@@ -14215,14 +14217,14 @@ if (modal.style.display === 'none' || arguments[0] === true) {
         modal.style.display = 'none';
     }
 }
-
+/*
 async function deleteHistoryItem(id) {
     if(confirm("Delete this record permanently?")) {
         await supabaseClient.from('invoice_history').delete().eq('id', id);
         toggleHistory(); toggleHistory();
     }
 }
-
+*/
 function applyTemplate() {
     const selected = document.getElementById('template_select').value;
     const previewContainer = document.getElementById('invoice-render');
