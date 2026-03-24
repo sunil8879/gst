@@ -16406,24 +16406,29 @@ window.addEventListener('resize', () => {
 
 
 
-
 const steps = [
-    { t: "1. OPERATIONAL FLOW - NEWS TICKER", d: "<b>Visitor View & Logged in view:</b> Browse live, professional Finance and GST news. Click any headline to read the full report on official news portals." },
-    { t: "2. OPERATIONAL FLOW - GOOGLE LOGIN", d: "Secure your workspace. Logging in enables <b>Cloud Storage</b>, allowing you to access your history and dashboard from any device." },
-    { t: "3. OPERATIONAL FLOW - BUSINESS DASHBOARD", d: "Analyze performance. View monthly summaries of total invoices generated, gross revenue, and total GST collected." },
-    { t: "4. OPERATIONAL FLOW - SELLER DETAILS", d: "Enter your business info. Once entered, these details are saved to your profile automatically for all future invoices." },
-    { t: "5. OPERATIONAL FLOW - CUSTOMER DETAILS", d: "Add client info. Typing a city name automatically detects the <b>State</b> to determine if CGST/SGST or IGST should be applied." },
-    { t: "6. OPERATIONAL FLOW - ITEMIZED LIST", d: "Add products. Use the <b>Smart Search</b> to automatically find the correct HSN codes and GST rates from the built-in legal database." },
-    { t: "7. OPERATIONAL FLOW - CLEAR ALL DETAILS", d: "Starting fresh? Use this to wipe the current form clean without refreshing the page, ready for a brand new entry." },
-    { t: "8. OPERATIONAL FLOW - DRAW SIGNATURE", d: "Sign digitally using your mouse or finger. This signature is captured as a high-resolution image and embedded into the Word file." },
-    { t: "9. OPERATIONAL FLOW - INVOICE HISTORY", d: "Access previous records. Filter by month/year to review amounts, products sold, and payment balances for past clients." },
-    { t: "10. OPERATIONAL FLOW - CHARTS SECTION", d: "Visual Analytics. Use Bar, Line, and Pie charts to track customer dues, growth trends, and your Revenue-to-GST ratio." },
-    { t: "11. OPERATIONAL FLOW - INVOICE REMINDER", d: "Enter an Invoice ID to fetch real-time data. It tracks exactly how much the customer has paid and what balance is pending." },
-    { t: "12. OPERATIONAL FLOW- ADD/UPDATE REMINDER", d: "Save payment status. Once saved, it triggers an <b>Auto-Message</b> generator for polite WhatsApp or Email reminders." },
-    { t: "13. OPERATIONAL FLOW - WORD TEMPLATES", d: "Choose from 5 styles: <b>Modern, Simple, Professional, Retail, or Service</b> to match your specific business branding." },
-    { t: "14. OPERATIONAL FLOW - QR CODE", d: "Upload your UPI/GPay QR code. It will be printed at the bottom of the invoice, allowing customers to scan and pay you instantly." },
-    { t: "15. OPERATIONAL FLOW - GENERATE WORD INVOICE", d: "The final step. Exports a professionally formatted .doc file compatible with Microsoft Word and Google Docs." },
-    { t: "16. OPERATIONAL FLOW - INSTALL APP", d: "Add to Home Screen. Transform this tool into a standalone app on your Phone or Desktop for faster, one-click access." }
+    { t: "1. LIVE FINANCE NEWS TICKER", d: "Located at the very top, this bar streams live GST and economic news. You can click on any headline to read the full story. It keeps you updated on tax changes while you work." },
+    { t: "2. SECURE GOOGLE LOGIN", d: "Click the Google button to sign in. This unlocks your 'Cloud Brain'—it ensures your business details, history, and dashboard are saved safely and can be accessed from any device." },
+    { t: "3. BUSINESS ANALYTICS DASHBOARD", d: "This is your control center. It shows a summary of your total sales, total revenue, and total GST collected for any month. It helps you see how your business is performing at a glance." },
+    { t: "4. SELLER IDENTITY CARD", d: "Enter your shop/office details here. Once you save an invoice, the app remembers your name, address, and GSTIN so you don't have to type them ever again." },
+    { t: "5. SMART CUSTOMER ENTRY", d: "Enter your customer's info. A smart feature here: as you type the customer's city, the app automatically detects the State to ensure the correct tax (CGST/SGST or IGST) is applied." },
+    { t: "6. HSN QUICK-FETCH TOOL", d: "If you are confused about a tax rate, just type the HSN code here and click FETCH. The app will search the legal database and tell you the exact product name and GST percentage." },
+    { t: "7. DYNAMIC ITEMIZED LIST", d: "This is where you list what you sold. You can add as many rows as you need. It calculates the total for each item, the tax amount, and the grand total automatically." },
+    { t: "8. AUTO-CALCULATION ENGINE", d: "As you add items, the app works in the background to calculate the 'Amount in Words' and the final bill value. It eliminates human calculation errors 100%." },
+    { t: "9. SMART DATA CLEARING", d: "The 'Clear All Details' button wipes the current screen clean so you can start a new invoice immediately. Don't worry, it won't delete your previous history from the cloud." },
+    { t: "10. DIGITAL SIGNATURE PAD", d: "Use your mouse or finger to sign directly on the screen. This drawing is captured and placed neatly at the bottom of your official document, making it look professional." },
+    { t: "11. INVOICE HISTORY LOG", d: "Every invoice you generate is stored here. You can filter by month to see exactly what you billed in the past. It’s like a digital file cabinet that never gets full." },
+    { t: "12. VISUAL PERFORMANCE CHARTS", d: "This section turns your data into colorful Bar, Line, and Pie charts. It helps you visualize which customers owe you the most and how your revenue is growing over time." },
+    { t: "13. PAYMENT REMINDER TRACKER", d: "Enter an Invoice ID to see if the customer has paid. It tracks 'Part Payments' and automatically tells you the pending balance amount for that specific bill." },
+    { t: "14. ONE-CLICK CUSTOMER ALERTS", d: "Once you update a payment status, the app generates a polite reminder message. You can send it directly to the customer via WhatsApp or Email with one click." },
+    { t: "15. DESIGNER WORD TEMPLATES", d: "Choose from 5 styles: Modern (Blue), Simple (Clean), Professional (Classic), Retail (Receipt), or Service. This allows you to change the 'look' of your bill to suit your brand." },
+    { t: "16. MASTER REPORTS SECTION", d: "Generate deep-dive reports like State-wise sales, GST-tier summaries, or HSN reports. These are essential for your CA when it's time to file your GST returns." },
+    { t: "17. DIGITAL INVENTORY TRACKER", d: "Keep track of your stock. Enter your items once, and the tracker will show you your 'Opening Balance' and 'Current Balance.' It even highlights items that are running low." },
+    { t: "18. VENDOR WHATSAPP CONNECT", d: "Inside the Inventory tracker, you can click a green WhatsApp icon next to a low-stock item to instantly message your supplier and order more goods." },
+    { t: "19. UPI PAYMENT QR CODE", d: "Upload a photo of your GooglePay or PhonePe QR code. The app will print it on the bottom of every invoice so your customers can scan and pay you instantly." },
+    { t: "20. GENERATE MS WORD INVOICE", d: "The final step! This button creates a professional .doc file. It is compatible with Microsoft Word and Google Docs, allowing you to print it or send it as a PDF." },
+    { t: "21. DATABASE MAPPING DICTIONARY", d: "This is a master list that helps you find items. It translates 'Legal Names' into 'Common Names' (for example: it tells you that 'Pepsi' is legally called 'Aerated Water')." },
+    { t: "22. ONE-CLICK APP INSTALL", d: "You can install this tool as a standalone app on your Phone or Laptop Home Screen. It gives you a shortcut icon for faster access, just like a regular mobile app." }
 ];
 
 let currentStep = 0;
