@@ -1129,6 +1129,74 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 
+
+
+<!-- --- PROFIT & EXPENSES SECTION --- -->
+<button id="btn-profit-toggle" onclick="toggleProfitSection()" style="background:var(--white); color:var(--black); border: 2px solid var(--black); width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; margin: 45px auto 10px auto; box-shadow: 4px 4px 0px #000; text-transform: uppercase; display: flex; align-items: center; justify-content: center;">
+    <i class="fas fa-hand-holding-usd"></i> Profit & Expenses
+</button>
+
+<div id="profit-section" class="input-card" style="display:none; text-align: center;">
+    <div class="section-header" style="background:black; color:white; justify-content: center;"><i class="fas fa-calculator" style="color:#7FFFD4;"></i> PROFIT & LOSS TRACKER</div>
+    
+    <div class="form-row">
+        <div style="text-align:left;">
+            <label style="font-size:0.7rem; font-weight:800;">SELECT DATE:</label>
+            <input type="date" id="exp_date" onchange="fetchRevenueForProfit()">
+        </div>
+        <div style="text-align:left;">
+            <label style="font-size:0.7rem; font-weight:800;">TOTAL REVENUE (MONTHLY):</label>
+            <input type="text" id="exp_revenue" readonly style="background:#eee;">
+        </div>
+    </div>
+
+    <div class="form-row" style="margin-top:15px;">
+        <input type="number" id="exp_salary" placeholder="Salary" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_marketing" placeholder="Marketing" value="0" oninput="calcProfit()">
+    </div>
+    <div class="form-row">
+        <input type="number" id="exp_electricity" placeholder="Electricity" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_maintenance" placeholder="Maintenance" value="0" oninput="calcProfit()">
+    </div>
+    <div class="form-row">
+        <input type="number" id="exp_internet" placeholder="Internet" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_rent" placeholder="Rent" value="0" oninput="calcProfit()">
+    </div>
+    <div class="form-row">
+        <input type="number" id="exp_vendor" placeholder="Vendor Costs" value="0" oninput="calcProfit()">
+        <input type="number" id="exp_transport" placeholder="Transport" value="0" oninput="calcProfit()">
+    </div>
+    <div class="form-row">
+        <input type="number" id="exp_misc" placeholder="Miscellaneous (Tea/Paper)" value="0" oninput="calcProfit()">
+        <input type="text" id="exp_note" placeholder="Expense Note (e.g. Bought A4 Paper)">
+    </div>
+
+    <div style="background:#f0f0f0; padding:15px; border:2px solid black; margin-top:20px; text-align:left;">
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.85rem;">
+            <span>TOTAL EXPENSES:</span><span id="disp_total_exp">₹ 0.00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.85rem; margin-top:5px;">
+            <span>EXPENSE %:</span><span id="disp_exp_perc">0.00%</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.1rem; margin-top:10px; border-top:2px solid black; padding-top:5px; color:#1B3E85;">
+            <span>NET PROFIT:</span><span id="disp_total_profit">₹ 0.00</span>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; justify-content:center;">
+        <button onclick="saveProfitRecord('ADD')" style="background:black; color:white; padding:10px 15px; font-size:0.7rem; font-weight:800; cursor:pointer;">ADD</button>
+        <button onclick="fetchProfitByDate()" style="background:var(--aqua); color:black; border:2px solid black; padding:10px 15px; font-size:0.7rem; font-weight:800; cursor:pointer;">FETCH</button>
+        <button onclick="saveProfitRecord('UPDATE')" style="background:#007BFF; color:white; border:none; padding:10px 15px; font-size:0.7rem; font-weight:800; cursor:pointer;">UPDATE</button>
+        <button onclick="clearProfitFields()" style="background:#ff4757; color:white; border:none; padding:10px 15px; font-size:0.7rem; font-weight:800; cursor:pointer;">CLEAR OFF</button>
+    </div>
+</div>
+
+
+
+
+
+
+
 <div class="section-header"><i class="fas fa-qrcode"></i> 13. Payment QR Code</div>
 <div style="background: var(--aqua); border: 3px solid black; box-shadow: 8px 8px 0px #000; padding: 15px; margin-bottom: 20px; text-align: center;">
     <input type="file" id="qr_upload" accept="image/*" onchange="processQR(this)" style="font-weight: 800; cursor: pointer; width: 100%;">
@@ -18112,6 +18180,109 @@ function renderMappingTables(filter = "") {
 function filterMapping() {
     const q = document.getElementById('mapping_search').value;
     renderMappingTables(q);
+}
+
+
+
+
+
+
+
+// --- PROFIT & EXPENSES LOGIC ---
+
+function toggleProfitSection() {
+    const sec = document.getElementById('profit-section');
+    sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+    if(sec.style.display === 'block') {
+        document.getElementById('exp_date').value = new Date().toISOString().split('T')[0];
+        fetchRevenueForProfit();
+    }
+}
+
+async function fetchRevenueForProfit() {
+    const dateVal = document.getElementById('exp_date').value;
+    if(!dateVal) return;
+    const monthYear = dateVal.substring(0, 7); // YYYY-MM
+    
+    const { data } = await supabaseClient.from('business_dashboard')
+        .select('total_revenue').eq('user_id', currentUserId).eq('month_year', monthYear).single();
+    
+    document.getElementById('exp_revenue').value = data ? parseFloat(data.total_revenue).toFixed(2) : "0.00";
+    calcProfit();
+}
+
+function calcProfit() {
+    const getNum = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const rev = parseFloat(document.getElementById('exp_revenue').value) || 0;
+    
+    const totalExp = getNum('exp_salary') + getNum('exp_marketing') + getNum('exp_electricity') + 
+                     getNum('exp_maintenance') + getNum('exp_internet') + getNum('exp_rent') + 
+                     getNum('exp_vendor') + getNum('exp_transport') + getNum('exp_misc');
+    
+    const profit = rev - totalExp;
+    const perc = rev > 0 ? (totalExp / rev) * 100 : 0;
+
+    document.getElementById('disp_total_exp').innerText = "₹ " + totalExp.toLocaleString();
+    document.getElementById('disp_exp_perc').innerText = perc.toFixed(2) + "%";
+    document.getElementById('disp_total_profit').innerText = "₹ " + profit.toLocaleString();
+}
+
+async function saveProfitRecord(mode) {
+    const dateVal = document.getElementById('exp_date').value;
+    if(!dateVal) return alert("Select Date");
+    
+    const getNum = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const rev = parseFloat(document.getElementById('exp_revenue').value) || 0;
+    const totalExp = getNum('exp_salary') + getNum('exp_marketing') + getNum('exp_electricity') + 
+                     getNum('exp_maintenance') + getNum('exp_internet') + getNum('exp_rent') + 
+                     getNum('exp_vendor') + getNum('exp_transport') + getNum('exp_misc');
+
+    const entry = {
+        user_id: currentUserId, record_date: dateVal,
+        salary: getNum('exp_salary'), marketing: getNum('exp_marketing'),
+        electricity: getNum('exp_electricity'), maintenance: getNum('exp_maintenance'),
+        internet: getNum('exp_internet'), rent: getNum('exp_rent'),
+        vendor_costs: getNum('exp_vendor'), transport: getNum('exp_transport'),
+        misc: getNum('exp_misc'), note: document.getElementById('exp_note').value,
+        total_expenses: totalExp, expense_percent: (rev > 0 ? (totalExp/rev*100) : 0),
+        total_profit: (rev - totalExp)
+    };
+
+    if(mode === 'ADD') {
+        const { error } = await supabaseClient.from('profit_expenses').insert([entry]);
+        alert(error ? "Error: " + error.message : "Record Added!");
+    } else {
+        const { error } = await supabaseClient.from('profit_expenses').update(entry).eq('user_id', currentUserId).eq('record_date', dateVal);
+        alert(error ? "Error: " + error.message : "Record Updated!");
+    }
+}
+
+async function fetchProfitByDate() {
+    const dateVal = document.getElementById('exp_date').value;
+    const { data, error } = await supabaseClient.from('profit_expenses')
+        .select('*').eq('user_id', currentUserId).eq('record_date', dateVal).single();
+    
+    if(data) {
+        document.getElementById('exp_salary').value = data.salary;
+        document.getElementById('exp_marketing').value = data.marketing;
+        document.getElementById('exp_electricity').value = data.electricity;
+        document.getElementById('exp_maintenance').value = data.maintenance;
+        document.getElementById('exp_internet').value = data.internet;
+        document.getElementById('exp_rent').value = data.rent;
+        document.getElementById('exp_vendor').value = data.vendor_costs;
+        document.getElementById('exp_transport').value = data.transport;
+        document.getElementById('exp_misc').value = data.misc;
+        document.getElementById('exp_note').value = data.note;
+        calcProfit();
+    } else { alert("No record found for this date."); }
+}
+
+function clearProfitFields() {
+    ['exp_salary','exp_marketing','exp_electricity','exp_maintenance','exp_internet','exp_rent','exp_vendor','exp_transport','exp_misc','exp_note'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = el.tagName === 'INPUT' && el.type === 'number' ? '0' : '';
+    });
+    calcProfit();
 }
 </script>
 </body>
