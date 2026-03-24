@@ -16906,48 +16906,82 @@ async function generateBusinessReport() {
     
     if (!currentUserId) return alert("Please login first.");
 
-    // 1. Fetch history for the selected month
-    const { data: history } = await supabaseClient.from('invoice_history')
-        .select('*').eq('user_id', currentUserId)
-        .gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31');
+    // 1. Fetch Dashboard (The Source of Truth for Totals), History (The Breakdown), and Customer States
+    const [dashRes, historyRes, customerRes] = await Promise.all([
+        supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single(),
+        supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31'),
+        supabaseClient.from('customer_details').select('business_name, state').eq('user_id', currentUserId)
+    ]);
 
-    if (!history || history.length === 0) return alert("No data found for this month.");
+    const dashboard = dashRes.data;
+    const history = historyRes.data || [];
+    const customers = customerRes.data || [];
+
+    if (!dashboard) return alert("No Dashboard data found for " + selectedMonth + ". Please generate an invoice first.");
 
     title.innerText = "Statewise Sales Report (" + selectedMonth + ")";
 
-    // 2. Aggregate Data by State
-    let stats = {}; let totalRev = 0; let totalGst = 0;
+    // 2. Map Customer Names to States
+    const nameToState = {};
+    customers.forEach(c => nameToState[c.business_name] = c.state);
+
+    // 3. Calculate breakdown from History
+    let stats = {};
+    let historyTotalRev = 0;
+    let historyTotalGst = 0;
+
     history.forEach(item => {
-        let st = item.customer_state || "Not Specified";
+        let st = nameToState[item.customer_name] || "OTHER STATES";
         let rev = parseFloat(item.taxable_amount) || 0;
         let gst = parseFloat(item.gst_amount) || 0;
+
         if (!stats[st]) stats[st] = { rev: 0, gst: 0 };
-        stats[st].rev += rev; stats[st].gst += gst;
-        totalRev += rev; totalGst += gst;
+        stats[st].rev += rev;
+        stats[st].gst += gst;
+
+        historyTotalRev += rev;
+        historyTotalGst += gst;
     });
 
-    // 3. Create Table
-    let table = `<table style="width:100%; border-collapse:collapse; border:2px solid black;">
-        <thead><tr style="background:black; color:white; text-align:left;">
-            <th style="padding:12px; border:1px solid white;">STATE NAME</th>
-            <th style="padding:12px; border:1px solid white;">REVENUE (EXCL. GST)</th>
-            <th style="padding:12px; border:1px solid white;">TOTAL GST</th>
-        </tr></thead><tbody>`;
+    // 4. Calculate the "Gap" (Deleted records or manual dashboard entries)
+    const targetRev = parseFloat(dashboard.total_revenue) || 0;
+    const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+    
+    const gapRev = targetRev - historyTotalRev;
+    const gapGst = targetGst - historyTotalGst;
 
-    Object.entries(stats).sort((a,b) => b[1].rev - a[1].rev).forEach(([st, val]) => {
+    // Add the gap as a separate row if it exists
+    if (Math.abs(gapRev) > 1) {
+        stats["ADJUSTMENTS / DELETED RECORDS"] = { rev: gapRev, gst: gapGst };
+    }
+
+    // 5. Generate HTML Table
+    let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+        <thead>
+            <tr style="background:black; color:white; text-align:left;">
+                <th style="padding:15px; border:1px solid white;">STATE NAME</th>
+                <th style="padding:15px; border:1px solid white;">REVENUE (EXCL. GST)</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    // Sort states by revenue descending
+    Object.entries(stats).sort((a, b) => b[1].rev - a[1].rev).forEach(([stName, val]) => {
         table += `<tr style="border-bottom:1px solid black;">
-            <td style="padding:12px; font-weight:800;">${st.toUpperCase()}</td>
-            <td style="padding:12px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            <td style="padding:12px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px; font-weight:800;">${stName.toUpperCase()}</td>
+            <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
         </tr>`;
     });
 
-    // 4. Add Total Row
-    table += `<tr style="background:#7FFFD4; font-weight:900; border-top:3px solid black;">
-        <td style="padding:12px;">TOTAL</td>
-        <td style="padding:12px;">₹ ${totalRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-        <td style="padding:12px;">₹ ${totalGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-    </tr></tbody></table>`;
+    // 6. THE TOTAL ROW (Matches Dashboard exactly)
+    table += `<tr style="background:#7FFFD4; font-weight:900; border-top:4px solid black;">
+        <td style="padding:15px;">TOTAL</td>
+        <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+    </tr></tbody></table>
+    <p style="margin-top:10px; font-size:0.75rem; color:#666;">* Data strictly reconciled with Business Dashboard totals.</p>`;
 
     container.innerHTML = table;
     document.getElementById('report-modal').style.display = 'block';
