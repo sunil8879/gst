@@ -659,6 +659,9 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 #reports-section-card .section-header { display: none; } #reports-section-card button { width: 220px !important; height: 45px !important; font-size: 0.75rem !important; margin: 15px auto !important; display: flex !important; align-items: center; justify-content: center; }
+
+
+#reports-section-card .section-header { justify-content: center; } #reports-section-card button { width: 220px !important; height: 45px !important; font-size: 0.75rem !important; margin: 20px auto !important; display: flex !important; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
@@ -1152,6 +1155,11 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
     <div class="form-row">
         <select id="report_type_select" style="border:2px solid black; font-weight:800;">
             <option value="state">1. State Wise Sales Report</option>
+<option value="gst">2. GST Wise Sales Report</option>
+<option value="product">3. Product Summary Report</option>
+<option value="customer">4. Customer Wise Sales Report</option>
+<option value="hsn">5. HSN Wise Sales Report</option>
+<option value="liability">6. GST Tax Liability Report</option>
         </select>
         <input type="month" id="report_month_picker" style="border:2px solid black; font-weight:800;">
     </div>
@@ -16903,25 +16911,29 @@ function pushHsnToInvoice() {
 // --- DYNAMIC STATEWISE REPORTING ENGINE (ADD-ON) ---
 
 // 1. Reveal reports and set default date after login
-const originalLogin = onGoogleLogin;
+// --- MASTER REPORTING ENGINE (STATE + GST) ---
+
+// 1. Reveal reports card after login
+const reportLoginBridge = onGoogleLogin;
 onGoogleLogin = async (resp) => {
-    await originalLogin(resp);
-    const reportCard = document.getElementById('reports-section-card');
-    if(reportCard) {
-        reportCard.style.setProperty('display', 'block', 'important');
+    await reportLoginBridge(resp);
+    const card = document.getElementById('reports-section-card');
+    if(card) {
+        card.style.setProperty('display', 'block', 'important');
         document.getElementById('report_month_picker').value = new Date().toISOString().slice(0, 7);
     }
 };
 
-// 2. The Smart Statewise Report Logic
+// 2. The Combined Reporting Logic
 async function generateBusinessReport() {
+    const type = document.getElementById('report_type_select').value;
     const selectedMonth = document.getElementById('report_month_picker').value;
     const container = document.getElementById('report-container');
     const title = document.getElementById('report-title');
     
-    if (!currentUserId) return alert("Please login with Google first.");
+    if (!currentUserId) return alert("Please login first.");
 
-    // Fetch Dashboard (Target Total), History (Individual rows), and Customer States
+    // Fetch all required data once
     const [dashRes, histRes, custRes] = await Promise.all([
         supabaseClient.from('business_dashboard').select('*').eq('user_id', currentUserId).eq('month_year', selectedMonth).single(),
         supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', selectedMonth + '-01').lte('inv_date', selectedMonth + '-31'),
@@ -16932,71 +16944,375 @@ async function generateBusinessReport() {
     const history = histRes.data || [];
     const customers = custRes.data || [];
 
-    if (!dashboard) return alert("No dashboard data found for this month. Generate an invoice first.");
+    if (!dashboard) return alert("No dashboard data found for " + selectedMonth);
 
-    title.innerText = "State Wise Sales Report (" + selectedMonth + ")";
-
-    // Map Customer Names to States
+    // --- DATA PREPARATION ---
     const nameToState = {};
     customers.forEach(c => nameToState[c.business_name.toLowerCase().trim()] = c.state);
-
-    let stats = {};
-    let historyRev = 0;
-    let historyGst = 0;
-
-    // Process records that still exist in history
-    history.forEach(item => {
-        let cleanName = (item.customer_name || "").toLowerCase().trim();
-        let st = nameToState[cleanName] || "OTHERS";
-        let rev = parseFloat(item.taxable_amount) || 0;
-        let gst = parseFloat(item.gst_amount) || 0;
-
-        if (!stats[st]) stats[st] = { rev: 0, gst: 0 };
-        stats[st].rev += rev;
-        stats[st].gst += gst;
-        historyRev += rev;
-        historyGst += gst;
-    });
-
-    // CALCULATE DELETED RECORDS (Gap between Dashboard and History)
+    
     const targetRev = parseFloat(dashboard.total_revenue) || 0;
     const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+    let historyRev = 0;
+    let historyGst = 0;
+    let stats = {};
+
+    // --- LOGIC FOR STATEWISE REPORT ---
+    if (type === 'state') {
+        title.innerText = "State Wise Sales Report (" + selectedMonth + ")";
+        history.forEach(item => {
+            let st = nameToState[(item.customer_name || "").toLowerCase().trim()] || "OTHERS";
+            let rev = parseFloat(item.taxable_amount) || 0;
+            let gst = parseFloat(item.gst_amount) || 0;
+            if (!stats[st]) stats[st] = { rev: 0, gst: 0 };
+            stats[st].rev += rev; stats[st].gst += gst;
+            historyRev += rev; historyGst += gst;
+        });
+    }
+
+    // --- LOGIC FOR GST WISE REPORT ---
+    if (type === 'gst') {
+        title.innerText = "GST Wise Sales Report (" + selectedMonth + ")";
+        history.forEach(item => {
+            let rev = parseFloat(item.taxable_amount) || 0;
+            let gst = parseFloat(item.gst_amount) || 0;
+            let rate = (rev > 0) ? Math.round((gst / rev) * 100) : 0;
+            let key = rate + "% GST Tier";
+            if (!stats[key]) stats[key] = { rev: 0, gst: 0 };
+            stats[key].rev += rev; stats[key].gst += gst;
+            historyRev += rev; historyGst += gst;
+        });
+    }
+
+// --- REPORT 3: PRODUCT SUMMARY REPORT ---
+    if (type === 'product') {
+        title.innerText = "Product Summary Report (" + selectedMonth + ")";
+        let productStats = {};
+        let historyRev = 0;
+        let historyGst = 0;
+
+        history.forEach(item => {
+            // Split the product list (e.g., "Printers, SaaS" -> ["Printers", "SaaS"])
+            let items = (item.product_sold || "").split(',').map(s => s.trim()).filter(s => s !== "");
+            let itemCount = items.length || 1;
+
+            let invoiceTaxable = parseFloat(item.taxable_amount) || 0;
+            let invoiceGst = parseFloat(item.gst_amount) || 0;
+
+            items.forEach(prodName => {
+                let pName = prodName.toUpperCase();
+                if (!productStats[pName]) productStats[pName] = { rev: 0, gst: 0 };
+                
+                // Proportionally divide the invoice revenue/gst among products in that invoice
+                productStats[pName].rev += (invoiceTaxable / itemCount);
+                productStats[pName].gst += (invoiceGst / itemCount);
+            });
+
+            historyRev += invoiceTaxable;
+            historyGst += invoiceGst;
+        });
+
+        // Reconcile with Dashboard (Deleted Records)
+        const targetRev = parseFloat(dashboard.total_revenue) || 0;
+        const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+        const gapRev = targetRev - historyRev;
+        const gapGst = targetGst - historyGst;
+
+        if (Math.abs(gapRev) > 0.5) {
+            productStats["DELETED RECORDS / UNKNOWN ITEMS"] = { rev: gapRev, gst: gapGst };
+        }
+
+        let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+            <thead><tr style="background:black; color:white; text-align:left;">
+                <th style="padding:15px; border:1px solid white;">PRODUCT NAME</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL REVENUE (EXCL. GST)</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
+            </tr></thead><tbody>`;
+
+        // Sort Descending by Revenue
+        Object.entries(productStats).sort((a, b) => b[1].rev - a[1].rev).forEach(([name, val]) => {
+            table += `<tr style="border-bottom:1px solid black;">
+                <td style="padding:15px; font-weight:800;">${name}</td>
+                <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            </tr>`;
+        });
+
+        // TOTAL ROW
+        table += `<tr style="background:#f0f0f0; font-weight:900; border-top:3px solid black;">
+            <td style="padding:15px;">TOTAL</td>
+            <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr>`;
+
+        // FINAL GRAND TOTAL
+        table += `<tr style="background:#7FFFD4; font-weight:900;">
+            <td colspan="2" style="padding:15px; text-align:right;">FINAL TOTAL (REV + GST):</td>
+            <td style="padding:15px; font-size:1.2rem;">₹ ${(targetRev + targetGst).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr></tbody></table>`;
+
+        container.innerHTML = table;
+        document.getElementById('report-modal').style.display = 'block';
+        return; 
+    }
+
+
+
+// --- REPORT 4: CUSTOMER WISE SALES REPORT ---
+    if (type === 'customer') {
+        title.innerText = "Customer Wise Sales Report (" + selectedMonth + ")";
+        let custStats = {};
+        let historyRev = 0;
+        let historyGst = 0;
+
+        history.forEach(item => {
+            let cName = (item.customer_name || "UNKNOWN CUSTOMER").toUpperCase().trim();
+            let rev = parseFloat(item.taxable_amount) || 0;
+            let gst = parseFloat(item.gst_amount) || 0;
+
+            if (!custStats[cName]) custStats[cName] = { rev: 0, gst: 0 };
+            custStats[cName].rev += rev;
+            custStats[cName].gst += gst;
+            historyRev += rev;
+            historyGst += gst;
+        });
+
+        // Reconcile with Dashboard (Handles gap from deleted records)
+        const targetRev = parseFloat(dashboard.total_revenue) || 0;
+        const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+        const gapRev = targetRev - historyRev;
+        const gapGst = targetGst - historyGst;
+
+        if (Math.abs(gapRev) > 0.5) {
+            custStats["DELETED RECORDS / PREVIOUS SALES"] = { rev: gapRev, gst: gapGst };
+        }
+
+        let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+            <thead><tr style="background:black; color:white; text-align:left;">
+                <th style="padding:15px; border:1px solid white;">CUSTOMER NAME</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL REVENUE (EXCL. GST)</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
+            </tr></thead><tbody>`;
+
+        // Sort Descending by Revenue
+        Object.entries(custStats).sort((a, b) => b[1].rev - a[1].rev).forEach(([name, val]) => {
+            table += `<tr style="border-bottom:1px solid black;">
+                <td style="padding:15px; font-weight:800;">${name}</td>
+                <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            </tr>`;
+        });
+
+        // TOTAL ROW (Reconciled with Dashboard)
+        table += `<tr style="background:#f0f0f0; font-weight:900; border-top:3px solid black;">
+            <td style="padding:15px;">TOTAL</td>
+            <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr>`;
+
+        // FINAL GRAND TOTAL
+        table += `<tr style="background:#7FFFD4; font-weight:900;">
+            <td colspan="2" style="padding:15px; text-align:right;">FINAL TOTAL (REV + GST):</td>
+            <td style="padding:15px; font-size:1.2rem;">₹ ${(targetRev + targetGst).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr></tbody></table>`;
+
+        container.innerHTML = table;
+        document.getElementById('report-modal').style.display = 'block';
+        return; 
+    }
+
+
+
+// --- REPORT 5: HSN WISE SALES REPORT ---
+    if (type === 'hsn') {
+        title.innerText = "HSN Wise Sales Report (" + selectedMonth + ")";
+        let hsnStats = {};
+        let historyRev = 0;
+        let historyGst = 0;
+
+        history.forEach(item => {
+            let products = (item.product_sold || "").split(',').map(s => s.trim()).filter(s => s !== "");
+            let count = products.length || 1;
+            let invRev = parseFloat(item.taxable_amount) || 0;
+            let invGst = parseFloat(item.gst_amount) || 0;
+
+            products.forEach(pName => {
+                // Find HSN from the gstDatabase based on the product name
+                let dbItem = gstDatabase.find(d => d.goods_name.toUpperCase().includes(pName.toUpperCase()));
+                let hsn = dbItem ? dbItem.hsn_code.split(/[\/, ]+/)[0] : "MISC";
+                
+                if (!hsnStats[hsn]) hsnStats[hsn] = { name: pName.toUpperCase(), rev: 0, gst: 0 };
+                hsnStats[hsn].rev += (invRev / count);
+                hsnStats[hsn].gst += (invGst / count);
+            });
+            historyRev += invRev;
+            historyGst += invGst;
+        });
+
+        // Reconcile with Dashboard
+        const targetRev = parseFloat(dashboard.total_revenue) || 0;
+        const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+        const gapRev = targetRev - historyRev;
+        const gapGst = targetGst - historyGst;
+
+        if (Math.abs(gapRev) > 0.5) {
+            hsnStats["DELETED"] = { name: "DELETED RECORDS", rev: gapRev, gst: gapGst };
+        }
+
+        let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+            <thead><tr style="background:black; color:white; text-align:left;">
+                <th style="padding:15px; border:1px solid white;">HSN CODE</th>
+                <th style="padding:15px; border:1px solid white;">PRODUCT NAME</th>
+                <th style="padding:15px; border:1px solid white;">REVENUE (EXCL. GST)</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
+            </tr></thead><tbody>`;
+
+        const entries = Object.entries(hsnStats).sort((a, b) => b[1].rev - a[1].rev);
+        entries.forEach(([code, val]) => {
+            table += `<tr style="border-bottom:1px solid black;">
+                <td style="padding:15px; font-weight:800;">${code}</td>
+                <td style="padding:15px; font-size:0.8rem;">${val.name}</td>
+                <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            </tr>`;
+        });
+
+        table += `<tr style="background:#f0f0f0; font-weight:900; border-top:3px solid black;">
+            <td colspan="2" style="padding:15px;">TOTAL (Unique HSNs: ${entries.length})</td>
+            <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr>`;
+
+        table += `<tr style="background:#7FFFD4; font-weight:900;">
+            <td colspan="3" style="padding:15px; text-align:right;">FINAL TOTAL (REV + GST):</td>
+            <td style="padding:15px; font-size:1.1rem;">₹ ${(targetRev + targetGst).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        </tr></tbody></table>`;
+
+        container.innerHTML = table;
+        document.getElementById('report-modal').style.display = 'block';
+        return;
+    }
+
+
+
+// --- REPORT 6: GST TAX LIABILITY REPORT ---
+// --- REPORT 6: GST TAX LIABILITY REPORT (STRICT STATE MATCH) ---
+    if (type === 'liability') {
+        title.innerText = "GST Tax Liability Report (" + selectedMonth + ")";
+        
+        // 1. Fetch Seller State and normalize it
+        const { data: sData } = await supabaseClient.from('seller_details').select('state').eq('user_id', currentUserId).single();
+        const sellerStateClean = (sData?.state || "").toLowerCase().trim();
+
+        // 2. Prepare Map for Customer States (for older records missing state)
+        const nameToStateMap = {};
+        customers.forEach(c => {
+            if(c.business_name) nameToStateMap[c.business_name.toLowerCase().trim()] = (c.state || "").toLowerCase().trim();
+        });
+
+        let tIgst = 0, tCgst = 0, tSgst = 0, historyTotalGst = 0;
+
+        // 3. Process History
+        history.forEach(item => {
+            let gstAmt = parseFloat(item.gst_amount) || 0;
+            let cNameClean = (item.customer_name || "").toLowerCase().trim();
+            
+            // Determine state: check record first, then check the map
+            let cStateClean = (item.customer_state || "").toLowerCase().trim();
+            if (!cStateClean) cStateClean = nameToStateMap[cNameClean] || "";
+
+            // LOGIC: If states match -> Intrastate (CGST/SGST). Else -> Interstate (IGST).
+            if (cStateClean === sellerStateClean && sellerStateClean !== "") {
+                tCgst += (gstAmt / 2);
+                tSgst += (gstAmt / 2);
+            } else {
+                tIgst += gstAmt;
+            }
+            historyTotalGst += gstAmt;
+        });
+
+        // 4. Reconcile with Dashboard (Deleted Records)
+        const targetGst = parseFloat(dashboard.total_gst_collected) || 0;
+        const targetRev = parseFloat(dashboard.total_revenue) || 0;
+        const gapGst = targetGst - historyTotalGst;
+        
+        // If there are deleted records, assume they were local (CGST/SGST) to avoid over-reporting IGST
+        if (Math.abs(gapGst) > 0.5) {
+            tCgst += (gapGst / 2);
+            tSgst += (gapGst / 2);
+        }
+
+        const totalGstPayable = tIgst + tCgst + tSgst;
+        const totalRevIncGst = targetRev + targetGst;
+        const avgGstPerc = totalRevIncGst > 0 ? ((targetGst / totalRevIncGst) * 100).toFixed(2) : "0.00";
+
+        // 5. Generate Table
+        let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
+            <thead><tr style="background:black; color:white; text-align:left;">
+                <th style="padding:15px; border:1px solid white;">TAX TYPE</th>
+                <th style="padding:15px; border:1px solid white;">TOTAL PAYABLE</th>
+            </tr></thead>
+            <tbody>
+                <tr style="border-bottom:1px solid black;"><td style="padding:15px; font-weight:800;">TOTAL IGST (Interstate)</td><td style="padding:15px;">₹ ${tIgst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td></tr>
+                <tr style="border-bottom:1px solid black;"><td style="padding:15px; font-weight:800;">TOTAL CGST (Central)</td><td style="padding:15px;">₹ ${tCgst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td></tr>
+                <tr style="border-bottom:1px solid black;"><td style="padding:15px; font-weight:800;">TOTAL SGST (State)</td><td style="padding:15px;">₹ ${tSgst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td></tr>
+                
+                <tr style="background:#f0f0f0; border-top:3px solid black; border-bottom:3px solid black;">
+                    <td style="padding:15px; font-weight:900;">TOTAL GST PAYABLE (A)</td>
+                    <td style="padding:15px; font-weight:900;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+                
+                <tr style="border-bottom:1px solid black;">
+                    <td style="padding:15px; font-weight:800;">TOTAL REVENUE INC. GST (B)</td>
+                    <td style="padding:15px; font-weight:800;">₹ ${totalRevIncGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+
+                <tr style="background:#7FFFD4; font-weight:900;">
+                    <td style="padding:15px;">AVG GST % (A / B * 100)</td>
+                    <td style="padding:15px; font-size:1.3rem;">${avgGstPerc} %</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-top:10px; font-size:0.75rem; color:#666;">* State Match Logic: ${sData?.state || "Unknown"} (Seller) vs Customer Database.</p>`;
+
+        container.innerHTML = table;
+        document.getElementById('report-modal').style.display = 'block';
+        return;
+    }
+
+    // --- COMMON: CALCULATE DELETED RECORDS GAP ---
     const gapRev = targetRev - historyRev;
     const gapGst = targetGst - historyGst;
-
     if (Math.abs(gapRev) > 0.5) {
         stats["DELETED RECORDS"] = { rev: gapRev, gst: gapGst };
     }
 
-    // Build the Table
+    // --- COMMON: BUILD HTML TABLE ---
     let table = `<table style="width:100%; border-collapse:collapse; border:3px solid black; background:white;">
         <thead><tr style="background:black; color:white; text-align:left;">
-            <th style="padding:15px; border:1px solid white;">STATE NAME</th>
+            <th style="padding:15px; border:1px solid white;">${type === 'state' ? 'STATE NAME' : 'GST TIER'}</th>
             <th style="padding:15px; border:1px solid white;">TOTAL REVENUE (EXCL. GST)</th>
             <th style="padding:15px; border:1px solid white;">TOTAL GST</th>
         </tr></thead><tbody>`;
 
-    // Sort Descending by Revenue
-    Object.entries(stats).sort((a, b) => b[1].rev - a[1].rev).forEach(([stName, val]) => {
+    Object.entries(stats).sort((a, b) => b[1].rev - a[1].rev).forEach(([label, val]) => {
         table += `<tr style="border-bottom:1px solid black;">
-            <td style="padding:15px; font-weight:800; text-transform:uppercase;">${stName}</td>
+            <td style="padding:15px; font-weight:800;">${label.toUpperCase()}</td>
             <td style="padding:15px;">₹ ${val.rev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
             <td style="padding:15px;">₹ ${val.gst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
         </tr>`;
     });
 
-    // 3. THE TOTAL ROW (Matches Dashboard exactly)
+    // TOTAL ROW
     table += `<tr style="background:#f0f0f0; font-weight:900; border-top:3px solid black;">
         <td style="padding:15px;">TOTAL</td>
         <td style="padding:15px;">₹ ${targetRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
         <td style="padding:15px;">₹ ${targetGst.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
     </tr>`;
 
-    // 4. THE FINAL GRAND TOTAL (Revenue + GST)
-    const finalTotalValue = targetRev + targetGst;
+    // FINAL GRAND TOTAL
     table += `<tr style="background:#7FFFD4; font-weight:900;">
         <td colspan="2" style="padding:15px; text-align:right;">FINAL TOTAL (REV + GST):</td>
-        <td style="padding:15px; font-size:1.2rem;">₹ ${finalTotalValue.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td style="padding:15px; font-size:1.2rem;">₹ ${(targetRev + targetGst).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
     </tr></tbody></table>`;
 
     container.innerHTML = table;
