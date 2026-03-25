@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- THE BOUNCER: KICKS UNAUTHORIZED USERS TO LOGIN.HTML -->
+    <script>
+        if (!localStorage.getItem('userRole') || !localStorage.getItem('userEmail')) {
+            window.location.replace("login.html");
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -19217,5 +19224,46 @@ window.fetchProfitByDate = async function() {
     }
 };
 </script>
+
+<!-- ROLE MANAGER & LOGOUT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const role = localStorage.getItem('userRole');
+            const email = localStorage.getItem('userEmail');
+
+            // 1. Replace the old Google Auth box with a clean Profile/Logout box
+            const authBox = document.getElementById('google-auth-container');
+            if (authBox) {
+                authBox.innerHTML = `
+                    <div style="background: black; color: #7FFFD4; border: 4px solid #7FFFD4; padding: 20px; text-align: center; font-weight: 900; font-size: 1.2rem; text-transform: uppercase;">
+                        Logged in as: ${role} <br>
+                        <span style="font-size: 0.9rem; color: white;">${email}</span><br>
+                        <button onclick="localStorage.clear(); window.location.replace('login.html');" style="margin-top: 15px; background: #ff4757; color: white; padding: 10px 25px; border: 2px solid white; cursor: pointer; font-weight: bold; font-size: 1rem;">LOGOUT</button>
+                    </div>
+                `;
+            }
+
+            // 2. Hide features if the user is STAFF
+            if (role === 'staff') {
+                const hideElements = [
+                    'btn-profit-toggle', 
+                    'profit-section', 
+                    'btn-dashboard', 
+                    'dashboard-modal', 
+                    'reports-section-card'
+                ];
+
+                hideElements.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.setProperty('display', 'none', 'important');
+                });
+
+                // Hide all GSTR buttons
+                document.querySelectorAll('button[onclick^="generateGSTR"]').forEach(btn => {
+                    btn.style.setProperty('display', 'none', 'important');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
