@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <!-- THE BOUNCER: KICKS UNAUTHORIZED USERS TO LOGIN.HTML -->
-    <script>
-        if (!localStorage.getItem('userRole') || !localStorage.getItem('userEmail')) {
-            window.location.replace("login.html");
-        }
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -787,13 +780,19 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
     </div>
 </div>
     </div>
-    <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px;">
-        <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
-        <span id="user-display-name" style="font-weight: 700; color: black;"></span>
-        <button onclick="googleLogout()" style="background: black; color: var(--aqua); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: var(--input-shadow);">
-            LOGOUT
-        </button>
-    </div>
+<div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+    <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
+    <span id="user-display-name" style="font-weight: 700; color: black;"></span>
+    
+    <!-- THE BUSINESS ID BADGE -->
+    <span style="background: black; color: #7FFFD4; font-weight: 900; padding: 10px 15px; border-radius: 8px; box-shadow: 4px 4px 0px white; text-transform: uppercase;">
+        BIZ ID: <span id="display-biz-id"></span>
+    </span>
+
+    <button onclick="googleLogout()" style="background: #ff4757; color: white; border: 2px solid black; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 4px 4px 0px black;">
+        LOGOUT
+    </button>
+</div>
 </div>
 
 
@@ -14199,6 +14198,8 @@ async function onGoogleLogin(response) {
     document.getElementById('logout-view').style.display = 'flex';
     document.getElementById('user-photo').src = data.user.user_metadata.avatar_url;
     document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
+// Add this line inside your onGoogleLogin function in index.html
+document.getElementById('display-biz-id').innerText = localStorage.getItem('businessId') || "SI-XXXXXX";
 
 document.querySelectorAll('.input-panel > *').forEach(el => {
         if (el.id.endsWith('-modal')) {
@@ -19224,46 +19225,5 @@ window.fetchProfitByDate = async function() {
     }
 };
 </script>
-
-<!-- ROLE MANAGER & LOGOUT -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const role = localStorage.getItem('userRole');
-            const email = localStorage.getItem('userEmail');
-
-            // 1. Replace the old Google Auth box with a clean Profile/Logout box
-            const authBox = document.getElementById('google-auth-container');
-            if (authBox) {
-                authBox.innerHTML = `
-                    <div style="background: black; color: #7FFFD4; border: 4px solid #7FFFD4; padding: 20px; text-align: center; font-weight: 900; font-size: 1.2rem; text-transform: uppercase;">
-                        Logged in as: ${role} <br>
-                        <span style="font-size: 0.9rem; color: white;">${email}</span><br>
-                        <button onclick="localStorage.clear(); window.location.replace('login.html');" style="margin-top: 15px; background: #ff4757; color: white; padding: 10px 25px; border: 2px solid white; cursor: pointer; font-weight: bold; font-size: 1rem;">LOGOUT</button>
-                    </div>
-                `;
-            }
-
-            // 2. Hide features if the user is STAFF
-            if (role === 'staff') {
-                const hideElements = [
-                    'btn-profit-toggle', 
-                    'profit-section', 
-                    'btn-dashboard', 
-                    'dashboard-modal', 
-                    'reports-section-card'
-                ];
-
-                hideElements.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.style.setProperty('display', 'none', 'important');
-                });
-
-                // Hide all GSTR buttons
-                document.querySelectorAll('button[onclick^="generateGSTR"]').forEach(btn => {
-                    btn.style.setProperty('display', 'none', 'important');
-                });
-            }
-        });
-    </script>
 </body>
 </html>
