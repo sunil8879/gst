@@ -752,28 +752,41 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 <!-- AUTH SECTION -->
-<!-- AUTH SECTION -->
 <div id="google-auth-container" style="text-align: center; margin-bottom: 25px; padding: 20px; border: 2px solid black; border-radius: 15px; box-shadow: var(--input-shadow); background: white;">
     
-    <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
-        <!-- Simple Profile Icon -->
-        <div style="width: 45px; height: 45px; background: black; color: #7FFFD4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; border: 2px solid #7FFFD4;" id="user-initial">U</div>
-        
-        <div style="text-align: left; line-height: 1.2;">
-            <div id="user-display-name" style="font-weight: 900; color: black; font-size: 1.2rem; text-transform: uppercase;"></div>
-            <div id="user-role-badge" style="font-size: 0.8rem; font-weight: 800; color: #555; text-transform: uppercase;"></div>
+    <div id="login-view">
+        <div id="g_id_onload"
+             data-client_id="68135849389-j91ihmh5ser165q8rgudsstb1c1e6ctt.apps.googleusercontent.com"
+             data-callback="onGoogleLogin">
         </div>
-        
-        <!-- THE BUSINESS ID BADGE -->
-        <span style="background: black; color: #7FFFD4; font-weight: 900; padding: 10px 15px; border-radius: 8px; box-shadow: 4px 4px 0px #007BFF; text-transform: uppercase;">
-            BIZ ID: <span id="display-biz-id"></span>
-        </span>
+      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="rectangular"></div>
 
-        <button onclick="appLogout()" style="background: #ff4757; color: white; border: 2px solid black; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 4px 4px 0px black; transition: 0.2s;">
+<!-- LANDING PAGE FOR VISITORS -->
+<div id="visitor-box" style="text-align:center; margin-top:10px;">
+    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:10px;">
+    
+    <div class="visitor-grid">
+        <div class="feature-card"><i class="fas fa-file-word"></i> Word Export</div>
+        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST</div>
+        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Sign</div>
+        <div class="feature-card"><i class="fas fa-history"></i> Cloud Data</div>
+        <div class="feature-card"><i class="fas fa-chart-line"></i> Analytics</div>
+        
+        <div class="feature-card"><i class="fas fa-search"></i> HSN Finder</div>
+        <div class="feature-card"><i class="fas fa-bolt"></i> PWA App</div>
+        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Auto</div>
+        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Themes</div>
+        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Pro</div>
+    </div>
+</div>
+    </div>
+    <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px;">
+        <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
+        <span id="user-display-name" style="font-weight: 700; color: black;"></span>
+        <button onclick="googleLogout()" style="background: black; color: var(--aqua); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: var(--input-shadow);">
             LOGOUT
         </button>
     </div>
-
 </div>
 
 
@@ -14179,8 +14192,6 @@ async function onGoogleLogin(response) {
     document.getElementById('logout-view').style.display = 'flex';
     document.getElementById('user-photo').src = data.user.user_metadata.avatar_url;
     document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
-// Add this line inside your onGoogleLogin function in index.html
-document.getElementById('display-biz-id').innerText = localStorage.getItem('businessId') || "SI-XXXXXX";
 
 document.querySelectorAll('.input-panel > *').forEach(el => {
         if (el.id.endsWith('-modal')) {
@@ -19205,91 +19216,6 @@ window.fetchProfitByDate = async function() {
         clearProfitFields();
     }
 };
-
-
-
-
-
-// --- ROCK SOLID APP INITIALIZATION & AUTO-LOGIN CHECK ---
-supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT') {
-        window.location.href = 'login.html';
-    } else if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        if (!session) {
-            // Not logged in? Send back to login page securely
-            window.location.href = 'login.html';
-            return;
-        }
-
-        // User is logged in. Save variables.
-        currentUserId = session.user.id;
-        currentUserEmail = session.user.email;
-
-        // Fetch their detailed profile from the 'users' table
-        const { data: userProfile, error } = await supabaseClient
-            .from('users')
-            .select('*')
-            .eq('user_uid', currentUserId)
-            .single();
-
-        if (userProfile) {
-            // 1. Update the Profile UI
-            const logoutView = document.getElementById('logout-view');
-            if(logoutView) logoutView.style.setProperty('display', 'flex', 'important');
-            
-            if(document.getElementById('user-display-name')) document.getElementById('user-display-name').innerText = userProfile.name || "User";
-            if(document.getElementById('user-initial')) document.getElementById('user-initial').innerText = (userProfile.name || "U").charAt(0).toUpperCase();
-            if(document.getElementById('user-role-badge')) document.getElementById('user-role-badge').innerText = "Role: " + userProfile.role;
-            if(document.getElementById('display-biz-id')) document.getElementById('display-biz-id').innerText = userProfile.business_id;
-
-            // 2. UNLOCK ALL PANELS (Overriding CSS restrictions)
-            document.querySelectorAll('.input-panel > *').forEach(el => {
-                if (el.id && el.id.endsWith('-modal')) {
-                    el.style.setProperty('display', 'none', 'important');
-                } else {
-                    let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
-                    el.style.setProperty('display', displayType, 'important');
-                }
-            });
-
-            // 3. FIX: EXPLICITLY REVEAL MISSING SECTIONS (GSTR & Manuals)
-            const gstrCard = document.getElementById('reports-section-card');
-            if (gstrCard) gstrCard.style.setProperty('display', 'block', 'important');
-            
-            const manuals = document.getElementById('flow-wrap');
-            if (manuals) manuals.style.setProperty('display', 'block', 'important');
-            
-            const profitBtn = document.getElementById('btn-profit-toggle');
-            if (profitBtn) profitBtn.style.setProperty('display', 'flex', 'important');
-
-            // 4. Hide Visitor Boxes & Old Login forms
-            const visitorBox = document.getElementById('visitor-box');
-            if (visitorBox) visitorBox.style.setProperty('display', 'none', 'important');
-            const loginView = document.getElementById('login-view');
-            if (loginView) loginView.style.setProperty('display', 'none', 'important');
-
-            // 5. Auto-Fill Seller Details based on their Registration data
-            if (document.getElementById('s_name')) document.getElementById('s_name').value = userProfile.business_name || '';
-            if (document.getElementById('s_addr')) document.getElementById('s_addr').value = userProfile.address || '';
-            if (document.getElementById('s_state')) document.getElementById('s_state').value = userProfile.state || '';
-            if (document.getElementById('s_phone')) document.getElementById('s_phone').value = userProfile.whatsapp_no || '';
-            if (document.getElementById('s_email')) document.getElementById('s_email').value = userProfile.email || '';
-
-            // 6. Refresh Canvas and Preview
-            if (typeof resizeCanvas === "function") resizeCanvas();
-            if (typeof liveUpdate === "function") liveUpdate();
-        } else {
-            console.error("Profile not found in database.");
-        }
-    }
-});
-
-// --- SECURE LOGOUT FUNCTION ---
-async function appLogout() {
-    await supabaseClient.auth.signOut();
-    localStorage.clear();
-    window.location.href = 'login.html';
-}
 </script>
 </body>
 </html>
