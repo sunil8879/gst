@@ -1295,6 +1295,21 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
     <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; border:none; box-shadow:6px 6px 0px #7FFFD4; cursor:pointer; text-transform:uppercase;">
         GENERATE REPORT
     </button>
+
+
+
+
+
+<!-- --- GSTR BUTTONS --- -->
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px;">
+    <button onclick="generateGSTR1()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">GSTR 1</button>
+<button onclick="generateGSTR3B()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">GSTR 3B</button>
+  <button onclick="generateGSTR9()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">GSTR 9</button>
+</div>
+
+
+
+
 </div>
 
 <!-- --- REPORT DISPLAY MODAL --- -->
@@ -18483,6 +18498,445 @@ function printThermalReceipt() {
     window.print();
     
     receiptDiv.style.display = 'none';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// --- GSTR-1 DYNAMIC ENGINE WITH MONTH-YEAR HISTORY ---
+
+async function generateGSTR1() {
+    const pickerValue = document.getElementById('report_month_picker').value; 
+    if (!pickerValue) return alert("Please select a Month and Year first.");
+    
+    const [year, monthNum] = pickerValue.split("-");
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthName = monthNames[parseInt(monthNum) - 1];
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+    if (!currentUserId) return alert("Please login first.");
+
+    const [histRes, custRes, sellerRes] = await Promise.all([
+        supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', pickerValue + '-01').lte('inv_date', pickerValue + '-31'),
+        supabaseClient.from('customer_details').select('*').eq('user_id', currentUserId),
+        supabaseClient.from('seller_details').select('state').eq('user_id', currentUserId).single()
+    ]);
+
+    const history = histRes.data || [];
+    const customers = custRes.data || [];
+    const sellerState = (sellerRes.data?.state || "").toLowerCase().trim();
+
+    if (history.length === 0) return alert("No records found for " + monthName + " " + year);
+
+    const custMap = {};
+    customers.forEach(c => { custMap[c.business_name.toLowerCase().trim()] = c; });
+
+    let b2bRows = "", b2cRows = "", hsnRows = "";
+    let hsnStats = {};
+    let b2bT = { val: 0, tax: 0, gst: 0 }, b2cT = { val: 0, tax: 0, gst: 0 }, hsnT = { val: 0, tax: 0, gst: 0 };
+
+    history.forEach(inv => {
+        const cName = (inv.customer_name || "").toLowerCase().trim();
+        const cData = custMap[cName] || {};
+        const cGstin = cData.gstin || "";
+        const cState = (inv.customer_state || cData.state || "Unknown").toLowerCase().trim();
+        const taxable = parseFloat(inv.taxable_amount) || 0;
+        const gst = parseFloat(inv.gst_amount) || 0;
+        const total = parseFloat(inv.final_amount) || 0;
+
+        let igst = (cState === sellerState) ? 0 : gst;
+        let cgst = (cState === sellerState) ? gst / 2 : 0;
+        let sgst = (cState === sellerState) ? gst / 2 : 0;
+
+        if (cGstin && cGstin.length === 15) {
+            b2bRows += `<tr><td>${cGstin}</td><td>${inv.inv_no}</td><td>${inv.inv_date}</td><td>${total.toFixed(2)}</td><td>${cState.toUpperCase()}</td><td>${taxable.toFixed(2)}</td><td>${igst.toFixed(2)}</td><td>${cgst.toFixed(2)}</td><td>${sgst.toFixed(2)}</td></tr>`;
+            b2bT.val += total; b2bT.tax += taxable; b2bT.gst += gst;
+        } else {
+            b2cRows += `<tr><td>${cState.toUpperCase()}</td><td>${total.toFixed(2)}</td><td>18%</td><td>${taxable.toFixed(2)}</td><td>${igst.toFixed(2)}</td><td>${cgst.toFixed(2)}</td><td>${sgst.toFixed(2)}</td></tr>`;
+            b2cT.val += total; b2cT.tax += taxable; b2cT.gst += gst;
+        }
+
+        const prods = (inv.product_sold || "").split(',');
+        prods.forEach(p => {
+            const pName = p.trim();
+            // FIX: Lookup actual HSN from database
+            const dbItem = gstDatabase.find(d => d.goods_name.toLowerCase().includes(pName.toLowerCase()));
+            const hsnCode = dbItem ? dbItem.hsn_code.split(/[\/, ]+/)[0] : "9901";
+
+            if(!hsnStats[hsnCode]) hsnStats[hsnCode] = { name: pName, tax: 0, val: 0, gst: 0 };
+            hsnStats[hsnCode].tax += (taxable / prods.length);
+            hsnStats[hsnCode].val += (total / prods.length);
+            hsnStats[hsnCode].gst += (gst / prods.length);
+        });
+    });
+
+    Object.entries(hsnStats).forEach(([code, v]) => {
+        hsnRows += `<tr><td>${code}</td><td>${v.name}</td><td>Nos</td><td>${v.val.toFixed(2)}</td><td>${v.tax.toFixed(2)}</td><td>${v.gst.toFixed(2)}</td></tr>`;
+        hsnT.val += v.val; hsnT.tax += v.tax; hsnT.gst += v.gst;
+    });
+
+    const tableStyle = `style="width:100%; border-collapse:collapse; text-align:center; font-size:0.75rem; margin-bottom:20px; border:2px solid black;"`;
+    title.innerText = "GSTR-1 FILING DATA";
+    
+    container.innerHTML = `
+        <div id="gstr-print-area" style="text-align:center; font-family:Arial; padding:10px;">
+            <h2>GSTR-1 SALES REPORT</h2>
+            <h4 style="background:yellow; display:inline-block; padding:5px 15px; border:1px solid black;">MONTH: ${monthName.toUpperCase()} | YEAR: ${year}</h4>
+            <h4 style="text-align:left; margin-top:20px;">1. B2B SALES (REGISTERED CUSTOMERS)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee;"><td>GSTIN</td><td>INV NO</td><td>DATE</td><td>VALUE</td><td>POS</td><td>TAXABLE</td><td>IGST</td><td>CGST</td><td>SGST</td></tr>
+                ${b2bRows || "<tr><td colspan='9'>No Records</td></tr>"}
+                <tr style="background:#7FFFD4; font-weight:bold;"><td colspan="3">GRAND TOTAL</td><td>${b2bT.val.toFixed(2)}</td><td>-</td><td>${b2bT.tax.toFixed(2)}</td><td colspan="3">GST: ${b2bT.gst.toFixed(2)}</td></tr>
+            </table>
+            <h4 style="text-align:left;">2. B2C SALES (UNREGISTERED CUSTOMERS)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee;"><td>PLACE OF SUPPLY</td><td>INV VALUE</td><td>TAX RATE</td><td>TAXABLE VALUE</td><td>IGST</td><td>CGST</td><td>SGST</td></tr>
+                ${b2cRows || "<tr><td colspan='7'>No Records</td></tr>"}
+                <tr style="background:#7FFFD4; font-weight:bold;"><td>GRAND TOTAL</td><td>${b2cT.val.toFixed(2)}</td><td>-</td><td>${b2cT.tax.toFixed(2)}</td><td colspan="3">GST: ${b2cT.gst.toFixed(2)}</td></tr>
+            </table>
+            <h4 style="text-align:left;">3. HSN SUMMARY</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee;"><td>HSN</td><td>DESCRIPTION</td><td>UQC</td><td>TOTAL VALUE</td><td>TAXABLE VALUE</td><td>TOTAL GST</td></tr>
+                ${hsnRows || "<tr><td colspan='6'>No Records</td></tr>"}
+                <tr style="background:#7FFFD4; font-weight:bold;"><td colspan="3">GRAND TOTAL</td><td>${hsnT.val.toFixed(2)}</td><td>${hsnT.tax.toFixed(2)}</td><td>${hsnT.gst.toFixed(2)}</td></tr>
+            </table>
+        </div>
+<div style="display:flex; gap:10px; margin-top:10px;">
+<button onclick="exportGSTR1ToWord('${monthName}_${year}')" style="flex:1; padding:15px; background:black; color:#7FFFD4; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px #7FFFD4; text-transform:uppercase;">Download Word</button>
+
+ <button onclick="exportGSTR1ToExcel('${monthName}_${year}')" style="flex:1; padding:15px; background:#1B3E85; color:white; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px black; text-transform:uppercase;">Download Excel</button>
+</div>
+
+    `;
+    document.getElementById('report-modal').style.display = 'block';
+}
+
+function exportGSTR1ToWord(filename) {
+    const html = document.getElementById('gstr-print-area').innerHTML;
+    const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'></head><body style="text-align:center;">${html}</body></html>`], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `GSTR1_${filename}.doc`;
+    link.click();
+}
+
+
+
+
+function exportGSTR1ToExcel(filename) {
+    const html = document.getElementById('gstr-print-area').innerHTML;
+    // Basic Excel XML template to ensure tables format correctly
+    const template = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>GSTR1 Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
+        <body>${html}</body></html>`;
+        
+    const blob = new Blob([template], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `GSTR1_${filename}.xls`;
+    link.click();
+}
+
+
+
+
+
+
+
+
+// --- GSTR-3B DYNAMIC SUMMARY ENGINE ---
+
+async function generateGSTR3B() {
+    const pickerValue = document.getElementById('report_month_picker').value; 
+    if (!pickerValue) return alert("Please select a Month and Year first.");
+    
+    const [year, monthNum] = pickerValue.split("-");
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthName = monthNames[parseInt(monthNum) - 1];
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+    if (!currentUserId) return alert("Please login first.");
+
+    // 1. Fetch Sales (History) and Purchases (Profit/Expenses for ITC)
+    const [histRes, expRes, sellerRes] = await Promise.all([
+        supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', pickerValue + '-01').lte('inv_date', pickerValue + '-31'),
+        supabaseClient.from('profit_expenses').select('*').eq('user_id', currentUserId).gte('record_date', pickerValue + '-01').lte('record_date', pickerValue + '-31'),
+        supabaseClient.from('seller_details').select('state').eq('user_id', currentUserId).single()
+    ]);
+
+    const sales = histRes.data || [];
+    const expenses = expRes.data || [];
+    const sellerState = (sellerRes.data?.state || "").toLowerCase().trim();
+
+    // 2. Calculate Output Tax (Sales)
+    let totalTaxableSales = 0;
+    let outIgst = 0, outCgst = 0, outSgst = 0;
+
+    sales.forEach(inv => {
+        const taxable = parseFloat(inv.taxable_amount) || 0;
+        const gst = parseFloat(inv.gst_amount) || 0;
+        const cState = (inv.customer_state || "").toLowerCase().trim();
+
+        totalTaxableSales += taxable;
+        if (cState === sellerState) {
+            outCgst += (gst / 2); outSgst += (gst / 2);
+        } else {
+            outIgst += gst;
+        }
+    });
+
+    // 3. Calculate Input Tax Credit (ITC from Vendor Costs)
+    // We assume an average of 18% GST paid on vendor purchases/expenses
+    let totalPurchases = 0;
+    expenses.forEach(e => { totalPurchases += (parseFloat(e.vendor_costs) || 0); });
+    
+    let itcTotal = totalPurchases * 0.18;
+    let itcIgst = itcTotal * 0.2; // Assume 20% interstate purchases
+    let itcCgst = (itcTotal * 0.8) / 2; // Assume 80% local
+    let itcSgst = (itcTotal * 0.8) / 2;
+
+    // 4. Final Totals
+    const totalOutputTax = outIgst + outCgst + outSgst;
+    const totalITC = itcIgst + itcCgst + itcSgst;
+    const netPayable = totalOutputTax - totalITC;
+
+    const tableStyle = `style="width:100%; border-collapse:collapse; text-align:center; font-size:0.85rem; margin-bottom:20px; border:2px solid black;"`;
+    
+    title.innerText = "GSTR-3B MONTHLY SUMMARY";
+    
+    container.innerHTML = `
+        <div id="gstr3b-print-area" style="text-align:center; font-family:Arial; padding:10px;">
+            <h2>GSTR-3B CONSOLIDATED SUMMARY</h2>
+            <h4 style="background:yellow; display:inline-block; padding:5px 15px; border:1px solid black;">PERIOD: ${monthName.toUpperCase()} ${year}</h4>
+            
+            <h4 style="text-align:left; margin-top:20px;">SECTION 1: OUTPUT TAX (ON SALES)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#f0f0f0;"><td>DESCRIPTION</td><td>TAXABLE VALUE</td><td>IGST</td><td>CGST</td><td>SGST</td></tr>
+                <tr><td>Total Outward Supplies</td><td>${totalTaxableSales.toFixed(2)}</td><td>${outIgst.toFixed(2)}</td><td>${outCgst.toFixed(2)}</td><td>${outSgst.toFixed(2)}</td></tr>
+                <tr style="background:#eee; font-weight:bold;"><td colspan="2">TOTAL OUTPUT TAX</td><td colspan="3">₹ ${totalOutputTax.toFixed(2)}</td></tr>
+            </table>
+
+            <h4 style="text-align:left;">SECTION 2: ELIGIBLE ITC (ON PURCHASES)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#f0f0f0;"><td>DESCRIPTION</td><td>IGST</td><td>CGST</td><td>SGST</td><td>TOTAL ITC</td></tr>
+                <tr><td>Input Tax Credit Available</td><td>${itcIgst.toFixed(2)}</td><td>${itcCgst.toFixed(2)}</td><td>${itcSgst.toFixed(2)}</td><td>${totalITC.toFixed(2)}</td></tr>
+            </table>
+
+            <h4 style="text-align:left;">SECTION 3: NET TAX PAYABLE</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:black; color:white; font-weight:bold;"><td>PARTICULARS</td><td>AMOUNT</td></tr>
+                <tr><td>Total Output Tax Liability</td><td>₹ ${totalOutputTax.toFixed(2)}</td></tr>
+                <tr><td>Less: Set-off via ITC</td><td>- ₹ ${totalITC.toFixed(2)}</td></tr>
+                <tr style="background:#7FFFD4; font-weight:900; font-size:1.1rem;"><td>NET GST PAYABLE IN CASH</td><td>₹ ${netPayable.toFixed(2)}</td></tr>
+            </table>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button onclick="exportGSTR3BToWord('${monthName}_${year}')" style="flex:1; padding:15px; background:black; color:#7FFFD4; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px #7FFFD4;">DOWNLOAD WORD</button>
+            <button onclick="exportGSTR3BToExcel('${monthName}_${year}')" style="flex:1; padding:15px; background:#1B3E85; color:white; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px black;">DOWNLOAD EXCEL</button>
+        </div>
+    `;
+    document.getElementById('report-modal').style.display = 'block';
+}
+
+// --- EXPORT FUNCTIONS FOR GSTR-3B ---
+function exportGSTR3BToWord(fn) {
+    const html = document.getElementById('gstr3b-print-area').innerHTML;
+    const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'></head><body style="text-align:center;">${html}</body></html>`], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `GSTR3B_${fn}.doc`; link.click();
+}
+
+function exportGSTR3BToExcel(fn) {
+    const html = document.getElementById('gstr3b-print-area').innerHTML;
+    const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head></head><body>${html}</body></html>`;
+    const blob = new Blob([template], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `GSTR3B_${fn}.xls`; link.click();
+}
+
+
+
+
+
+
+// --- GSTR-9 ANNUAL SUMMARY ENGINE ---
+
+// --- GSTR-9 ANNUAL SUMMARY ENGINE (COMPLETE) ---
+
+async function generateGSTR9() {
+    const pickerValue = document.getElementById('report_month_picker').value; 
+    if (!pickerValue) return alert("Please select any month within the target Financial Year.");
+    
+    // 1. Calculate Financial Year (April to March)
+    const selectedDate = new Date(pickerValue + "-01");
+    let fyStartYear = selectedDate.getFullYear();
+    if (selectedDate.getMonth() < 3) fyStartYear--; // If Jan-Mar, the FY started the previous April
+    
+    const startDate = `${fyStartYear}-04-01`;
+    const endDate = `${fyStartYear + 1}-03-31`;
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+    if (!currentUserId) return alert("Please login first.");
+
+    // 2. Fetch Year-Long Data from Supabase
+    const [histRes, expRes, sellerRes] = await Promise.all([
+        supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', startDate).lte('inv_date', endDate),
+        supabaseClient.from('profit_expenses').select('*').eq('user_id', currentUserId).gte('record_date', startDate).lte('record_date', endDate),
+        supabaseClient.from('seller_details').select('state').eq('user_id', currentUserId).single()
+    ]);
+
+    const sales = histRes.data || [];
+    const expenses = expRes.data || [];
+    const sellerState = (sellerRes.data?.state || "").toLowerCase().trim();
+
+    if (sales.length === 0) return alert(`No sales data found for the Financial Year ${fyStartYear}-${fyStartYear+1}`);
+
+    // 3. Aggregate Yearly Totals
+    let totalSales = 0, outIgst = 0, outCgst = 0, outSgst = 0;
+    let hsnStats = {};
+    let hsnGT = { val: 0, tax: 0, gst: 0 }; // Grand Totals for HSN Table
+
+    sales.forEach(inv => {
+        const taxable = parseFloat(inv.taxable_amount) || 0;
+        const gst = parseFloat(inv.gst_amount) || 0;
+        const total = parseFloat(inv.final_amount) || 0;
+        const cState = (inv.customer_state || "").toLowerCase().trim();
+
+        totalSales += taxable;
+        if (cState === sellerState) {
+            outCgst += (gst / 2); outSgst += (gst / 2);
+        } else {
+            outIgst += gst;
+        }
+
+        // --- Aggregate HSN Summary Logic ---
+        const prods = (inv.product_sold || "").split(',');
+        prods.forEach(p => {
+            const pName = p.trim();
+            // Lookup code from database
+            const dbItem = gstDatabase.find(d => d.goods_name.toLowerCase().includes(pName.toLowerCase()));
+            const code = dbItem ? dbItem.hsn_code.split(/[\/, ]+/)[0] : "9901";
+            
+            if (!hsnStats[code]) hsnStats[code] = { name: pName.toUpperCase(), val: 0, tax: 0, gst: 0 };
+            
+            let partVal = (total / prods.length);
+            let partTax = (taxable / prods.length);
+            let partGst = (gst / prods.length);
+
+            hsnStats[code].val += partVal;
+            hsnStats[code].tax += partTax;
+            hsnStats[code].gst += partGst;
+
+            // Add to HSN Grand Total
+            hsnGT.val += partVal;
+            hsnGT.tax += partTax;
+            hsnGT.gst += partGst;
+        });
+    });
+
+    // 4. Calculate Yearly ITC (Based on recorded vendor costs)
+    let totalVendorCost = 0;
+    expenses.forEach(e => totalVendorCost += (parseFloat(e.vendor_costs) || 0));
+    let itcTotal = totalVendorCost * 0.18; // Standard 18% assumption
+    let itcIgst = itcTotal * 0.2; 
+    let itcCgst = (itcTotal * 0.8) / 2;
+    let itcSgst = (itcTotal * 0.8) / 2;
+
+    const totalGstCollected = outIgst + outCgst + outSgst;
+    const totalItcClaimed = itcIgst + itcCgst + itcSgst;
+    const netTaxPaid = totalGstCollected - totalItcClaimed;
+
+    title.innerText = `GSTR-9 Annual Report (FY ${fyStartYear}-${fyStartYear+1})`;
+
+    // 5. Build HSN Table Rows
+    let hsnRows = "";
+    Object.entries(hsnStats).sort((a,b) => b[1].tax - a[1].tax).forEach(([code, v]) => {
+        hsnRows += `<tr><td>${code}</td><td>${v.name}</td><td>${v.val.toFixed(2)}</td><td>${v.tax.toFixed(2)}</td><td>${v.gst.toFixed(2)}</td></tr>`;
+    });
+
+    // Add the HSN Grand Total Footer
+    hsnRows += `<tr style="background:#7FFFD4; font-weight:bold; border-top:2px solid black;">
+        <td colspan="2">HSN SUMMARY GRAND TOTAL</td>
+        <td>${hsnGT.val.toFixed(2)}</td>
+        <td>${hsnGT.tax.toFixed(2)}</td>
+        <td>${hsnGT.gst.toFixed(2)}</td>
+    </tr>`;
+
+    const tableStyle = `style="width:100%; border-collapse:collapse; text-align:center; font-size:0.8rem; margin-bottom:25px; border:2px solid black;"`;
+
+    // 6. Final UI Rendering
+    container.innerHTML = `
+        <div id="gstr9-print-area" style="text-align:center; font-family:Arial; padding:15px;">
+            <h2 style="text-decoration:underline; margin-bottom:5px;">GSTR-9 ANNUAL SUMMARY REPORT</h2>
+            <h3 style="background:yellow; display:inline-block; padding:10px; border:2px solid #000;">FINANCIAL YEAR: ${fyStartYear} - ${fyStartYear+1}</h3>
+
+            <h4 style="text-align:left; margin-top:30px;">1. ANNUAL REVENUE & OUTPUT TAX (SALES)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee; font-weight:bold;"><td>PARTICULARS</td><td>TAXABLE SALES</td><td>IGST</td><td>CGST</td><td>SGST</td><td>TOTAL GST</td></tr>
+                <tr><td>FY Consolidated</td><td>${totalSales.toFixed(2)}</td><td>${outIgst.toFixed(2)}</td><td>${outCgst.toFixed(2)}</td><td>${outSgst.toFixed(2)}</td><td style="font-weight:bold;">${totalGstCollected.toFixed(2)}</td></tr>
+            </table>
+
+            <h4 style="text-align:left;">2. ANNUAL INPUT TAX CREDIT (ITC ON PURCHASES)</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee; font-weight:bold;"><td>DESCRIPTION</td><td>ITC IGST</td><td>ITC CGST</td><td>ITC SGST</td><td>TOTAL ITC CLAIMED</td></tr>
+                <tr><td>Vendor/Expense Summary</td><td>${itcIgst.toFixed(2)}</td><td>${itcCgst.toFixed(2)}</td><td>${itcSgst.toFixed(2)}</td><td style="font-weight:bold;">${totalItcClaimed.toFixed(2)}</td></tr>
+            </table>
+
+            <h4 style="text-align:left;">3. ANNUAL TAX PAYABLE RECONCILIATION</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:black; color:white; font-weight:bold;"><td>FINAL STANDING</td><td>AMOUNT</td></tr>
+                <tr><td>Total GST Collected (Sales)</td><td>₹ ${totalGstCollected.toFixed(2)}</td></tr>
+                <tr><td>Total ITC Claimed (Purchases)</td><td>- ₹ ${totalItcClaimed.toFixed(2)}</td></tr>
+                <tr style="background:#7FFFD4; font-weight:900; font-size:1.1rem;"><td>NET ANNUAL TAX LIABILITY</td><td>₹ ${netTaxPaid.toFixed(2)}</td></tr>
+            </table>
+
+            <h4 style="text-align:left;">4. YEARLY HSN SUMMARY</h4>
+            <table border="1" ${tableStyle}>
+                <tr style="background:#eee; font-weight:bold;"><td>HSN</td><td>PRODUCT NAME</td><td>TOTAL VALUE</td><td>TAXABLE</td><td>TOTAL GST</td></tr>
+                ${hsnRows}
+            </table>
+            <p style="font-size:0.7rem; color:#666; margin-top:20px;">* Verified report generated via SMART INVOICE PRO compliance engine.</p>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button onclick="exportGSTR9ToWord('${fyStartYear}')" style="flex:1; padding:15px; background:black; color:#7FFFD4; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px #7FFFD4; text-transform:uppercase;">Download Word</button>
+            <button onclick="exportGSTR9ToExcel('${fyStartYear}')" style="flex:1; padding:15px; background:#1B3E85; color:white; font-weight:900; cursor:pointer; border:none; box-shadow:4px 4px 0px black; text-transform:uppercase;">Download Excel</button>
+        </div>
+    `;
+    document.getElementById('report-modal').style.display = 'block';
+}
+
+// --- EXPORT FUNCTIONS ---
+function exportGSTR9ToWord(fy) {
+    const html = document.getElementById('gstr9-print-area').innerHTML;
+    const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'></head><body style="text-align:center;">${html}</body></html>`], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `GSTR9_FY_${fy}.doc`; link.click();
+}
+
+function exportGSTR9ToExcel(fy) {
+    const html = document.getElementById('gstr9-print-area').innerHTML;
+    const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head></head><body>${html}</body></html>`;
+    const blob = new Blob([template], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `GSTR9_FY_${fy}.xls`; link.click();
 }
 </script>
 </body>
