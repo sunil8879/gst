@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WELCOME TO THE LOGIN PAGE OF SMART INVOICE PRO</title>
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #ffffff;
+            border: 20px solid black;
+            box-sizing: border-box;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top Buttons */
+        .top-btn-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #ffffff;
+            color: black;
+            border: 4px solid black;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 8px 8px 0px #7FFFD4, 14px 14px 0px black;
+            transition: 0.1s;
+            text-transform: uppercase;
+        }
+
+        .action-btn:active {
+            transform: translate(6px, 6px);
+            box-shadow: 2px 2px 0px #7FFFD4, 8px 8px 0px black;
+        }
+
+        /* Intense 3D Bevel Title */
+        .title-box {
+            background: #7FFFD4;
+            color: black;
+            border: 10px solid black;
+            /* Intense Bevel effect */
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-bottom-color: #004d40;
+            border-right-color: #004d40;
+            box-shadow: 15px 15px 0px black, 
+                        inset 10px 10px 20px rgba(255,255,255,0.9), 
+                        inset -10px -10px 20px rgba(0,0,0,0.4);
+            text-align: center;
+            padding: 30px 50px;
+            margin: 40px 20px;
+            width: 85%;
+            max-width: 1000px;
+        }
+
+        .title-box h1 {
+            margin: 0;
+            text-decoration: underline;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px white;
+        }
+
+        /* Centered Image */
+        .image-container {
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border: 6px solid black;
+            box-shadow: 15px 15px 0px #7FFFD4, 22px 22px 0px black;
+        }
+
+        /* Modal Popups */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border: 6px solid black;
+            box-shadow: 15px 15px 0px #7FFFD4, 22px 22px 0px black;
+            width: 90%;
+            max-width: 450px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            text-decoration: underline;
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-top: 0;
+        }
+
+        .modal-content label {
+            font-weight: 900;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 3px solid black;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            font-weight: bold;
+            box-shadow: 5px 5px 0px black;
+            background: white;
+        }
+
+        .modal-content input[readonly] {
+            background: #e0e0e0;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #7FFFD4;
+            color: black;
+            border: 4px solid black;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px black;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background: black;
+            color: #7FFFD4;
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: black;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Buttons -->
+    <div class="top-btn-container">
+        <button class="action-btn" onclick="openModal('owner')">REGISTER AS AN OWNER</button>
+        <button class="action-btn" onclick="openModal('staff')">REGISTER AS A STAFF MEMBER</button>
+    </div>
+
+    <!-- 3D Bevel Title -->
+    <div class="title-box">
+        <h1>WELCOME TO THE LOGIN PAGE OF SMART INVOICE PRO</h1>
+    </div>
+
+    <!-- Main Image -->
+    <div class="image-container">
+        <img src="gst.jpg" alt="Smart Invoice Pro GST">
+    </div>
+
+    <!-- OWNER MODAL -->
+    <div id="modal-owner" class="modal">
+        <div class="modal-content">
+            <h2>Owner Registration / Login</h2>
+            <div id="google-btn-owner" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+            
+            <div id="form-owner" style="display: none;">
+                <label>Business ID (Auto-Generated UUID)</label>
+                <input type="text" id="owner_business_id" readonly>
+                
+                <label>Google Unique ID</label>
+                <input type="text" id="owner_google_id" readonly>
+                
+                <label>Owner Email</label>
+                <input type="email" id="owner_email" readonly>
+                
+                <label>Business Name</label>
+                <input type="text" id="owner_business_name" placeholder="Enter Your Business Name" required>
+                
+                <button class="submit-btn" onclick="submitOwner()">SUBMIT</button>
+            </div>
+            <button class="cancel-btn" onclick="closeModal('modal-owner')">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- STAFF MODAL -->
+    <div id="modal-staff" class="modal">
+        <div class="modal-content">
+            <h2>Staff Registration / Login</h2>
+            <div id="google-btn-staff" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+            
+            <div id="form-staff" style="display: none;">
+                <label>Business ID (Ask your Owner for this)</label>
+                <input type="text" id="staff_business_id" placeholder="Paste exact Business ID here" required>
+                
+                <label>Google Unique ID</label>
+                <input type="text" id="staff_google_id" readonly>
+                
+                <label>Staff Name</label>
+                <input type="text" id="staff_name" readonly>
+                
+                <label>Role</label>
+                <input type="text" value="staff" readonly>
+                
+                <label>Staff Email</label>
+                <input type="email" id="staff_email" readonly>
+                
+                <label>Status</label>
+                <select id="staff_status">
+                    <option value="Active">Active</option>
+                    <option value="Disabled">Disabled</option>
+                </select>
+                
+                <button class="submit-btn" onclick="submitStaff()">SUBMIT</button>
+            </div>
+            <button class="cancel-btn" onclick="closeModal('modal-staff')">CANCEL</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // UPDATE THIS WITH YOUR ACTUAL GITHUB HOSTING URL
+        const GITHUB_APP_URL = "https://sunil8879.github.io/gst/"; // Change to 'https://your-username.github.io/index.html'
+
+        // Google Client ID (From your index.html)
+        const GOOGLE_CLIENT_ID = "68135849389-j91ihmh5ser165q8rgudsstb1c1e6ctt.apps.googleusercontent.com";
+
+        let activeRole = ''; 
+        let tempGooglePayload = null;
+
+        // ==========================================
+        // 2. MODAL & GOOGLE AUTH LOGIC
+        // ==========================================
+        function openModal(role) {
+            activeRole = role;
+            document.getElementById(`modal-${role}`).style.display = 'flex';
+            document.getElementById(`form-${role}`).style.display = 'none'; // Hide form initially
+            document.getElementById(`google-btn-${role}`).style.display = 'flex';
+
+            // Render Google Button
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById(`google-btn-${role}`),
+                { theme: "filled_blue", size: "large", width: 300 }
+            );
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function handleGoogleResponse(response) {
+            // Decode Google JWT Token
+            const base64Url = response.credential.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(window.atob(base64));
+            tempGooglePayload = payload;
+
+            // Check if user already exists in the `users` table
+            const { data: existingUser, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', payload.email)
+                .single();
+
+            if (existingUser) {
+                // If user exists, check role collision
+                if (existingUser.role !== activeRole) {
+                    alert(`ACCESS DENIED: This email is already registered as a ${existingUser.role.toUpperCase()}. You cannot login as ${activeRole.toUpperCase()}.`);
+                    return;
+                }
+                
+                // If role matches and Status is disabled for staff
+                if (existingUser.role === 'staff' && existingUser.status === 'Disabled') {
+                    alert("ACCESS DENIED: Your staff account is currently Disabled.");
+                    return;
+                }
+
+                // Everything is good, LOGIN directly!
+                alert("Welcome back! Logging you in...");
+                saveSessionAndRedirect(existingUser.role, existingUser.email, existingUser.business_id);
+
+            } else {
+                // NEW USER: Show the registration form corresponding to their choice
+                document.getElementById(`google-btn-${activeRole}`).style.display = 'none';
+                document.getElementById(`form-${activeRole}`).style.display = 'block';
+
+                if (activeRole === 'owner') {
+                    document.getElementById('owner_business_id').value = crypto.randomUUID();
+                    document.getElementById('owner_google_id').value = payload.sub;
+                    document.getElementById('owner_email').value = payload.email;
+                } else {
+                    document.getElementById('staff_google_id').value = payload.sub;
+                    document.getElementById('staff_email').value = payload.email;
+                    document.getElementById('staff_name').value = payload.name;
+                }
+            }
+        }
+
+        // ==========================================
+        // 3. SUBMIT FUNCTIONS (TO SUPABASE)
+        // ==========================================
+        async function submitOwner() {
+            const b_id = document.getElementById('owner_business_id').value;
+            const g_id = document.getElementById('owner_google_id').value;
+            const email = document.getElementById('owner_email').value;
+            const b_name = document.getElementById('owner_business_name').value;
+
+            if (!b_name.trim()) return alert("Please enter your Business Name");
+
+            // 1. Insert into Business Table
+            const { error: bizError } = await supabase.from('business').insert([{
+                business_id: b_id,
+                owner_id: g_id,
+                business_name: b_name,
+                owner_email: email,
+                google_id: g_id
+            }]);
+            if (bizError) return alert("Business Registration Error: " + bizError.message);
+
+            // 2. Insert into Users Table
+            const { error: userError } = await supabase.from('users').insert([{
+                id: crypto.randomUUID(),
+                user_uid: g_id,
+                name: tempGooglePayload.name,
+                role: 'owner',
+                email: email,
+                business_id: b_id,
+                status: 'Active',
+                google_id: g_id
+            }]);
+            if (userError) return alert("User Registration Error: " + userError.message);
+
+            alert("Owner Registration Successful!");
+            saveSessionAndRedirect('owner', email, b_id);
+        }
+
+        async function submitStaff() {
+            const b_id = document.getElementById('staff_business_id').value.trim();
+            const g_id = document.getElementById('staff_google_id').value;
+            const email = document.getElementById('staff_email').value;
+            const name = document.getElementById('staff_name').value;
+            const status = document.getElementById('staff_status').value;
+
+            if (!b_id) return alert("Please enter the Owner's Business ID");
+
+            // 1. Validate if Business ID exists in the business table
+            const { data: bizData, error: verifyError } = await supabase
+                .from('business')
+                .select('*')
+                .eq('business_id', b_id)
+                .single();
+                
+            if (!bizData || verifyError) return alert("INVALID BUSINESS ID: Please check the ID provided by your owner.");
+
+            // 2. Insert into Users Table
+            const { error: userError } = await supabase.from('users').insert([{
+                id: crypto.randomUUID(),
+                user_uid: g_id,
+                name: name,
+                role: 'staff',
+                email: email,
+                business_id: b_id,
+                status: status,
+                google_id: g_id
+            }]);
+            if (userError) return alert("User Registration Error: " + userError.message);
+
+            alert("Staff Registration Successful!");
+            saveSessionAndRedirect('staff', email, b_id);
+        }
+
+        // ==========================================
+        // 4. SESSION MANAGEMENT
+        // ==========================================
+        function saveSessionAndRedirect(role, email, businessId) {
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('businessId', businessId);
+            window.location.href = https://sunil8879.github.io/gst/;
+        }
+    </script>
+</body>
+</html>
