@@ -171,10 +171,12 @@
         </div>
     </div>
 
-    <script>
+<script>
         const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // FIXED: Renamed from 'supabase' to 'supabaseClient' to prevent global naming conflicts
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let activeRole = ''; 
         let tempPayload = null;
@@ -200,7 +202,8 @@
             const payload = JSON.parse(window.atob(response.credential.split('.')[1]));
             tempPayload = payload;
 
-            const { data: user } = await supabase.from('users').select('*').eq('email', payload.email).single();
+            // FIXED: Changed to supabaseClient
+            const { data: user } = await supabaseClient.from('users').select('*').eq('email', payload.email).single();
 
             if (user) {
                 if (user.role !== activeRole) return alert(`Email already registered as ${user.role}.`);
@@ -232,8 +235,9 @@
             const bname = document.getElementById('owner_biz_name').value;
             if(!bname) return alert("Enter Business Name");
 
-            await supabase.from('business').insert([{ business_id: bid, owner_id: tempPayload.sub, business_name: bname, owner_email: tempPayload.email, google_id: tempPayload.sub }]);
-            await supabase.from('users').insert([{ id: crypto.randomUUID(), user_uid: tempPayload.sub, name: tempPayload.name, role: 'owner', email: tempPayload.email, business_id: bid, status: 'Active', google_id: tempPayload.sub }]);
+            // FIXED: Changed to supabaseClient
+            await supabaseClient.from('business').insert([{ business_id: bid, owner_id: tempPayload.sub, business_name: bname, owner_email: tempPayload.email, google_id: tempPayload.sub }]);
+            await supabaseClient.from('users').insert([{ id: crypto.randomUUID(), user_uid: tempPayload.sub, name: tempPayload.name, role: 'owner', email: tempPayload.email, business_id: bid, status: 'Active', google_id: tempPayload.sub }]);
 
             localStorage.setItem('userRole', 'owner');
             localStorage.setItem('userEmail', tempPayload.email);
@@ -244,10 +248,11 @@
             const bid = document.getElementById('staff_biz_id').value;
             if(!bid) return alert("Enter Business ID");
 
-            const { data: biz } = await supabase.from('business').select('*').eq('business_id', bid).single();
+            // FIXED: Changed to supabaseClient
+            const { data: biz } = await supabaseClient.from('business').select('*').eq('business_id', bid).single();
             if(!biz) return alert("Invalid Business ID");
 
-            await supabase.from('users').insert([{ id: crypto.randomUUID(), user_uid: tempPayload.sub, name: tempPayload.name, role: 'staff', email: tempPayload.email, business_id: bid, status: document.getElementById('staff_status').value, google_id: tempPayload.sub }]);
+            await supabaseClient.from('users').insert([{ id: crypto.randomUUID(), user_uid: tempPayload.sub, name: tempPayload.name, role: 'staff', email: tempPayload.email, business_id: bid, status: document.getElementById('staff_status').value, google_id: tempPayload.sub }]);
 
             localStorage.setItem('userRole', 'staff');
             localStorage.setItem('userEmail', tempPayload.email);
