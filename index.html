@@ -1200,10 +1200,30 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
         <input type="number" id="exp_internet" placeholder="Internet" value="0" oninput="calcProfit()" />
         <input type="number" id="exp_rent" placeholder="Rent" value="0" oninput="calcProfit()" />
     </div>
-    <div class="form-row">
-        <input type="number" id="exp_vendor" placeholder="Vendor Costs" value="0" oninput="calcProfit()" />
-        <input type="number" id="exp_transport" placeholder="Transport" value="0" oninput="calcProfit()" />
+<!-- Row 1: Detailed Vendor GST Tracking -->
+<div class="form-row" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+    <div>
+        <label style="font-size:0.6rem; font-weight:800; display:block; margin-bottom:5px;">VENDOR COST (TAXABLE)</label>
+        <input type="number" id="exp_vendor" placeholder="Cost" value="0" oninput="calcProfit()" />
     </div>
+    <div>
+        <label style="font-size:0.6rem; font-weight:800; display:block; margin-bottom:5px;">GST TYPE</label>
+        <select id="exp_vendor_gst_type" onchange="calcProfit()" style="font-size:0.75rem;">
+            <option value="CGST/SGST">LOCAL (CGST/SGST)</option>
+            <option value="IGST">INTERSTATE (IGST)</option>
+        </select>
+    </div>
+    <div>
+        <label style="font-size:0.6rem; font-weight:800; display:block; margin-bottom:5px;">GST PAID TO VENDOR</label>
+        <input type="number" id="exp_vendor_gst_amt" placeholder="GST Amount" value="0" oninput="calcProfit()" />
+    </div>
+</div>
+
+<!-- Row 2: Transport and Miscellaneous -->
+<div class="form-row" style="margin-top:15px;">
+    <input type="number" id="exp_transport" placeholder="Transport" value="0" oninput="calcProfit()" />
+    <input type="number" id="exp_misc" placeholder="Miscellaneous (Tea/Paper)" value="0" oninput="calcProfit()" />
+</div>
     <div class="form-row">
         <input type="number" id="exp_misc" placeholder="Miscellaneous (Tea/Paper)" value="0" oninput="calcProfit()" />
         <input type="text" id="exp_note" placeholder="Expense Note" />
@@ -18699,19 +18719,36 @@ async function generateGSTR3B() {
     });
 
     // 3. Calculate Input Tax Credit (ITC from Vendor Costs)
-    // We assume an average of 18% GST paid on vendor purchases/expenses
-    let totalPurchases = 0;
-    expenses.forEach(e => { totalPurchases += (parseFloat(e.vendor_costs) || 0); });
-    
-    let itcTotal = totalPurchases * 0.18;
-    let itcIgst = itcTotal * 0.2; // Assume 20% interstate purchases
-    let itcCgst = (itcTotal * 0.8) / 2; // Assume 80% local
-    let itcSgst = (itcTotal * 0.8) / 2;
+   
 
     // 4. Final Totals
     const totalOutputTax = outIgst + outCgst + outSgst;
-    const totalITC = itcIgst + itcCgst + itcSgst;
+  
+
+
+
+
+
+// Add this logic inside generateGSTR3B and generateGSTR9 loops
+let itcIgst = 0, itcCgst = 0, itcSgst = 0;
+
+expenses.forEach(e => {
+    let amt = parseFloat(e.vendor_gst_amount) || 0;
+    if(e.vendor_gst_type === 'IGST') {
+        itcIgst += amt;
+    } else {
+        itcCgst += (amt / 2);
+        itcSgst += (amt / 2);
+    }
+});
+// Total ITC is now the exact sum of manual entries
+const totalITC = itcIgst + itcCgst + itcSgst;
     const netPayable = totalOutputTax - totalITC;
+
+
+
+
+
 
     const tableStyle = `style="width:100%; border-collapse:collapse; text-align:center; font-size:0.85rem; margin-bottom:20px; border:2px solid black;"`;
     
@@ -18853,14 +18890,24 @@ async function generateGSTR9() {
     // 4. Calculate Yearly ITC (Based on recorded vendor costs)
     let totalVendorCost = 0;
     expenses.forEach(e => totalVendorCost += (parseFloat(e.vendor_costs) || 0));
-    let itcTotal = totalVendorCost * 0.18; // Standard 18% assumption
-    let itcIgst = itcTotal * 0.2; 
-    let itcCgst = (itcTotal * 0.8) / 2;
-    let itcSgst = (itcTotal * 0.8) / 2;
+  
+ const totalGstCollected = outIgst + outCgst + outSgst;
+// Add this logic inside generateGSTR3B and generateGSTR9 loops
+let itcIgst = 0, itcCgst = 0, itcSgst = 0;
 
-    const totalGstCollected = outIgst + outCgst + outSgst;
-    const totalItcClaimed = itcIgst + itcCgst + itcSgst;
-    const netTaxPaid = totalGstCollected - totalItcClaimed;
+expenses.forEach(e => {
+    let amt = parseFloat(e.vendor_gst_amount) || 0;
+    if(e.vendor_gst_type === 'IGST') {
+        itcIgst += amt;
+    } else {
+        itcCgst += (amt / 2);
+        itcSgst += (amt / 2);
+    }
+});
+
+const totalITC = itcIgst + itcCgst + itcSgst;
+const totalItcClaimed = totalITC; // FIX: Now it works
+const netTaxPaid = totalGstCollected - totalItcClaimed;
 
     title.innerText = `GSTR-9 Annual Report (FY ${fyStartYear}-${fyStartYear+1})`;
 
@@ -18938,6 +18985,237 @@ function exportGSTR9ToExcel(fy) {
     const link = document.createElement('a');
     link.href = url; link.download = `GSTR9_FY_${fy}.xls`; link.click();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 1. THE CALCULATION FUNCTION (Updates the UI)
+window.calcProfit = function() {
+    const getN = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const rev = parseFloat(document.getElementById('exp_revenue').value) || 0;
+    
+    // Total Expenses = All manual costs + the specific GST paid to vendor
+    const totalExp = getN('exp_salary') + getN('exp_marketing') + getN('exp_electricity') + 
+                     getN('exp_maintenance') + getN('exp_internet') + getN('exp_rent') + 
+                     getN('exp_vendor') + getN('exp_transport') + getN('exp_misc') + 
+                     getN('exp_vendor_gst_amt'); 
+    
+    const profit = rev - totalExp;
+    document.getElementById('disp_total_exp').innerText = "₹ " + totalExp.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('disp_total_profit').innerText = "₹ " + profit.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('disp_exp_perc').innerText = rev > 0 ? ((totalExp / rev) * 100).toFixed(2) + "%" : "0.00%";
+};
+
+// 2. THE SAVE FUNCTION (Actually adds the data to Supabase)
+window.saveProfitRecord = async function(mode) {
+    const dateVal = document.getElementById('exp_date').value;
+    if(!dateVal || !currentUserId) return alert("Select Date & Login");
+
+    const getN = (id) => parseFloat(document.getElementById(id).value) || 0;
+    
+    const entry = {
+        user_id: currentUserId,
+        record_date: dateVal,
+        salary: getN('exp_salary'),
+        marketing: getN('exp_marketing'),
+        electricity: getN('exp_electricity'),
+        maintenance: getN('exp_maintenance'),
+        internet: getN('exp_internet'),
+        rent: getN('exp_rent'),
+        vendor_costs: getN('exp_vendor'),
+        transport: getN('exp_transport'),
+        misc: getN('exp_misc'),
+        note: document.getElementById('exp_note').value,
+        vendor_gst_type: document.getElementById('exp_vendor_gst_type').value, // NEW FIELD
+        vendor_gst_amount: getN('exp_vendor_gst_amt'), // NEW FIELD
+        total_expenses: parseFloat(document.getElementById('disp_total_exp').innerText.replace(/[^\d.-]/g, '')),
+        total_profit: parseFloat(document.getElementById('disp_total_profit').innerText.replace(/[^\d.-]/g, '')),
+        expense_percent: parseFloat(document.getElementById('disp_exp_perc').innerText)
+    };
+
+    if (mode === 'ADD') {
+        const { error } = await supabaseClient.from('profit_expenses').insert([entry]);
+        alert(error ? error.message : "Record Saved Successfully!");
+    } else {
+        const { error } = await supabaseClient.from('profit_expenses').update(entry).eq('user_id', currentUserId).eq('record_date', dateVal);
+        alert(error ? error.message : "Record Updated Successfully!");
+    }
+};
+
+// 3. THE FETCH FUNCTION (Retrieves the new fields when you click FETCH)
+window.fetchProfitByDate = async function() {
+    const dateVal = document.getElementById('exp_date').value;
+    if (!dateVal || !currentUserId) return alert("Select Date");
+
+    const { data, error } = await supabaseClient.from('profit_expenses').select('*').eq('user_id', currentUserId).eq('record_date', dateVal).single();
+    
+    if (data) {
+        document.getElementById('exp_salary').value = data.salary;
+        document.getElementById('exp_marketing').value = data.marketing;
+        document.getElementById('exp_electricity').value = data.electricity;
+        document.getElementById('exp_maintenance').value = data.maintenance;
+        document.getElementById('exp_internet').value = data.internet;
+        document.getElementById('exp_rent').value = data.rent;
+        document.getElementById('exp_vendor').value = data.vendor_costs;
+        document.getElementById('exp_transport').value = data.transport;
+        document.getElementById('exp_misc').value = data.misc;
+        document.getElementById('exp_note').value = data.note || "";
+        // LOAD NEW FIELDS
+        document.getElementById('exp_vendor_gst_type').value = data.vendor_gst_type || "CGST/SGST";
+        document.getElementById('exp_vendor_gst_amt').value = data.vendor_gst_amount || 0;
+        
+        calcProfit(); // Update totals on screen
+        alert("Record Loaded!");
+    } else {
+        alert("No record found for this date.");
+    }
+};
+
+
+
+
+
+
+
+
+
+// --- FINAL STABLE FETCH ENGINE for PROFIT & EXPENSES ---
+window.fetchProfitByDate = async function() {
+    const dateVal = document.getElementById('exp_date').value;
+    if (!dateVal || !currentUserId) return alert("Please select a date and ensure you are logged in.");
+
+    // 1. Sync the revenue first to ensure profit calculations are accurate
+    await fetchRevenueForProfit();
+
+    // 2. Fetch data (We use select and check length instead of .single to prevent crashes)
+    const { data, error } = await supabaseClient.from('profit_expenses')
+        .select('*')
+        .eq('user_id', currentUserId)
+        .eq('record_date', dateVal);
+
+    if (error) {
+        console.error("Supabase Error:", error);
+        return alert("Error connecting to database: " + error.message);
+    }
+
+    // 3. Check if a record exists
+    if (data && data.length > 0) {
+        const record = data[0]; // Take the found record
+
+        // Fill standard fields
+        document.getElementById('exp_salary').value = record.salary || 0;
+        document.getElementById('exp_marketing').value = record.marketing || 0;
+        document.getElementById('exp_electricity').value = record.electricity || 0;
+        document.getElementById('exp_maintenance').value = record.maintenance || 0;
+        document.getElementById('exp_internet').value = record.internet || 0;
+        document.getElementById('exp_rent').value = record.rent || 0;
+        document.getElementById('exp_vendor').value = record.vendor_costs || 0;
+        document.getElementById('exp_transport').value = record.transport || 0;
+        document.getElementById('exp_misc').value = record.misc || 0;
+        document.getElementById('exp_note').value = record.note || "";
+        
+        // Fill the new manual GST fields
+        if (document.getElementById('exp_vendor_gst_type')) {
+            document.getElementById('exp_vendor_gst_type').value = record.vendor_gst_type || "CGST/SGST";
+        }
+        if (document.getElementById('exp_vendor_gst_amt')) {
+            document.getElementById('exp_vendor_gst_amt').value = record.vendor_gst_amount || 0;
+        }
+
+        // Trigger the visual calculations
+        calcProfit();
+        alert("Success: Data loaded for " + dateVal);
+    } else {
+        alert("No record exists for " + dateVal + ". All fields reset to zero.");
+        clearProfitFields();
+    }
+};
+
+
+
+
+
+
+
+
+// --- CONSOLIDATED FETCH ENGINE: SUMS MULTIPLE DAILY RECORDS ---
+window.fetchProfitByDate = async function() {
+    const dateVal = document.getElementById('exp_date').value;
+    if (!dateVal || !currentUserId) return alert("Please select a date and ensure you are logged in.");
+
+    // 1. Sync Monthly Revenue from Dashboard
+    await fetchRevenueForProfit();
+
+    // 2. Fetch ALL records for this specific date
+    const { data, error } = await supabaseClient.from('profit_expenses')
+        .select('*')
+        .eq('user_id', currentUserId)
+        .eq('record_date', dateVal);
+
+    if (error) {
+        console.error("Database Error:", error);
+        return alert("Database Error: " + error.message);
+    }
+
+    if (data && data.length > 0) {
+        // 3. AGGREGATION LOGIC (Summing everything for the day)
+        let totals = {
+            salary: 0, marketing: 0, electricity: 0, maintenance: 0, 
+            internet: 0, rent: 0, vendor_costs: 0, transport: 0, 
+            misc: 0, gst_amt: 0
+        };
+        let combinedNotes = [];
+
+        data.forEach(record => {
+            totals.salary += parseFloat(record.salary) || 0;
+            totals.marketing += parseFloat(record.marketing) || 0;
+            totals.electricity += parseFloat(record.electricity) || 0;
+            totals.maintenance += parseFloat(record.maintenance) || 0;
+            totals.internet += parseFloat(record.internet) || 0;
+            totals.rent += parseFloat(record.rent) || 0;
+            totals.vendor_costs += parseFloat(record.vendor_costs) || 0;
+            totals.transport += parseFloat(record.transport) || 0;
+            totals.misc += parseFloat(record.misc) || 0;
+            totals.gst_amt += parseFloat(record.vendor_gst_amount) || 0;
+            if(record.note) combinedNotes.push(record.note);
+        });
+
+        // 4. POPULATE UI WITH CONSOLIDATED TOTALS
+        document.getElementById('exp_salary').value = totals.salary;
+        document.getElementById('exp_marketing').value = totals.marketing;
+        document.getElementById('exp_electricity').value = totals.electricity;
+        document.getElementById('exp_maintenance').value = totals.maintenance;
+        document.getElementById('exp_internet').value = totals.internet;
+        document.getElementById('exp_rent').value = totals.rent;
+        document.getElementById('exp_vendor').value = totals.vendor_costs;
+        document.getElementById('exp_transport').value = totals.transport;
+        document.getElementById('exp_misc').value = totals.misc;
+        document.getElementById('exp_vendor_gst_amt').value = totals.gst_amt;
+        
+        // Show combined notes
+        document.getElementById('exp_note').value = combinedNotes.join(" | ");
+
+        // Set the dropdown to the type of the latest entry (as a fallback)
+        document.getElementById('exp_vendor_gst_type').value = data[data.length-1].vendor_gst_type || "CGST/SGST";
+
+        // Update the visual dashboard in the card
+        calcProfit(); 
+        alert(`Consolidated data for ${dateVal} loaded. (Found ${data.length} records)`);
+    } else {
+        alert("No record found for " + dateVal);
+        clearProfitFields();
+    }
+};
 </script>
 </body>
 </html>
