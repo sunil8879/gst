@@ -184,6 +184,19 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+
+
+
+        // --- NEW: AUTO-REDIRECT IF ALREADY LOGGED IN ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                // Force redirect and bypass browser cache
+                window.location.href = "index.html?t=" + new Date().getTime();
+            }
+        });
+
+
+
         // --- ACCORDION LOGIC ---
         function toggleSection(id) {
             document.getElementById('landing-img').style.display = 'none'; // Hide image when a form opens
@@ -281,7 +294,7 @@
 
             // Save essential data for index.html to use
             localStorage.setItem('businessId', userProfile.business_id);
-            window.location.replace("index.html");
+           window.location.href = "index.html?t=" + new Date().getTime();
         }
 
         // --- GMAIL LOGIN LOGIC (OWNER ONLY) ---
@@ -319,7 +332,7 @@
             }
 
             localStorage.setItem('businessId', bizId);
-            window.location.replace("index.html");
+           window.location.href = "index.html?t=" + new Date().getTime();
         }
     </script>
 </body>

@@ -19210,73 +19210,85 @@ window.fetchProfitByDate = async function() {
 
 
 
-
-// --- APP INITIALIZATION & AUTO-LOGIN CHECK ---
-window.addEventListener('DOMContentLoaded', async () => {
-    // 1. Check if Supabase session exists (User logged in via login.html)
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
-    
-    if (!session) {
-        // Not logged in? Send them back to the login page securely!
-        window.location.replace('login.html');
-        return;
-    }
-
-    // 2. User is logged in. Save variables for the rest of your app.
-    currentUserId = session.user.id;
-    currentUserEmail = session.user.email;
-
-    // 3. Fetch their detailed profile from the 'users' table
-    const { data: userProfile } = await supabaseClient
-        .from('users')
-        .select('*')
-        .eq('user_uid', currentUserId)
-        .single();
-
-    if (userProfile) {
-        // 4. Update the Profile UI
-        document.getElementById('logout-view').style.display = 'flex';
-        document.getElementById('user-display-name').innerText = userProfile.name || "User";
-        document.getElementById('user-initial').innerText = (userProfile.name || "U").charAt(0).toUpperCase();
-        document.getElementById('user-role-badge').innerText = "Role: " + userProfile.role;
-        
-        if (document.getElementById('display-biz-id')) {
-            document.getElementById('display-biz-id').innerText = userProfile.business_id;
+// --- ROCK SOLID APP INITIALIZATION & AUTO-LOGIN CHECK ---
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT') {
+        window.location.href = 'login.html';
+    } else if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (!session) {
+            // Not logged in? Send back to login page securely
+            window.location.href = 'login.html';
+            return;
         }
 
-        // 5. UNLOCK THE MAIN APP (Reveal all sections)
-        document.querySelectorAll('.input-panel > *').forEach(el => {
-            if (el.id.endsWith('-modal')) {
-                el.style.setProperty('display', 'none', 'important');
-            } else {
-                let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
-                el.style.setProperty('display', displayType, 'important');
-            }
-        });
+        // User is logged in. Save variables.
+        currentUserId = session.user.id;
+        currentUserEmail = session.user.email;
 
-        // Hide Visitor Box
-        const visitorBox = document.getElementById('visitor-box');
-        if (visitorBox) visitorBox.style.display = 'none';
+        // Fetch their detailed profile from the 'users' table
+        const { data: userProfile, error } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('user_uid', currentUserId)
+            .single();
 
-        // Auto-Fill Seller Details based on their Registration data
-        if (userProfile.role === 'owner' || userProfile.role === 'staff') {
-            if(document.getElementById('s_name')) document.getElementById('s_name').value = userProfile.business_name || '';
-            if(document.getElementById('s_addr')) document.getElementById('s_addr').value = userProfile.address || '';
-            if(document.getElementById('s_state')) document.getElementById('s_state').value = userProfile.state || '';
-            if(document.getElementById('s_phone')) document.getElementById('s_phone').value = userProfile.whatsapp_no || '';
-            if(document.getElementById('s_email')) document.getElementById('s_email').value = userProfile.email || '';
+        if (userProfile) {
+            // 1. Update the Profile UI
+            const logoutView = document.getElementById('logout-view');
+            if(logoutView) logoutView.style.setProperty('display', 'flex', 'important');
+            
+            if(document.getElementById('user-display-name')) document.getElementById('user-display-name').innerText = userProfile.name || "User";
+            if(document.getElementById('user-initial')) document.getElementById('user-initial').innerText = (userProfile.name || "U").charAt(0).toUpperCase();
+            if(document.getElementById('user-role-badge')) document.getElementById('user-role-badge').innerText = "Role: " + userProfile.role;
+            if(document.getElementById('display-biz-id')) document.getElementById('display-biz-id').innerText = userProfile.business_id;
+
+            // 2. UNLOCK ALL PANELS (Overriding CSS restrictions)
+            document.querySelectorAll('.input-panel > *').forEach(el => {
+                if (el.id && el.id.endsWith('-modal')) {
+                    el.style.setProperty('display', 'none', 'important');
+                } else {
+                    let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+                    el.style.setProperty('display', displayType, 'important');
+                }
+            });
+
+            // 3. FIX: EXPLICITLY REVEAL MISSING SECTIONS (GSTR & Manuals)
+            const gstrCard = document.getElementById('reports-section-card');
+            if (gstrCard) gstrCard.style.setProperty('display', 'block', 'important');
+            
+            const manuals = document.getElementById('flow-wrap');
+            if (manuals) manuals.style.setProperty('display', 'block', 'important');
+            
+            const profitBtn = document.getElementById('btn-profit-toggle');
+            if (profitBtn) profitBtn.style.setProperty('display', 'flex', 'important');
+
+            // 4. Hide Visitor Boxes & Old Login forms
+            const visitorBox = document.getElementById('visitor-box');
+            if (visitorBox) visitorBox.style.setProperty('display', 'none', 'important');
+            const loginView = document.getElementById('login-view');
+            if (loginView) loginView.style.setProperty('display', 'none', 'important');
+
+            // 5. Auto-Fill Seller Details based on their Registration data
+            if (document.getElementById('s_name')) document.getElementById('s_name').value = userProfile.business_name || '';
+            if (document.getElementById('s_addr')) document.getElementById('s_addr').value = userProfile.address || '';
+            if (document.getElementById('s_state')) document.getElementById('s_state').value = userProfile.state || '';
+            if (document.getElementById('s_phone')) document.getElementById('s_phone').value = userProfile.whatsapp_no || '';
+            if (document.getElementById('s_email')) document.getElementById('s_email').value = userProfile.email || '';
+
+            // 6. Refresh Canvas and Preview
+            if (typeof resizeCanvas === "function") resizeCanvas();
+            if (typeof liveUpdate === "function") liveUpdate();
+        } else {
+            console.error("Profile not found in database.");
         }
-
-        if (typeof resizeCanvas === "function") resizeCanvas();
-        if (typeof liveUpdate === "function") liveUpdate();
     }
 });
 
-// --- NEW SECURE LOGOUT FUNCTION ---
+// --- SECURE LOGOUT FUNCTION ---
 async function appLogout() {
     await supabaseClient.auth.signOut();
     localStorage.clear();
-    window.location.replace('login.html');
+    window.location.href = 'login.html';
 }
 </script>
 </body>
