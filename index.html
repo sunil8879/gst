@@ -752,47 +752,28 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 <!-- AUTH SECTION -->
+<!-- AUTH SECTION -->
 <div id="google-auth-container" style="text-align: center; margin-bottom: 25px; padding: 20px; border: 2px solid black; border-radius: 15px; box-shadow: var(--input-shadow); background: white;">
     
-    <div id="login-view">
-        <div id="g_id_onload"
-             data-client_id="68135849389-j91ihmh5ser165q8rgudsstb1c1e6ctt.apps.googleusercontent.com"
-             data-callback="onGoogleLogin">
-        </div>
-      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="rectangular"></div>
-
-<!-- LANDING PAGE FOR VISITORS -->
-<div id="visitor-box" style="text-align:center; margin-top:10px;">
-    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:10px;">
-    
-    <div class="visitor-grid">
-        <div class="feature-card"><i class="fas fa-file-word"></i> Word Export</div>
-        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST</div>
-        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Sign</div>
-        <div class="feature-card"><i class="fas fa-history"></i> Cloud Data</div>
-        <div class="feature-card"><i class="fas fa-chart-line"></i> Analytics</div>
+    <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <!-- Simple Profile Icon -->
+        <div style="width: 45px; height: 45px; background: black; color: #7FFFD4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; border: 2px solid #7FFFD4;" id="user-initial">U</div>
         
-        <div class="feature-card"><i class="fas fa-search"></i> HSN Finder</div>
-        <div class="feature-card"><i class="fas fa-bolt"></i> PWA App</div>
-        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Auto</div>
-        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Themes</div>
-        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Pro</div>
-    </div>
-</div>
-    </div>
-<div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
-    <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
-    <span id="user-display-name" style="font-weight: 700; color: black;"></span>
-    
-    <!-- THE BUSINESS ID BADGE -->
-    <span style="background: black; color: #7FFFD4; font-weight: 900; padding: 10px 15px; border-radius: 8px; box-shadow: 4px 4px 0px white; text-transform: uppercase;">
-        BIZ ID: <span id="display-biz-id"></span>
-    </span>
+        <div style="text-align: left; line-height: 1.2;">
+            <div id="user-display-name" style="font-weight: 900; color: black; font-size: 1.2rem; text-transform: uppercase;"></div>
+            <div id="user-role-badge" style="font-size: 0.8rem; font-weight: 800; color: #555; text-transform: uppercase;"></div>
+        </div>
+        
+        <!-- THE BUSINESS ID BADGE -->
+        <span style="background: black; color: #7FFFD4; font-weight: 900; padding: 10px 15px; border-radius: 8px; box-shadow: 4px 4px 0px #007BFF; text-transform: uppercase;">
+            BIZ ID: <span id="display-biz-id"></span>
+        </span>
 
-    <button onclick="googleLogout()" style="background: #ff4757; color: white; border: 2px solid black; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 4px 4px 0px black;">
-        LOGOUT
-    </button>
-</div>
+        <button onclick="appLogout()" style="background: #ff4757; color: white; border: 2px solid black; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 4px 4px 0px black; transition: 0.2s;">
+            LOGOUT
+        </button>
+    </div>
+
 </div>
 
 
@@ -19224,6 +19205,79 @@ window.fetchProfitByDate = async function() {
         clearProfitFields();
     }
 };
+
+
+
+
+
+
+// --- APP INITIALIZATION & AUTO-LOGIN CHECK ---
+window.addEventListener('DOMContentLoaded', async () => {
+    // 1. Check if Supabase session exists (User logged in via login.html)
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    
+    if (!session) {
+        // Not logged in? Send them back to the login page securely!
+        window.location.replace('login.html');
+        return;
+    }
+
+    // 2. User is logged in. Save variables for the rest of your app.
+    currentUserId = session.user.id;
+    currentUserEmail = session.user.email;
+
+    // 3. Fetch their detailed profile from the 'users' table
+    const { data: userProfile } = await supabaseClient
+        .from('users')
+        .select('*')
+        .eq('user_uid', currentUserId)
+        .single();
+
+    if (userProfile) {
+        // 4. Update the Profile UI
+        document.getElementById('logout-view').style.display = 'flex';
+        document.getElementById('user-display-name').innerText = userProfile.name || "User";
+        document.getElementById('user-initial').innerText = (userProfile.name || "U").charAt(0).toUpperCase();
+        document.getElementById('user-role-badge').innerText = "Role: " + userProfile.role;
+        
+        if (document.getElementById('display-biz-id')) {
+            document.getElementById('display-biz-id').innerText = userProfile.business_id;
+        }
+
+        // 5. UNLOCK THE MAIN APP (Reveal all sections)
+        document.querySelectorAll('.input-panel > *').forEach(el => {
+            if (el.id.endsWith('-modal')) {
+                el.style.setProperty('display', 'none', 'important');
+            } else {
+                let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+                el.style.setProperty('display', displayType, 'important');
+            }
+        });
+
+        // Hide Visitor Box
+        const visitorBox = document.getElementById('visitor-box');
+        if (visitorBox) visitorBox.style.display = 'none';
+
+        // Auto-Fill Seller Details based on their Registration data
+        if (userProfile.role === 'owner' || userProfile.role === 'staff') {
+            if(document.getElementById('s_name')) document.getElementById('s_name').value = userProfile.business_name || '';
+            if(document.getElementById('s_addr')) document.getElementById('s_addr').value = userProfile.address || '';
+            if(document.getElementById('s_state')) document.getElementById('s_state').value = userProfile.state || '';
+            if(document.getElementById('s_phone')) document.getElementById('s_phone').value = userProfile.whatsapp_no || '';
+            if(document.getElementById('s_email')) document.getElementById('s_email').value = userProfile.email || '';
+        }
+
+        if (typeof resizeCanvas === "function") resizeCanvas();
+        if (typeof liveUpdate === "function") liveUpdate();
+    }
+});
+
+// --- NEW SECURE LOGOUT FUNCTION ---
+async function appLogout() {
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    window.location.replace('login.html');
+}
 </script>
 </body>
 </html>
