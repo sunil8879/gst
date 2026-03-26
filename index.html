@@ -1452,6 +1452,22 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
     </button>
 </div>
 
+
+
+
+<!-- --- DATA EXPORT SECTION --- -->
+<div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+    <button onclick="exportAllUserData()" style="background:#1B3E85; color:white; width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
+        <i class="fas fa-file-export"></i> 20. Export My Data
+    </button>
+    <p style="font-size:0.6rem; color:#666; margin-top:5px;">* Download all your records as a secure JSON backup.</p>
+</div>
+
+
+
+
+
+
 <!-- Mapping Modal -->
 <div id="mapping-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:60000; padding:10px; box-sizing:border-box; overflow-y:auto;">
     <div style="background:white; max-width:1100px; margin:20px auto; padding:30px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative;">
@@ -19433,6 +19449,76 @@ function verifyOwner() {
     } else {
         alert("INCORRECT PIN: Access Denied.");
         return false;
+    }
+}
+
+
+
+
+
+
+
+// --- MASTER DATA EXPORT ENGINE (LOGIN-SPECIFIC) ---
+async function exportAllUserData() {
+    // 1. SECURITY GATE: Requires Owner PIN
+    if (verifyOwner() === false) return;
+
+    alert("Preparing your data backup. Please wait...");
+
+    try {
+        // 2. PARALLEL FETCH: Pull data from all tables for THIS user only
+        const [
+            { data: profile },
+            { data: invoices },
+            { data: customers },
+            { data: seller },
+            { data: inventory },
+            { data: reminders },
+            { data: profits }
+        ] = await Promise.all([
+            supabaseClient.from('profiles').select('*').eq('id', currentUserId),
+            supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId),
+            supabaseClient.from('customer_details').select('*').eq('user_id', currentUserId),
+            supabaseClient.from('seller_details').select('*').eq('user_id', currentUserId),
+            supabaseClient.from('inventory_tracker').select('*').eq('user_id', currentUserId),
+            supabaseClient.from('invoice_reminders').select('*').eq('user_id', currentUserId),
+            supabaseClient.from('profit_expenses').select('*').eq('user_id', currentUserId)
+        ]);
+
+        // 3. PACKAGE DATA
+        const masterBackup = {
+            metadata: {
+                export_version: "1.0",
+                export_date: new Date().toLocaleString(),
+                owner_email: currentUserEmail
+            },
+            data: {
+                user_profile: profile,
+                invoice_history: invoices,
+                customer_database: customers,
+                seller_profile: seller,
+                inventory_records: inventory,
+                payment_reminders: reminders,
+                profit_loss_ledger: profits
+            }
+        };
+
+        // 4. GENERATE DOWNLOAD
+        const fileName = `SmartInvoice_Backup_${currentUserEmail.split('@')[0]}_${new Date().toISOString().slice(0,10)}.json`;
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(masterBackup, null, 2));
+        
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchorNode); 
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+
+        alert("SUCCESS: Your complete business data has been exported to your local drive.");
+
+    } catch (err) {
+        console.error("Export Error:", err);
+        alert("CRITICAL ERROR: Could not export data. Check your internet connection.");
     }
 }
 </script>
