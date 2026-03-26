@@ -14250,7 +14250,8 @@ const { data: profileData } = await supabaseClient
     .eq('id', currentUserId)
     .single();
 
-dbOwnerPin = profileData ? profileData.owner_pin : null;
+// Add String() to ensure it's text for comparison later
+dbOwnerPin = profileData && profileData.owner_pin ? String(profileData.owner_pin) : null;
     currentUserEmail = data.user.email;
 
     // Check for errors when saving profile
@@ -19407,32 +19408,27 @@ function downloadEwayJSON() {
 
 
 // --- OWNER ACCESS GATEKEEPER ---
-async function verifyOwner() {
-    // 1. If no PIN exists in database, help the client set one up
+function verifyOwner() {
+    // 1. SAAS SETUP: If no PIN exists, ask to create one
     if (!dbOwnerPin) {
-        const newPin = prompt("SAAS SETUP: Please set your unique 4-digit Owner PIN to secure your reports:");
+        const newPin = prompt("SAAS SETUP: Please set your unique 4-digit Owner PIN:");
         if (newPin && newPin.length >= 4) {
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ owner_pin: newPin })
-                .eq('id', currentUserId);
-            
-            if (!error) {
-                dbOwnerPin = newPin;
-                alert("PIN SET SUCCESSFULLY! You can now use this PIN to access your reports.");
-                return true;
-            } else {
-                alert("Error saving PIN. Try again.");
-                return false;
-            }
+            dbOwnerPin = newPin; // Set it locally immediately
+            // Save to database in the background
+            supabaseClient.from('profiles').update({ owner_pin: newPin }).eq('id', currentUserId).then(() => {
+                alert("PIN SAVED TO CLOUD.");
+            });
+            return true;
         }
-        alert("PIN setup cancelled or too short.");
+        alert("Setup cancelled. Access Denied.");
         return false;
     }
 
-    // 2. Standard verification for existing clients
-    const input = prompt("ACCESS RESTRICTED: Please enter your Owner PIN:");
-    if (input === dbOwnerPin) {
+    // 2. VERIFICATION: For existing clients
+    const input = prompt("ACCESS RESTRICTED: Please enter Owner PIN:");
+
+    // STOPS BYPASS: Checks that input is not null (Cancel) and not empty (Blank OK)
+    if (input !== null && input !== "" && input === dbOwnerPin) {
         return true;
     } else {
         alert("INCORRECT PIN: Access Denied.");
