@@ -1646,7 +1646,7 @@ const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
 
 
 
-
+let dbOwnerPin = null;
 
     let currentUserId = null;
     let currentUserEmail = null;
@@ -14243,6 +14243,14 @@ async function onGoogleLogin(response) {
     if (error) return alert("Login Failed: " + error.message);
 
     currentUserId = data.user.id;
+// Fetch the unique PIN for this SAAS client
+const { data: profileData } = await supabaseClient
+    .from('profiles')
+    .select('owner_pin')
+    .eq('id', currentUserId)
+    .single();
+
+dbOwnerPin = profileData ? profileData.owner_pin : null;
     currentUserEmail = data.user.email;
 
     // Check for errors when saving profile
@@ -19397,11 +19405,32 @@ function downloadEwayJSON() {
 
 
 // --- OWNER ACCESS GATEKEEPER ---
-const OWNER_PIN = "1234"; // <--- CHANGE YOUR PASSWORD HERE
+async function verifyOwner() {
+    // 1. If no PIN exists in database, help the client set one up
+    if (!dbOwnerPin) {
+        const newPin = prompt("SAAS SETUP: Please set your unique 4-digit Owner PIN to secure your reports:");
+        if (newPin && newPin.length >= 4) {
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ owner_pin: newPin })
+                .eq('id', currentUserId);
+            
+            if (!error) {
+                dbOwnerPin = newPin;
+                alert("PIN SET SUCCESSFULLY! You can now use this PIN to access your reports.");
+                return true;
+            } else {
+                alert("Error saving PIN. Try again.");
+                return false;
+            }
+        }
+        alert("PIN setup cancelled or too short.");
+        return false;
+    }
 
-function verifyOwner() {
-    const input = prompt("ACCESS RESTRICTED: Please enter Owner PIN to view financial reports:");
-    if (input === OWNER_PIN) {
+    // 2. Standard verification for existing clients
+    const input = prompt("ACCESS RESTRICTED: Please enter your Owner PIN:");
+    if (input === dbOwnerPin) {
         return true;
     } else {
         alert("INCORRECT PIN: Access Denied.");
