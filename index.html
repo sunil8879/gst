@@ -718,6 +718,27 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } #s_pincode, #c_pincode { grid-column: auto !important; }
+
+
+
+input.error-box { border: 3px solid #ff4757 !important; background-color: #fff0f1 !important; }
+
+
+
+/* DARK RED ERROR STYLE */
+input.error-box, select.error-box, textarea.error-box { 
+    border: 3px solid #8b0000 !important; 
+    background-color: #fff5f5 !important; 
+    color: #8b0000 !important;
+    box-shadow: 0px 0px 10px rgba(139, 0, 0, 0.5) !important;
+}
+
+
+
+
+.error-box { background-color: #ffff00 !important; border: 3px solid #000 !important; color: #000 !important; }
+
+input.error-box { background-color: yellow !important; }
 </style>
 </head>
 <body>
@@ -13916,12 +13937,19 @@ const cPhone = document.getElementById('c_phone').value;
         return res.trim().toUpperCase();
     }
 async function exportToWord() {
-    // UPDATED VALIDATION: Ignores E-Way Bill, Transport, and optional fields
-const coreFields = [...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id=s_pincode], [id=c_pincode], [id=manual_payment_mode], [id^="rem_"], [id^="chart_"], [id^="fetch_"], [id^="ewb_"], [id^="exp_"], [id^="s_phone"], [id^="s_email"], [id^="c_phone"], [id^="c_email"])')];
-    if (coreFields.some(el => !el.value.trim())) {
-        return alert("PLEASE FILL IN CORE DETAILS (Seller, Customer, and Items) first.");
+ // DYNAMIC ERROR MESSAGE ONE-LINER
+    const errList = [...new Set([...document.querySelectorAll('.error-box')].map(el => el.id.split('_')[1].replace('phone','whatsapp no')))].join(', ');
+    if (errList) return alert("PLEASE CORRECT the " + errList);
+
+  
+
+    // 2. Check for empty Vitals
+    const vitalIds = ['s_name', 's_addr', 's_gstin', 's_state', 's_pincode', 'c_name', 'c_addr', 'c_state', 'c_pincode', 'inv_date'];
+    if (vitalIds.some(id => !document.getElementById(id).value.trim())) {
+        return alert("MISSING DATA: Please fill in all Seller, Customer, and Date details.");
     }
 
+    // ... rest of your code ...
     if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) {
         return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
     }
@@ -19652,6 +19680,215 @@ function getStateName(code) {
 
 ['s','c'].forEach(p => document.getElementById(p+'_addr').onchange = () => { if(document.getElementById(p+'_gstin').value.length === 15) verifyGSTIN(p+'_gstin'); });
 ['s_addr', 'c_addr'].forEach(id => document.getElementById(id).addEventListener('input', function() { this.style.background = 'white'; }));
+
+
+
+
+
+
+
+
+
+// --- MASTER DATA VALIDATION SUITE ---
+
+const pincodeMap = {
+    "Delhi": [[110, 110]],
+    "Haryana": [[121, 136]],
+    "Punjab": [[140, 160]],
+    "Chandigarh": [[160, 160]],
+    "Himachal Pradesh": [[171, 177]],
+    "Jammu and Kashmir": [[180, 194]],
+    "Ladakh": [[194, 194]],
+    "Uttarakhand": [[244, 263]],
+    "Uttar Pradesh": [[201, 285]],
+    "Rajasthan": [[301, 345]],
+    "Gujarat": [[360, 396]],
+    "Dadra and Nagar Haveli and Daman and Diu": [[362, 396]],
+    "Maharashtra": [[400, 444]],
+    "Goa": [[403, 403]],
+    "Karnataka": [[560, 591]],
+    "Telangana": [[500, 509]],
+    "Andhra Pradesh": [[515, 535]],
+    "Tamil Nadu": [[600, 643]],
+    "Kerala": [[670, 695]],
+    "Lakshadweep": [[682, 682]],
+    "West Bengal": [[700, 743]],
+    "Odisha": [[751, 770]],
+    "Assam": [[781, 788]],
+    "Arunachal Pradesh": [[790, 792]],
+    "Manipur": [[795, 795]],
+    "Meghalaya": [[793, 794]],
+    "Mizoram": [[796, 796]],
+    "Nagaland": [[797, 798]],
+    "Tripura": [[799, 799]],
+    "Sikkim": [[737, 737]],
+    "Bihar": [[800, 854]],
+    "Jharkhand": [[822, 835]],
+    "Madhya Pradesh": [[450, 488]],
+    "Chhattisgarh": [[490, 497]],
+    "Andaman and Nicobar Islands": [[744, 744]],
+    "Puducherry": [[605, 609]]
+};
+
+function validateInputs(prefix) {
+    const email = document.getElementById(prefix + '_email').value.trim();
+    const phone = document.getElementById(prefix + '_phone').value.trim();
+    const pin = document.getElementById(prefix + '_pincode').value.trim();
+    const state = document.getElementById(prefix + '_state').value;
+    const label = prefix === 's' ? "SELLER" : "CUSTOMER";
+
+    // 1. Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+        alert(`INVALID ${label} EMAIL: Please enter a valid address (e.g., name@domain.com)`);
+        return false;
+    }
+
+    // 2. WhatsApp/Phone Validation
+    if (phone && !/^\d{10}$/.test(phone)) {
+        alert(`INVALID ${label} PHONE: Number must be exactly 10 digits.`);
+        return false;
+    }
+
+    // 3. Pincode Length Validation
+    if (pin && !/^\d{6}$/.test(pin)) {
+        alert(`INVALID ${label} PINCODE: Pincode must be exactly 6 digits.`);
+        return false;
+    }
+
+    // 4. Pincode-State Match Validation
+    if (pin && state) {
+        const prefix3 = parseInt(pin.substring(0, 3));
+        const ranges = pincodeMap[state];
+        if (ranges) {
+            const isValid = ranges.some(range => prefix3 >= range[0] && prefix3 <= range[1]);
+            if (!isValid) {
+                alert(`LOCATION MISMATCH: Pincode "${pin}" does not belong to ${state}. Please check.`);
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+['s_pincode', 'c_pincode', 's_phone', 'c_phone'].forEach(id => document.getElementById(id).addEventListener('input', function() { if(this.value.length > (id.includes('pin') ? 6 : 10)) this.style.borderColor = 'red'; else this.style.borderColor = 'black'; }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 1. MASTER PINCODE DATABASE (Matches your dropdown names exactly)
+
+// 2. THE VALIDATION BRAIN
+function runLiveValidation(el) {
+    const val = el.value.trim();
+    const prefix = el.id.split('_')[0]; // 's' or 'c'
+    let isValid = true;
+
+    // Email Check
+    if (el.id.includes('email')) {
+        isValid = val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    } 
+    // Phone Check
+    else if (el.id.includes('phone')) {
+        isValid = val === "" || /^\d{10}$/.test(val);
+    } 
+    // Pincode Check
+    else if (el.id.includes('pincode')) {
+        const state = document.getElementById(prefix + '_state').value;
+        const ranges = pinMaster[state];
+        
+        // Pincode is invalid if:
+        // - It's not 6 digits
+        // - OR the first 3 digits don't match the selected state's range
+        if (val.length === 6) {
+            const pref3 = parseInt(val.substring(0, 3));
+            if (!ranges || !ranges.some(r => pref3 >= r[0] && pref3 <= r[1])) {
+                isValid = false;
+            }
+        } else if (val.length > 0 && val.length !== 6) {
+            isValid = false; // Turn red if partial but not 6
+        }
+    }
+
+    if (isValid) el.classList.remove('error-box');
+    else el.classList.add('error-box');
+}
+
+// 3. ATTACH LISTENERS
+// This ensures pincode turns red/black when you type AND when you change the State dropdown
+['s','c'].forEach(p => {
+    const inputs = [p+'_email', p+'_phone', p+'_pincode'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => runLiveValidation(e.target));
+    });
+    
+    // Crucial: If state changes, re-check the pincode
+    document.getElementById(p+'_state').addEventListener('change', () => {
+        runLiveValidation(document.getElementById(p+'_pincode'));
+    });
+});
+
+
+
+
+
+const pinMaster = {
+    "Andaman and Nicobar Islands": [[744, 744]], "Andhra Pradesh": [[515, 535]], "Arunachal Pradesh": [[790, 792]], "Assam": [[781, 788]], "Bihar": [[800, 854]], "Chandigarh": [[160, 160]], "Chhattisgarh": [[490, 497]], "Dadra and Nagar Haveli and Daman and Diu": [[362, 396]], "Delhi": [[110, 110]], "Goa": [[403, 403]], "Gujarat": [[360, 396]], "Haryana": [[121, 136]], "Himachal Pradesh": [[171, 177]], "Jammu and Kashmir": [[180, 194]], "Jharkhand": [[822, 835]], "Karnataka": [[560, 591]], "Kerala": [[670, 695]], "Ladakh": [[194, 194]], "Lakshadweep": [[682, 682]], "Madhya Pradesh": [[450, 488]], "Maharashtra": [[400, 444]], "Manipur": [[795, 795]], "Meghalaya": [[793, 794]], "Mizoram": [[796, 796]], "Nagaland": [[797, 798]], "Odisha": [[751, 770]], "Puducherry": [[605, 609]], "Punjab": [[140, 160]], "Rajasthan": [[301, 345]], "Sikkim": [[737, 737]], "Tamil Nadu": [[600, 643]], "Telangana": [[500, 509]], "Tripura": [[799, 799]], "Uttar Pradesh": [[201, 285]], "Uttarakhand": [[244, 263]], "West Bengal": [[700, 743]]
+};
+
+function runLiveValidation(el) {
+    if (!el) return;
+    const val = el.value.trim();
+    const prefix = el.id.split('_')[0]; 
+    let isValid = true;
+
+    if (el.id.includes('email')) {
+        isValid = val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    } else if (el.id.includes('phone')) {
+        isValid = val === "" || /^\d{10}$/.test(val);
+    } else if (el.id.includes('pincode')) {
+        const state = document.getElementById(prefix + '_state').value;
+        const ranges = pinMaster[state];
+        // STRICTOR PINCODE LOGIC:
+        if (val.length > 0) {
+            const isSixDigits = /^\d{6}$/.test(val);
+            const pref3 = parseInt(val.substring(0, 3));
+            const rangeMatch = ranges && ranges.some(r => pref3 >= r[0] && pref3 <= r[1]);
+            // It is valid ONLY if it is 6 digits AND the state range matches
+            isValid = isSixDigits && rangeMatch;
+        }
+    }
+
+    if (isValid) el.classList.remove('error-box');
+    else el.classList.add('error-box');
+}
+
+
+
+
+
+['s','c'].forEach(p => { 
+    ['pincode','phone','email'].forEach(f => document.getElementById(p+'_'+f).addEventListener('input', (e) => runLiveValidation(e.target)));
+    document.getElementById(p+'_state').addEventListener('change', () => runLiveValidation(document.getElementById(p+'_pincode')));
+});
 </script>
 </body>
 </html>
