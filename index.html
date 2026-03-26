@@ -14413,6 +14413,7 @@ async function saveToHistory() {
 // Function to display history
 // Replace Start
 async function toggleHistory() {
+if (!verifyOwner()) return;
     const modal = document.getElementById('history-modal');
     
     if (!currentUserId) return alert("ACCESS DENIED: Please login with Google to view your invoice history.");
@@ -15864,6 +15865,7 @@ let hint = hsnHints[singleHsn] || hsnHints[singleHsn.substring(0, 2)] || "";
 
 
 async function toggleDashboard() {
+ if (!verifyOwner()) return; 
     const modal = document.getElementById('dashboard-modal');
     if (!currentUserId) return alert("Please login with Google to access the Dashboard.");
     
@@ -16468,6 +16470,7 @@ if (typeof google !== 'undefined') {
 }
 
 async function toggleCharts() {
+ if (!verifyOwner()) return;
     console.log("Charts button clicked. Current User ID:", currentUserId);
     
     const modal = document.getElementById('charts-modal');
@@ -17202,6 +17205,7 @@ onGoogleLogin = async (resp) => {
 
 // 2. The Combined Reporting Logic
 async function generateBusinessReport() {
+if (!verifyOwner()) return;
     const type = document.getElementById('report_type_select').value;
     const selectedMonth = document.getElementById('report_month_picker').value;
     const container = document.getElementById('report-container');
@@ -18362,6 +18366,7 @@ onGoogleLogin = async function(resp) {
 };
 
 function toggleProfitSection() {
+if (!verifyOwner()) return;
     const sec = document.getElementById('profit-section');
     sec.style.display = (sec.style.display === 'none') ? 'block' : 'none';
     if(sec.style.display === 'block') fetchRevenueForProfit();
@@ -18458,6 +18463,7 @@ onGoogleLogin = async function(resp) {
 
 // 2. Robust Toggle Logic
 window.toggleProfitSection = function() {
+if (!verifyOwner()) return;
     const sec = document.getElementById('profit-section');
     if(!sec) return;
     
@@ -18603,6 +18609,7 @@ function printThermalReceipt() {
 // --- GSTR-1 DYNAMIC ENGINE WITH MONTH-YEAR HISTORY ---
 
 async function generateGSTR1() {
+if (!verifyOwner()) return;
     const pickerValue = document.getElementById('report_month_picker').value; 
     if (!pickerValue) return alert("Please select a Month and Year first.");
     
@@ -18748,6 +18755,7 @@ function exportGSTR1ToExcel(filename) {
 // --- GSTR-3B DYNAMIC SUMMARY ENGINE ---
 
 async function generateGSTR3B() {
+if (!verifyOwner()) return;
     const pickerValue = document.getElementById('report_month_picker').value; 
     if (!pickerValue) return alert("Please select a Month and Year first.");
     
@@ -18885,6 +18893,7 @@ function exportGSTR3BToExcel(fn) {
 // --- GSTR-9 ANNUAL SUMMARY ENGINE (COMPLETE) ---
 
 async function generateGSTR9() {
+if (!verifyOwner()) return;
     const pickerValue = document.getElementById('report_month_picker').value; 
     if (!pickerValue) return alert("Please select any month within the target Financial Year.");
     
@@ -19381,6 +19390,23 @@ function downloadEwayJSON() {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+}
+
+
+
+
+
+// --- OWNER ACCESS GATEKEEPER ---
+const OWNER_PIN = "1234"; // <--- CHANGE YOUR PASSWORD HERE
+
+function verifyOwner() {
+    const input = prompt("ACCESS RESTRICTED: Please enter Owner PIN to view financial reports:");
+    if (input === OWNER_PIN) {
+        return true;
+    } else {
+        alert("INCORRECT PIN: Access Denied.");
+        return false;
+    }
 }
 </script>
 </body>
