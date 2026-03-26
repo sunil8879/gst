@@ -706,6 +706,9 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 #thermal-receipt-area, #thermal-receipt-area * { text-align: center !important; justify-content: center !important; }
 
 #thermal-receipt-area { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; width: 100% !important; } .receipt-row { justify-content: center !important; gap: 20px !important; width: 100% !important; }
+
+
+#s_pincode, #c_pincode { text-align: center; grid-column: 1 / -1; }
 </style>
 </head>
 <body>
@@ -833,6 +836,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
         <textarea id="s_addr" placeholder="Address" oninput="liveUpdate()" style="margin-top:10px; height: 60px;"></textarea>
         <div class="form-row" style="margin-top:10px">
             <input type="text" id="s_gstin" placeholder="My GSTIN" oninput="liveUpdate()">
+
                  <select id="s_state" onchange="liveUpdate()">
     <option value="">Select State</option>
     <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
@@ -878,6 +882,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <div class="form-row" style="margin-top:10px">
             <input type="text" id="s_phone" placeholder="WhatsApp / Phone No" oninput="liveUpdate()">
             <input type="email" id="s_email" placeholder="Business Email" oninput="liveUpdate()">
+<input type="number" id="s_pincode" placeholder="Seller Pincode" oninput="liveUpdate()">
         </div>
 
 
@@ -887,6 +892,7 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
         <textarea id="c_addr" placeholder="Customer Address" oninput="liveUpdate()" style="margin-top:10px; height: 60px;"></textarea>
         <div class="form-row" style="margin-top:10px">
             <input type="text" id="c_gstin" placeholder="Customer GSTIN (Optional)" oninput="liveUpdate()">
+
            <select id="c_state" onchange="liveUpdate()">
     <option value="">Customer State</option>
     <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
@@ -932,7 +938,11 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
 <div class="form-row" style="margin-top:10px">
             <input type="text" id="c_phone" placeholder="Customer WhatsApp / Phone No" oninput="liveUpdate()">
             <input type="email" id="c_email" placeholder="Customer Email" oninput="liveUpdate()">
+<input type="number" id="c_pincode" placeholder="Customer Pincode" oninput="liveUpdate()">
         </div>
+
+
+
 
 
 
@@ -989,6 +999,53 @@ body .input-panel, body div#google-auth-container { width: 85% !important; max-w
             <button class="btn-add" onclick="addItem()" style="margin-left:auto">+ Add Item</button>
         </div>
         <div id="items-list"></div>
+
+
+
+
+
+<!-- --- TRANSPORT & E-WAY BILL SECTION --- -->
+<div id="transport-section-card" style="background: #fff; border: 3px solid black; padding: 20px; margin-bottom: 25px; box-shadow: 8px 8px 0px #000; text-align: left;">
+    <div class="section-header" style="margin-top:0; border-bottom: 4px solid #ffcc00;">
+        <i class="fas fa-truck"></i> 4. TRANSPORT DETAILS (E-WAY BILL)
+    </div>
+    <p style="font-size: 0.7rem; font-weight: 800; color: #d63031; margin-bottom: 15px;">* Mandatory for goods worth ₹50,000 or above.</p>
+    
+    <div class="form-row">
+        <div>
+            <label style="font-size:0.7rem; font-weight:800;">SUPPLY TYPE</label>
+            <select id="ewb_supply_type">
+                <option value="0">Outward (Sales)</option>
+                <option value="1">Inward (Purchase)</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:0.7rem; font-weight:800;">TRANSPORT MODE</label>
+            <select id="ewb_trans_mode">
+                <option value="1">1 - Road</option>
+                <option value="2">2 - Rail</option>
+                <option value="3">3 - Air</option>
+                <option value="4">4 - Ship</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row" style="margin-top:10px;">
+        <input type="text" id="ewb_vehicle_no" placeholder="Vehicle Number (e.g. MH12AB1234)">
+        <input type="number" id="ewb_distance" placeholder="Distance in KM">
+    </div>
+
+    <div class="form-row" style="margin-top:10px;">
+        <input type="text" id="ewb_trans_id" placeholder="Transporter ID (GSTIN)">
+        <input type="text" id="ewb_lr_no" placeholder="LR / RR / Airway Bill No.">
+    </div>
+
+    <button onclick="downloadEwayJSON()" style="background: #000; color: #fff; width: 100%; padding: 15px; font-weight: 900; margin-top: 15px; border: none; box-shadow: 6px 6px 0px #ffcc00; cursor: pointer; text-transform: uppercase;">
+        <i class="fas fa-file-code"></i> Download E-Way Bill JSON
+    </button>
+</div>
+
+
 
 
 
@@ -13829,7 +13886,17 @@ const cPhone = document.getElementById('c_phone').value;
         return res.trim().toUpperCase();
     }
 async function exportToWord() {
-if ([...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id^="rem_"], [id^="chart_"], [id^="fetch_"])')].some(el => !el.value.trim())) return alert("PLEASE FILL IN ALL THE FIELDS"); if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
+    // UPDATED VALIDATION: Ignores E-Way Bill, Transport, and optional fields
+const coreFields = [...document.querySelectorAll('.input-panel :is(input, select, textarea):not([type=file], [id=c_gstin], [id=s_pincode], [id=c_pincode], [id=manual_payment_mode], [id^="rem_"], [id^="chart_"], [id^="fetch_"], [id^="ewb_"], [id^="exp_"], [id^="s_phone"], [id^="s_email"], [id^="c_phone"], [id^="c_email"])')];
+    if (coreFields.some(el => !el.value.trim())) {
+        return alert("PLEASE FILL IN CORE DETAILS (Seller, Customer, and Items) first.");
+    }
+
+    if (!/^[a-zA-Z0-9]{15}$/.test(document.getElementById('s_gstin').value)) {
+        return alert("INVALID GSTIN: Seller GSTIN must be exactly 15 alphanumeric characters.");
+    }
+    
+    // ... rest of your exportToWord function remains exactly the same ...
     
     // 1. Save to history first
     await saveToHistory();
@@ -13837,7 +13904,8 @@ if ([...document.querySelectorAll('.input-panel :is(input, select, textarea):not
     const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value || document.getElementById(id).innerText : "--";
     const selectedTpl = document.getElementById('template_select').value;
     const sName = getVal('s_name');
-    const sAddr = getVal('s_addr');
+  const sZip = document.getElementById('s_pincode').value;
+    const sAddr = getVal('s_addr') + (sZip ? " - " + sZip : "");
     const sGst = getVal('s_gstin');
 
 
@@ -13849,7 +13917,8 @@ const sPhone = document.getElementById('s_phone').value ? `Phone: ${document.get
     const invNo = getVal('inv_no');
     const invDate = getVal('inv_date');
     const cName = getVal('c_name');
-    const cAddr = getVal('c_addr');
+ const cZip = document.getElementById('c_pincode').value;
+    const cAddr = getVal('c_addr') + (cZip ? " - " + cZip : "");
     const cGst = getVal('c_gstin');
 
 
@@ -19216,6 +19285,103 @@ window.fetchProfitByDate = async function() {
         clearProfitFields();
     }
 };
+
+
+
+
+
+// --- E-WAY BILL JSON GENERATOR ---
+
+const stateCodeMap = {
+    "Jammu and Kashmir": "01", "Himachal Pradesh": "02", "Punjab": "03", "Chandigarh": "04", "Uttarakhand": "05",
+    "Haryana": "06", "Delhi": "07", "Rajasthan": "08", "Uttar Pradesh": "09", "Bihar": "10", "Sikkim": "11",
+    "Arunachal Pradesh": "12", "Nagaland": "13", "Manipur": "14", "Mizoram": "15", "Tripura": "16", "Meghalaya": "17",
+    "Assam": "18", "West Bengal": "19", "Jharkhand": "20", "Odisha": "21", "Chhattisgarh": "22", "Madhya Pradesh": "23",
+    "Gujarat": "24", "Dadra and Nagar Haveli and Daman and Diu": "26", "Maharashtra": "27", "Andhra Pradesh": "37",
+    "Karnataka": "29", "Goa": "30", "Lakshadweep": "31", "Kerala": "32", "Tamil Nadu": "33", "Puducherry": "34",
+    "Andaman and Nicobar Islands": "35", "Telangana": "36", "Ladakh": "38"
+};
+
+function downloadEwayJSON() {
+    // 1. Get Values
+    const invDateRaw = document.getElementById('inv_date').value;
+    const formattedDate = invDateRaw.split('-').reverse().join('/'); // YYYY-MM-DD to DD/MM/YYYY
+
+    // Tax Calculation Logic
+    let taxable = 0, cgst = 0, sgst = 0, igst = 0;
+    const sState = document.getElementById('s_state').value;
+    const cState = document.getElementById('c_state').value;
+
+    document.querySelectorAll('.item-row-box').forEach(box => {
+        const id = box.id.replace('item-row-', '');
+        const qty = parseFloat(document.getElementById(`qty-${id}`).value) || 0;
+        const rate = parseFloat(document.getElementById(`rate-${id}`).value) || 0;
+        const val = qty * rate;
+        taxable += val;
+
+        const cP = parseFloat(document.getElementById(`cgst-${id}`).value) || 0;
+        const sP = parseFloat(document.getElementById(`sgst-${id}`).value) || 0;
+        const iP = parseFloat(document.getElementById(`igst-${id}`).value) || 0;
+
+        if (sState === cState) {
+            cgst += (val * cP / 100);
+            sgst += (val * sP / 100);
+        } else {
+            igst += (val * iP / 100);
+        }
+    });
+
+    const grandTotal = taxable + cgst + sgst + igst;
+
+    if (grandTotal < 50000) {
+        if (!confirm("Total value is below ₹50,000. E-Way bill is usually not mandatory. Continue?")) return;
+    }
+
+    // 2. Build Object
+    const ewayData = {
+        "supplyType": document.getElementById('ewb_supply_type').value === "0" ? "O" : "I",
+        "docType": "INV",
+        "docNo": document.getElementById('inv_no').value,
+        "docDate": formattedDate,
+
+        "fromGstin": document.getElementById('s_gstin').value,
+        "fromTrdName": document.getElementById('s_name').value,
+        "fromAddr1": document.getElementById('s_addr').value.substring(0, 100),
+        "fromStateCode": parseInt(stateCodeMap[sState] || 0),
+        "fromPincode": parseInt(document.getElementById('s_pincode').value || 0),
+
+        "toGstin": document.getElementById('c_gstin').value || "URP",
+        "toTrdName": document.getElementById('c_name').value,
+        "toAddr1": document.getElementById('c_addr').value.substring(0, 100),
+        "toStateCode": parseInt(stateCodeMap[cState] || 0),
+        "toPincode": parseInt(document.getElementById('c_pincode').value || 0),
+
+        "totalValue": Math.round(grandTotal),
+        "cgstValue": parseFloat(cgst.toFixed(2)),
+        "sgstValue": parseFloat(sgst.toFixed(2)),
+        "igstValue": parseFloat(igst.toFixed(2)),
+
+        "transMode": document.getElementById('ewb_trans_mode').value,
+        "vehicleNo": document.getElementById('ewb_vehicle_no').value.toUpperCase(),
+        "distance": parseInt(document.getElementById('ewb_distance').value || 0),
+        "transporterId": document.getElementById('ewb_trans_id').value,
+        "lrNo": document.getElementById('ewb_lr_no').value
+    };
+
+    // 3. Validation Check
+    if(!ewayData.fromGstin || !ewayData.fromPincode || !ewayData.toPincode) {
+        return alert("Error: GSTINs and Pincodes are mandatory for E-Way Bill JSON.");
+    }
+
+    // 4. Download
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ewayData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "ewaybill_" + ewayData.docNo + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
 </script>
 </body>
 </html>
