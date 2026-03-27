@@ -13955,6 +13955,10 @@ async function exportToWord() {
     }
     
     // ... rest of your exportToWord function remains exactly the same ...
+
+
+const ewbV = [...document.querySelectorAll('.item-row-box')].map(b=>b.id.split('-')[2]).reduce((s,i)=>{const g=parseFloat(document.getElementById('igst-'+i).value)||0, a=(parseFloat(document.getElementById('qty-'+i).value)||0)*(parseFloat(document.getElementById('rate-'+i).value)||0); return g>0?s+a+(a*g/100):s;},0); if(ewbV > 50000 && !document.getElementById('ewb_vehicle_no').value.trim()) return alert("E-WAY BILL REQUIRED: Total value (excluding exempt goods) exceeds ₹50,000. Please fill Transport Details.");
+
     
     // 1. Save to history first
     await saveToHistory();
