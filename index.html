@@ -14023,6 +14023,14 @@ const sigBoxImg = signatureDataURL.length > 2000 ? `<img src="${signatureDataURL
 
 const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '150mm';
 
+
+
+// ADD THIS: 768px Mobile Logic for QR Alignment
+    const isMobileDevice = window.innerWidth <= 768;
+    const qrContainerStyle = isMobileDevice ? "text-align: center; width: 100%; margin-top: 15pt;" : "text-align: right; margin-top: 5pt;";
+
+
+
     // 3. CONSTRUCT THE DOCUMENT
     const docContent = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -14103,7 +14111,7 @@ const vPos = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '30mm' : '1
         </div>
 
 
-
+<div style="${qrContainerStyle}"> <!-- Changed to use the new variable -->
 
 
 <!-- PASTE THE QR CODE BOX BELOW -->
@@ -18576,6 +18584,48 @@ window.fetchRevenueForProfit = async function() {
 
 // --- THERMAL RECEIPT LOGIC ---
 function printThermalReceipt() {
+// ADD THIS AT THE VERY TOP: 768px Mobile Only Word Export
+    if (window.innerWidth <= 768) {
+        liveUpdate();
+        const sName = document.getElementById('s_name').value || "OUR SHOP";
+        const sAddr = document.getElementById('s_addr').value || "";
+        const sPhone = document.getElementById('s_phone').value || "";
+        const sGst = document.getElementById('s_gstin').value || "";
+        const invNo = document.getElementById('inv_no').value || "";
+        const payMode = document.getElementById('manual_payment_mode').value || "CASH";
+        const dateTime = new Date().toLocaleString();
+        const subtotalText = document.getElementById('prev_taxable').innerText;
+        const grandTotalText = document.getElementById('prev_total').innerText;
+        let itemRowsMobile = "";
+        document.querySelectorAll('.item-row-box').forEach(box => {
+            const id = box.id.replace('item-row-', '');
+            const name = document.getElementById(`name-${id}`).value;
+            const qty = document.getElementById(`qty-${id}`).value;
+            const rate = document.getElementById(`rate-${id}`).value;
+            if (name) { itemRowsMobile += `<tr><td style="font-size:9pt; border:none;">${name} (x${qty})</td><td style="font-size:9pt; text-align:right; border:none;">${(qty * rate).toFixed(2)}</td></tr>`; }
+        });
+        const mobileReceiptDoc = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>
+            <div style="width: 180pt; border: 1pt dashed #000; padding: 10pt; font-family:'Courier New'; margin: auto; text-align: center;">
+                <strong style="font-size:12pt;">${sName}</strong><br><span style="font-size:8pt;">${sAddr}<br>PH: ${sPhone}<br>GSTIN: ${sGst}</span>
+                <div style="border-top:1pt dashed #000; margin: 4pt 0;"></div>
+                <div style="font-size:8pt; text-align:left;">INV: ${invNo}<br>DATE: ${dateTime}</div>
+                <div style="border-top:1pt dashed #000; margin: 4pt 0;"></div>
+                <table style="width:100%; border:none;">${itemRowsMobile}</table>
+                <div style="border-top:1pt dashed #000; margin: 4pt 0;"></div>
+                <div style="text-align:right; font-size:9pt;">Sub-Total: ${subtotalText}<br><strong>TOTAL: ${grandTotalText}</strong></div>
+                <div style="border-top:1pt dashed #000; margin: 4pt 0;"></div>
+                <div style="font-size:8pt;">PAID VIA: ${payMode}<br>THANK YOU!</div>
+                ${globalQRBase64 ? `<div style="text-align:center; margin-top:5pt;"><img src="${globalQRBase64}" width="80" height="80"></div>` : ""}
+            </div>
+        </body></html>`;
+        const blob = new Blob(['\ufeff', mobileReceiptDoc], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Receipt_${invNo}.doc`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        return; // THIS STOPS the function here so Laptop code below is never touched.
+    }
     // 1. Collect Data
     const sName = document.getElementById('s_name').value || "OUR SHOP";
     const sAddr = document.getElementById('s_addr').value || "";
