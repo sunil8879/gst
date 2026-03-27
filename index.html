@@ -739,6 +739,9 @@ input.error-box, select.error-box, textarea.error-box {
 .error-box { background-color: #ffff00 !important; border: 3px solid #000 !important; color: #000 !important; }
 
 input.error-box { background-color: yellow !important; }
+
+
+#exporter-section { display: none !important; }
 </style>
 </head>
 <body>
@@ -1490,16 +1493,155 @@ input.error-box { background-color: yellow !important; }
 
 
 
-<!-- --- DATA EXPORT SECTION --- -->
-<div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
-    <button onclick="exportAllUserData()" style="background:#1B3E85; color:white; width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
-        <i class="fas fa-file-export"></i> 29. Export My Data
+<!-- --- 21. EXPORTERS SECTION --- -->
+<!-- --- 21. EXPORTERS SECTION (UPDATED SIDE-BY-SIDE LAYOUT) --- -->
+<div style="text-align: center; margin-top: 20px;">
+    <button onclick="toggleExporterSection()" style="background:var(--aqua); color:black; width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
+        <i class="fas fa-ship"></i> 21. Exporters Section
     </button>
-    <p style="font-size:0.6rem; color:#666; margin-top:5px;">* Download all your records as a secure JSON backup.</p>
 </div>
 
+<div id="exporter-section" style="display:none; background:white; border:4px solid black; box-shadow:15px 15px 0px black; padding:30px; margin:30px auto; max-width:950px;">
+    <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; justify-content: center;">
+        <i class="fas fa-globe-americas" style="color:var(--aqua);"></i> INTERNATIONAL EXPORT TERMINAL
+    </div>
 
+    <!-- Group 1: General Invoice Info -->
+    <div class="form-row">
+        <div><label style="font-size:0.6rem; font-weight:900;">1. DATE</label><input type="date" id="ex_date"></div>
+        <div><label style="font-size:0.6rem; font-weight:900;">2. INVOICE NO</label><input type="text" id="ex_inv_no" readonly style="background:#eee;"></div>
+    </div>
+
+    <!-- COLUMN HEADERS -->
+    <div class="form-row" style="background:#000; color:#7FFFD4; padding:5px; margin-top:15px; border:1px solid black;">
+        <div style="font-weight:900; text-align:center; font-size:0.7rem;">FROM: EXPORTER DETAILS</div>
+        <div style="font-weight:900; text-align:center; font-size:0.7rem;">TO: BUYER DETAILS</div>
+    </div>
+
+    <!-- Row: Business Names -->
+    <div class="form-row" style="margin-top:10px;">
+        <input type="text" id="ex_biz" placeholder="3. Exporter Business Name">
+        <input type="text" id="ex_buy_biz" placeholder="To Business Name">
+    </div>
+
+    <!-- Row: PAN/GST vs Buyer Name -->
+    <div class="form-row">
+        <input type="text" id="ex_gstin" placeholder="4. Exporter GSTIN No">
+        <input type="text" id="ex_buy_name" placeholder="Name of Buyer">
+    </div>
+
+    <!-- Row: Contact Names -->
+    <div class="form-row">
+        <input type="text" id="ex_exp_name" placeholder="5. Name of Exporter">
+        <input type="text" id="ex_country" value="INDIA" placeholder="9. Country of Exporter">
+    </div>
+
+    <!-- Row: Addresses -->
+    <div class="form-row">
+        <textarea id="ex_addr" placeholder="6. Exporter Address" style="height:55px;"></textarea>
+        <textarea id="ex_buy_addr" placeholder="To Address" style="height:55px;"></textarea>
+    </div>
+
+    <!-- Row: Pincodes -->
+    <div class="form-row">
+        <input type="text" id="ex_pin" placeholder="7. Exporter Pincode" style="text-align:center;">
+        <input type="text" id="ex_buy_pin" placeholder="To Pincode" style="text-align:center;">
+    </div>
+
+    <!-- Row: States -->
+    <div class="form-row">
+        <input type="text" id="ex_state" placeholder="8. Exporter State">
+        <input type="text" id="ex_buy_state" placeholder="To State">
+    </div>
+
+    <!-- Row: WhatsApp -->
+    <div class="form-row">
+        <input type="text" id="ex_wa" placeholder="10. Exporter WhatsApp">
+        <input type="text" id="ex_buy_wa" placeholder="To WhatsApp">
+    </div>
+
+    <!-- Row: Emails -->
+    <div class="form-row">
+        <input type="email" id="ex_email" placeholder="11. Exporter Email">
+        <input type="email" id="ex_buy_email" placeholder="To Email">
+    </div>
+
+    <!-- Row: Export Settings -->
+    <div class="form-row" style="border-top:1px solid #ddd; padding-top:15px; margin-top:10px;">
+        <select id="ex_type" onchange="calcExInr()">
+            <option value="LUT">12. LUT - Zero Rated</option>
+            <option value="IGST">12. IGST Enabled</option>
+        </select>
+        <div class="search-container" style="position:relative;">
+            <input type="text" id="ex_prod" placeholder="13. Product Name (Search)..." oninput="searchExProd()">
+            <div id="ex_res" class="search-dropdown" style="display:none; position:absolute; z-index:999; width:100%;"></div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <input type="text" id="ex_hsn" placeholder="14. HSN/SAC Code" readonly style="background:#f9f9f9;">
+        <input type="number" id="ex_qty" placeholder="15. Quantity" oninput="calcExInr()">
+    </div>
+
+    <div class="form-row">
+        <input type="number" id="ex_rate" placeholder="16. Rate (Foreign Currency)" oninput="calcExInr()">
+        <input type="text" id="ex_gst_p" placeholder="17. GST %" readonly style="background:#eee;">
+    </div>
+
+    <div class="form-row">
+        <input type="text" id="ex_to_country" placeholder="18. To Country (Final Destination)">
+        <input type="text" id="ex_port" placeholder="19. Port Code">
+    </div>
+
+    <div class="form-row">
+        <input type="text" id="ex_ship_no" placeholder="20. Shipping Bill No">
+        <input type="date" id="ex_ship_date" title="21. Shipping Bill Date">
+    </div>
+
+    <div class="form-row">
+        <select id="ex_curr" onchange="getExRate()">
+            <option value="USD">22. USD - Dollar</option>
+            <option value="EUR">22. EUR - Euro</option>
+            <option value="AED">22. AED - Dirham</option>
+            <option value="GBP">22. GBP - Pound</option>
+            <option value="Others">Others</option>
+        </select>
+        <input type="number" id="ex_rate_val" placeholder="23. Exchange Rate" oninput="calcExInr()">
+    </div>
+
+    <div class="form-row">
+        <div style="grid-column: 1 / -1;">
+            <label style="font-size:0.6rem; font-weight:900;">24. EQUIVALENT INR</label>
+            <input type="text" id="ex_inr" readonly style="background:#000; color:var(--aqua); font-weight:900; text-align:center;">
+        </div>
+    </div>
+
+    <div style="background:#f0f0f0; padding:15px; border:2px solid black; margin-top:20px; display:flex; justify-content:space-between; font-weight:900; font-size:0.8rem;">
+        <span>25. GST PAYABLE (INR): <span id="disp_ex_gst" style="color:red;">₹ 0.00</span></span>
+        <span>26. EXPORT VALUE (FCY): <span id="disp_ex_val" style="color:green;">0.00</span></span>
+    </div>
+
+    <!-- EXPORTER CONTROL BUTTONS -->
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:25px; justify-content:center;">
+        <button onclick="saveExRecord('ADD')" style="background:black; color:white; padding:10px 20px; font-weight:800; cursor:pointer;">ADD</button>
+        <button onclick="viewExHistory()" style="background:white; border:2px solid black; padding:10px 15px; cursor:pointer; font-size:0.75rem;">HISTORY</button>
+        <button onclick="fetchExByInv()" style="background:var(--aqua); border:2px solid black; padding:10px 15px; cursor:pointer; font-weight:800;">FETCH</button>
+        <button onclick="saveExRecord('UPDATE')" style="background:#007BFF; color:white; border:none; padding:10px 20px; font-weight:800; cursor:pointer;">UPDATE</button>
+        <button onclick="clearExFields()" style="background:#ff4757; color:white; border:none; padding:10px 15px; cursor:pointer;">CLEAR OFF</button>
+        <button onclick="printExWord()" style="background:#1B3E85; color:white; border:2px solid black; padding:10px 20px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0px black;">PRINT INVOICE</button>
+    </div>
+
+    <!-- GSTR SECTION -->
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:25px; justify-content:center; border-top:3px solid black; padding-top:20px;">
+        <button onclick="genExGSTR('1')" style="background:black; color:white; width:130px; height:35px; font-size:0.65rem; font-weight:800; border:1px solid var(--aqua);">GSTR-1 (EXPORT)</button>
+        <button onclick="genExGSTR('3B')" style="background:black; color:white; width:130px; height:35px; font-size:0.65rem; font-weight:800; border:1px solid var(--aqua);">GSTR-3B (EXPORT)</button>
+        <button onclick="genExGSTR('9')" style="background:black; color:white; width:130px; height:35px; font-size:0.65rem; font-weight:800; border:1px solid var(--aqua);">GSTR-9 (EXPORT)</button>
+    </div>
+</div>
  </div>
+
+
+
 
 
 
@@ -14342,7 +14484,7 @@ dbOwnerPin = profileData && profileData.owner_pin ? String(profileData.owner_pin
     document.getElementById('user-display-name').innerText = data.user.user_metadata.full_name;
 
 document.querySelectorAll('.input-panel > *').forEach(el => {
-        if (el.id.endsWith('-modal')) {
+     if (el.id.endsWith('-modal') || el.id === 'exporter-section')  {
             el.style.setProperty('display', 'none', 'important');
         } else {
             let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
@@ -19943,6 +20085,468 @@ function runLiveValidation(el) {
     ['pincode','phone','email'].forEach(f => document.getElementById(p+'_'+f).addEventListener('input', (e) => runLiveValidation(e.target)));
     document.getElementById(p+'_state').addEventListener('change', () => runLiveValidation(document.getElementById(p+'_pincode')));
 });
+
+
+
+
+
+
+
+
+
+
+// --- EXPORTER MASTER ENGINE ---
+// --- STANDALONE EXPORTER ENGINE ---
+
+// --- STANDALONE EXPORTER ENGINE (V4 - FIXED & SYNCED) ---
+
+// 1. DYNAMIC TOGGLE
+function toggleExporterSection() {
+    const sec = document.getElementById('exporter-section');
+    if (!sec.style.display || sec.style.display === 'none') {
+        sec.style.setProperty('display', 'block', 'important');
+        document.getElementById('ex_date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('ex_inv_no').value = "EXP-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+        getExRate();
+    } else {
+        sec.style.setProperty('display', 'none', 'important');
+    }
+}
+
+// 2. FETCH RECORD BY INVOICE NO
+async function fetchExByInv() {
+    const no = prompt("Enter Export Invoice No to fetch:");
+    if(!no) return;
+    const { data, error } = await supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).eq('inv_no', no).single();
+    if(data) {
+        document.getElementById('ex_date').value = data.record_date;
+        document.getElementById('ex_inv_no').value = data.inv_no;
+        document.getElementById('ex_biz').value = data.biz_name;
+        document.getElementById('ex_gstin').value = data.gstin_no;
+        document.getElementById('ex_exp_name').value = data.exporter_name;
+        document.getElementById('ex_addr').value = data.address;
+        document.getElementById('ex_pin').value = data.pincode;
+        document.getElementById('ex_state').value = data.state;
+        document.getElementById('ex_wa').value = data.whatsapp;
+        document.getElementById('ex_email').value = data.email;
+        document.getElementById('ex_type').value = data.export_type;
+        document.getElementById('ex_prod').value = data.product_name;
+        document.getElementById('ex_hsn').value = data.hsn_code;
+        document.getElementById('ex_qty').value = data.quantity;
+        document.getElementById('ex_rate').value = data.rate_fcy;
+        document.getElementById('ex_gst_p').value = data.gst_percent;
+        document.getElementById('ex_to_country').value = data.to_country;
+        document.getElementById('ex_port').value = data.port_code;
+        document.getElementById('ex_ship_no').value = data.shipping_bill_no;
+        document.getElementById('ex_ship_date').value = data.shipping_bill_date;
+        document.getElementById('ex_curr').value = data.currency;
+document.getElementById('ex_buy_biz').value = data.buy_biz_name;
+document.getElementById('ex_buy_name').value = data.buy_name;
+document.getElementById('ex_buy_addr').value = data.buy_address;
+document.getElementById('ex_buy_pin').value = data.buy_pincode;
+document.getElementById('ex_buy_state').value = data.buy_state;
+document.getElementById('ex_buy_wa').value = data.buy_whatsapp;
+document.getElementById('ex_buy_email').value = data.buy_email;
+        document.getElementById('ex_rate_val').value = data.exchange_rate;
+        calcExInr();
+        alert("Record loaded successfully!");
+    } else { alert("Export Invoice not found in your history."); }
+}
+
+// 3. LOGIN-WISE HISTORY MODAL
+async function viewExHistory() {
+    if(!currentUserId) return alert("Please login first");
+    
+    try {
+        const { data, error } = await supabaseClient.from('exporter')
+            .select('record_date, inv_no, product_name, equivalent_inr')
+            .eq('user_id', currentUserId)
+            .order('record_date', { ascending: false });
+
+        if (error) throw error;
+
+        let html = `<table style="width:100%; border-collapse:collapse; font-size:0.85rem; border:1px solid black; background:white;">
+            <tr style="background:#000; color:#7FFFD4;">
+                <th style="padding:10px; border:1px solid #444;">DATE</th>
+                <th style="padding:10px; border:1px solid #444;">INV NO</th>
+                <th style="padding:10px; border:1px solid #444;">PRODUCT</th>
+                <th style="padding:10px; border:1px solid #444;">VALUE (INR)</th>
+            </tr>`;
+
+        if (!data || data.length === 0) {
+            html += `<tr><td colspan="4" style="padding:20px; text-align:center;">No export records found.</td></tr>`;
+        } else {
+            data.forEach(row => {
+                html += `<tr>
+                    <td style="padding:8px; border:1px solid #eee; text-align:center;">${row.record_date}</td>
+                    <td style="padding:8px; border:1px solid #eee; font-weight:bold; color:#1B3E85;">${row.inv_no}</td>
+                    <td style="padding:8px; border:1px solid #eee;">${row.product_name}</td>
+                    <td style="padding:8px; border:1px solid #eee; text-align:right;">₹ ${parseFloat(row.equivalent_inr).toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
+                </tr>`;
+            });
+        }
+        html += `</table>`;
+
+        // Push to your existing report modal
+        document.getElementById('report-title').innerText = "MY EXPORT HISTORY";
+        document.getElementById('report-container').innerHTML = html;
+        document.getElementById('report-modal').style.setProperty('display', 'block', 'important');
+
+    } catch (e) {
+        alert("History Fetch Error: " + e.message);
+    }
+}
+
+// 4. PRINT EXPORT INVOICE (WORD FORMAT)
+async function printExWord() {
+    const v = (id) => document.getElementById(id).value || document.getElementById(id).innerText;
+    const doc = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'></head><body style="font-family:Arial; padding:20pt; border:2pt solid black;">
+        <h2 style="text-align:center; text-decoration:underline;">COMMERCIAL EXPORT INVOICE</h2>
+
+        <table style="width:100%; margin-bottom:20pt;">
+            <tr><td><b>Exporter:</b><br>${v('ex_exp_name')}<br>${v('ex_addr')}<br>${v('ex_state')} - ${v('ex_pin')}<br>GSTIN: ${v('ex_gstin')}</td>
+                <td style="text-align:right; vertical-align:top;"><b>Inv No:</b> ${v('ex_inv_no')}<br><b>Date:</b> ${v('ex_date')}<br><b>Currency:</b> ${v('ex_curr')}</td>
+<td style="width:50%; text-align:right;"><b>Buyer (To):</b><br>${v('ex_buy_name')}<br>${v('ex_buy_biz')}<br>${v('ex_buy_addr')}<br>${v('ex_buy_state')} - ${v('ex_buy_pin')}</td></tr>
+        </table>
+
+        <table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
+            <tr style="background:#f2f2f2;"><th>Product / Description</th><th>HSN</th><th>Qty</th><th>Price (${v('ex_curr')})</th><th>Total (${v('ex_curr')})</th></tr>
+            <tr><td>${v('ex_prod')}</td><td>${v('ex_hsn')}</td><td>${v('ex_qty')}</td><td>${v('ex_rate')}</td><td>${v('disp_ex_val').split(' ')[1]}</td></tr>
+        </table>
+        <div style="text-align:right; margin-top:20pt;">
+            <p>Exchange Rate: ${v('ex_rate_val')}</p>
+            <p><b>Equivalent Total:</b> ${v('ex_inr')}</p>
+            <p><b>GST Payable:</b> ${v('disp_ex_gst')}</p>
+        </div>
+        <div style="margin-top:40pt; border-top:1pt solid #000; padding-top:10pt;">
+            <p><b>Shipping Bill Details:</b> No: ${v('ex_ship_no')} | Date: ${v('ex_ship_date')} | Port: ${v('ex_port')}</p>
+            <p><b>Destination Country:</b> ${v('ex_to_country')}</p>
+        </div>
+    </body></html>`;
+    const blob = new Blob(['\ufeff', doc], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Export_Inv_${v('ex_inv_no')}.doc`; link.click();
+}
+
+// 5. HELPER: EXCHANGE RATE
+async function getExRate() {
+    const c = document.getElementById('ex_curr').value;
+    if(c === 'Others') return;
+    try {
+        const res = await fetch(`https://open.er-api.com/v6/latest/USD`);
+        const d = await res.json();
+        const rate = (d.rates.INR / d.rates[c]).toFixed(2);
+        document.getElementById('ex_rate_val').value = rate;
+        calcExInr();
+    } catch(e) { document.getElementById('ex_rate_val').value = 83.50; }
+}
+
+// 6. HELPER: MATH
+function calcExInr() {
+    const q = parseFloat(document.getElementById('ex_qty').value) || 0;
+    const r = parseFloat(document.getElementById('ex_rate').value) || 0;
+    const ex = parseFloat(document.getElementById('ex_rate_val').value) || 0;
+    const gstP = parseFloat(document.getElementById('ex_gst_p').value) || 0;
+    const type = document.getElementById('ex_type').value;
+    const fcyVal = q * r;
+    const inr = fcyVal * ex;
+    const gstAmt = (type === 'IGST') ? (inr * gstP / 100) : 0;
+    document.getElementById('ex_inr').value = "₹ " + inr.toFixed(2);
+    document.getElementById('disp_ex_gst').innerText = "₹ " + gstAmt.toFixed(2);
+    document.getElementById('disp_ex_val').innerText = document.getElementById('ex_curr').value + " " + fcyVal.toFixed(2);
+}
+
+// 7. HELPER: CLEAR FIELDS
+function clearExFields() {
+    ['ex_biz','ex_gstin','ex_exp_name','ex_addr','ex_pin','ex_state','ex_wa','ex_email','ex_prod','ex_hsn','ex_qty','ex_rate','ex_to_country','ex_port','ex_ship_no','ex_ship_date', 'ex_buy_biz','ex_buy_name','ex_buy_addr','ex_buy_pin','ex_buy_state','ex_buy_wa','ex_buy_email'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ex_inv_no').value = "EXP-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+}
+
+
+
+// --- PRODUCT SEARCH FOR EXPORTERS ---
+function searchExProd() {
+    const q = document.getElementById('ex_prod').value.toLowerCase().trim();
+    const drop = document.getElementById('ex_res');
+    drop.innerHTML = '';
+
+    // Only search if user types 2 or more characters
+    if (q.length < 2) {
+        drop.style.display = 'none';
+        return;
+    }
+
+    // Filter from your existing gstDatabase
+    const matches = gstDatabase.filter(item => 
+        item.goods_name.toLowerCase().includes(q)
+    ).slice(0, 10); // Show top 10 results
+
+    if (matches.length > 0) {
+        drop.style.setProperty('display', 'block', 'important');
+        matches.forEach(m => {
+            const div = document.createElement('div');
+            // Styling to match your professional look
+            div.style = "padding:12px; border-bottom:1px solid #eee; cursor:pointer; background:white; color:black; text-align:left; font-family:sans-serif;";
+            div.innerHTML = `<div style="font-weight:900; font-size:0.85rem;">${m.goods_name}</div>
+                             <div style="font-size:0.75rem; color:#666;">HSN: ${m.hsn_code} | GST: <strong>${m.igst}</strong></div>`;
+            
+            div.onclick = () => {
+                document.getElementById('ex_prod').value = m.goods_name;
+                // Take the first HSN if multiple are listed
+                document.getElementById('ex_hsn').value = m.hsn_code.split(/[\/, ]+/)[0].trim();
+                // Set the GST percentage (removing the % sign)
+                document.getElementById('ex_gst_p').value = parseFloat(m.igst) || 0;
+                
+                drop.style.display = 'none';
+                // Trigger math update
+                if (typeof calcExInr === "function") calcExInr();
+            };
+            drop.appendChild(div);
+        });
+    } else {
+        drop.style.display = 'none';
+    }
+}
+
+// Close search dropdown if user clicks elsewhere
+document.addEventListener('click', function(e) {
+    if (e.target.id !== 'ex_prod') {
+        const drop = document.getElementById('ex_res');
+        if(drop) drop.style.display = 'none';
+    }
+});
+async function saveExRecord(mode) {
+    if(!currentUserId) return alert("Please login first.");
+    
+    // Helper to extract numbers from strings like "₹ 1,000.00"
+    const cleanNum = (val) => parseFloat(String(val).replace(/[^\d.-]/g, '')) || 0;
+    
+    const data = {
+        user_id: currentUserId,
+        record_date: document.getElementById('ex_date').value,
+        inv_no: document.getElementById('ex_inv_no').value,
+        biz_name: document.getElementById('ex_biz').value,
+        gstin_no: document.getElementById('ex_gstin').value,
+        exporter_name: document.getElementById('ex_exp_name').value,
+        address: document.getElementById('ex_addr').value,
+        pincode: document.getElementById('ex_pin').value,
+        state: document.getElementById('ex_state').value,
+        country_exporter: document.getElementById('ex_country').value,
+        whatsapp: document.getElementById('ex_wa').value,
+        email: document.getElementById('ex_email').value,
+        export_type: document.getElementById('ex_type').value,
+        product_name: document.getElementById('ex_prod').value,
+        hsn_code: document.getElementById('ex_hsn').value,
+        quantity: parseFloat(document.getElementById('ex_qty').value) || 0,
+        rate_fcy: parseFloat(document.getElementById('ex_rate').value) || 0,
+        gst_percent: parseFloat(document.getElementById('ex_gst_p').value) || 0,
+        to_country: document.getElementById('ex_to_country').value,
+        port_code: document.getElementById('ex_port').value,
+        shipping_bill_no: document.getElementById('ex_ship_no').value,
+        shipping_bill_date: document.getElementById('ex_ship_date').value || null,
+        currency: document.getElementById('ex_curr').value,
+        exchange_rate: parseFloat(document.getElementById('ex_rate_val').value) || 1,
+        equivalent_inr: cleanNum(document.getElementById('ex_inr').value),
+        gst_payable: cleanNum(document.getElementById('disp_ex_gst').innerText),
+buy_biz_name: document.getElementById('ex_buy_biz').value,
+buy_name: document.getElementById('ex_buy_name').value,
+buy_address: document.getElementById('ex_buy_addr').value,
+buy_pincode: document.getElementById('ex_buy_pin').value,
+buy_state: document.getElementById('ex_buy_state').value,
+buy_whatsapp: document.getElementById('ex_buy_wa').value,
+buy_email: document.getElementById('ex_buy_email').value,
+        export_value_fcy: (parseFloat(document.getElementById('ex_qty').value) || 0) * (parseFloat(document.getElementById('ex_rate').value) || 0)
+    };
+
+    try {
+        if (mode === 'ADD') {
+            const { error } = await supabaseClient.from('exporter').insert([data]);
+            if (error) throw error;
+            alert("RECORD SAVED: Export invoice added to cloud.");
+        } else {
+            const { error } = await supabaseClient.from('exporter').update(data).eq('user_id', currentUserId).eq('inv_no', data.inv_no);
+            if (error) throw error;
+            alert("RECORD UPDATED: Export invoice changes saved.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("DATABASE ERROR: " + e.message);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- DYNAMIC EXPORT GSTR REPORTING ENGINE ---
+
+// --- STANDALONE EXPORT GSTR REPORTING ENGINE (FIXED) ---
+
+async function genExGSTR(type) {
+    if(!currentUserId) return alert("Please login first");
+    
+    // 1. Get Month/Year from the Global Report Picker
+    const pickerVal = document.getElementById('report_month_picker').value;
+    if(!pickerVal) return alert("Please select a Month & Year in the 'REPORTS SECTION' (Point 22) first.");
+    
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+    const [selYear, selMonth] = pickerVal.split("-");
+
+    try {
+        let query = supabaseClient.from('exporter').select('*').eq('user_id', currentUserId);
+        
+        // --- DATE FILTER LOGIC ---
+        if(type === '9') {
+            // Annual Logic (April to March)
+            let fyStart = parseInt(selMonth) >= 4 ? selYear : parseInt(selYear) - 1;
+            let startDate = `${fyStart}-04-01`;
+            let endDate = `${parseInt(fyStart) + 1}-03-31`;
+            query = query.gte('record_date', startDate).lte('record_date', endDate);
+            title.innerText = `GSTR-9 ANNUAL EXPORT REPORT (FY ${fyStart}-${parseInt(fyStart)+1})`;
+        } else {
+            // Monthly Logic
+            query = query.gte('record_date', `${pickerVal}-01`).lte('record_date', `${pickerVal}-31`);
+            title.innerText = `GSTR-${type} EXPORT REPORT (${pickerVal})`;
+        }
+
+        const { data, error } = await query;
+        if(error) throw error;
+
+        if(!data || data.length === 0) {
+            return alert("NO RECORDS: You haven't added any export invoices for this period.");
+        }
+
+        let html = "";
+        let gTotals = { total: 0, taxable: 0, igst: 0 };
+
+        // --- VIEW 1: GSTR-1 (Invoice Level) ---
+        if(type === '1') {
+            html = `<table border="1" id="ex-gstr-table" style="width:100%; border-collapse:collapse; font-size:0.7rem; text-align:center; background:white;">
+                <tr style="background:#000; color:white;">
+                    <th>INV NO</th><th>DATE</th><th>TYPE</th><th>SHIP BILL</th><th>PORT</th><th>TOTAL (INR)</th><th>TAXABLE</th><th>IGST</th>
+                </tr>`;
+            data.forEach(r => {
+                const tx = parseFloat(r.equivalent_inr) || 0;
+                const gst = parseFloat(r.gst_payable) || 0;
+                const tot = tx + gst;
+                gTotals.total += tot; gTotals.taxable += tx; gTotals.igst += gst;
+                html += `<tr><td>${r.inv_no}</td><td>${r.record_date}</td><td>${r.export_type}</td><td>${r.shipping_bill_no || '-'}</td><td>${r.port_code || '-'}</td><td>${tot.toFixed(2)}</td><td>${tx.toFixed(2)}</td><td>${gst.toFixed(2)}</td></tr>`;
+            });
+            html += `<tr style="background:#7FFFD4; font-weight:900;"><td colspan="5">GRAND TOTAL</td><td>₹ ${gTotals.total.toFixed(2)}</td><td>₹ ${gTotals.taxable.toFixed(2)}</td><td>₹ ${gTotals.igst.toFixed(2)}</td></tr></table>`;
+        }
+
+        // --- VIEW 2: GSTR-3B (Summary Level) ---
+        else if(type === '3B') {
+            let lutSum = 0, igstSum = 0, taxDue = 0;
+            data.forEach(r => {
+                const val = parseFloat(r.equivalent_inr) || 0;
+                if(r.export_type === 'LUT') lutSum += val;
+                else { igstSum += val; taxDue += (parseFloat(r.gst_payable) || 0); }
+            });
+            // Fetch Purchase ITC for this month
+            const { data: expenses } = await supabaseClient.from('profit_expenses').select('vendor_gst_amount').eq('user_id', currentUserId).gte('record_date', `${pickerVal}-01`).lte('record_date', `${pickerVal}-31`);
+            let itc = expenses ? expenses.reduce((s, x) => s + (parseFloat(x.vendor_gst_amount) || 0), 0) : 0;
+
+            html = `<table border="1" id="ex-gstr-table" style="width:100%; border-collapse:collapse; background:white; font-size:0.9rem;">
+                <tr><td style="padding:10px; background:#eee;">Zero Rated Supply (LUT)</td><td style="padding:10px; font-weight:bold;">₹ ${lutSum.toFixed(2)}</td></tr>
+                <tr><td style="padding:10px; background:#eee;">Zero Rated Supply (IGST Paid)</td><td style="padding:10px; font-weight:bold;">₹ ${igstSum.toFixed(2)}</td></tr>
+                <tr><td style="padding:10px; background:#eee;">Tax Payable (Output IGST)</td><td style="padding:10px; font-weight:bold; color:red;">₹ ${taxDue.toFixed(2)}</td></tr>
+                <tr><td style="padding:10px; background:#eee;">ITC Used (From Purchases)</td><td style="padding:10px; font-weight:bold; color:green;">₹ ${itc.toFixed(2)}</td></tr>
+                <tr style="background:black; color:#7FFFD4; font-size:1.1rem;"><td style="padding:10px;"><b>NET CASH PAYABLE</b></td><td style="padding:10px;"><b>₹ ${Math.max(0, taxDue - itc).toFixed(2)}</b></td></tr>
+            </table>`;
+        }
+
+        // --- VIEW 3: GSTR-9 (Annual Level) ---
+        else if(type === '9') {
+            let annualRev = 0, annualTax = 0;
+            data.forEach(r => {
+                annualRev += (parseFloat(r.equivalent_inr) || 0);
+                annualTax += (parseFloat(r.gst_payable) || 0);
+            });
+            html = `<div id="ex-gstr-table" style="border:4px solid black; padding:30px; text-align:center; background:white;">
+                <h2 style="margin:0;">ANNUAL EXPORT RECONCILIATION</h2>
+                <hr>
+                <div style="font-size:1.4rem; margin:20px 0;">Total Exports: <b>₹ ${annualRev.toLocaleString('en-IN')}</b></div>
+                <div style="font-size:1.2rem; color:red;">Total Export Tax Paid: <b>₹ ${annualTax.toLocaleString('en-IN')}</b></div>
+                <p style="font-size:0.75rem; color:#666;">Note: This report is a consolidation of all Export invoices from April to March.</p>
+            </div>`;
+        }
+
+        // Add Download UI
+        html += `<div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="dlEx('Word','${type}')" style="flex:1; padding:12px; background:black; color:white; font-weight:800; cursor:pointer; border:none;">DOWNLOAD AS WORD</button>
+            <button onclick="dlEx('Excel','${type}')" style="flex:1; padding:12px; background:#1B3E85; color:white; font-weight:800; cursor:pointer; border:none;">DOWNLOAD AS EXCEL</button>
+        </div>`;
+
+        container.innerHTML = html;
+        document.getElementById('report-modal').style.setProperty('display', 'block', 'important');
+
+    } catch (e) {
+        console.error(e);
+        alert("CRITICAL ERROR: " + e.message);
+    }
+}
+// Helper: Download Logic
+function dlEx(format, type) {
+    const content = document.getElementById('ex-gstr-table').outerHTML;
+    const blobType = format === 'Word' ? 'application/msword' : 'application/vnd.ms-excel';
+    const ext = format === 'Word' ? '.doc' : '.xls';
+    const blob = new Blob(['\ufeff', content], { type: blobType });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Exporter_GSTR${type}_Report${ext}`;
+    link.click();
+}
+
+// 2. UPDATED PRINT WORD INVOICE (With LUT Line)
+async function printExWord() {
+    const v = (id) => document.getElementById(id).value || document.getElementById(id).innerText;
+    const isLUT = v('ex_type') === 'LUT';
+    
+    const doc = `
+    <html><head><meta charset='utf-8'></head><body style="font-family:Arial; padding:20pt; border:2pt solid black;">
+        <h2 style="text-align:center; text-decoration:underline;">COMMERCIAL EXPORT INVOICE</h2>
+        <table style="width:100%; margin-bottom:20pt;">
+            <tr>
+                <td style="width:50%;"><b>Exporter (From):</b><br>${v('ex_exp_name')}<br>${v('ex_biz')}<br>${v('ex_addr')}<br>${v('ex_state')} - ${v('ex_pin')}<br>GSTIN: ${v('ex_gstin')}</td>
+                <td style="width:50%; text-align:right; vertical-align:top;"><b>Inv No:</b> ${v('ex_inv_no')}<br><b>Date:</b> ${v('ex_date')}<br><b>Currency:</b> ${v('ex_curr')}<br><br><b>Buyer (To):</b><br>${v('ex_buy_name')}<br>${v('ex_buy_biz')}<br>${v('ex_buy_addr')}<br>${v('ex_buy_state')} - ${v('ex_buy_pin')}</td>
+            </tr>
+        </table>
+        <table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
+            <tr style="background:#f2f2f2;"><th>Product / Description</th><th>HSN</th><th>Qty</th><th>Price (${v('ex_curr')})</th><th>Total (${v('ex_curr')})</th></tr>
+            <tr><td>${v('ex_prod')}</td><td>${v('ex_hsn')}</td><td>${v('ex_qty')}</td><td>${v('ex_rate')}</td><td>${v('disp_ex_val').split(' ')[1]}</td></tr>
+        </table>
+        <div style="text-align:right; margin-top:20pt;">
+            <p>Exchange Rate: ${v('ex_rate_val')}</p>
+            <p><b>Equivalent Total:</b> ${v('ex_inr')}</p>
+            <p><b>GST Payable:</b> ${v('disp_ex_gst')}</p>
+            <h3 style="border-top:1pt solid black; padding-top:10pt;">GRAND TOTAL (INR): ₹ ${(parseFloat(v('ex_inr').replace('₹ ','').replace(',','')) + parseFloat(v('disp_ex_gst').replace('₹ ','').replace(',',''))).toFixed(2)}</h3>
+        </div>
+        <div style="margin-top:40pt; border-top:1pt solid #000; padding-top:10pt; font-size:10pt;">
+            <p><b>Shipping Details:</b> Bill No: ${v('ex_ship_no')} | Date: ${v('ex_ship_date')} | Port: ${v('ex_port')}</p>
+            <p><b>Destination:</b> ${v('ex_to_country')}</p>
+            ${isLUT ? `<p style="margin-top:20pt; font-weight:bold; text-align:center;">Supply meant for export under LUT without payment of IGST</p>` : ""}
+        </div>
+    </body></html>`;
+    
+    const blob = new Blob(['\ufeff', doc], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Export_Inv_${v('ex_inv_no')}.doc`; link.click();
+}
 </script>
 </body>
 </html>
