@@ -1529,105 +1529,117 @@ input.error-box { background-color: yellow !important; }
     <!-- Row: Business Names -->
     <div class="form-row" style="margin-top:10px;">
         <input type="text" id="ex_biz" placeholder="3. Exporter Business Name">
-        <input type="text" id="ex_buy_biz" placeholder="To Business Name">
+        <input type="text" id="ex_buy_biz" placeholder="4. To Business Name">
     </div>
 
     <!-- Row: PAN/GST vs Buyer Name -->
     <div class="form-row">
-        <input type="text" id="ex_gstin" placeholder="4. Exporter GSTIN No">
-        <input type="text" id="ex_buy_name" placeholder="Name of Buyer">
+            <input type="text" id="ex_exp_name" placeholder="5. Name of Exporter">
+        <input type="text" id="ex_buy_name" placeholder="6. Name of Buyer">
     </div>
 
-    <!-- Row: Contact Names -->
-    <div class="form-row">
-        <input type="text" id="ex_exp_name" placeholder="5. Name of Exporter">
-        <input type="text" id="ex_country" value="INDIA" placeholder="9. Country of Exporter">
-    </div>
+
 
     <!-- Row: Addresses -->
     <div class="form-row">
-        <textarea id="ex_addr" placeholder="6. Exporter Address" style="height:55px;"></textarea>
-        <textarea id="ex_buy_addr" placeholder="To Address" style="height:55px;"></textarea>
+        <textarea id="ex_addr" placeholder="7. Exporter Address" style="height:55px;"></textarea>
+        <textarea id="ex_buy_addr" placeholder="8. To Address" style="height:55px;"></textarea>
     </div>
 
     <!-- Row: Pincodes -->
     <div class="form-row">
-        <input type="text" id="ex_pin" placeholder="7. Exporter Pincode" style="text-align:center;">
-        <input type="text" id="ex_buy_pin" placeholder="To Pincode" style="text-align:center;">
+        <input type="text" id="ex_pin" placeholder="9. Exporter Pincode" style="text-align:left;">
+        <input type="text" id="ex_buy_pin" placeholder="10. To Pincode" style="text-align:left">
     </div>
 
     <!-- Row: States -->
     <div class="form-row">
-        <input type="text" id="ex_state" placeholder="8. Exporter State">
-        <input type="text" id="ex_buy_state" placeholder="To State">
+        <input type="text" id="ex_state" placeholder="11. Exporter State">
+        <input type="text" id="ex_buy_state" placeholder="12. To State">
     </div>
+
+
+
+
+    <!-- Row: Contact Names -->
+    <div class="form-row">
+        <input type="text" id="ex_country" value="INDIA" placeholder="13.  Country of Exporter">
+    <input type="text" id="ex_to_country" placeholder=" 14. . To Country (Final Destination)" list="exportCountryList">
+    </div>
+
+
+
+
+
 
     <!-- Row: WhatsApp -->
     <div class="form-row">
-        <input type="text" id="ex_wa" placeholder="10. Exporter WhatsApp">
-        <input type="text" id="ex_buy_wa" placeholder="To WhatsApp">
+        <input type="text" id="ex_wa" placeholder="15. . Exporter WhatsApp">
+        <input type="text" id="ex_buy_wa" placeholder="16. To WhatsApp">
     </div>
 
     <!-- Row: Emails -->
     <div class="form-row">
-        <input type="email" id="ex_email" placeholder="11. Exporter Email">
-        <input type="email" id="ex_buy_email" placeholder="To Email">
+        <input type="email" id="ex_email" placeholder="17. Exporter Email">
+        <input type="email" id="ex_buy_email" placeholder="18. To Email">
     </div>
 
     <!-- Row: Export Settings -->
     <div class="form-row" style="border-top:1px solid #ddd; padding-top:15px; margin-top:10px;">
         <select id="ex_type" onchange="calcExInr()">
-            <option value="LUT">12. LUT - Zero Rated</option>
-            <option value="IGST">12. IGST Enabled</option>
+            <option value="LUT">19. LUT - Zero Rated</option>
+            <option value="IGST">20.  IGST Enabled</option>
         </select>
         <div class="search-container" style="position:relative;">
-            <input type="text" id="ex_prod" placeholder="13. Product Name (Search)..." oninput="searchExProd()">
+            <input type="text" id="ex_prod" placeholder="21. Product Name (Search)..." oninput="searchExProd()">
             <div id="ex_res" class="search-dropdown" style="display:none; position:absolute; z-index:999; width:100%;"></div>
         </div>
     </div>
 
     <div class="form-row">
-        <input type="text" id="ex_hsn" placeholder="14. HSN/SAC Code" readonly style="background:#f9f9f9;">
-        <input type="number" id="ex_qty" placeholder="15. Quantity" oninput="calcExInr()">
+        <input type="text" id="ex_hsn" placeholder="22. HSN/SAC Code" readonly style="background:#f9f9f9;">
+        <input type="number" id="ex_qty" placeholder="Quantity" oninput="calcExInr()">
     </div>
 
     <div class="form-row">
-        <input type="number" id="ex_rate" placeholder="16. Rate (Foreign Currency)" oninput="calcExInr()">
-        <input type="text" id="ex_gst_p" placeholder="17. GST %" readonly style="background:#eee;">
+        <input type="number" id="ex_rate" placeholder="23. Rate (Foreign Currency)" oninput="calcExInr()">
+        <input type="text" id="ex_gst_p" placeholder="24. GST %" readonly style="background:#eee;">
     </div>
 
     <div class="form-row">
-        <input type="text" id="ex_to_country" placeholder="18. To Country (Final Destination)">
-        <input type="text" id="ex_port" placeholder="19. Port Code">
+      <input type="text" id="ex_gstin" placeholder="25. Exporter GSTIN No">
+       <input type="text" id="ex_port" placeholder=" 26. Port Code" list="exportPortList">
     </div>
 
     <div class="form-row">
-        <input type="text" id="ex_ship_no" placeholder="20. Shipping Bill No">
-        <input type="date" id="ex_ship_date" title="21. Shipping Bill Date">
+        <input type="text" id="ex_ship_no" placeholder="27. Shipping Bill No">
+        <input type="date" id="ex_ship_date" title="28. Shipping Bill Date">
     </div>
 
     <div class="form-row">
         <select id="ex_curr" onchange="getExRate()">
-            <option value="USD">22. USD - Dollar</option>
-            <option value="EUR">22. EUR - Euro</option>
-            <option value="AED">22. AED - Dirham</option>
-            <option value="GBP">22. GBP - Pound</option>
-            <option value="Others">Others</option>
+            <option value="USD">29. USD - Dollar</option>
+            <option value="EUR">29. EUR - Euro</option>
+            <option value="AED">29. AED - Dirham</option>
+            <option value="GBP">29. GBP - Pound</option>
+            <option value="Others">29. Others</option>
         </select>
-        <input type="number" id="ex_rate_val" placeholder="23. Exchange Rate" oninput="calcExInr()">
+        <input type="number" id="ex_rate_val" placeholder="30. Exchange Rate" oninput="calcExInr()">
     </div>
 
     <div class="form-row">
         <div style="grid-column: 1 / -1;">
-            <label style="font-size:0.6rem; font-weight:900;">24. EQUIVALENT INR</label>
+            <label style="font-size:0.6rem; font-weight:900;">31. EQUIVALENT INR</label>
             <input type="text" id="ex_inr" readonly style="background:#000; color:var(--aqua); font-weight:900; text-align:center;">
         </div>
     </div>
 
     <div style="background:#f0f0f0; padding:15px; border:2px solid black; margin-top:20px; display:flex; justify-content:space-between; font-weight:900; font-size:0.8rem;">
-        <span>25. GST PAYABLE (INR): <span id="disp_ex_gst" style="color:red;">₹ 0.00</span></span>
-        <span>26. EXPORT VALUE (FCY): <span id="disp_ex_val" style="color:green;">0.00</span></span>
+        <span>32. GST PAYABLE (INR): <span id="disp_ex_gst" style="color:red;">₹ 0.00</span></span>
+        <span>33. EXPORT VALUE (FCY): <span id="disp_ex_val" style="color:green;">0.00</span></span>
     </div>
+
+
 
     <!-- EXPORTER CONTROL BUTTONS -->
     <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:25px; justify-content:center;">
@@ -20186,10 +20198,228 @@ document.addEventListener('click', function(e) {
         if(drop) drop.style.display = 'none';
     }
 });
+
+
+
+
+
+
+
+
+// EXPORT SECTION: VALIDATIONS & AUTO-POPULATE ENGINE
+
+
+const exPinToState = [
+    { r: [110, 110], s: "Delhi" }, { r: [121, 136], s: "Haryana" }, { r: [140, 160], s: "Punjab" }, { r: [160, 160], s: "Chandigarh" },
+    { r: [170, 176], s: "Himachal Pradesh" }, { r: [180, 194], s: "Jammu & Kashmir" }, { r: [194, 194], s: "Ladakh" }, { r: [201, 285], s: "Uttar Pradesh" },
+    { r: [248, 263], s: "Uttarakhand" }, { r: [301, 347], s: "Rajasthan" }, { r: [360, 396], s: "Gujarat" }, { r: [396, 396], s: "Dadra & Nagar Haveli" },
+    { r: [400, 444], s: "Maharashtra" }, { r: [403, 403], s: "Goa" }, { r: [450, 482], s: "Madhya Pradesh" }, { r: [490, 493], s: "Chhattisgarh" },
+    { r: [500, 509], s: "Telangana" }, { r: [515, 533], s: "Andhra Pradesh" }, { r: [560, 591], s: "Karnataka" }, { r: [600, 643], s: "Tamil Nadu" },
+    { r: [605, 605], s: "Puducherry" }, { r: [670, 695], s: "Kerala" }, { r: [682, 682], s: "Lakshadweep" }, { r: [700, 743], s: "West Bengal" },
+    { r: [737, 737], s: "Sikkim" }, { r: [744, 744], s: "Andaman & Nicobar" }, { r: [751, 770], s: "Odisha" }, { r: [781, 788], s: "Assam" },
+    { r: [791, 792], s: "Arunachal Pradesh" }, { r: [793, 794], s: "Meghalaya" }, { r: [795, 795], s: "Manipur" }, { r: [796, 796], s: "Mizoram" },
+    { r: [797, 798], s: "Nagaland" }, { r: [799, 799], s: "Tripura" }, { r: [800, 855], s: "Bihar" }, { r: [815, 835], s: "Jharkhand" }
+];
+
+// COMPREHENSIVE PORT MAPPING (Nearest Port / ICD mapped for every state)
+const exStateToPort = {
+    "Maharashtra": ["INNSA1 (Nhava Sheva Sea)", "INABG1 (Alibag)", "INDHN1 (Dahanu)", "INDIG1 (Dighi)", "INPVL6 (Panvel ICD)", "INNSK6 (Nashik ICD)"],
+    "Gujarat": ["INMUN1 (Mundra Sea)", "INPAV1 (Pipavav)", "INOKH1 (Okha)", "INNAV1 (Navlakhi)", "INPBD1 (Porbandar)", "INADA6 (Ahmedabad ICD)"],
+    "Tamil Nadu": ["INMAA1 (Chennai Sea)", "INMAA4 (Chennai Air)", "INCBE6 (Coimbatore ICD)"],
+    "West Bengal": ["INCCU1 (Kolkata Sea)"],
+    "Andhra Pradesh": ["INVTZ1 (Vizag Sea)", "INKRI1 (Krishnapatnam Sea)"],
+    "Kerala": ["INCOK1 (Cochin Sea)"],
+    "Odisha": ["INPRT1 (Paradip Sea)"],
+    "Goa": ["INPAN1 (Panaji Sea)"],
+    "Karnataka": ["INIXE1 (New Mangalore Sea)", "INWFD6 (Bangalore ICD)"], // Karnataka added!
+    "Delhi": ["INDEL4 (Delhi Air Cargo)", "INDEL6 (Tughlakabad ICD)"],
+    "Haryana": ["INHRH6 (Garhi Harsaru ICD)", "INDEL4 (Delhi Air)"],
+    "Punjab": ["INLDH6 (Ludhiana ICD)", "INASR6 (Amritsar ICD)"],
+    "Rajasthan": ["INJAI6 (Jaipur ICD)", "INMUN1 (Mundra Sea)"],
+    "Uttar Pradesh": ["INCPL6 (Dadri ICD)", "INDEA6 (Noida SEZ)"],
+    "Madhya Pradesh": ["ININD6 (Pithampur ICD)", "INNSA1 (Nhava Sheva Sea)"],
+    "Telangana": ["INHYD4 (Hyderabad Air)", "INSNF6 (Sanathnagar ICD)"],
+    "Bihar": ["INPTN6 (Patna ICD)", "INCCU1 (Kolkata Sea)"],
+    "Jharkhand": ["INCCU1 (Kolkata Sea)"],
+    "Chhattisgarh": ["INVTZ1 (Vizag Sea)"],
+    "Uttarakhand": ["INRUK6 (Roorkee ICD)"],
+    "Himachal Pradesh": ["INBDI6 (Baddi ICD)"],
+    "Jammu & Kashmir": ["INASR6 (Amritsar ICD)"],
+    "Assam": ["INAGT8 (Agartala Land)", "INCCU1 (Kolkata Sea)"],
+    "Tripura": ["INAGT8 (Agartala Land)"],
+    "Andaman & Nicobar": ["INCNB1 (Car-Nicobar)", "INCRN1 (Cornwallis)", "INNAN1 (Nancowrie)"]
+};
+
+const exCountries = [
+    {"n":"Afghanistan","c":"+93"},{"n":"Albania","c":"+355"},{"n":"Algeria","c":"+213"},{"n":"Andorra","c":"+376"},{"n":"Angola","c":"+244"},
+    {"n":"Antigua and Barbuda","c":"+1-268"},{"n":"Argentina","c":"+54"},{"n":"Armenia","c":"+374"},{"n":"Australia","c":"+61"},{"n":"Austria","c":"+43"},
+    {"n":"Azerbaijan","c":"+994"},{"n":"Bahamas","c":"+1-242"},{"n":"Bahrain","c":"+973"},{"n":"Bangladesh","c":"+880"},{"n":"Barbados","c":"+1-246"},
+    {"n":"Belarus","c":"+375"},{"n":"Belgium","c":"+32"},{"n":"Belize","c":"+501"},{"n":"Benin","c":"+229"},{"n":"Bhutan","c":"+975"},
+    {"n":"Bolivia","c":"+591"},{"n":"Bosnia and Herzegovina","c":"+387"},{"n":"Botswana","c":"+267"},{"n":"Brazil","c":"+55"},{"n":"Brunei","c":"+673"},
+    {"n":"Bulgaria","c":"+359"},{"n":"Burkina Faso","c":"+226"},{"n":"Burundi","c":"+257"},{"n":"Cambodia","c":"+855"},{"n":"Cameroon","c":"+237"},
+    {"n":"Canada","c":"+1"},{"n":"Central African Republic","c":"+236"},{"n":"Chad","c":"+235"},{"n":"Chile","c":"+56"},{"n":"China","c":"+86"},
+    {"n":"Colombia","c":"+57"},{"n":"Comoros","c":"+269"},{"n":"Congo (Republic)","c":"+242"},{"n":"Costa Rica","c":"+506"},{"n":"Croatia","c":"+385"},
+    {"n":"Cuba","c":"+53"},{"n":"Cyprus","c":"+357"},{"n":"Czech Republic","c":"+420"},{"n":"Denmark","c":"+45"},{"n":"Djibouti","c":"+253"},
+    {"n":"Dominica","c":"+1-767"},{"n":"Dominican Republic","c":"+1-809"},{"n":"Ecuador","c":"+593"},{"n":"Egypt","c":"+20"},{"n":"El Salvador","c":"+503"},
+    {"n":"Equatorial Guinea","c":"+240"},{"n":"Eritrea","c":"+291"},{"n":"Estonia","c":"+372"},{"n":"Eswatini","c":"+268"},{"n":"Ethiopia","c":"+251"},
+    {"n":"Fiji","c":"+679"},{"n":"Finland","c":"+358"},{"n":"France","c":"+33"},{"n":"Gabon","c":"+241"},{"n":"Gambia","c":"+220"},
+    {"n":"Georgia","c":"+995"},{"n":"Germany","c":"+49"},{"n":"Ghana","c":"+233"},{"n":"Greece","c":"+30"},{"n":"Grenada","c":"+1-473"},
+    {"n":"Guatemala","c":"+502"},{"n":"Guinea","c":"+224"},{"n":"Guinea-Bissau","c":"+245"},{"n":"Guyana","c":"+592"},{"n":"Haiti","c":"+509"},
+    {"n":"Honduras","c":"+504"},{"n":"Hungary","c":"+36"},{"n":"Iceland","c":"+354"},{"n":"India","c":"+91"},{"n":"Indonesia","c":"+62"},
+    {"n":"Iran","c":"+98"},{"n":"Iraq","c":"+964"},{"n":"Ireland","c":"+353"},{"n":"Israel","c":"+972"},{"n":"Italy","c":"+39"},
+    {"n":"Jamaica","c":"+1-876"},{"n":"Japan","c":"+81"},{"n":"Jordan","c":"+962"},{"n":"Kazakhstan","c":"+7"},{"n":"Kenya","c":"+254"},
+    {"n":"Kuwait","c":"+965"},{"n":"Kyrgyzstan","c":"+996"},{"n":"Laos","c":"+856"},{"n":"Latvia","c":"+371"},{"n":"Lebanon","c":"+961"},
+    {"n":"Lesotho","c":"+266"},{"n":"Liberia","c":"+231"},{"n":"Libya","c":"+218"},{"n":"Liechtenstein","c":"+423"},{"n":"Lithuania","c":"+370"},
+    {"n":"Luxembourg","c":"+352"},{"n":"Madagascar","c":"+261"},{"n":"Malawi","c":"+265"},{"n":"Malaysia","c":"+60"},{"n":"Maldives","c":"+960"},
+    {"n":"Mali","c":"+223"},{"n":"Malta","c":"+356"},{"n":"Marshall Islands","c":"+692"},{"n":"Mauritania","c":"+222"},{"n":"Mauritius","c":"+230"},
+    {"n":"Mexico","c":"+52"},{"n":"Micronesia","c":"+691"},{"n":"Moldova","c":"+373"},{"n":"Monaco","c":"+377"},{"n":"Mongolia","c":"+976"},
+    {"n":"Montenegro","c":"+382"},{"n":"Morocco","c":"+212"},{"n":"Mozambique","c":"+258"},{"n":"Myanmar","c":"+95"},{"n":"Namibia","c":"+264"},
+    {"n":"Nauru","c":"+674"},{"n":"Nepal","c":"+977"},{"n":"Netherlands","c":"+31"},{"n":"New Zealand","c":"+64"},{"n":"Nicaragua","c":"+505"},
+    {"n":"Niger","c":"+227"},{"n":"Nigeria","c":"+234"},{"n":"North Korea","c":"+850"},{"n":"North Macedonia","c":"+389"},{"n":"Norway","c":"+47"},
+    {"n":"Oman","c":"+968"},{"n":"Pakistan","c":"+92"},{"n":"Palau","c":"+680"},{"n":"Panama","c":"+507"},{"n":"Papua New Guinea","c":"+675"},
+    {"n":"Paraguay","c":"+595"},{"n":"Peru","c":"+51"},{"n":"Philippines","c":"+63"},{"n":"Poland","c":"+48"},{"n":"Portugal","c":"+351"},
+    {"n":"Qatar","c":"+974"},{"n":"Romania","c":"+40"},{"n":"Russia","c":"+7"},{"n":"Rwanda","c":"+250"},{"n":"Saint Kitts and Nevis","c":"+1-869"},
+    {"n":"Saint Lucia","c":"+1-758"},{"n":"Saint Vincent and the Grenadines","c":"+1-784"},{"n":"Samoa","c":"+685"},{"n":"San Marino","c":"+378"},
+    {"n":"Sao Tome and Principe","c":"+239"},{"n":"Saudi Arabia","c":"+966"},{"n":"Senegal","c":"+221"},{"n":"Serbia","c":"+381"},{"n":"Seychelles","c":"+248"},
+    {"n":"Sierra Leone","c":"+232"},{"n":"Singapore","c":"+65"},{"n":"Slovakia","c":"+421"},{"n":"Slovenia","c":"+386"},{"n":"Solomon Islands","c":"+677"},
+    {"n":"Somalia","c":"+252"},{"n":"South Africa","c":"+27"},{"n":"South Korea","c":"+82"},{"n":"South Sudan","c":"+211"},{"n":"Spain","c":"+34"},
+    {"n":"Sri Lanka","c":"+94"},{"n":"Sudan","c":"+249"},{"n":"Suriname","c":"+597"},{"n":"Sweden","c":"+46"},{"n":"Switzerland","c":"+41"},
+    {"n":"Syria","c":"+963"},{"n":"Taiwan","c":"+886"},{"n":"Tajikistan","c":"+992"},{"n":"Tanzania","c":"+255"},{"n":"Thailand","c":"+66"},
+    {"n":"Timor-Leste","c":"+670"},{"n":"Togo","c":"+228"},{"n":"Tonga","c":"+676"},{"n":"Trinidad and Tobago","c":"+1-868"},{"n":"Tunisia","c":"+216"},
+    {"n":"Turkey","c":"+90"},{"n":"Turkmenistan","c":"+993"},{"n":"Tuvalu","c":"+688"},{"n":"Uganda","c":"+256"},{"n":"Ukraine","c":"+380"},
+    {"n":"United Arab Emirates","c":"+971"},{"n":"United Kingdom","c":"+44"},{"n":"United States","c":"+1"},{"n":"Uruguay","c":"+598"},
+    {"n":"Uzbekistan","c":"+998"},{"n":"Vanuatu","c":"+678"},{"n":"Vatican City","c":"+379"},{"n":"Venezuela","c":"+58"},{"n":"Vietnam","c":"+84"},
+    {"n":"Yemen","c":"+967"},{"n":"Zambia","c":"+260"},{"n":"Zimbabwe","c":"+263"}
+];
+
+// 1. DYNAMIC INJECT DATALISTS ON LOAD
+window.addEventListener('DOMContentLoaded', () => {
+    let cList = document.createElement('datalist'); cList.id = 'exportCountryList';
+    exCountries.forEach(c => { cList.innerHTML += `<option value="${c.n}">`; });
+    document.body.appendChild(cList);
+
+    let pList = document.createElement('datalist'); pList.id = 'exportPortList';
+    document.body.appendChild(pList);
+});
+
+// 2. PINCODE -> STATE -> NEAREST PORT AUTO-POPULATOR
+document.getElementById('ex_pin').addEventListener('input', function() {
+    let val = this.value.trim();
+    
+    // Prompt at 3 digits
+    if (val.length === 3) {
+        let pref = parseInt(val);
+        let match = exPinToState.find(x => pref >= x.r[0] && pref <= x.r[1]);
+        let hint = document.getElementById('ex_pin_hint');
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.id = 'ex_pin_hint';
+            hint.style.cssText = "color: #1B3E85; font-size: 0.75rem; font-weight: bold; margin-top: 5px; grid-column: 1/-1;";
+            this.parentNode.appendChild(hint);
+        }
+        hint.innerText = match ? `State Prefix Match: ${match.s}` : "No State Prefix Matched";
+    } 
+    // Auto-populate on 6 digits
+    else if (val.length === 6) {
+        let pref = parseInt(val.substring(0,3));
+        let match = exPinToState.find(x => pref >= x.r[0] && pref <= x.r[1]);
+        
+        if (match) {
+            // Auto-fill state
+            document.getElementById('ex_state').value = match.s;
+            document.getElementById('ex_pin_hint').innerText = "State & Nearest Port Auto-Populated!";
+            
+            // Auto-fill Port List & Default Nearest Port
+            let pList = document.getElementById('exportPortList');
+            pList.innerHTML = '';
+            
+            // Check if state is in Port array, if not, use Nhava Sheva as absolute fallback
+            let portsArray = exStateToPort[match.s] || ["INNSA1 (Nhava Sheva Sea)"];
+            
+            portsArray.forEach(port => {
+                pList.innerHTML += `<option value="${port.split(' ')[0]}">${port}</option>`;
+            });
+            
+            // ONE-LINER: Extract just the code (e.g. INIXE1) and populate the box
+            document.getElementById('ex_port').value = portsArray[0].split(' ')[0];
+            
+        }
+    } else {
+        let hint = document.getElementById('ex_pin_hint');
+        if (hint) hint.innerText = "";
+    }
+});
+
+// 3. TO COUNTRY -> WHATSAPP (COUNTRY CODE) AUTO-POPULATOR
+document.getElementById('ex_to_country').addEventListener('input', function() {
+    let val = this.value.trim().toLowerCase();
+    if (val.length >= 3) {
+        let match = exCountries.find(c => c.n.toLowerCase().includes(val));
+        if (match) {
+            document.getElementById('ex_buy_wa').value = match.c + " ";
+        }
+    }
+});
+
+// 4. GSTIN MOD-36 CHECKSUM VERIFIER (On Blur)
+document.getElementById('ex_gstin').addEventListener('blur', function() {
+    let gstin = this.value.trim().toUpperCase();
+    if (!gstin) return;
+    
+    if (gstin.length !== 15) {
+        return alert("❌ INVALID GSTIN: Must be exactly 15 characters.");
+    }
+    
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let totalSum = 0;
+    try {
+        for (let i = 0; i < 14; i++) {
+            let charValue = chars.indexOf(gstin[i]);
+            if (charValue === -1) throw new Error();
+            let multiplier = (i % 2 === 0) ? 1 : 2;
+            let product = charValue * multiplier;
+            totalSum += Math.floor(product / 36) + (product % 36);
+        }
+        let checkCode = (36 - (totalSum % 36)) % 36;
+        if (gstin[14] === chars[checkCode]) {
+            alert("✅ SUCCESS: Valid GSTIN format verified.");
+        } else {
+            alert("❌ INVALID GSTIN: Mathematical checksum verification failed.");
+        }
+    } catch(e) {
+        alert("❌ INVALID GSTIN: Invalid characters found.");
+    }
+});
+
+// 5. MASTER SAVE FUNCTION (Blank checks + Email domain validation)
 async function saveExRecord(mode) {
     if(!currentUserId) return alert("Please login first.");
     
-    // Helper to extract numbers from strings like "₹ 1,000.00"
+    // 1. STRICT: Check if ANY field is empty (matching the exact new sequence & IDs)
+    const allFields = [
+        'ex_date', 'ex_inv_no', 'ex_biz', 'ex_buy_biz', 'ex_exp_name', 'ex_buy_name', 
+        'ex_addr', 'ex_buy_addr', 'ex_pin', 'ex_buy_pin', 'ex_state', 'ex_buy_state', 
+        'ex_country', 'ex_to_country', 'ex_wa', 'ex_buy_wa', 'ex_email', 'ex_buy_email', 
+        'ex_type', 'ex_prod', 'ex_hsn', 'ex_qty', 'ex_rate', 'ex_gst_p', 'ex_gstin', 
+        'ex_port', 'ex_ship_no', 'ex_ship_date', 'ex_curr', 'ex_rate_val'
+    ];
+    
+    for (let id of allFields) {
+        if (!document.getElementById(id).value.trim()) {
+            return alert("All fields are compulsory. Please fill up missing details.");
+        }
+    }
+
+    // 2. STRICT: Email Verification (@ and domain validation)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(document.getElementById('ex_email').value.trim())) {
+        return alert("Error: Invalid Exporter Email. Please include '@' and a proper domain.");
+    }
+    if (!emailRegex.test(document.getElementById('ex_buy_email').value.trim())) {
+        return alert("Error: Invalid Buyer Email. Please include '@' and a proper domain.");
+    }
+
+    // 3. Payload Creation for Database
     const cleanNum = (val) => parseFloat(String(val).replace(/[^\d.-]/g, '')) || 0;
     
     const data = {
@@ -20197,35 +20427,35 @@ async function saveExRecord(mode) {
         record_date: document.getElementById('ex_date').value,
         inv_no: document.getElementById('ex_inv_no').value,
         biz_name: document.getElementById('ex_biz').value,
-        gstin_no: document.getElementById('ex_gstin').value,
+        buy_biz_name: document.getElementById('ex_buy_biz').value,
         exporter_name: document.getElementById('ex_exp_name').value,
+        buy_name: document.getElementById('ex_buy_name').value,
         address: document.getElementById('ex_addr').value,
+        buy_address: document.getElementById('ex_buy_addr').value,
         pincode: document.getElementById('ex_pin').value,
+        buy_pincode: document.getElementById('ex_buy_pin').value,
         state: document.getElementById('ex_state').value,
+        buy_state: document.getElementById('ex_buy_state').value,
         country_exporter: document.getElementById('ex_country').value,
+        to_country: document.getElementById('ex_to_country').value,
         whatsapp: document.getElementById('ex_wa').value,
+        buy_whatsapp: document.getElementById('ex_buy_wa').value,
         email: document.getElementById('ex_email').value,
+        buy_email: document.getElementById('ex_buy_email').value,
         export_type: document.getElementById('ex_type').value,
         product_name: document.getElementById('ex_prod').value,
         hsn_code: document.getElementById('ex_hsn').value,
         quantity: parseFloat(document.getElementById('ex_qty').value) || 0,
         rate_fcy: parseFloat(document.getElementById('ex_rate').value) || 0,
         gst_percent: parseFloat(document.getElementById('ex_gst_p').value) || 0,
-        to_country: document.getElementById('ex_to_country').value,
+        gstin_no: document.getElementById('ex_gstin').value,
         port_code: document.getElementById('ex_port').value,
         shipping_bill_no: document.getElementById('ex_ship_no').value,
-        shipping_bill_date: document.getElementById('ex_ship_date').value || null,
+        shipping_bill_date: document.getElementById('ex_ship_date').value,
         currency: document.getElementById('ex_curr').value,
         exchange_rate: parseFloat(document.getElementById('ex_rate_val').value) || 1,
         equivalent_inr: cleanNum(document.getElementById('ex_inr').value),
         gst_payable: cleanNum(document.getElementById('disp_ex_gst').innerText),
-buy_biz_name: document.getElementById('ex_buy_biz').value,
-buy_name: document.getElementById('ex_buy_name').value,
-buy_address: document.getElementById('ex_buy_addr').value,
-buy_pincode: document.getElementById('ex_buy_pin').value,
-buy_state: document.getElementById('ex_buy_state').value,
-buy_whatsapp: document.getElementById('ex_buy_wa').value,
-buy_email: document.getElementById('ex_buy_email').value,
         export_value_fcy: (parseFloat(document.getElementById('ex_qty').value) || 0) * (parseFloat(document.getElementById('ex_rate').value) || 0)
     };
 
@@ -20244,8 +20474,6 @@ buy_email: document.getElementById('ex_buy_email').value,
         alert("DATABASE ERROR: " + e.message);
     }
 }
-
-
 
 
 
