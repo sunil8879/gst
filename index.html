@@ -1425,6 +1425,13 @@ input.error-box { background-color: yellow !important; }
 
 
 
+
+
+
+
+
+
+
 </div>
 
 <!-- --- REPORT DISPLAY MODAL --- -->
@@ -1646,7 +1653,22 @@ input.error-box { background-color: yellow !important; }
         <button onclick="genExGSTR('9')" style="background:black; color:white; width:130px; height:35px; font-size:0.65rem; font-weight:800; border:1px solid var(--aqua);">GSTR-9 (EXPORT)</button>
     </div>
 </div>
- </div>
+<!-- --- FINAL COMBINED GSTR REPORTS --- -->
+<!-- --- MASTER COMBINED GSTR-1 --- -->
+<div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 3px double black;">
+    <button onclick="genFinalGSTR1()" style="background:black; color:var(--aqua); width:240px; height:50px; font-size:0.85rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">
+        GENERATE FINAL GSTR-1
+    </button>
+</div>
+
+
+
+
+
+
+</div>
+
+
 
 
 
@@ -14451,9 +14473,6 @@ async function fetchFinanceNews() {
 }
 window.addEventListener('DOMContentLoaded', fetchFinanceNews);
 
-
-
-
 async function onGoogleLogin(response) {
     const { data, error } = await supabaseClient.auth.signInWithIdToken({
         provider: 'google',
@@ -20554,6 +20573,415 @@ async function printExWord() {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `Export_Inv_${v('ex_inv_no')}.doc`; link.click();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- FINAL COMBINED GSTR-1 ENGINE ---
+
+async function genFinalGSTR1() {
+    // 1. PIN Check
+    if (verifyOwner() === false) return;
+
+    // 2. Get the Month from the Picker (Section 22)
+    const monthPicker = document.getElementById('report_month_picker');
+    if (!monthPicker || !monthPicker.value) {
+        return alert("STOP: Please go to Section 22 (REPORTS) and select a Month first.");
+    }
+    const pickerVal = monthPicker.value;
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+
+    // Show a small loader so the user knows it's working
+    container.innerHTML = "<p style='text-align:center; padding:20px;'>Calculating Combined Data... Please wait.</p>";
+    document.getElementById('report-modal').style.display = 'block';
+
+    try {
+        // 3. FETCH ALL DATA
+        const [histRes, expRes, sellerRes, custRes] = await Promise.all([
+            supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', `${pickerVal}-01`).lte('inv_date', `${pickerVal}-31`),
+            supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).gte('record_date', `${pickerVal}-01`).lte('record_date', `${pickerVal}-31`),
+            supabaseClient.from('seller_details').select('*').eq('user_id', currentUserId).maybeSingle(),
+            supabaseClient.from('customer_details').select('business_name, gstin, state').eq('user_id', currentUserId)
+        ]);
+
+        const domestic = histRes.data || [];
+        const exports = expRes.data || [];
+        const seller = sellerRes.data || { business_name: "Not Set", gstin: "Not Set", state: "" };
+        const customers = custRes.data || [];
+
+        // Map customers for GSTIN lookup
+        const custMap = {};
+        customers.forEach(c => { if(c.business_name) custMap[c.business_name.toLowerCase().trim()] = c; });
+
+        // 4. BUCKETS FOR CALCULATIONS
+        let b2b = { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 };
+        let b2cl = { count: 0, tax: 0, igst: 0 };
+        let b2cs = { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 };
+        let expLUT = { count: 0, tax: 0 };
+        let expIGST = { count: 0, tax: 0, igst: 0 };
+
+        const sState = (seller.state || "").toLowerCase().trim();
+
+        // 5. PROCESS DOMESTIC
+        domestic.forEach(inv => {
+            const cName = (inv.customer_name || "").toLowerCase().trim();
+            const cData = custMap[cName] || {};
+            const cGstin = cData.gstin || "";
+            const cState = (cData.state || "").toLowerCase().trim();
+            const tx = parseFloat(inv.taxable_amount) || 0;
+            const gst = parseFloat(inv.gst_amount) || 0;
+            const isInter = (cState !== sState && cState !== "");
+
+            if (cGstin.length === 15) {
+                b2b.count++; b2b.tax += tx;
+                if (isInter) b2b.igst += gst; else { b2b.cgst += gst/2; b2b.sgst += gst/2; }
+            } else if (isInter && parseFloat(inv.final_amount) > 250000) {
+                b2cl.count++; b2cl.tax += tx; b2cl.igst += gst;
+            } else {
+                b2cs.count++; b2cs.tax += tx;
+                if (isInter) b2cs.igst += gst; else { b2cs.cgst += gst/2; b2cs.sgst += gst/2; }
+            }
+        });
+
+        // 6. PROCESS EXPORTS
+        exports.forEach(ex => {
+            const tx = parseFloat(ex.equivalent_inr) || 0;
+            const gst = parseFloat(ex.gst_payable) || 0;
+            if (ex.export_type === 'LUT') { expLUT.count++; expLUT.tax += tx; }
+            else { expIGST.count++; expIGST.tax += tx; expIGST.igst += gst; }
+        });
+
+        // 7. RENDER FINAL UI
+        title.innerText = "FINAL GSTR-1 COMBINED REPORT";
+        container.innerHTML = `
+        <div id="final-gstr1-print" style="font-family:Arial; padding:20px; background:white; color:black; border:1px solid #000; text-align:left; line-height:1.6;">
+            <center>
+                <h2 style="margin-bottom:0;">FINAL GSTR-1</h2>
+                <p style="margin-top:0;"><i>(Combined Domestic + Export Sales)</i></p>
+            </center>
+            <hr>
+            <p><b>GSTIN:</b> ${seller.gstin} | <b>Name:</b> ${seller.business_name}<br><b>Period:</b> ${pickerVal}</p>
+            
+            <h3 style="background:#eee; padding:5px;">1. DOMESTIC SALES</h3>
+            <b>B2B (Registered):</b> Inv: ${b2b.count} | Taxable: ₹${b2b.tax.toFixed(2)} | CGST: ${b2b.cgst.toFixed(2)} | SGST: ${b2b.sgst.toFixed(2)} | IGST: ${b2b.igst.toFixed(2)}<br>
+            <b>B2C Large (>2.5L):</b> Inv: ${b2cl.count} | Taxable: ₹${b2cl.tax.toFixed(2)} | IGST: ${b2cl.igst.toFixed(2)}<br>
+            <b>B2C Small:</b> Inv: ${b2cs.count} | Taxable: ₹${b2cs.tax.toFixed(2)} | IGST: ${b2cs.igst.toFixed(2)}
+
+            <h3 style="background:#eee; padding:5px;">2. EXPORT SALES</h3>
+            <b>LUT (Zero Rated):</b> Inv: ${expLUT.count} | Taxable: ₹${expLUT.tax.toFixed(2)} | IGST: 0.00<br>
+            <b>IGST Paid:</b> Inv: ${expIGST.count} | Taxable: ₹${expIGST.tax.toFixed(2)} | IGST: ₹${expIGST.igst.toFixed(2)}
+
+            <h3 style="background:#eee; padding:5px;">3. TOTAL OUTWARD SUPPLIES</h3>
+            <div style="border:2px solid black; padding:10px; background:#7FFFD4;">
+                <b style="font-size:1.1rem;">Grand Total Sales: ₹ ${(b2b.tax + b2cl.tax + b2cs.tax + expLUT.tax + expIGST.tax).toFixed(2)}</b><br>
+                <b>Total GST Collected: ₹ ${(b2b.cgst + b2b.sgst + b2b.igst + b2cl.igst + b2cs.cgst + b2cs.sgst + b2cs.igst + expIGST.igst).toFixed(2)}</b>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="dlFinalGSTR('Word')" style="flex:1; padding:12px; background:black; color:white; font-weight:800; cursor:pointer;">DOWNLOAD WORD</button>
+            <button onclick="dlFinalGSTR('Excel')" style="flex:1; padding:12px; background:#1B3E85; color:white; font-weight:800; cursor:pointer;">DOWNLOAD EXCEL</button>
+        </div>`;
+    } catch (e) {
+        console.error(e);
+        alert("CRITICAL ERROR: " + e.message);
+    }
+}
+
+// Download function for Final GSTR
+function dlFinalGSTR(format) {
+    const content = document.getElementById('final-gstr1-print').innerHTML;
+    const blob = new Blob(['\ufeff', `<html><body>${content}</body></html>`], { type: format === 'Word' ? 'application/msword' : 'application/vnd.ms-excel' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Final_GSTR1_${format}.${format === 'Word' ? 'doc' : 'xls'}`;
+    link.click();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- FINAL COMBINED GSTR-1 ENGINE (STRICT & ROBUST) ---
+
+// --- FINAL COMBINED GSTR-1 ENGINE (DOMESTIC + EXPORT) ---
+
+async function genFinalGSTR1() {
+    // 1. Security & Month Selection
+    if (verifyOwner() === false) return;
+    const selMonth = document.getElementById('report_month_picker').value;
+    if (!selMonth) return alert("Please select a Month & Year in Section 22 first.");
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+
+    try {
+        // 2. Parallel Data Fetch
+        const [hRes, eRes, sRes, cRes] = await Promise.all([
+            supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', `${selMonth}-01`).lte('inv_date', `${selMonth}-31`),
+            supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).gte('record_date', `${selMonth}-01`).lte('record_date', `${selMonth}-31`),
+            supabaseClient.from('seller_details').select('*').eq('user_id', currentUserId).maybeSingle(),
+            supabaseClient.from('customer_details').select('business_name, gstin, state').eq('user_id', currentUserId)
+        ]);
+
+        const seller = sRes.data || { business_name: "--", gstin: "--", state: "" };
+        const sState = (seller.state || "").toLowerCase().trim();
+        
+        // Map customers for GSTIN & State check
+        const custMap = {};
+        (cRes.data || []).forEach(c => { if(c.business_name) custMap[c.business_name.toLowerCase().trim()] = c; });
+
+        // 3. Calculation Buckets
+        let dom = {
+            b2b: { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 },
+            b2cl: { count: 0, tax: 0, igst: 0 },
+            b2cs: { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 }
+        };
+        let exp = {
+            lut: { count: 0, tax: 0 },
+            igst: { count: 0, tax: 0, igst: 0 }
+        };
+
+        // 4. Process Domestic (Invoice History)
+        (hRes.data || []).forEach(inv => {
+            const cData = custMap[(inv.customer_name || "").toLowerCase().trim()] || {};
+            const cGst = (cData.gstin || "").trim();
+            const cSt = (cData.state || "").toLowerCase().trim();
+            const tx = parseFloat(inv.taxable_amount) || 0;
+            const gst = parseFloat(inv.gst_amount) || 0;
+            const isInter = (cSt !== sState && cSt !== "");
+
+            if (cGst.length === 15) {
+                // B2B
+                dom.b2b.count++; dom.b2b.tax += tx;
+                if (isInter) dom.b2b.igst += gst; else { dom.b2b.cgst += gst/2; dom.b2b.sgst += gst/2; }
+            } else if (isInter && parseFloat(inv.final_amount) > 250000) {
+                // B2C Large (>2.5L Interstate)
+                dom.b2cl.count++; dom.b2cl.tax += tx; dom.b2cl.igst += gst;
+            } else {
+                // B2C Small
+                dom.b2cs.count++; dom.b2cs.tax += tx;
+                if (isInter) dom.b2cs.igst += gst; else { dom.b2cs.cgst += gst/2; dom.b2cs.sgst += gst/2; }
+            }
+        });
+
+        // 5. Process Exports (Exporter Table)
+        (eRes.data || []).forEach(row => {
+            const val = parseFloat(row.equivalent_inr) || 0;
+            const tax = parseFloat(row.gst_payable) || 0;
+            if (row.export_type === 'LUT') { exp.lut.count++; exp.lut.tax += val; }
+            else { exp.igst.count++; exp.igst.tax += val; exp.igst.igst += tax; }
+        });
+
+        // 6. Final Summaries
+        const totalTaxable = dom.b2b.tax + dom.b2cl.tax + dom.b2cs.tax + exp.lut.tax + exp.igst.tax;
+        const totalCGST = dom.b2b.cgst + dom.b2cs.cgst;
+        const totalSGST = dom.b2b.sgst + dom.b2cs.sgst;
+        const totalIGST = dom.b2b.igst + dom.b2cl.igst + dom.b2cs.igst + exp.igst.igst;
+
+        // 7. Render UI
+        title.innerText = "FINAL GSTR-1 COMBINED REPORT";
+        container.innerHTML = `
+        <div id="final-gstr1-doc" style="font-family:Arial; padding:30px; background:white; color:black; border:1px solid black; text-align:left; line-height:1.6;">
+            <center><h2>FINAL GSTR-1 (Combined Domestic + Export)</h2><p><i>Monthly / Quarterly Return of Outward Supplies</i></p></center>
+            <hr>
+            <p><b>GSTIN:</b> ${seller.gstin} | <b>Legal Name:</b> ${seller.business_name}<br><b>Trade Name:</b> ${seller.business_name} | <b>Tax Period:</b> ${selMonth}</p>
+            
+            <h3 style="background:#eee; padding:5px; border:1px solid #000;">1. DOMESTIC SALES</h3>
+            <b>B2B Sales (Registered):</b> Inv: ${dom.b2b.count} | Taxable: ₹${dom.b2b.tax.toFixed(2)} | CGST: ${dom.b2b.cgst.toFixed(2)} | SGST: ${dom.b2b.sgst.toFixed(2)} | IGST: ${dom.b2b.igst.toFixed(2)}<br><br>
+            <b>B2C Large (Interstate > ₹2.5L):</b> Inv: ${dom.b2cl.count} | Taxable: ₹${dom.b2cl.tax.toFixed(2)} | IGST: ${dom.b2cl.igst.toFixed(2)}<br><br>
+            <b>B2C Small (Consumers):</b> Inv: ${dom.b2cs.count} | Taxable: ₹${dom.b2cs.tax.toFixed(2)} | CGST: ${dom.b2cs.cgst.toFixed(2)} | SGST: ${dom.b2cs.sgst.toFixed(2)} | IGST: ${dom.b2cs.igst.toFixed(2)}
+
+            <h3 style="background:#eee; padding:5px; border:1px solid #000;">2. EXPORT SALES (Table 6A)</h3>
+            <b>Exports with LUT (Zero Rated):</b> Inv: ${exp.lut.count} | Taxable: ₹${exp.lut.tax.toFixed(2)} | IGST: 0.00<br><br>
+            <b>Exports with IGST Paid:</b> Inv: ${exp.igst.count} | Taxable: ₹${exp.igst.tax.toFixed(2)} | IGST Paid: ₹${exp.igst.igst.toFixed(2)}
+
+            <h3 style="background:#eee; padding:5px; border:1px solid #000;">3. CREDIT / DEBIT NOTES</h3>
+            Debit Notes: 0 | Credit Notes: 0 | Net Adjustment: 0.00
+
+            <div style="margin-top:20px; padding:20px; border:3px solid black; background:#7FFFD4;">
+                <h3 style="margin-top:0;">4. TOTAL OUTWARD SUPPLIES</h3>
+                Domestic Taxable: ₹${(dom.b2b.tax + dom.b2cl.tax + dom.b2cs.tax).toFixed(2)}<br>
+                Export Taxable: ₹${(exp.lut.tax + exp.igst.tax).toFixed(2)}<hr>
+                <b style="font-size:1.2rem;">Grand Total Sales: ₹ ${totalTaxable.toFixed(2)}</b><br><br>
+                <b>Total GST Collected:</b><br>
+                CGST: ₹${totalCGST.toFixed(2)} | SGST: ₹${totalSGST.toFixed(2)} | IGST: ₹${totalIGST.toFixed(2)}
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="dlFinalGSTR('Word')" style="flex:1; padding:15px; background:black; color:white; font-weight:800; cursor:pointer;">DOWNLOAD AS WORD</button>
+            <button onclick="dlFinalGSTR('Excel')" style="flex:1; padding:15px; background:#1B3E85; color:white; font-weight:800; cursor:pointer;">DOWNLOAD AS EXCEL</button>
+        </div>`;
+        document.getElementById('report-modal').style.display = 'block';
+
+    } catch (e) {
+        alert("CRITICAL ERROR: " + e.message);
+    }
+}
+
+// Global Download Helper
+function dlFinalGSTR(format) {
+    const content = document.getElementById('final-gstr1-doc');
+    const blobType = format === 'Word' ? 'application/msword' : 'application/vnd.ms-excel';
+    const ext = format === 'Word' ? '.doc' : '.xls';
+    const blob = new Blob(['\ufeff', `<html><body>${content.innerHTML}</body></html>`], { type: blobType });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Final_GSTR1_Combined_${format}${ext}`;
+    link.click();
+}
+
+
+
+
+
+
+
+
+
+
+
+async function genFinalGSTR1() {
+    // 1. DATA SOURCE CHECK
+    const picker = document.getElementById('report_month_picker');
+    if (!picker || !picker.value) return alert("Select a month in the 'REPORTS SECTION' first.");
+    const selMonth = picker.value;
+
+    const container = document.getElementById('report-container');
+    const title = document.getElementById('report-title');
+
+    // Open the modal immediately so the user sees progress
+    title.innerText = "GENERATING COMBINED REPORT...";
+    container.innerHTML = "<div style='text-align:center; padding:30px;'>Fetching Domestic and Export records...</div>";
+    document.getElementById('report-modal').style.display = 'block';
+
+    try {
+        // 2. FETCH EVERYTHING
+        const [hRes, eRes, sRes, cRes] = await Promise.all([
+            supabaseClient.from('invoice_history').select('*').eq('user_id', currentUserId).gte('inv_date', `${selMonth}-01`).lte('inv_date', `${selMonth}-31`),
+            supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).gte('record_date', `${selMonth}-01`).lte('record_date', `${selMonth}-31`),
+            supabaseClient.from('seller_details').select('*').eq('user_id', currentUserId).maybeSingle(),
+            supabaseClient.from('customer_details').select('business_name, gstin, state').eq('user_id', currentUserId)
+        ]);
+
+        const domestic = hRes.data || [];
+        const exports = eRes.data || [];
+        const seller = sRes.data || { business_name: "NOT FOUND", gstin: "NOT FOUND", state: "" };
+        
+        const custMap = {};
+        (cRes.data || []).forEach(c => { if(c.business_name) custMap[c.business_name.toLowerCase().trim()] = c; });
+
+        // 3. CALCULATION BUCKETS
+        let domB2B = { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 };
+        let domB2CLarge = { count: 0, tax: 0, igst: 0 };
+        let domB2CSmall = { count: 0, tax: 0, cgst: 0, sgst: 0, igst: 0 };
+        let expLUT = { count: 0, tax: 0 };
+        let expIGST = { count: 0, tax: 0, igst: 0 };
+
+        const sSt = (seller.state || "").toLowerCase().trim();
+
+        // 4. PROCESS DOMESTIC
+        domestic.forEach(inv => {
+            const cName = (inv.customer_name || "").toLowerCase().trim();
+            const cData = custMap[cName] || {};
+            const cGstin = (cData.gstin || "").trim();
+            const cSt = (cData.state || "").toLowerCase().trim();
+            const txVal = parseFloat(inv.taxable_amount) || 0;
+            const gstAmt = parseFloat(inv.gst_amount) || 0;
+            const isInter = (cSt !== sSt && cSt !== "");
+
+            if (cGstin.length === 15) {
+                domB2B.count++; domB2B.tax += txVal;
+                if (isInter) domB2B.igst += gstAmt; else { domB2B.cgst += gstAmt/2; domB2B.sgst += gstAmt/2; }
+            } else if (isInter && parseFloat(inv.final_amount) > 250000) {
+                domB2CLarge.count++; domB2CLarge.tax += txVal; domB2CLarge.igst += gstAmt;
+            } else {
+                domB2CSmall.count++; domB2CSmall.tax += txVal;
+                if (isInter) domB2CSmall.igst += gstAmt; else { domB2CSmall.cgst += gstAmt/2; domB2CSmall.sgst += gstAmt/2; }
+            }
+        });
+
+        // 5. PROCESS EXPORTS
+        exports.forEach(ex => {
+            const txVal = parseFloat(ex.equivalent_inr) || 0;
+            const gstPaid = parseFloat(ex.gst_payable) || 0;
+            if (ex.export_type === 'LUT') { expLUT.count++; expLUT.tax += txVal; }
+            else { expIGST.count++; expIGST.tax += txVal; expIGST.igst += gstPaid; }
+        });
+
+        // 6. TOTALS
+        const grandTaxable = domB2B.tax + domB2CLarge.tax + domB2CSmall.tax + expLUT.tax + expIGST.tax;
+        const totalCGST = domB2B.cgst + domB2CSmall.cgst;
+        const totalSGST = domB2B.sgst + domB2CSmall.sgst;
+        const totalIGST = domB2B.igst + domB2CLarge.igst + domB2CSmall.igst + expIGST.igst;
+
+        // 7. RENDER
+        title.innerText = "FINAL GSTR-1 (COMBINED)";
+        container.innerHTML = `
+        <div id="gstr1-final-report" style="font-family:Arial; padding:30px; background:white; color:black; border:2px solid black; text-align:left;">
+            <center><h2>FINAL GSTR-1 (Combined Domestic + Export)</h2><p><i>Monthly Return of Outward Supplies</i></p></center>
+            <hr>
+            <p><b>GSTIN:</b> ${seller.gstin} | <b>Legal Name:</b> ${seller.business_name}<br><b>Tax Period:</b> ${selMonth}</p>
+            
+            <h3>1. Domestic Sales</h3>
+            <b>B2B (Registered):</b> Inv: ${domB2B.count} | Taxable: ₹${domB2B.tax.toFixed(2)} | CGST: ${domB2B.cgst.toFixed(2)} | SGST: ${domB2B.sgst.toFixed(2)} | IGST: ${domB2B.igst.toFixed(2)}<br><br>
+            <b>B2C Large (>2.5L):</b> Inv: ${domB2CLarge.count} | Taxable: ₹${domB2CLarge.tax.toFixed(2)} | IGST: ${domB2CLarge.igst.toFixed(2)}<br><br>
+            <b>B2C Small (Consumers):</b> Inv: ${domB2CSmall.count} | Taxable: ₹${domB2CSmall.tax.toFixed(2)} | CGST: ${domB2CSmall.cgst.toFixed(2)} | SGST: ${domB2CSmall.sgst.toFixed(2)} | IGST: ${domB2CSmall.igst.toFixed(2)}
+
+            <h3>2. Export Sales (Table 6A)</h3>
+            <b>LUT (Zero Rated):</b> Inv: ${expLUT.count} | Taxable: ₹${expLUT.tax.toFixed(2)} | IGST: 0<br><br>
+            <b>IGST Paid:</b> Inv: ${expIGST.count} | Taxable: ₹${expIGST.tax.toFixed(2)} | IGST Paid: ₹${expIGST.igst.toFixed(2)}
+
+            <div style="margin-top:30px; padding:20px; border:4px solid black; background:#7FFFD4;">
+                <h2 style="margin:0;">TOTAL OUTWARD SUPPLIES</h2>
+                <hr style="border:1px solid black;">
+                <b style="font-size:1.3rem;">Grand Total Sales: ₹ ${grandTaxable.toFixed(2)}</b><br><br>
+                <b>Combined Tax Summary:</b><br>
+                CGST: ₹${totalCGST.toFixed(2)} | SGST: ₹${totalSGST.toFixed(2)} | IGST: ₹${totalIGST.toFixed(2)}
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="dlFinalGSTR1('Word')" style="flex:1; padding:15px; background:black; color:white; font-weight:800; cursor:pointer;">DOWNLOAD WORD</button>
+            <button onclick="dlFinalGSTR1('Excel')" style="flex:1; padding:15px; background:#1B3E85; color:white; font-weight:800; cursor:pointer;">DOWNLOAD EXCEL</button>
+        </div>`;
+
+    } catch (err) {
+        alert("CRITICAL FETCH ERROR: " + err.message);
+    }
+}
+
+// Global Downloader for Combined Report
+function dlFinalGSTR1(format) {
+    const html = document.getElementById('gstr1-final-report').innerHTML;
+    const blobType = format === 'Word' ? 'application/msword' : 'application/vnd.ms-excel';
+    const ext = format === 'Word' ? '.doc' : '.xls';
+    const blob = new Blob(['\ufeff', `<html><body>${html}</body></html>`], { type: blobType });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Final_GSTR1_${format}${ext}`;
+    link.click();
 }
 </script>
 </body>
