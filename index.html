@@ -858,6 +858,41 @@ input.error-box { background-color: yellow !important; }
                 <div id="stat-gst" style="font-size:2rem; font-weight:900; color:#007BFF;">₹ 0.00</div>
             </div>
         </div>
+
+
+
+
+
+
+<!-- ADDED EXPORT DASHBOARD FIGURES -->
+     <!-- ADDED EXPORT DASHBOARD FIGURES -->
+        <h3 style="text-transform:uppercase; margin-top:30px; border-bottom:3px solid black; padding-bottom:5px; text-align:left;">Export Figures</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+            <div style="border:3px solid black; padding:15px; background:#f9f9f9; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.8rem; font-weight:800; color:#666;">EXPORT INVOICES</div>
+                <div id="stat-exp-count" style="font-size:1.8rem; font-weight:900;">0</div>
+            </div>
+            <div style="border:3px solid black; padding:15px; background:#f9f9f9; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.8rem; font-weight:800; color:#666;">EXPORT REVENUE (INR)</div>
+                <div id="stat-exp-revenue" style="font-size:1.8rem; font-weight:900; color:#28a745;">₹ 0.00</div>
+            </div>
+            <div style="border:3px solid black; padding:15px; background:#f9f9f9; box-shadow:5px 5px 0px #eee;">
+                <div style="font-size:0.8rem; font-weight:800; color:#666;">EXPORT IGST (INR)</div>
+                <div id="stat-exp-gst" style="font-size:1.8rem; font-weight:900; color:#dc3545;">₹ 0.00</div>
+            </div>
+        </div>
+
+        <h3 style="text-transform:uppercase; margin-top:30px; border-bottom:3px solid black; padding-bottom:5px; text-align:left;">Grand Totals (Domestic + Export)</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+            <div style="border:4px solid black; padding:15px; background:#7FFFD4; box-shadow:8px 8px 0px #000;">
+                <div style="font-size:0.9rem; font-weight:900; color:#000;">GRAND TOTAL REVENUE</div>
+                <div id="stat-grand-revenue" style="font-size:2rem; font-weight:900; color:#000;">₹ 0.00</div>
+            </div>
+            <div style="border:4px solid black; padding:15px; background:#1B3E85; color:white; box-shadow:8px 8px 0px #000;">
+                <div style="font-size:0.9rem; font-weight:900;">GRAND TOTAL GST</div>
+                <div id="stat-grand-gst" style="font-size:2rem; font-weight:900;">₹ 0.00</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1162,6 +1197,14 @@ input.error-box { background-color: yellow !important; }
             <div style="border:3px solid black; padding:15px;">
                 <h3 style="text-align:center; text-transform:uppercase; margin-top:0;">3. Revenue vs GST Distribution</h3>
                 <div id="pie_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+
+
+
+<!-- 4. ADDED EXPORT CHART -->
+            <div style="border:3px solid black; padding:15px; background:#e0f7fa;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0; color:#00796b;">4. Domestic vs Export Revenue (Grand Total)</h3>
+                <div id="export_pie_chart_div" style="width: 100%; height: 400px;"></div>
             </div>
         </div>
     </div>
@@ -1650,6 +1693,19 @@ input.error-box { background-color: yellow !important; }
         <button onclick="clearExFields()" style="background:#ff4757; color:white; border:none; padding:10px 15px; cursor:pointer;">CLEAR OFF</button>
         <button onclick="printExWord()" style="background:#1B3E85; color:white; border:2px solid black; padding:10px 20px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0px black;">PRINT INVOICE</button>
     </div>
+
+
+
+<!-- ADDED WHATSAPP REMINDER BUTTON -->
+    <div style="text-align:center; margin-top:20px;">
+        <button onclick="sendExportWaReminder()" style="background:#25D366; color:black; padding:12px 25px; font-size:0.85rem; font-weight:900; border:2px solid black; cursor:pointer; box-shadow:4px 4px 0px black; text-transform:uppercase;">
+            <i class="fab fa-whatsapp" style="font-size:1.2rem; vertical-align:middle; margin-right:5px;"></i> WHATSAPP REMINDER
+        </button>
+    </div>
+
+
+
+
 
     <!-- GSTR SECTION -->
     <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:25px; justify-content:center; border-top:3px solid black; padding-top:20px;">
@@ -14691,6 +14747,42 @@ if (modal.style.display === 'none' || arguments[0] === true) {
         }
 
         html += `</tbody></table>`;
+
+
+
+
+// --- ADDED EXPORT HISTORY TABLE ---
+      // --- ADDED EXPORT HISTORY TABLE ---
+        const { data: expHist } = await supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).gte('record_date', selMonth + '-01').lte('record_date', selMonth + '-31').order('record_date', { ascending: false });
+        
+        html += `<h3 style="margin-top:40px; border-bottom:4px solid var(--aqua); padding-bottom:5px; color:black; text-transform:uppercase;">INTERNATIONAL EXPORT HISTORY</h3>`;
+        html += `<table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:20px;">
+                <thead>
+                    <tr style="background:#000; color:#7FFFD4; border:2px solid black;">
+                        <th style="padding:10px; border:1px solid black;">Date</th>
+                        <th style="padding:10px; border:1px solid black;">Buyer Name</th>
+                        <th style="padding:10px; border:1px solid black;">Invoice No</th>
+                        <th style="padding:10px; border:1px solid black;">Export Type</th>
+                        <th style="padding:10px; border:1px solid black;">Value (INR)</th>
+                        <th style="padding:10px; border:1px solid black;">IGST (INR)</th>
+                    </tr>
+                </thead><tbody>`;
+                
+        if (!expHist || expHist.length === 0) {
+            html += `<tr><td colspan="6" style="padding:20px; text-align:center; border:1px solid black;">No export records found for this month.</td></tr>`;
+        } else {
+            expHist.forEach(item => {
+                html += `<tr>
+                    <td style="padding:10px; border:1px solid black;">${item.record_date}</td>
+                    <td style="padding:10px; border:1px solid black;">${item.buy_name || item.buy_biz_name}</td>
+                    <td style="padding:10px; border:1px solid black;">${item.inv_no}</td>
+                    <td style="padding:10px; border:1px solid black;">${item.export_type}</td>
+                    <td style="padding:10px; border:1px solid black; font-weight:bold; color:green;">${parseFloat(item.equivalent_inr).toFixed(2)}</td>
+                    <td style="padding:10px; border:1px solid black; font-weight:bold; color:red;">${parseFloat(item.gst_payable).toFixed(2)}</td>
+                </tr>`;
+            });
+        }
+        html += `</tbody></table>`;
         document.getElementById('history-content').innerHTML = html;
         modal.style.display = 'block';
     } else {
@@ -16097,12 +16189,33 @@ async function updateDashboardStats() {
     document.getElementById('stat-count').innerText = totalCount;
     document.getElementById('stat-revenue').innerText = "₹ " + Number(totalRevenue).toLocaleString('en-IN', {minimumFractionDigits: 2});
     document.getElementById('stat-gst').innerText = "₹ " + Number(totalGst).toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+
+
+
+
+// --- ADDED EXPORT STATS LOGIC ---
+    const { data: expData } = await supabaseClient.from('exporter').select('*').eq('user_id', currentUserId).gte('record_date', `${selectedMonth}-01`).lte('record_date', `${selectedMonth}-31`);
+    
+    let expCount = 0, expRev = 0, expGst = 0;
+    
+    if (expData) {
+        expCount = expData.length;
+        expData.forEach(r => {
+            expRev += (parseFloat(r.equivalent_inr) || 0);
+            expGst += (parseFloat(r.gst_payable) || 0);
+        });
+    }
+    
+    // Update Export UI
+    if (document.getElementById('stat-exp-count')) document.getElementById('stat-exp-count').innerText = expCount;
+    if (document.getElementById('stat-exp-revenue')) document.getElementById('stat-exp-revenue').innerText = "₹ " + Number(expRev).toLocaleString('en-IN', {minimumFractionDigits: 2});
+    if (document.getElementById('stat-exp-gst')) document.getElementById('stat-exp-gst').innerText = "₹ " + Number(expGst).toLocaleString('en-IN', {minimumFractionDigits: 2});
+    
+    // Update Grand Totals UI (Dynamic: Domestic + Export)
+    if (document.getElementById('stat-grand-revenue')) document.getElementById('stat-grand-revenue').innerText = "₹ " + Number(totalRevenue + expRev).toLocaleString('en-IN', {minimumFractionDigits: 2});
+    if (document.getElementById('stat-grand-gst')) document.getElementById('stat-grand-gst').innerText = "₹ " + Number(totalGst + expGst).toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
-
-
-
-
-
 
 
 
@@ -16814,6 +16927,33 @@ async function loadAllCharts() {
             pieHole: 0.4,
             colors: ['#000', '#7FFFD4']
         });
+
+
+
+// --- ADDED EXPORT CHART LOGIC ---
+        const { data: expChartData } = await supabaseClient.from('exporter').select('equivalent_inr').eq('user_id', currentUserId).gte('record_date', `${selectedMonth}-01`).lte('record_date', `${selectedMonth}-31`);
+        
+        let expTotalRev = 0;
+        if (expChartData) expChartData.forEach(r => expTotalRev += (parseFloat(r.equivalent_inr) || 0));
+        
+        const domTotalRev = dashboard ? parseFloat(dashboard.total_revenue) : 0;
+        const expPieArray = [['Type', 'Revenue']];
+        
+        if (domTotalRev > 0 || expTotalRev > 0) {
+            expPieArray.push(['Domestic Revenue', domTotalRev]);
+            expPieArray.push(['Export Revenue', expTotalRev]);
+        } else {
+            expPieArray.push(['No Data', 1]);
+        }
+        
+        if (document.getElementById('export_pie_chart_div')) {
+            const expPieData = google.visualization.arrayToDataTable(expPieArray);
+            new google.visualization.PieChart(document.getElementById('export_pie_chart_div')).draw(expPieData, {
+                pieHole: 0.4,
+                colors: ['#000000', '#00796b'],
+                backgroundColor: 'transparent'
+            });
+        }
 
     } catch (e) {
         console.error("Chart Drawing Error:", e);
@@ -21432,6 +21572,43 @@ function dlFinalGSTR9(format, fyStartYear) {
     link.href = URL.createObjectURL(blob);
     link.download = `Final_Combined_GSTR9_FY_${fyString}.${ext}`;
     link.click();
+}
+
+
+
+
+
+
+
+
+// --- WHATSAPP EXPORT REMINDER ENGINE ---
+function sendExportWaReminder() {
+    const waNumRaw = document.getElementById('ex_buy_wa').value.trim();
+    const invNo = document.getElementById('ex_inv_no').value.trim();
+    const amount = document.getElementById('disp_ex_val').innerText.trim(); // Fetches Foreign Currency Amount
+
+    if (!waNumRaw) {
+        return alert("Please enter the Buyer's WhatsApp number in Field 16.");
+    }
+    if (!invNo || amount === "0.00" || amount === "") {
+        return alert("Please ensure Invoice Number and Amount are calculated first.");
+    }
+
+    // Clean WhatsApp number (removes + and spaces for the URL)
+    const waNum = waNumRaw.replace(/[^0-9]/g, '');
+
+    // Determine Greeting based on current time
+    const hrs = new Date().getHours();
+    let greeting = "Good Evening";
+    if (hrs < 12) greeting = "Good Morning";
+    else if (hrs < 17) greeting = "Good Afternoon";
+
+    // Format the exact message requested
+    const msg = `Hello ${greeting} sir, I hope you are good. This is just a polite reminder to you about the payment of ${amount} vide invoice no ${invNo} is still pending. I request you to kindly make the payment at the earliest. Thank you.`;
+
+    // Open WhatsApp in a new tab
+    const waLink = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+    window.open(waLink, '_blank');
 }
 </script>
 </body>
