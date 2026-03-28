@@ -1201,6 +1201,34 @@ input.error-box { background-color: yellow !important; }
 
 
 
+<!-- EXPORT CHART 1: HORIZONTAL STACKED BAR -->
+            <div style="border:3px solid black; padding:15px; background:#f4f6f9; margin-top:20px;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0; color:#1B3E85;">Export: Revenue, GST & Customers</h3>
+                <div style="text-align:center; margin-bottom:10px;">
+                    <label style="font-weight:bold; font-size:0.85rem;">View By: </label>
+                    <select id="export_bar_view" onchange="loadAllCharts()" style="border:2px solid black; padding:5px; font-weight:bold; cursor:pointer;">
+                        <option value="month">Entire Month</option>
+                        <option value="date">Specific Date</option>
+                    </select>
+                    <input type="date" id="export_bar_slicer" onchange="loadAllCharts()" style="border:2px solid black; padding:5px; box-shadow:3px 3px 0px black; display:none; margin-left:10px;">
+                </div>
+                <div id="export_bar_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+
+            <!-- EXPORT CHART 2: LINE CHART -->
+            <div style="border:3px solid black; padding:15px; background:#f4f6f9; margin-top:20px;">
+                <h3 style="text-align:center; text-transform:uppercase; margin-top:0; color:#1B3E85;">Export: Customer Wise Invoice vs Pending</h3>
+                <div style="text-align:center; margin-bottom:10px;">
+                    <label style="font-weight:bold; font-size:0.85rem;">View By: </label>
+                    <select id="export_line_view" onchange="loadAllCharts()" style="border:2px solid black; padding:5px; font-weight:bold; cursor:pointer;">
+                        <option value="month">Entire Month</option>
+                        <option value="date">Specific Date</option>
+                    </select>
+                    <input type="date" id="export_line_slicer" onchange="loadAllCharts()" style="border:2px solid black; padding:5px; box-shadow:3px 3px 0px black; display:none; margin-left:10px;">
+                </div>
+                <div id="export_line_chart_div" style="width: 100%; height: 400px;"></div>
+            </div>
+
 <!-- 4. ADDED EXPORT CHART -->
             <div style="border:3px solid black; padding:15px; background:#e0f7fa;">
                 <h3 style="text-align:center; text-transform:uppercase; margin-top:0; color:#00796b;">4. Domestic vs Export Revenue (Grand Total)</h3>
@@ -1676,7 +1704,11 @@ input.error-box { background-color: yellow !important; }
             <input type="text" id="ex_inr" readonly style="background:#000; color:var(--aqua); font-weight:900; text-align:center;">
         </div>
     </div>
-
+<!-- ADDED: AMOUNT RECEIVED & PENDING -->
+    <div class="form-row">
+        <input type="number" id="ex_amt_recv" placeholder="32. Amount Received (INR)" oninput="calcExInr()">
+        <input type="text" id="ex_amt_pend" placeholder="33. Amount Pending (Excl. GST)" readonly style="background:#fff0f1; color:red; font-weight:bold;">
+    </div>
     <div style="background:#f0f0f0; padding:15px; border:2px solid black; margin-top:20px; display:flex; justify-content:space-between; font-weight:900; font-size:0.8rem;">
         <span>32. GST PAYABLE (INR): <span id="disp_ex_gst" style="color:red;">₹ 0.00</span></span>
         <span>33. EXPORT VALUE (FCY): <span id="disp_ex_val" style="color:green;">0.00</span></span>
@@ -16930,6 +16962,107 @@ async function loadAllCharts() {
 
 
 
+// --- ADDED: NEW EXPORT CHARTS (BAR & LINE) WITH SLICERS ---
+        const exBarView = document.getElementById('export_bar_view')?.value || 'month';
+        const exBarDate = document.getElementById('export_bar_slicer');
+        if (exBarDate) exBarDate.style.display = exBarView === 'date' ? 'inline-block' : 'none';
+
+        const exLineView = document.getElementById('export_line_view')?.value || 'month';
+        const exLineDate = document.getElementById('export_line_slicer');
+        if (exLineDate) exLineDate.style.display = exLineView === 'date' ? 'inline-block' : 'none';
+
+        // Fetch detailed export data for the selected month
+        const { data: exDetailedData } = await supabaseClient.from('exporter')
+            .select('record_date, equivalent_inr, gst_payable, buy_biz_name, buy_name, amount_pending, amount_received')
+            .eq('user_id', currentUserId)
+            .gte('record_date', `${selectedMonth}-01`)
+            .lte('record_date', `${selectedMonth}-31`);
+
+        if (exDetailedData) {
+            // CHART 1: Horizontal Stacked Bar (Group by Month or Date)
+            let barMap = {};
+            exDetailedData.forEach(r => {
+                // Slicer filter
+                if (exBarView === 'date' && exBarDate.value && r.record_date !== exBarDate.value) return; 
+                
+                let key = (exBarView === 'month') ? `Month: ${selectedMonth}` : r.record_date;
+                
+                if (!barMap[key]) barMap[key] = { rev: 0, gst: 0, custs: new Set() };
+                barMap[key].rev += parseFloat(r.equivalent_inr) || 0;
+                barMap[key].gst += parseFloat(r.gst_payable) || 0;
+                
+                let cName = (r.buy_biz_name || r.buy_name || "Unknown").trim();
+                if (cName) barMap[key].custs.add(cName);
+            });
+
+            const exBarArray = [['Period', 'Revenue (INR)', 'GST (INR)', 'Customers Count']];
+            Object.keys(barMap).sort().forEach(k => {
+                exBarArray.push([k, barMap[k].rev, barMap[k].gst, barMap[k].custs.size]);
+            });
+            if (exBarArray.length === 1) exBarArray.push(['No Data', 0, 0, 0]);
+
+            if (document.getElementById('export_bar_chart_div')) {
+                const exBarTable = google.visualization.arrayToDataTable(exBarArray);
+                new google.visualization.BarChart(document.getElementById('export_bar_chart_div')).draw(exBarTable, {
+                    isStacked: true,
+                    colors: ['#1B3E85', '#ff4757', '#25D366'],
+                    chartArea: { width: '65%', height: '60%' },
+                    vAxis: { title: 'Period' },
+                    hAxes: {
+                        0: { title: 'Amount (INR)', minValue: 0 },
+                        1: { title: 'Customer Count', minValue: 0 } // Dual axis for the green bar
+                    },
+                    series: {
+                        0: { targetAxisIndex: 0 }, // Revenue to Axis 0
+                        1: { targetAxisIndex: 0 }, // GST to Axis 0
+                        2: { targetAxisIndex: 1 }  // Customer Count to Axis 1 (Fixes the invisible green bar)
+                    },
+                    backgroundColor: 'transparent'
+                });
+            }
+
+            // CHART 2: Line Chart (Group by Customer)
+            let lineMap = {};
+            exDetailedData.forEach(r => {
+                // Slicer filter
+                if (exLineView === 'date' && exLineDate.value && r.record_date !== exLineDate.value) return; 
+                
+                let cName = (r.buy_biz_name || r.buy_name || "Unknown").trim();
+                if (!cName) return;
+                if (!lineMap[cName]) lineMap[cName] = { invAmt: 0, pendAmt: 0 };
+                
+                let totalVal = parseFloat(r.equivalent_inr) || 0;
+                let pend = parseFloat(r.amount_pending) || 0;
+                let paid = parseFloat(r.amount_received) || 0;
+                
+                // Fallback for old records
+                if (paid === 0 && pend === 0 && totalVal > 0) pend = totalVal; 
+
+                lineMap[cName].invAmt += totalVal;
+                lineMap[cName].pendAmt += pend;
+            });
+
+            const exLineArray = [['Customer', 'Total Invoice (excl GST)', 'Pending Amount']];
+            Object.keys(lineMap).sort().forEach(c => {
+                exLineArray.push([c, lineMap[c].invAmt, lineMap[c].pendAmt]);
+            });
+            if (exLineArray.length === 1) exLineArray.push(['No Data', 0, 0]);
+
+            if (document.getElementById('export_line_chart_div')) {
+                const exLineTable = google.visualization.arrayToDataTable(exLineArray);
+                new google.visualization.LineChart(document.getElementById('export_line_chart_div')).draw(exLineTable, {
+                    curveType: 'function',
+                    colors: ['#1B3E85', '#ff4757'],
+                    pointSize: 7,
+                    chartArea: { width: '70%', height: '70%' },
+                    vAxis: { title: 'Amount (INR)', minValue: 0 },
+                    backgroundColor: 'transparent'
+                });
+            }
+        }
+
+
+
 // --- ADDED EXPORT CHART LOGIC ---
         const { data: expChartData } = await supabaseClient.from('exporter').select('equivalent_inr').eq('user_id', currentUserId).gte('record_date', `${selectedMonth}-01`).lte('record_date', `${selectedMonth}-31`);
         
@@ -20262,6 +20395,7 @@ document.getElementById('ex_buy_state').value = data.buy_state;
 document.getElementById('ex_buy_wa').value = data.buy_whatsapp;
 document.getElementById('ex_buy_email').value = data.buy_email;
         document.getElementById('ex_rate_val').value = data.exchange_rate;
+document.getElementById('ex_amt_recv').value = data.amount_received || '';
         calcExInr();
         alert("Record loaded successfully!");
     } else { alert("Export Invoice not found in your history."); }
@@ -20273,29 +20407,42 @@ async function viewExHistory() {
     
     try {
         const { data, error } = await supabaseClient.from('exporter')
-            .select('record_date, inv_no, product_name, equivalent_inr')
+        .select('record_date, inv_no, product_name, equivalent_inr, amount_received, amount_pending')
             .eq('user_id', currentUserId)
             .order('record_date', { ascending: false });
 
         if (error) throw error;
 
         let html = `<table style="width:100%; border-collapse:collapse; font-size:0.85rem; border:1px solid black; background:white;">
-            <tr style="background:#000; color:#7FFFD4;">
+          <tr style="background:#000; color:#7FFFD4;">
                 <th style="padding:10px; border:1px solid #444;">DATE</th>
                 <th style="padding:10px; border:1px solid #444;">INV NO</th>
                 <th style="padding:10px; border:1px solid #444;">PRODUCT</th>
                 <th style="padding:10px; border:1px solid #444;">VALUE (INR)</th>
+                <th style="padding:10px; border:1px solid #444;">PAID</th>
+                <th style="padding:10px; border:1px solid #444;">PENDING</th>
             </tr>`;
 
         if (!data || data.length === 0) {
             html += `<tr><td colspan="4" style="padding:20px; text-align:center;">No export records found.</td></tr>`;
         } else {
             data.forEach(row => {
+             let totalValue = parseFloat(row.equivalent_inr) || 0;
+                let paid = parseFloat(row.amount_received) || 0;
+                
+                // Fallback for old records: if pending is exactly 0 and paid is exactly 0, pending = total
+                let pending = parseFloat(row.amount_pending) || 0;
+                if (paid === 0 && pending === 0 && totalValue > 0) {
+                    pending = totalValue;
+                }
+                
                 html += `<tr>
                     <td style="padding:8px; border:1px solid #eee; text-align:center;">${row.record_date}</td>
                     <td style="padding:8px; border:1px solid #eee; font-weight:bold; color:#1B3E85;">${row.inv_no}</td>
                     <td style="padding:8px; border:1px solid #eee;">${row.product_name}</td>
                     <td style="padding:8px; border:1px solid #eee; text-align:right;">₹ ${parseFloat(row.equivalent_inr).toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
+                    <td style="padding:8px; border:1px solid #eee; text-align:right; color:green; font-weight:bold;">₹ ${paid.toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
+                    <td style="padding:8px; border:1px solid #eee; text-align:right; color:red; font-weight:bold;">₹ ${pending.toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
                 </tr>`;
             });
         }
@@ -20371,11 +20518,16 @@ function calcExInr() {
     document.getElementById('ex_inr').value = "₹ " + inr.toFixed(2);
     document.getElementById('disp_ex_gst').innerText = "₹ " + gstAmt.toFixed(2);
     document.getElementById('disp_ex_val').innerText = document.getElementById('ex_curr').value + " " + fcyVal.toFixed(2);
+
+// --- ADDED: PENDING AMOUNT CALCULATION ---
+    const amtRecv = parseFloat(document.getElementById('ex_amt_recv').value) || 0;
+    const pending = Math.max(0, inr - amtRecv);
+    document.getElementById('ex_amt_pend').value = "₹ " + pending.toFixed(2);
 }
 
 // 7. HELPER: CLEAR FIELDS
 function clearExFields() {
-    ['ex_biz','ex_gstin','ex_exp_name','ex_addr','ex_pin','ex_state','ex_wa','ex_email','ex_prod','ex_hsn','ex_qty','ex_rate','ex_to_country','ex_port','ex_ship_no','ex_ship_date', 'ex_buy_biz','ex_buy_name','ex_buy_addr','ex_buy_pin','ex_buy_state','ex_buy_wa','ex_buy_email'].forEach(id => document.getElementById(id).value = '');
+    ['ex_biz','ex_gstin','ex_exp_name','ex_addr','ex_pin','ex_state','ex_wa','ex_email','ex_prod','ex_hsn','ex_qty','ex_rate','ex_to_country','ex_port','ex_ship_no','ex_ship_date', 'ex_buy_biz','ex_buy_name','ex_buy_addr','ex_buy_pin','ex_buy_state','ex_buy_wa','ex_buy_email', 'ex_amt_recv','ex_amt_pend'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ex_inv_no').value = "EXP-" + Math.random().toString(36).substring(2, 9).toUpperCase();
 }
 
@@ -20690,7 +20842,9 @@ async function saveExRecord(mode) {
         exchange_rate: parseFloat(document.getElementById('ex_rate_val').value) || 1,
         equivalent_inr: cleanNum(document.getElementById('ex_inr').value),
         gst_payable: cleanNum(document.getElementById('disp_ex_gst').innerText),
-        export_value_fcy: (parseFloat(document.getElementById('ex_qty').value) || 0) * (parseFloat(document.getElementById('ex_rate').value) || 0)
+       export_value_fcy: (parseFloat(document.getElementById('ex_qty').value) || 0) * (parseFloat(document.getElementById('ex_rate').value) || 0),
+        amount_received: parseFloat(document.getElementById('ex_amt_recv').value) || 0,
+        amount_pending: cleanNum(document.getElementById('ex_amt_pend').value)
     };
 
     try {
@@ -20725,6 +20879,7 @@ async function saveExRecord(mode) {
 // --- STANDALONE EXPORT GSTR REPORTING ENGINE (FIXED) ---
 
 async function genExGSTR(type) {
+if (!verifyOwner()) return;
     if(!currentUserId) return alert("Please login first");
     
     // 1. Get Month/Year from the Global Report Picker
