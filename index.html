@@ -1432,12 +1432,28 @@ input.error-box { background-color: yellow !important; }
 
 
 
-<!-- SMALL WHATSAPP BUTTON -->
+
+
+
+
+
+
+<!-- SMALL DYNAMIC WHATSAPP BUTTON -->
 <div style="text-align: center; margin-top: 10px;">
-    <button onclick="sendInvoiceByWa()" style="background:#25D366; color:black; border:2px solid black; padding:8px 15px; font-size:0.75rem; font-weight:800; cursor:pointer; box-shadow:4px 4px 0px #000; text-transform:uppercase; display: inline-flex; align-items: center; gap: 8px;">
-        <i class="fab fa-whatsapp" style="font-size: 1.1rem;"></i> 20. WhatsApp Summary
+    <button onclick="sendInvoiceByWa()" style="background:#25D366; color:white; border:none; padding:6px 12px; font-size:0.7rem; font-weight:800; cursor:pointer; box-shadow:3px 3px 0px #000; text-transform:uppercase; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px;">
+        <i class="fab fa-whatsapp"></i> 20. Send to WhatsApp
     </button>
 </div>
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- --- THERMAL RECEIPT SECTION --- -->
@@ -21876,43 +21892,58 @@ function sendExportWaReminder() {
 
 
 
-// --- SMALL WHATSAPP DISPATCHER ---
 async function sendInvoiceByWa() {
-    let waNum = document.getElementById('c_phone').value.trim();
-    const cName = document.getElementById('c_name').value.trim();
+    // 1. DYNAMIC DATA CAPTURE
     const sName = document.getElementById('s_name').value || "Our Business";
-    const invNo = document.getElementById('inv_no').value;
-    const totalAmt = document.getElementById('prev_total').innerText;
+    const cName = document.getElementById('c_name').value || "Sir/Madam";
+    const invNo = document.getElementById('inv_no').value || "--";
+    const invDate = document.getElementById('inv_date').value || "--";
+    let waNum = document.getElementById('c_phone').value.trim();
 
-    if (!cName) return alert("Please enter Customer Name first.");
+    // 2. DYNAMIC GST & TOTAL CALCULATION
+    const totalText = document.getElementById('prev_total').innerText || "0";
+    const taxableText = document.getElementById('prev_taxable').innerText || "0";
+    
+    const totalVal = parseFloat(totalText.replace(/[^\d.]/g, '')) || 0;
+    const taxableVal = parseFloat(taxableText.replace(/[^\d.]/g, '')) || 0;
+    const gstVal = (totalVal - taxableVal).toFixed(2);
 
-    // Search Supabase for phone if UI is empty
+    if (totalVal === 0) return alert("Invoice is empty!");
+
+    // 3. DATABASE FALLBACK FOR PHONE
     if (!waNum && currentUserId) {
-        const { data } = await supabaseClient.from('customer_details')
-            .select('whatsapp_no').eq('user_id', currentUserId).eq('business_name', cName).maybeSingle();
-        if (data) {
-            waNum = data.whatsapp_no;
-            document.getElementById('c_phone').value = waNum;
-        }
+        const { data } = await supabaseClient.from('customer_details').select('whatsapp_no').eq('user_id', currentUserId).eq('business_name', cName).maybeSingle();
+        if (data) waNum = data.whatsapp_no;
     }
+    if (!waNum) return alert("Enter WhatsApp Number first.");
 
-    if (!waNum) return alert("WhatsApp number not found for this customer.");
+    // 4. DYNAMIC GREETING & UPI SETUP
+    const hrs = new Date().getHours();
+    const greet = hrs < 12 ? "Good Morning" : hrs < 17 ? "Good Afternoon" : "Good Evening";
+    
+    // Prompt for UPI ID if not already saved (Dynamic request)
+    const myUpi = prompt("Enter your UPI ID (e.g., name@okaxis) to receive ₹" + totalVal, "yourname@upi");
+    if (!myUpi) return;
 
-    // Build small item list
-    let items = "";
-    document.querySelectorAll('.item-row-box').forEach(box => {
-        const id = box.id.replace('item-row-', '');
-        const n = document.getElementById(`name-${id}`).value;
-        const q = document.getElementById(`qty-${id}`).value;
-        const r = document.getElementById(`rate-${id}`).value;
-        if(n) items += `• ${n} (x${q}) - ₹${(q*r).toFixed(2)}\n`;
-    });
+    const upiLink = `upi://pay?pa=${myUpi}&pn=${encodeURIComponent(sName)}&am=${totalVal.toFixed(2)}&cu=INR`;
 
+    // 5. CONSTRUCT DYNAMIC MESSAGE
+const msg = `${greet} sir, this is *${document.getElementById('s_name').value}*. I hope you are good. I am sending you the invoice summary as well as GPay link for the payment of the goods purchased from us.`;
+
+*INVOICE SUMMARY:*
+Invoice No: ${invNo}
+Date of Transaction: ${invDate}
+GST Amount: ₹${gstVal}
+Total Amount: *₹${totalVal.toFixed(2)}*
+
+*GPAY / UPI NOW:*
+${upiLink}
+
+Thank you for the business !!`;
+
+    // 6. EXECUTE
     const cleanNum = waNum.replace(/\D/g, '');
     const finalNum = cleanNum.length === 10 ? "91" + cleanNum : cleanNum;
-    
-    const msg = `*INVOICE SUMMARY* 📄\n\nCustomer: *${cName}*\nInv No: *${invNo}*\n\n*Items:*\n${items}\n*GRAND TOTAL: ${totalAmt}*\n\n_Generated via Smart Invoice Pro_`;
-
     window.open(`https://wa.me/${finalNum}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 </script>
