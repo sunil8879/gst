@@ -1506,7 +1506,7 @@ input.error-box { background-color: yellow !important; }
 <div id="glossary-box">
     <div class="gloss-nav">
         <button class="proc-btn" onclick="moveGlossary(-1)"><i class="fas fa-arrow-left"></i> PREV</button>
-        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/50</span>)</span>
+        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/52</span>)</span>
         <button class="proc-btn" onclick="moveGlossary(1)">NEXT <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="gloss-body">
@@ -17009,7 +17009,8 @@ const steps = [
     { t: "23. REPORTS SECTION", d: "Then comes the reports section which is also password protected as it contains sensitive information. There r 6 different kinds of reports like : statewise sales report, gstwise sales report, customerwise sales report,product summary,hsn wise and gst tax liability report. u can generate the reports monthwise." },
     { t: "24. GSTR-1, GSTR-3B & GSTR-9", d: "The purpose of GSTR-1 is to report all outward sales made by a business. it has to be filed every month if the turnover is more than 5 crores and quarterly if the turnover is less than 5 crores. Data filed in GSTR-1 becomes visible to the buyer in GSTR-2B for claiming ITC. GSTR-3B is a summary return used to declare tax liability and pay GST. Filing frequency is Monthly OR Quarterly (QRMP scheme). This is the return where actual GST payment happens. GSTR-9 : Its a Yearly summary of all GST returns filed during the financial year. Its filed once in a year." },
     { t: "25. MANUAL & GLOSSARY", d: "Then comes the Manual & Glossary. Manual contains the sequence of steps of how to use this software and Glossary contains the basic theory about GST and related terminologies with numerical examples." },
-    { t: "26. MASTER DATA EXPORT", d: "Finally, Export data : The user has the option to back up his data from the different tables of supabase. Kindly note : The user will be able to export only his data." }
+    { t: "26. MASTER DATA EXPORT", d: "Next is the Export data section : The user has the option to back up his data from the different tables of supabase. Kindly note : The user will be able to export only his data." },
+    { t: "27. EXPORT SECTION", d: "Finally, Export section : The user has the option to view the data of domestic sales and sales via Export separately in sections like Business Dasboard, Invoice history, Charts, GSTR" }
 ];
 
 let currentStep = 0;
@@ -17302,6 +17303,94 @@ const glossaryData = [
         n: "50. GST Demand Notice",
         t: "If the government finds unpaid tax during inspection, a demand notice is issued requiring payment.",
         c: `Unpaid GST found = ₹2,00,000\nInterest = ₹30,000 | Penalty = ₹2,00,000\nTotal demand: ₹4,30,000\nBusiness must pay this amount.`
+    },
+
+  {
+        n: "51. Formula for finding valid GSTIN",
+        t: "To verify a GSTIN, a mathematical formula (Mod-36) is applied to the first 14 characters to find the 15th character. Letters are converted to numbers, multiplied by alternating weights, summed up, and divided by 36. The remainder is subtracted from 36 to get the final checksum character.",
+        c: `Step 1 — Convert Letters into Numbers
+Numbers stay the same.
+But letters must be converted into numbers.
+Rule:
+A = 10
+B = 11
+C = 12
+D = 13
+...
+Z = 35
+So we use 0–35 system (called base-36).
+
+Step 2 — Take a Real GSTIN Example (First 14 characters)
+Example: 27AAPFU0939F1Z
+Now convert each character.
+So now we have numbers:
+2 7 10 10 25 15 30 0 9 3 9 15 1 35
+
+Step 3 — Multiply by Alternating Numbers
+Now we multiply like this:
+1, 2, 1, 2, 1, 2, 1, 2 ...
+
+Now calculate:
+2×1 = 2
+7×2 = 14
+10×1 = 10
+10×2 = 20
+25×1 = 25
+15×2 = 30
+30×1 = 30
+0×2 = 0
+9×1 = 9
+3×2 = 6
+9×1 = 9
+15×2 = 30
+1×1 = 1
+35×2 = 70
+
+Step 4 — Add Everything
+Now add all values:
+2 + 14 + 10 + 20 + 25 + 30 + 30 + 0 + 9 + 6 + 9 + 30 + 1 + 70
+Total: 256
+
+Step 5 — Divide by 36
+Now we divide by 36.
+256 ÷ 36
+Remainder = 256 % 36 = 4
+
+Step 6 — Final Step (Most Important)
+Now do:
+36 − remainder
+36 − 4 = 32
+
+Now convert 32 into a character.
+Remember:
+W = 32
+So checksum = W
+
+Final GSTIN: 27AAPFU0939F1ZW`
+    },
+
+    {
+        n: "52. PAN NO FORMAT CHECK",
+        t: "The Permanent Account Number (PAN) is a 10-character alphanumeric identifier. Its structure follows a strict pattern where specific characters represent the entity type, the cardholder's name, and a final checksum.",
+        c: `First 3 characters are random alphabets (AAA to ZZZ).
+
+The 4th character represents the status of the PAN holder:
+P - Individual person
+C - Company
+H - HUF (Hindu Undivided Family)
+F - Firm
+A - Association of Persons
+T - Trust
+B - Body of Individuals
+L - Local Authority
+J - Artificial Juridical Person
+G - Government
+
+The 5th character is the first letter of the surname (for individuals) or the first letter of the company/entity name.
+
+The next 4 characters are sequential numbers ranging from 0001 to 9999.
+
+The 10th character is an alphabetic checksum digit.`
     }
 ];
 
@@ -19760,6 +19849,11 @@ async function exportAllUserData() {
             }
         };
 
+
+// --- ADDED: FETCH AND ATTACH EXPORT DATA DYNAMICALLY ---
+        const { data: exportSales } = await supabaseClient.from('exporter').select('*').eq('user_id', currentUserId);
+        masterBackup.data.international_exports = exportSales;
+        
         // 4. GENERATE DOWNLOAD
         const fileName = `SmartInvoice_Backup_${currentUserEmail.split('@')[0]}_${new Date().toISOString().slice(0,10)}.json`;
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(masterBackup, null, 2));
