@@ -1433,22 +1433,12 @@ input.error-box { background-color: yellow !important; }
 
 
 
-
-
-
-
-
-<!-- SMALL DYNAMIC WHATSAPP BUTTON -->
+<!-- SMALL WHATSAPP BUTTON -->
 <div style="text-align: center; margin-top: 10px;">
-    <button onclick="sendInvoiceByWa()" style="background:#25D366; color:white; border:none; padding:6px 12px; font-size:0.7rem; font-weight:800; cursor:pointer; box-shadow:3px 3px 0px #000; text-transform:uppercase; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px;">
-        <i class="fab fa-whatsapp"></i> 20. Send via WhatsApp
+    <button onclick="sendInvoiceByWa()" style="background:#25D366; color:white; border:1px solid #075E54; padding:6px 12px; font-size:0.7rem; font-weight:800; cursor:pointer; box-shadow:3px 3px 0px #000; text-transform:uppercase; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px; transition: 0.2s;">
+        <i class="fab fa-whatsapp"></i> 20. Send to WhatsApp
     </button>
 </div>
-
-
-
-
-
 
 
 
@@ -1459,13 +1449,13 @@ input.error-box { background-color: yellow !important; }
 <!-- --- THERMAL RECEIPT SECTION --- -->
 <div class="input-card" style="text-align: center; border-style: dashed !important;">
     <div class="section-header" style="background:black; color:white; justify-content: center;">
-        <i class="fas fa-print" style="color:#7FFFD4;"></i>21.  RETAIL THERMAL PRINT
+        <i class="fas fa-print" style="color:#7FFFD4;"></i>20.  RETAIL THERMAL PRINT
     </div>
     <div style="margin-bottom:15px;">
         <input type="text" id="manual_payment_mode" placeholder="Enter Payment Mode (e.g. Cash, UPI)" style="border:2px solid black; text-align:center;">
     </div>
     <button onclick="printThermalReceipt()" style="background:var(--aqua); color:var(--black); border: 2px solid var(--black); width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; text-transform: uppercase;">
-        <i class="fas fa-receipt"></i> 22. Print Thermal Receipt
+        <i class="fas fa-receipt"></i> 21. Print Thermal Receipt
     </button>
     <p style="font-size:0.6rem; margin-top:10px; font-weight:700;">* Optimized for 2-inch and 3-inch roll printers.</p>
 </div>
@@ -1489,7 +1479,7 @@ input.error-box { background-color: yellow !important; }
 <!-- --- REPORTS SECTION CARD --- -->
 <div id="reports-section-card" style="display:none; background:white; border:3px solid black; box-shadow:10px 10px 0px black; padding:30px; margin-top:45px; text-align:left;">
     <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; display:flex; align-items:center;">
-        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> 23. REPORTS SECTION
+        <i class="fas fa-chart-line" style="color:#7FFFD4; margin-right:15px;"></i> 22. REPORTS SECTION
     </div>
     <div class="form-row">
         <select id="report_type_select" style="border:2px solid black; font-weight:800;">
@@ -1503,7 +1493,7 @@ input.error-box { background-color: yellow !important; }
         <input type="month" id="report_month_picker" style="border:2px solid black; font-weight:800;">
     </div>
     <button onclick="generateBusinessReport()" style="background:black; color:#7FFFD4; width:100%; padding:15px; font-weight:900; margin-top:20px; border:none; box-shadow:6px 6px 0px #7FFFD4; cursor:pointer; text-transform:uppercase;">
-        24. GENERATE REPORT
+        23. GENERATE REPORT
     </button>
 
 
@@ -1512,9 +1502,9 @@ input.error-box { background-color: yellow !important; }
 
 <!-- --- GSTR BUTTONS --- -->
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px;">
-    <button onclick="generateGSTR1()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">25. GSTR 1</button>
-<button onclick="generateGSTR3B()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">26. GSTR 3B</button>
-  <button onclick="generateGSTR9()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">27. GSTR 9</button>
+    <button onclick="generateGSTR1()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">24. GSTR 1</button>
+<button onclick="generateGSTR3B()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">25. GSTR 3B</button>
+  <button onclick="generateGSTR9()" style="background:black; color:white; width:100px !important; height:35px !important; font-size:0.65rem !important; font-weight:800; cursor:pointer; border:1px solid #7FFFD4;">26. GSTR 9</button>
 </div>
 
 
@@ -1540,7 +1530,7 @@ input.error-box { background-color: yellow !important; }
 
 
 <details id="flow-wrap" style="display:none; width:100%; margin:20px auto;">
-    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">28. Manual & Glossary</summary>
+    <summary style="list-style:none; cursor:pointer; background:#000; color:var(--aqua); width:220px; height:45px; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:800; font-size:0.75rem; border:2px solid #000; box-shadow:4px 4px 0px #000; text-transform:uppercase;">27. Manual & Glossary</summary>
 
 
 
@@ -1581,7 +1571,7 @@ input.error-box { background-color: yellow !important; }
 <!-- --- DATABASE MAPPING SECTION --- -->
 <div style="text-align: center; margin-top: 20px;">
     <button onclick="toggleMappingModal()" style="background:var(--black); color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
-        <i class="fas fa-database"></i> 29. Database Mapping
+        <i class="fas fa-database"></i> 28. Database Mapping
     </button>
 </div>
 
@@ -1589,7 +1579,7 @@ input.error-box { background-color: yellow !important; }
 <!-- --- DATA EXPORT SECTION --- -->
 <div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
     <button onclick="exportAllUserData()" style="background:#1B3E85; color:white; width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
-        <i class="fas fa-file-export"></i> 30. Export My Data
+        <i class="fas fa-file-export"></i> 29. Export My Data
     </button>
     <p style="font-size:0.6rem; color:#666; margin-top:5px;">* Download all your records as a secure JSON backup.</p>
 </div>
@@ -1600,7 +1590,7 @@ input.error-box { background-color: yellow !important; }
 <!-- --- 30. EXPORTERS SECTION (UPDATED SIDE-BY-SIDE LAYOUT) --- -->
 <div style="text-align: center; margin-top: 20px;">
     <button onclick="toggleExporterSection()" style="background:var(--aqua); color:black; width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000; text-transform:uppercase;">
-        <i class="fas fa-ship"></i> 31. Exporters Section
+        <i class="fas fa-ship"></i> 30. Exporters Section
     </button>
 </div>
 
@@ -1755,7 +1745,7 @@ input.error-box { background-color: yellow !important; }
 <!-- ADDED WHATSAPP REMINDER BUTTON -->
     <div style="text-align:center; margin-top:20px;">
         <button onclick="sendExportWaReminder()" style="background:#25D366; color:black; padding:12px 25px; font-size:0.85rem; font-weight:900; border:2px solid black; cursor:pointer; box-shadow:4px 4px 0px black; text-transform:uppercase;">
-            <i class="fab fa-whatsapp" style="font-size:1.2rem; vertical-align:middle; margin-right:5px;"></i>WHATSAPP REMINDER
+            <i class="fab fa-whatsapp" style="font-size:1.2rem; vertical-align:middle; margin-right:5px;"></i> WHATSAPP REMINDER
         </button>
     </div>
 
@@ -1778,9 +1768,9 @@ input.error-box { background-color: yellow !important; }
 <div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 3px double black;">
     <h3 style="text-transform: uppercase; font-weight: 900; margin-bottom: 20px;">Final Compliance Section (Combined)</h3>
     <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
-        <button onclick="genFinalGSTR1()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">32. FINAL GSTR-1</button>
-        <button onclick="genFinalGSTR3B()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">33. FINAL GSTR-3B</button>
-        <button onclick="genFinalGSTR9()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">34. FINAL GSTR-9</button>
+        <button onclick="genFinalGSTR1()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">FINAL GSTR-1</button>
+        <button onclick="genFinalGSTR3B()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">FINAL GSTR-3B</button>
+        <button onclick="genFinalGSTR9()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">FINAL GSTR-9</button>
     </div>
 </div>
  </div>
@@ -21892,49 +21882,76 @@ function sendExportWaReminder() {
 
 
 
+
+
+
+
+// --- FULLY DYNAMIC WHATSAPP DISPATCHER ---
 async function sendInvoiceByWa() {
-    // 1. DYNAMIC DATA CAPTURE
-    const sName = document.getElementById('s_name').value || "Our Business";
-    const cName = document.getElementById('c_name').value || "Sir/Madam";
-    const invNo = document.getElementById('inv_no').value || "--";
-    const invDate = document.getElementById('inv_date').value || "--";
-    let waNum = document.getElementById('c_phone').value.trim();
-
-    // 2. DYNAMIC GST & TOTAL CALCULATION
-    const totalText = document.getElementById('prev_total').innerText || "0";
-    const taxableText = document.getElementById('prev_taxable').innerText || "0";
+    // 1. Data Capture from UI
+    let wa_cPhone = document.getElementById('c_phone').value.trim();
+    const wa_cName = document.getElementById('c_name').value.trim() || "Customer";
+    const wa_sName = document.getElementById('s_name').value || "Our Business";
+    const wa_pName = document.getElementById('user-display-name').innerText || "Manager";
+    const wa_invNo = document.getElementById('inv_no').value || "--";
+    const wa_invDate = document.getElementById('inv_date').value || "--";
     
-    const totalVal = parseFloat(totalText.replace(/[^\d.]/g, '')) || 0;
-    const taxableVal = parseFloat(taxableText.replace(/[^\d.]/g, '')) || 0;
-    const gstVal = (totalVal - taxableVal).toFixed(2);
+    // 2. Financial Math (Dynamic GST & Total)
+    const wa_totalTxt = document.getElementById('prev_total').innerText || "0";
+    const wa_taxableTxt = document.getElementById('prev_taxable').innerText || "0";
+    const wa_cleanTotal = wa_totalTxt.replace(/[^\d.]/g, '');
+    const wa_cleanTaxable = wa_taxableTxt.replace(/[^\d.]/g, '');
+    const wa_gstAmt = (parseFloat(wa_cleanTotal) - parseFloat(wa_cleanTaxable)).toFixed(2);
 
-    if (totalVal === 0) return alert("Invoice is empty!");
+    if (parseFloat(wa_cleanTotal) === 0) return alert("Invoice is empty!");
 
-    // 3. DATABASE FALLBACK FOR PHONE
-    if (!waNum && currentUserId) {
-        const { data } = await supabaseClient.from('customer_details').select('whatsapp_no').eq('user_id', currentUserId).eq('business_name', cName).maybeSingle();
-        if (data) waNum = data.whatsapp_no;
+    // 3. Database Search for Phone (If UI is blank)
+    if (!wa_cPhone && currentUserId) {
+        const { data } = await supabaseClient.from('customer_details').select('whatsapp_no').eq('user_id', currentUserId).eq('business_name', wa_cName).maybeSingle();
+        if (data) { wa_cPhone = data.whatsapp_no; document.getElementById('c_phone').value = wa_cPhone; }
     }
-    if (!waNum) return alert("Enter WhatsApp Number first.");
+    if (!wa_cPhone) return alert("Please enter the Customer's WhatsApp Number.");
 
-    // 4. DYNAMIC GREETING & UPI SETUP
-    const hrs = new Date().getHours();
-    const greet = hrs < 12 ? "Good Morning" : hrs < 17 ? "Good Afternoon" : "Good Evening";
-    
-    // Prompt for UPI ID if not already saved (Dynamic request)
-    const myUpi = prompt("Enter your UPI ID (e.g., name@okaxis) to receive ₹" + totalVal, "yourname@upi");
-    if (!myUpi) return;
+    // 4. Time-Based Greeting
+    const wa_hrs = new Date().getHours();
+    const wa_greet = wa_hrs < 12 ? "Good Morning" : wa_hrs < 17 ? "Good Afternoon" : "Good Evening";
 
-    const upiLink = `upi://pay?pa=${myUpi}&pn=${encodeURIComponent(sName)}&am=${totalVal.toFixed(2)}&cu=INR`;
+    // 5. Build Dynamic Item List
+    const wa_itemList = Array.from(document.querySelectorAll('.item-row-box'))
+        .map(box => {
+            const name = box.querySelector('input[id^="name-"]').value;
+            const qty = box.querySelector('input[id^="qty-"]').value;
+            return name ? `• ${name} (x${qty})` : null;
+        })
+        .filter(x => x !== null)
+        .join("\n");
 
-    // 5. CONSTRUCT DYNAMIC MESSAGE
-const msg = `${(new Date().getHours()<12?'Good Morning':new Date().getHours()<17?'Good Afternoon':'Good Evening')} sir, this is ${document.getElementById('s_name').value}. I hope you are good. I am sending you the invoice summary as well as GPay link for the payment of the goods purchased from us.\n\nINVOICE SUMMARY:\nInvoice No: ${document.getElementById('inv_no').value}\nDate: ${document.getElementById('inv_date').value}\n\nITEMS:\n${Array.from(document.querySelectorAll('.item-row-box')).map(b => "• " + b.querySelector('input[id^="name-"]').value + " (x" + b.querySelector('input[id^="qty-"]').value + ")").join("\n")}\n\nGST Amount: ₹${(parseFloat(document.getElementById('prev_total').innerText.replace(/[^\d.]/g, '')) - parseFloat(document.getElementById('prev_taxable').innerText.replace(/[^\d.]/g, ''))).toFixed(2)}\nTotal Amount: ${document.getElementById('prev_total').innerText}\n\nGPAY / UPI NOW:\n${upiLink}\n\nThank you for the business !!`;
+    // 6. Generate UPI Deep Link
+    const wa_upiID = prompt("Enter your UPI ID to receive ₹" + wa_cleanTotal, "yourname@upi");
+    if (!wa_upiID) return;
+    const wa_upiLink = `upi://pay?pa=${wa_upiID}&pn=${encodeURIComponent(wa_sName)}&am=${wa_cleanTotal}&cu=INR`;
 
+    // 7. Construct Professional Message
+    const msg = `${wa_greet} sir, I am ${wa_pName} from ${wa_sName}. I hope you are good. I am sending you the invoice summary as well as GPay link for the payment of the goods purchased from us.
 
-    // 6. EXECUTE
-    const cleanNum = waNum.replace(/\D/g, '');
-    const finalNum = cleanNum.length === 10 ? "91" + cleanNum : cleanNum;
-    window.open(`https://wa.me/${finalNum}?text=${encodeURIComponent(msg)}`, '_blank');
+*INVOICE SUMMARY:*
+Invoice No: ${wa_invNo}
+Date: ${wa_invDate}
+
+*ITEMS:*
+${wa_itemList}
+
+GST Amount: ₹${wa_gstAmt}
+Total Amount: *${wa_totalTxt}*
+
+*CLICK TO PAY (GPAY/UPI):*
+${wa_upiLink}
+
+Thank you for the business !!`;
+
+    // 8. Open WhatsApp
+    const wa_finalNum = wa_cPhone.replace(/\D/g, '');
+    window.open(`https://wa.me/${wa_finalNum.length === 10 ? "91" + wa_finalNum : wa_finalNum}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 </script>
 </body>
