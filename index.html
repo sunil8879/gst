@@ -1441,7 +1441,7 @@ input.error-box { background-color: yellow !important; }
 <!-- SMALL DYNAMIC WHATSAPP BUTTON -->
 <div style="text-align: center; margin-top: 10px;">
     <button onclick="sendInvoiceByWa()" style="background:#25D366; color:white; border:none; padding:6px 12px; font-size:0.7rem; font-weight:800; cursor:pointer; box-shadow:3px 3px 0px #000; text-transform:uppercase; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px;">
-        <i class="fab fa-whatsapp"></i> 20. Send to WhatsApp
+        <i class="fab fa-whatsapp"></i> 20. Send via WhatsApp
     </button>
 </div>
 
@@ -21928,18 +21928,8 @@ async function sendInvoiceByWa() {
     const upiLink = `upi://pay?pa=${myUpi}&pn=${encodeURIComponent(sName)}&am=${totalVal.toFixed(2)}&cu=INR`;
 
     // 5. CONSTRUCT DYNAMIC MESSAGE
-const msg = `${greet} sir, this is *${document.getElementById('s_name').value}*. I hope you are good. I am sending you the invoice summary as well as GPay link for the payment of the goods purchased from us.`;
+const msg = `${(new Date().getHours()<12?'Good Morning':new Date().getHours()<17?'Good Afternoon':'Good Evening')} sir, this is ${document.getElementById('s_name').value}. I hope you are good. I am sending you the invoice summary as well as GPay link for the payment of the goods purchased from us.\n\nINVOICE SUMMARY:\nInvoice No: ${document.getElementById('inv_no').value}\nDate: ${document.getElementById('inv_date').value}\n\nITEMS:\n${Array.from(document.querySelectorAll('.item-row-box')).map(b => "• " + b.querySelector('input[id^="name-"]').value + " (x" + b.querySelector('input[id^="qty-"]').value + ")").join("\n")}\n\nGST Amount: ₹${(parseFloat(document.getElementById('prev_total').innerText.replace(/[^\d.]/g, '')) - parseFloat(document.getElementById('prev_taxable').innerText.replace(/[^\d.]/g, ''))).toFixed(2)}\nTotal Amount: ${document.getElementById('prev_total').innerText}\n\nGPAY / UPI NOW:\n${upiLink}\n\nThank you for the business !!`;
 
-*INVOICE SUMMARY:*
-Invoice No: ${invNo}
-Date of Transaction: ${invDate}
-GST Amount: ₹${gstVal}
-Total Amount: *₹${totalVal.toFixed(2)}*
-
-*GPAY / UPI NOW:*
-${upiLink}
-
-Thank you for the business !!`;
 
     // 6. EXECUTE
     const cleanNum = waNum.replace(/\D/g, '');
