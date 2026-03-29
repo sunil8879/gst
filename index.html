@@ -803,6 +803,48 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     border-radius: 5px;  /* Optional: slightly rounded corners */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: makes it "pop" from the text */
 }
+
+
+
+
+
+
+/* 1. Ensure the main container doesn't have a fixed width */
+body {
+    margin: 0;
+    padding: 15px; /* Adds a nice breathing room on mobile screens */
+    line-height: 1.6; /* Improves readability of heavy text */
+    word-wrap: break-word; /* Prevents long words/links from pushing the screen wide */
+}
+
+/* 2. Make sure images never exceed screen width */
+.manual-img {
+    max-width: 100%;    /* Image will shrink to fit the screen */
+    height: auto;       /* Maintains aspect ratio */
+    display: block;     /* Removes weird bottom gaps */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 3. Wrapper adjustment for mobile gaps */
+.img-wrapper {
+    width: 100%;        /* Takes full width available */
+    margin-top: 25px;
+    margin-bottom: 25px;
+    overflow: hidden;   /* Ensures nothing "leaks" out */
+}
+
+/* 4. Optional: Responsive font sizing */
+@media (max-width: 600px) {
+    body {
+        font-size: 16px; /* Larger font for easier reading on small screens */
+        padding: 10px;
+    }
+    .img-wrapper {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
 </style>
 </head>
 <body>
@@ -1595,7 +1637,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     </button>
 </div>
 
-
+<div class="img-wrapper">
+    <img src="whatsapp.jpg" alt="Invoice generator" class="manual-img">
+</div>
 
 
 
