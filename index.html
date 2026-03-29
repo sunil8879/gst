@@ -830,6 +830,50 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
+
+
+
+
+
+
+
+/* Responsive Fixes */
+@media screen and (max-width: 600px) {
+    /* 1. Remove Horizontal Scroll */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Force the main container to fit the screen */
+    .container, .main-content, table {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    /* 2. Stack Footer Buttons */
+    .footer-buttons, .button-group, .modal-footer {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100%;
+        gap: 10px; /* Space between stacked buttons */
+        padding: 10px;
+    }
+
+    .footer-buttons button, 
+    .footer-buttons a, 
+    .btn {
+        width: 100% !important; /* Make buttons full width */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        display: block;
+    }
+}
 </style>
 </head>
 <body>
