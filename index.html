@@ -809,90 +809,68 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-/* 1. Ensure the main container doesn't have a fixed width */
-body {
-    margin: 0;
-    padding: 15px; /* Adds a nice breathing room on mobile screens */
-    line-height: 1.6; /* Improves readability of heavy text */
-    word-wrap: break-word; /* Prevents long words/links from pushing the screen wide */
-}
-
-/* 2. Make sure images never exceed screen width */
-.manual-img {
-    max-width: 100%;    /* Image will shrink to fit the screen */
-    height: auto;       /* Maintains aspect ratio */
-    display: block;     /* Removes weird bottom gaps */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* 3. Wrapper adjustment for mobile gaps */
-.img-wrapper {
-    width: 100%;        /* Takes full width available */
-    margin-top: 25px;
-    margin-bottom: 25px;
-    overflow: hidden;   /* Ensures nothing "leaks" out */
-}
-
-/* 4. Optional: Responsive font sizing */
-@media (max-width: 600px) {
-    body {
-        font-size: 16px; /* Larger font for easier reading on small screens */
-        padding: 10px;
-    }
-    .img-wrapper {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-}
 
 
 
 
 
-/* 1. THE GOLDEN RULE: This prevents padding from adding to the width */
+
+/* --- CRITICAL MOBILE FIXES --- */
+
 * {
-    box-sizing: border-box;
-}
-
-/* 2. FORCE THE BODY TO BE THE SCREEN WIDTH ONLY */
-html, body {
-    width: 100%;
+    box-sizing: border-box; /* Prevents padding from breaking width */
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* This kills the horizontal scroll bar */
-    -webkit-text-size-adjust: 100%; /* Prevents font-scaling issues on iPhone */
 }
 
-/* 3. FIX THE CONTAINER AND FOOTER */
-/* If you have a div with a class like .container or .footer, 
-   ensure they don't have a fixed 'width' in pixels! */
-.container, .footer, footer, div {
-    max-width: 100% !important; 
-    width: auto !important; 
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* 4. THE IMAGE FIX */
-.img-wrapper {
+html, body {
     width: 100%;
-    padding: 0 10px; /* Gives a little gap from the edge of the phone */
-    margin: 30px 0;  /* Your requested equal top/bottom gaps */
-    text-align: center;
+    overflow-x: hidden; /* Strictly prevents horizontal scroll */
+    position: relative;
 }
 
-.manual-img {
-    max-width: 100%; 
+/* Fix for the Glass Card / Main Containers */
+.glass-card, .container, .main-content {
+    width: 90% !important; /* Forces it to fit on mobile */
+    max-width: 450px;      /* Keeps original size on desktop */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    left: 0 !important;    /* Resets any absolute positioning */
+    right: 0 !important;
+}
+
+/* Ensure images don't overflow */
+img {
+    max-width: 100%;
     height: auto;
-    display: inline-block;
 }
 
-/* 5. FIX TABLES (If you have any, tables usually break mobile) */
-table {
-    display: block;
-    width: 100%;
-    overflow-x: auto; /* Lets only the table scroll if it's too wide, not the whole page */
+/* Mobile Media Query */
+@media (max-width: 768px) {
+    .hero-section, .navbar, .footer {
+        flex-direction: column !important; /* Stacks items vertically */
+        padding: 20px 15px !important;
+        text-align: center;
+    }
+
+    /* Fix for any hidden horizontal overflow items */
+    .row, .flex-group {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.8rem !important; /* Shrinks large titles */
+        word-wrap: break-word;
+    }
+
+    /* Specifically for the PrivateBin code structure */
+    section {
+        width: 100% !important;
+        padding: 10px !important;
+        overflow: hidden;
+    }
 }
 </style>
 </head>
