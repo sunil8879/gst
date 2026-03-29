@@ -845,6 +845,55 @@ body {
         margin-bottom: 20px;
     }
 }
+
+
+
+
+
+/* 1. THE GOLDEN RULE: This prevents padding from adding to the width */
+* {
+    box-sizing: border-box;
+}
+
+/* 2. FORCE THE BODY TO BE THE SCREEN WIDTH ONLY */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* This kills the horizontal scroll bar */
+    -webkit-text-size-adjust: 100%; /* Prevents font-scaling issues on iPhone */
+}
+
+/* 3. FIX THE CONTAINER AND FOOTER */
+/* If you have a div with a class like .container or .footer, 
+   ensure they don't have a fixed 'width' in pixels! */
+.container, .footer, footer, div {
+    max-width: 100% !important; 
+    width: auto !important; 
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* 4. THE IMAGE FIX */
+.img-wrapper {
+    width: 100%;
+    padding: 0 10px; /* Gives a little gap from the edge of the phone */
+    margin: 30px 0;  /* Your requested equal top/bottom gaps */
+    text-align: center;
+}
+
+.manual-img {
+    max-width: 100%; 
+    height: auto;
+    display: inline-block;
+}
+
+/* 5. FIX TABLES (If you have any, tables usually break mobile) */
+table {
+    display: block;
+    width: 100%;
+    overflow-x: auto; /* Lets only the table scroll if it's too wide, not the whole page */
+}
 </style>
 </head>
 <body>
