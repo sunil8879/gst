@@ -813,59 +813,7 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-/* MOBILE ONLY REPAIRS */
-@media screen and (max-width: 768px) {
-    /* 1. Stop horizontal scroll and fix background */
-    html, body {
-        width: 100% !important;
-        overflow-x: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        height: auto !important; /* Prevents vertical cutting */
-    }
 
-    /* 2. Fix the "Cutting Off" by making containers fluid */
-    .glass-card, .container, .main-content, section {
-        width: 90% !important;        /* Screen-width based */
-        max-width: 100% !important;
-        margin: 20px auto !important; /* Centers card */
-        left: 0 !important;           /* Resets absolute positioning */
-        transform: none !important;   /* Fixes centering blur/cutting */
-        padding: 15px !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 3. Fix Footer/Header being cut off */
-    footer, header, .footer-content {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important; /* Stacks items vertically */
-        align-items: center !important;
-        padding: 20px 10px !important;
-        text-align: center !important;
-    }
-
-    /* 4. Fix Text Wrapping */
-    h1, h2, h3, p, a {
-        white-space: normal !important; /* Allows text to go to next line */
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        max-width: 100% !important;
-    }
-
-    /* 5. Force the Floating Button to be visible and correctly placed */
-    #installApp {
-        display: block !important; /* Overrides the one-liner if needed for testing */
-        font-size: 14px !important;
-        bottom: 20px !important;
-        right: 20px !important;
-    }
-}
-
-/* GLOBAL BOX FIX (Prevents padding from pushing elements off-screen) */
-* {
-    box-sizing: border-box !important;
-}
 </style>
 </head>
 <body>
@@ -22198,7 +22146,7 @@ Thank you for the business !!`;
 
 
 
-<button id="installApp" style="position:fixed; bottom:20px; right:20px; z-index:9999; padding:12px 24px; background:#007bff; color:#fff; border:none; border-radius:50px; font-weight:bold; box-shadow:0 4px 15px rgba(0,0,0,0.3); cursor:pointer; display:none;">Install App</button>
+
 
 </script>
 
