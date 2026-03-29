@@ -872,6 +872,87 @@ img {
         overflow: hidden;
     }
 }
+
+
+
+
+
+
+
+
+/* 1. Reset and Force Border-Box */
+* {
+    box-sizing: border-box !important;
+    max-width: 100% !important; /* Forces every element to stay within screen width */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+html, body {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important; /* Prevents side-scrolling */
+    -webkit-text-size-adjust: 100%; /* Prevents Safari font-zooming */
+}
+
+/* 2. Fix Headings being cut off */
+h1, h2, h3, h4, .title {
+    width: 100% !important;
+    white-space: normal !important; /* Allows text to wrap to next line */
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    font-size: clamp(1.5rem, 8vw, 2.5rem) !important; /* Adjusts size based on screen */
+    line-height: 1.2 !important;
+    padding: 0 10px !important;
+}
+
+/* 3. Fix Containers & Cards */
+.container, .glass-card, .main-content, section {
+    width: 100% !important;
+    min-width: 0 !important; /* Allows flex items to shrink */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 15px !important;
+    left: 0 !important;
+    transform: none !important; /* Removes any centering transforms that might push it off-screen */
+}
+
+/* 4. Fix Footer (The main culprit for "cutting off") */
+footer {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important; /* Stacks footer items vertically on small screens */
+    align-items: center !important;
+    padding: 20px 10px !important;
+    gap: 10px !important;
+}
+
+footer div, footer span, footer a {
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* 5. Fix Flexbox rows that overflow */
+.row, .flex-container, .navbar {
+    display: flex !important;
+    flex-wrap: wrap !important; /* Forces side-by-side items to stack when no room */
+    width: 100% !important;
+}
+
+/* 6. Media Query for final adjustments */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 5px !important;
+    }
+    
+    /* Ensure no fixed heights on containers */
+    .hero, .header {
+        height: auto !important;
+        padding: 40px 10px !important;
+    }
+}
 </style>
 </head>
 <body>
