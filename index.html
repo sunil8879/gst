@@ -813,147 +813,58 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-
-
-.floating-install {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;       /* Keeps it on top of images */
-    padding: 15px 30px;
-    background-color: #28a745; /* Green color */
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-
-
-
-
-
-
-/* Responsive Fixes */
-@media screen and (max-width: 600px) {
-    /* 1. Remove Horizontal Scroll */
+/* MOBILE ONLY REPAIRS */
+@media screen and (max-width: 768px) {
+    /* 1. Stop horizontal scroll and fix background */
     html, body {
-        overflow-x: hidden;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Force the main container to fit the screen */
-    .container, .main-content, table {
         width: 100% !important;
-        max-width: 100% !important;
-        display: block;
-        overflow-x: hidden;
-        box-sizing: border-box;
-    }
-
-    /* 2. Stack Footer Buttons */
-    .footer-buttons, .button-group, .modal-footer {
-        display: flex !important;
-        flex-direction: column !important;
-        width: 100%;
-        gap: 10px; /* Space between stacked buttons */
-        padding: 10px;
-    }
-
-    .footer-buttons button, 
-    .footer-buttons a, 
-    .btn {
-        width: 100% !important; /* Make buttons full width */
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        display: block;
-    }
-}
-
-
-
-
-
-
-
-/* FINAL OVERRIDE TO FIX MOBILE DESTRUCTION */
-@media screen and (max-width: 600px) {
-    /* Stop horizontal scroll at the root */
-    html, body {
         overflow-x: hidden !important;
-        position: relative;
-        width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
+        height: auto !important; /* Prevents vertical cutting */
     }
 
-    /* Fix the 3D Title so it doesn't rotate off-screen */
-    .title-container-3d {
-        transform: rotate(0deg) !important; /* Rotation kills mobile widths */
-        padding: 20px !important;
-        width: 95% !important;
-        margin: 10px auto !important;
-    }
-    .title-3d-intense { font-size: 2rem !important; }
-
-    /* Fix the card slider - This is the main cause of your scroll */
-    .card-slider-container {
-        width: 100% !important;
-        overflow: hidden !important;
-    }
-    .card-track {
-        animation: none !important; /* Stop the sliding animation on mobile */
-        flex-direction: column !important;
-        align-items: center !important;
-    }
-    .feature-card-premium {
-        width: 90% !important; /* Was 350px, which breaks mobile */
-        margin: 10px 0 !important;
-    }
-
-    /* STACK THE FOOTER LINKS (ONE BELOW THE OTHER) */
-    .footer-wrap {
-        flex-direction: column !important; /* Vertical stack */
-        align-items: center !important;
-        padding: 20px !important;
-        gap: 0 !important;
-    }
-
-    .foot-link {
-        width: 100% !important; /* Full width */
-        margin: 8px 0 !important; /* Space between them */
-        box-sizing: border-box !important;
-        display: flex !important;
-        justify-content: center !important;
-    }
-
-    /* STACK ACTION BUTTONS (Dashboard, History, etc) */
-    #btn-dashboard, #btn-history, #btn-charts, #btn-inventory, #install-pwa {
-        width: 100% !important; /* Forces them to be 100% wide */
-        margin: 10px 0 !important;
-        display: flex !important;
-    }
-
-    /* Fix the Main Panels */
-    .input-panel, .main-container, #google-auth-container {
-        width: 95% !important;
-        max-width: 95% !important;
-        margin: 10px auto !important;
+    /* 2. Fix the "Cutting Off" by making containers fluid */
+    .glass-card, .container, .main-content, section {
+        width: 90% !important;        /* Screen-width based */
+        max-width: 100% !important;
+        margin: 20px auto !important; /* Centers card */
+        left: 0 !important;           /* Resets absolute positioning */
+        transform: none !important;   /* Fixes centering blur/cutting */
         padding: 15px !important;
-        border-right-width: 5px !important; /* Shrink the 3D edges */
-        border-bottom-width: 10px !important;
+        box-sizing: border-box !important;
     }
 
-    /* Fix images */
-    .manual-img, #visitor-box img {
+    /* 3. Fix Footer/Header being cut off */
+    footer, header, .footer-content {
         width: 100% !important;
-        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important; /* Stacks items vertically */
+        align-items: center !important;
+        padding: 20px 10px !important;
+        text-align: center !important;
     }
+
+    /* 4. Fix Text Wrapping */
+    h1, h2, h3, p, a {
+        white-space: normal !important; /* Allows text to go to next line */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+    }
+
+    /* 5. Force the Floating Button to be visible and correctly placed */
+    #installApp {
+        display: block !important; /* Overrides the one-liner if needed for testing */
+        font-size: 14px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+    }
+}
+
+/* GLOBAL BOX FIX (Prevents padding from pushing elements off-screen) */
+* {
+    box-sizing: border-box !important;
 }
 </style>
 </head>
@@ -22287,44 +22198,10 @@ Thank you for the business !!`;
 
 
 
-
+<button id="installApp" style="position:fixed; bottom:20px; right:20px; z-index:9999; padding:12px 24px; background:#007bff; color:#fff; border:none; border-radius:50px; font-weight:bold; box-shadow:0 4px 15px rgba(0,0,0,0.3); cursor:pointer; display:none;">Install App</button>
 
 </script>
 
-<button class="floating-install">INSTALL NOW</button>
-<script>
-let deferredPrompt;
-const installBtn = document.getElementById('install-pwa');
-// Also targeting your floating button if that's the one you use
-const floatingBtn = document.querySelector('.floating-install');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
-  // Stash the event so it can be triggered later.
-  deferredPrompt = e;
-  
-  // Make the buttons visible now that we know the app can be installed
-  if(installBtn) installBtn.style.setProperty('display', 'flex', 'important');
-  if(floatingBtn) floatingBtn.style.display = 'block';
-});
-
-async function handleInstall() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-    }
-    deferredPrompt = null;
-  } else {
-    // Fallback for iOS or if browser hasn't triggered prompt yet
-    alert("To Install: \n1. Open in Safari or Chrome\n2. Tap the 'Share' or 'Menu' icon\n3. Select 'Add to Home Screen'");
-  }
-}
-
-if(installBtn) installBtn.addEventListener('click', handleInstall);
-if(floatingBtn) floatingBtn.addEventListener('click', handleInstall);
-</script>
 </body>
 </html>
