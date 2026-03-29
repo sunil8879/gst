@@ -614,13 +614,12 @@ button[onclick="deleteReminderRecord()"] {
 
 
 
-
-body div#google-auth-container { border-width: 20px 20px 40px 20px !important; border-style: solid !important; border-color: #ffffff #00b38f #003325 #ccffee !important; background: #7FFFD4 !important; box-shadow: none !important; border-radius: 0 !important; display: inline-block !important; } #finance-ticker-wrap, #finance-ticker-wrap *, #ticker-content, a.news-link { color: #ffffff !important; text-decoration-color: #ffffff !important; }
-
+body div#google-auth-container { border-width: 20px 20px 40px 20px !important; border-style: solid !important; border-color: #ffffff #ffffff #ffffff #ffffff !important; background: #ffffff !important; box-shadow: none !important; border-radius: 0 !important; display: inline-block !important; } #finance-ticker-wrap, #finance-ticker-wrap *, #ticker-content, a.news-link { color: #ffffff !important; text-decoration-color: #ffffff !important; }
 
 
 
-#login-view .g_id_signin { border-style: solid !important; border-width: 10px 10px 15px 10px !important; border-color: #ffffff #007bff #002244 #cce5ff !important; border-radius: 0 !important; box-shadow: none !important; display: inline-flex !important; padding: 5px !important; background: #002244 !important; } #finance-ticker-wrap, #finance-ticker-wrap *, #ticker-content, a.news-link { color: #ffffff !important; text-decoration-color: #ffffff !important; }
+
+#login-view .g_id_signin { border-style: solid !important; border-width: 10px 10px 15px 10px !important; border-color: #ffffff #ffffff #ffffff #ffffff !important; border-radius: 0 !important; box-shadow: none !important; display: inline-flex !important; padding: 5px !important; background: #002244 !important; } #finance-ticker-wrap, #finance-ticker-wrap *, #ticker-content, a.news-link { color: #ffffff !important; text-decoration-color: #ffffff !important; }
 
 
 #login-view .g_id_signin { margin-bottom: 30px !important; }
@@ -742,21 +741,64 @@ input.error-box { background-color: yellow !important; }
 
 
 #exporter-section { display: none !important; }
+#google-auth-container { width: 100% !important; padding: 0 !important; } #visitor-box img { width: 100% !important; max-width: 100% !important; }
+
+
+
+/* --- STYLISH 3D HEADER & ROTATING LOGO --- */
+.logo-gst-rotate { width: 120px; animation: rotate360 5s linear infinite; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2)); }
+@keyframes rotate360 { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+.title-container-3d { background: #fff; border: 8px solid #000; padding: 30px 60px; transform: rotate(5deg); box-shadow: 15px 15px 0px var(--aqua); display: inline-block; }
+.title-3d-intense { font-size: 4.5rem !important; font-weight: 900; color: #1B3E85; text-transform: uppercase; margin: 0; line-height: 1; text-decoration: underline; text-shadow: 1px 1px 0 #ccc, 2px 2px 0 #bbb, 3px 3px 0 #aaa, 7px 7px 0 #000; }
+
+/* --- SLOW LTR CARD SLIDER --- */
+.card-slider-container { width: 100%; overflow: hidden; background: #f0f0f0; padding: 50px 0; border-top: 6px solid #000; border-bottom: 6px solid #000; }
+.card-track { display: flex; gap: 40px; animation: slide-ltr 80s linear infinite; width: max-content; }
+@keyframes slide-ltr { 0% { transform: translateX(-100%); } 100% { transform: translateX(50%); } }
+.feature-card-premium { width: 350px; background: white; border: 4px solid #000; padding: 30px; flex-shrink: 0; box-shadow: 10px 10px 0px var(--aqua); transition: 0.3s; }
+.feature-card-premium:hover { transform: scale(1.05); box-shadow: 15px 15px 0px #1B3E85; }
+.feature-card-premium i { font-size: 3rem; color: #1B3E85; margin-bottom: 20px; display: block; }
+.feature-card-premium h3 { font-size: 1.3rem; font-weight: 900; color: #000; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 3px solid var(--aqua); padding-bottom: 5px; }
+.feature-card-premium p { font-size: 0.9rem; color: #333; font-weight: 600; line-height: 1.5; white-space: normal; }
+
+/* --- STYLISH FOOTER --- */
+.footer-wrap { border-top: 5px solid black; padding: 40px; display: flex; justify-content: center; gap: 30px; background: white; margin-top: 40px; }
+.foot-link { border: 3px solid black; padding: 12px 25px; font-weight: 900; color: black; text-decoration: none; text-transform: uppercase; box-shadow: 4px 4px 0px var(--aqua); transition: 0.2s; }
+.foot-link:hover { background: black; color: white; transform: translate(-2px, -2px); }
+
+
+
+
+
+
+
+
+
+.foot-link { background: #000 !important; color: #fff !important; border-style: solid !important; border-width: 6px 6px 12px 6px !important; border-color: #ffffff #444 #000 #ccc !important; padding: 10px 20px !important; display: inline-flex !important; align-items: center !important; gap: 12px !important; text-decoration: none !important; margin: 10px !important; font-family: arial, sans-serif !important; } .f-ico { background: white !important; color: #000 !important; width: 22px !important; height: 22px !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; font-weight: 900 !important; font-size: 14px !important; }
+
+.card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#ffffff !important; border-color: #000 !important; }
+body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#ffffff !important; }
+#finance-ticker-wrap, #finance-ticker-wrap *, #ticker-content { background: #000 !important; color: #fff !important; }
+
+
+
+.title-container-3d { font-family: 'Poppins', sans-serif !important; background: #fff !important; border: 5px solid #000 !important; box-shadow: 10px 10px 0px #000 !important; } .title-3d-intense, .title-container-3d span { text-shadow: none !important; color: #000 !important; font-family: 'Poppins', sans-serif !important; }
+
+.feature-card-premium { box-shadow: 10px 10px 0px #000 !important; }
+
+.footer-wrap { background: #7FFFD4 !important; border-top: 5px solid #000 !important; }
 </style>
 </head>
 <body>
 
 
 
-<div class="navbar">
-    <div class="nav-content-wrapper">
-        <!-- 1. Rotating Logo -->
-        <img src="gst.png" class="logo-gst" alt="Logo">
-
-        <!-- 2. Tilted Title & Tagline -->
-        <div class="title-tilt-box">
-            <h1 class="title-3d-custom" data-text="SMART INVOICE PRO">SMART INVOICE PRO</h1>
-            <span class="tagline-below">Invoice right, Business bright</span>
+<div class="navbar" style="padding: 60px 20px; background: white; border: none; box-shadow: none;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
+        <img src="gst.png" class="logo-gst-rotate" alt="Logo">
+        <div class="title-container-3d">
+            <h1 class="title-3d-intense">SMART INVOICE PRO</h1>
+            <span style="font-size: 1.8rem; font-weight: 800; color: black; display: block; margin-top: 10px;">Invoice right, Business bright</span>
         </div>
     </div>
 </div>
@@ -795,27 +837,82 @@ input.error-box { background-color: yellow !important; }
              data-client_id="68135849389-j91ihmh5ser165q8rgudsstb1c1e6ctt.apps.googleusercontent.com"
              data-callback="onGoogleLogin">
         </div>
-      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="rectangular"></div>
+ <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-size="large" data-shape="rectangular"></div>
+
 
 <!-- LANDING PAGE FOR VISITORS -->
-<div id="visitor-box" style="text-align:center; margin-top:10px;">
-    <img src="gst.jpg" style="width:100%; max-width:500px; border:3px solid black; box-shadow: 8px 8px 0px black; margin-bottom:10px;">
+<!-- LANDING PAGE FOR VISITORS -->
+<div id="visitor-box" style="padding:0; background:white; text-align:center;">
+    <!-- Full Size Image -->
+    <img src="gst.jpg" style="width:100%; height:auto; display:block; border-top:8px solid #000; border-bottom:8px solid #000;">
     
-    <div class="visitor-grid">
-        <div class="feature-card"><i class="fas fa-file-word"></i> Word Export</div>
-        <div class="feature-card"><i class="fas fa-calculator"></i> Auto GST</div>
-        <div class="feature-card"><i class="fas fa-pen-nib"></i> Draw Sign</div>
-        <div class="feature-card"><i class="fas fa-history"></i> Cloud Data</div>
-        <div class="feature-card"><i class="fas fa-chart-line"></i> Analytics</div>
-        
-        <div class="feature-card"><i class="fas fa-search"></i> HSN Finder</div>
-        <div class="feature-card"><i class="fas fa-bolt"></i> PWA App</div>
-        <div class="feature-card"><i class="fas fa-map-marker-alt"></i> State Auto</div>
-        <div class="feature-card"><i class="fas fa-paint-brush"></i> 5 Themes</div>
-        <div class="feature-card"><i class="fas fa-mobile-alt"></i> Mobile Pro</div>
+    <!-- Moving Card Section -->
+    <div class="card-slider-container">
+        <div class="card-track">
+            <!-- Card 1 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-file-word"></i>
+                <h3>Professional Word Export</h3>
+                <p>Generate high-quality Microsoft Word invoices with your business signature and custom branding instantly for a premium corporate appearance.</p>
+            </div>
+            <!-- Card 2 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-calculator"></i>
+                <h3>Automated GST Math Engine</h3>
+                <p>Intelligent tax system that automatically calculates and splits CGST, SGST, and IGST based on customer location and current government tax slabs.</p>
+            </div>
+            <!-- Card 3 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-pen-nib"></i>
+                <h3>Digital Signature Signpad</h3>
+                <p>Draw your official business signature directly on the screen with a mouse or finger to be automatically embedded in every professional document.</p>
+            </div>
+            <!-- Card 4 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-history"></i>
+                <h3>Secure Cloud Data Storage</h3>
+                <p>Your entire transaction history and customer database are saved safely in the cloud with private access via your secure Google login profile.</p>
+            </div>
+            <!-- Card 5 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-chart-line"></i>
+                <h3>3D Business Analytics</h3>
+                <p>Visualise your business growth with stunning interactive charts tracking revenue, tax collections, and growth trends with just a single click.</p>
+            </div>
+            <!-- Card 6 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-search"></i>
+                <h3>Smart HSN Finder Engine</h3>
+                <p>Instantly access a massive database of over 12,000 HSN codes and government-mandated GST rates for any product category without searching.</p>
+            </div>
+            <!-- Card 7 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-bolt"></i>
+                <h3>No-Cost App Installation</h3>
+                <p>Install this software as a Progressive Web App on your phone or PC home screen with zero store fees, zero commissions, and instant updates.</p>
+            </div>
+            <!-- Card 8 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-print"></i>
+                <h3>Retail Thermal Printing</h3>
+                <p>Dedicated printing engine designed specifically for 2-inch and 3-inch roll printers used in fast-paced retail shops and checkout counters.</p>
+            </div>
+            <!-- Card 9 -->
+            <div class="feature-card-premium">
+                <i class="fas fa-boxes"></i>
+                <h3>Smart Inventory Tracker</h3>
+                <p>Keep a detailed eye on your stock levels, vendor purchases, and monthly balances with automated alerts when items hit critical low stock levels.</p>
+            </div>
+            <!-- Card 10 -->
+            <div class="feature-card-premium">
+                <i class="fab fa-whatsapp"></i>
+                <h3>Direct WhatsApp Billing</h3>
+                <p>Send professional invoice summaries and UPI GPay payment links directly to your customer's WhatsApp number for lightning-fast collections.</p>
+            </div>
+        </div>
     </div>
 </div>
-    </div>
+</div>
     <div id="logout-view" style="display: none; align-items: center; justify-content: center; gap: 15px;">
         <img id="user-photo" src="" style="width: 40px; border-radius: 50%; border: 2px solid black;">
         <span id="user-display-name" style="font-weight: 700; color: black;"></span>
@@ -1804,12 +1901,11 @@ input.error-box { background-color: yellow !important; }
 
 
 
-<div  id="mobile-legal-wrap"style="text-align: center; margin-top: 30px; width: 100%;">
-
-    <button onclick="showLegal('privacy')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Privacy</button>
-    <button onclick="showLegal('disclaimer')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Disclaimer</button>
-    <button onclick="showLegal('about')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">About</button>
-<button onclick="showLegal('contact')" style="display: inline-block; background: white; border: 2px solid black; padding: 10px 20px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; font-size: 0.7rem; text-transform: uppercase; margin: 0 40px;">Contact</button>
+<div class="footer-wrap" style="background: white; border-top: 4px solid black; padding: 60px 10px; text-align: center;">
+    <a href="privacy_smart.html" class="foot-link"><span class="f-ico">P</span> Privacy Policy</a>
+    <a href="disclaimer_smart.html" class="foot-link"><span class="f-ico">D</span> Disclaimer</a>
+    <a href="about_smart.html" class="foot-link"><span class="f-ico">A</span> About Us</a>
+    <a href="contact_smart.html" class="foot-link"><span class="f-ico">C</span> Contact</a>
 </div>
 
 <!-- Legal Modal -->
