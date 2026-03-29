@@ -787,6 +787,22 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 .feature-card-premium { box-shadow: 10px 10px 0px #000 !important; }
 
 .footer-wrap { background: #7FFFD4 !important; border-top: 5px solid #000 !important; }
+
+
+
+.img-wrapper {
+    margin-top: 30px;    /* Space above the image */
+    margin-bottom: 30px; /* Space below the image (equal gap) */
+    text-align: center;  /* Centers the image */
+}
+
+.manual-img {
+    max-width: 100%;     /* Prevents image from being wider than the screen */
+    height: auto;        /* Keeps aspect ratio */
+    border: 1px solid #ddd; /* Optional: adds a light border to define the image */
+    border-radius: 5px;  /* Optional: slightly rounded corners */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: makes it "pop" from the text */
+}
 </style>
 </head>
 <body>
@@ -929,6 +945,17 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     <i class="fas fa-chart-line"></i> 1. Open Business Dashboard
 </button>
 
+
+
+
+<div class="img-wrapper">
+    <img src="dashboard.jpg" alt="Business Dashboard" class="manual-img">
+</div>
+
+
+
+
+
 <!-- Dashboard Modal -->
 <div id="dashboard-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; padding:20px; box-sizing:border-box;">
     <div style="background:white; max-width:600px; margin:50px auto; padding:40px; border:5px solid black; box-shadow: 15px 15px 0px var(--aqua); position:relative; text-align: center;">
@@ -1056,6 +1083,12 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
             <input type="email" id="s_email" placeholder="Business Email" oninput="liveUpdate()">
         </div>
 
+
+
+<div class="img-wrapper">
+    <img src="seller.jpg" alt="Seller details" class="manual-img">
+</div>
+
         <div class="section-header"><i class="fas fa-user-tie"></i> 3. Customer Details</div>
         <!-- Row 1: GST & Verify -->
         <div class="form-row">
@@ -1117,7 +1150,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
         </div>
 
 
-
+<div class="img-wrapper">
+    <img src="customer.jpg" alt="Customer details" class="manual-img">
+</div>
 
 
 <!-- --- HSN QUICK-FETCH TOOL --- -->
@@ -1215,7 +1250,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     </button>
 </div>
 
-
+<div class="img-wrapper">
+    <img src="transport.jpg" alt="Transprt details" class="manual-img">
+</div>
 
 
 
@@ -1249,12 +1286,16 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
+
+
 <!-- History Button -->
 <button id="btn-history" onclick="toggleHistory()" style="background: var(--white); color: var(--black); border: 2px solid var(--black); width: 100%; padding: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px var(--black); text-transform: uppercase;">
     <i class="fas fa-history"></i> 11. View Invoice History
 </button>
 
-
+<div class="img-wrapper">
+    <img src="inv_history.jpg" alt="Invoice history" class="manual-img">
+</div>
 
 
 
@@ -1337,7 +1378,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-
+<div class="img-wrapper">
+    <img src="charts.jpg" alt="Charts" class="manual-img">
+</div>
 
 
 
@@ -1390,7 +1433,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     <div id="reminder-output-msg" style="margin-top:20px; padding:15px; border:2px dashed black; font-weight:700; font-size:0.85rem; min-height:40px; display:none;"></div>
 </div>
 
-
+<div class="img-wrapper">
+    <img src="reminder.jpg" alt="Invoice reminder" class="manual-img">
+</div>
 
 
 <div class="section-header"><i class="fas fa-paint-brush"></i> 15. Select Word Template</div>
@@ -1428,7 +1473,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 </button>
 
 
-
+<div class="img-wrapper">
+    <img src="inventory.jpg" alt="Inventory" class="manual-img">
+</div>
 
 
 
@@ -1436,6 +1483,13 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 <button id="btn-profit-toggle" onclick="toggleProfitSection()" style="display:none; background:white; color:black; border: 2px solid black; width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; margin: 45px auto 10px auto; box-shadow: 4px 4px 0px #000; text-transform: uppercase; align-items: center; justify-content: center;">
     <i class="fas fa-hand-holding-usd"></i> 17. Profit and Expenses
 </button>
+
+
+<div class="img-wrapper">
+    <img src="profit.jpg" alt="Profit" class="manual-img">
+</div>
+
+
 
 <div id="profit-section" class="input-card" style="display:none; text-align: center;">
     <div class="section-header" style="background:black; color:white; justify-content: center;"><i class="fas fa-calculator" style="color:#7FFFD4;"></i> PROFIT AND LOSS TRACKER</div>
@@ -1515,7 +1569,6 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-
 <div class="section-header"><i class="fas fa-qrcode"></i> 18. Payment QR Code</div>
 <div style="background: var(--aqua); border: 3px solid black; box-shadow: 8px 8px 0px #000; padding: 15px; margin-bottom: 20px; text-align: center;">
     <input type="file" id="qr_upload" accept="image/*" onchange="processQR(this)" style="font-weight: 800; cursor: pointer; width: 100%;">
@@ -1523,12 +1576,17 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 </div>
 
 
+<div class="img-wrapper">
+    <img src="QR.jpg" alt="QR Cde" class="manual-img">
+</div>
 
 
         <button class="btn-download" onclick="exportToWord()"><i class="fas fa-file-word"></i> 19. GENERATE MS WORD INVOICE</button>
 
 
-
+<div class="img-wrapper">
+    <img src="invoice_gen.jpg" alt="Invoice generator" class="manual-img">
+</div>
 
 <!-- SMALL WHATSAPP BUTTON -->
 <div style="text-align: center; margin-top: 10px;">
@@ -1554,6 +1612,12 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     <button onclick="printThermalReceipt()" style="background:var(--aqua); color:var(--black); border: 2px solid var(--black); width: 220px !important; height: 45px !important; font-size: 0.75rem !important; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #000; text-transform: uppercase;">
         <i class="fas fa-receipt"></i> 22. Print Thermal Receipt
     </button>
+
+<div class="img-wrapper">
+    <img src="thermal.jpg" alt="Thermal print" class="manual-img">
+</div>
+
+
     <p style="font-size:0.6rem; margin-top:10px; font-weight:700;">* Optimized for 2-inch and 3-inch roll printers.</p>
 </div>
 
@@ -1594,7 +1658,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     </button>
 
 
-
+<div class="img-wrapper">
+    <img src="reports.jpg" alt="Reports" class="manual-img">
+</div>
 
 
 <!-- --- GSTR BUTTONS --- -->
@@ -1661,7 +1727,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 </details>
 
 
-
+<div class="img-wrapper">
+    <img src="glossary.jpg" alt="Glossary" class="manual-img">
+</div>
 
 
 
@@ -1690,6 +1758,13 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
         <i class="fas fa-ship"></i> 31. Exporters Section
     </button>
 </div>
+
+
+<div class="img-wrapper">
+    <img src="export.jpg" alt="Export section" class="manual-img">
+</div>
+
+
 
 <div id="exporter-section" style="display:none; background:white; border:4px solid black; box-shadow:15px 15px 0px black; padding:30px; margin:30px auto; max-width:950px;">
     <div class="section-header" style="background:black; color:white; margin:-30px -30px 20px -30px; padding:15px; justify-content: center;">
@@ -1869,6 +1944,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
         <button onclick="genFinalGSTR3B()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">33. FINAL GSTR-3B</button>
         <button onclick="genFinalGSTR9()" style="background:black; color:var(--aqua); width:220px; height:45px; font-size:0.75rem; font-weight:800; cursor:pointer; border:2px solid black; box-shadow:4px 4px 0px #000;">34. FINAL GSTR-9</button>
     </div>
+</div>
+<div class="img-wrapper">
+    <img src="GSTR.jpg" alt="Final GSTR" class="manual-img">
 </div>
  </div>
 
