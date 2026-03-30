@@ -814,6 +814,134 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
+
+
+
+
+
+
+/* --- COMPREHENSIVE MOBILE OVERRIDE --- */
+@media (max-width: 768px) {
+    /* 1. Prevent Horizontal Scrolling */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        position: relative;
+    }
+
+    /* 2. Main Container Adjustments */
+    .main-container {
+        padding: 10px !important;
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .input-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        box-shadow: 6px 6px 0px #000 !important; /* Slightly smaller shadow for mobile */
+    }
+
+    /* 3. Header & Logo Scaling */
+    .navbar {
+        padding: 20px 5px !important;
+    }
+    .navbar div[style*="display: flex"] {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    .title-3d-intense {
+        font-size: 2rem !important; /* Scale down 5rem to 2rem */
+        text-decoration: none !important;
+    }
+    .title-container-3d {
+        padding: 15px !important;
+        transform: none !important; /* Remove tilt to prevent cutting off edges */
+        width: 90%;
+    }
+    .logo-gst-rotate {
+        width: 80px !important;
+    }
+
+    /* 4. Form and Input Fixes */
+    .form-row {
+        grid-template-columns: 1fr !important; /* Force single column */
+        gap: 12px !important;
+    }
+    input, select, textarea {
+        font-size: 16px !important; /* Prevent iOS zoom-in */
+        width: 100% !important;
+    }
+
+    /* 5. Buttons - Full Width */
+    button, #btn-dashboard, #btn-history, #btn-charts, #btn-inventory, #install-pwa, .btn-download {
+        width: 100% !important;
+        margin: 10px 0 !important;
+        height: auto !important;
+        padding: 15px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* 6. Modals & Tables */
+    #dashboard-modal > div, #history-modal > div, #charts-modal > div, #report-modal > div, #mapping-modal > div {
+        width: 95% !important;
+        margin: 10px auto !important;
+        padding: 15px !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Make large tables scrollable internally so they don't break the page width */
+    #report-container, #history-content, #mapping-content-area, .inv-table {
+        display: block !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* 7. Footer - One Below the Other */
+    .footer-wrap {
+        display: flex !important;
+        flex-direction: column !important; /* Stacks links vertically */
+        align-items: center !important;
+        padding: 40px 10px !important;
+        gap: 10px !important;
+    }
+    .foot-link {
+        width: 100% !important;
+        max-width: 280px;
+        box-sizing: border-box;
+        margin: 5px 0 !important;
+        justify-content: flex-start !important;
+    }
+
+    /* 8. Fix Feature Slider */
+    .feature-card-premium {
+        width: 280px !important; /* Smaller cards for mobile */
+        padding: 20px !important;
+    }
+
+    /* 9. Payment Reminder Section */
+    #reminder-section .form-row div[style*="display:flex"] {
+        flex-direction: column !important;
+    }
+
+    /* 10. Exporter Section Grid */
+    #exporter-section {
+        padding: 15px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 11. HSN Fetch Adjustments */
+    div:has(> #fetch_hsn_input) {
+        flex-direction: column !important;
+    }
+}
 </style>
 </head>
 <body>
