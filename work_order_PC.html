@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WORK ORDER PRO - 500 STYLES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #0ea5e9; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .field { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        input, select, textarea { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
+        h3 { background: #1e293b; color: white; padding: 8px; font-size: 11px; border-radius: 4px; text-transform: uppercase; margin: 20px 0 10px 0; }
+        .template-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 150px; overflow-y: auto; background: #e2e8f0; padding: 10px; border-radius: 8px; }
+        .tpl-btn { padding: 8px 0; border: none; cursor: pointer; color: white; font-size: 9px; font-weight: bold; border-radius: 3px; }
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; margin-top: 20px; border-radius: 10px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .btn-act { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h1>Work Order Pro (500 Permutations)</h1>
+    
+    <h3>1. Header & Company Info</h3>
+    <div class="form-grid">
+        <div class="field"><label>Logo</label><input type="file" accept="image/*" onchange="loadLogo(this)"></div>
+        <div class="field"><label>Company Name</label><input type="text" id="h_name" value="Apex Builders Group" oninput="update()"></div>
+        <div class="field"><label>Address</label><input type="text" id="h_addr" value="Sector 44, Tech Hub, Gurgaon" oninput="update()"></div>
+        <div class="field"><label>Contact Details</label><input type="text" id="h_cont" value="+91 124 5566 7788 | support@apexbuilders.com" oninput="update()"></div>
+        <div class="field"><label>WO Number</label><input type="text" id="w_no" value="WO/2025/4421" oninput="update()"></div>
+        <div class="field"><label>Date</label><input type="date" id="w_date" oninput="update()"></div>
+    </div>
+
+    <h3>2. Client Information</h3>
+    <div class="form-grid">
+        <div class="field"><label>Client Name</label><input type="text" id="c_name" value="Ritesh Enterprises" oninput="update()"></div>
+        <div class="field"><label>Client Contact</label><input type="text" id="c_cont" value="Mr. Ritesh | 9988776655" oninput="update()"></div>
+        <div class="field" style="grid-column: span 2;"><label>Client Address</label><input type="text" id="c_addr" value="Office 402, Skyline Towers, Noida" oninput="update()"></div>
+    </div>
+
+    <h3>3. Project Details</h3>
+    <div class="form-grid">
+        <div class="field" style="grid-column: span 2;"><label>Work Description</label><input type="text" id="p_desc" value="Full HVAC Installation and Ducting" oninput="update()"></div>
+        <div class="field" style="grid-column: span 2;"><label>Scope of Work</label><textarea id="p_scope" oninput="update()">Complete installation of VRV AC units, copper piping insulation, and exhaust fans in the server room.</textarea></div>
+        <div class="field"><label>Timeline</label><input type="text" id="p_time" value="45 Days" oninput="update()"></div>
+        <div class="field"><label>Start Date</label><input type="date" id="p_start" oninput="update()"></div>
+        <div class="field"><label>End Date</label><input type="date" id="p_end" oninput="update()"></div>
+    </div>
+
+    <h3>4. Financials & Terms</h3>
+    <div class="form-grid">
+        <div class="field"><label>Project Value (₹)</label><input type="number" id="f_val" value="450000" oninput="update()"></div>
+        <div class="field"><label>Payment Terms</label><input type="text" id="f_pay" value="25% Booking, 50% Mid-way, 25% Completion" oninput="update()"></div>
+        <div class="field" style="grid-column: span 2;"><label>Terms & Conditions</label><textarea id="t_cond" oninput="update()">1. Any structural change will cost extra. 2. 6 months service warranty. 3. Final payment before site handover.</textarea></div>
+    </div>
+
+    <div class="template-grid" id="tpl-grid"></div>
+
+    <div class="btn-group">
+        <button class="btn-act" style="background:#10b981;" onclick="window.print()"><i class="fas fa-save"></i> SAVE PDF</button>
+        <button class="btn-act" style="background:#2563eb;" onclick="exportWord()"><i class="fas fa-file-word"></i> SAVE WORD</button>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const colors = ["#0ea5e9", "#1e293b", "#b91c1c", "#059669", "#6366f1"];
+
+    const Modules = {
+        borders: [
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border: 1px solid #ddd; box-shadow: 15px 15px 0px ${c};`,
+            (c) => `border: 5px double ${c}; padding: 5px; outline: 1px solid #000; outline-offset: 4px;`,
+            (c) => `border-left: 20px solid ${c}; border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;`,
+            (c) => `border: 2px solid #ddd; border-radius: 20px;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}</td><td align="right"><h1 style="color:${c}">WORK ORDER</h1><b>${d.hName}</b><br><small>${d.hAddr}</small></td></tr></table><hr color="${c}">`,
+            (d, c) => `<div style="background:${c}; color:white; padding:20px; margin:-40px -40px 20px -40px; text-align:center;">${d.logo}<h1>WORK ORDER</h1><p>${d.hName} | ${d.hCont}</p></div>`,
+            (d, c) => `<div style="text-align:center;">${d.logo}<h1>${d.hName}</h1><p>${d.hAddr}</p><hr color="${c}"></div>`,
+            (d, c) => `<div style="border-bottom:5px solid ${c}; padding-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><div><b>WO NO: ${d.wNo}</b></div><div>${d.hName}</div></div>`,
+            (d, c) => `<div style="border-left:10px solid ${c}; padding-left:15px;"><h2>${d.hName}</h2><p>${d.hCont}</p></div>`
+        ],
+        contents: [
+            (d, c) => `<div style="margin:20px 0; display:flex; justify-content:space-between; font-size:13px;">
+                <div><b>CLIENT:</b><br>${d.cName}<br>${d.cAddr}<br>Contact: ${d.cCont}</div>
+                <div><b>ORDER INFO:</b><br>Date: ${d.wDate}<br>Timeline: ${d.pTime}</div>
+            </div>
+            <div style="border:1px solid #eee; padding:15px; font-size:13px;"><b>Work Description:</b> ${d.pDesc}<br><br><b>Detailed Scope:</b> ${d.pScope}</div>
+            <table width="100%" border="1" style="border-collapse:collapse; margin-top:20px; font-size:13px;" cellpadding="10">
+                <tr bgcolor="#f1f5f9"><td><b>Start:</b> ${d.pStart}</td><td><b>End:</b> ${d.pEnd}</td><td><b>Project Value:</b> ₹${d.fVal}</td></tr>
+                <tr><td colspan="3"><b>Payment Terms:</b> ${d.fPay}</td></tr>
+            </table>`,
+            (d, c) => `<div style="background:#f8fafc; padding:20px; margin:20px 0; border:1px solid ${c};">
+                <h3 style="background:none; color:${c}; margin:0;">PROJECT: ${d.pDesc}</h3><p>Duration: ${d.pTime} (Starting ${d.pStart})</p>
+                <b>Work Scope:</b> ${d.pScope}<br><br><b>Commercials:</b> ₹${d.fVal} [${d.fPay}]</div>`,
+            (d, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin-top:20px; font-size:13px;" cellpadding="10">
+                <tr bgcolor="${c}" style="color:white"><td>PARTICULARS</td><td>DETAILS</td></tr>
+                <tr><td>Client Information</td><td>${d.cName} (${d.cCont})<br>${d.cAddr}</td></tr>
+                <tr><td>Project Description</td><td>${d.pDesc}</td></tr>
+                <tr><td>Timeline & Scope</td><td>Dates: ${d.pStart} to ${d.pEnd}<br>Scope: ${d.pScope}</td></tr>
+                <tr><td>Financials</td><td>Value: <b>₹${d.fVal}</b> | Terms: ${d.fPay}</td></tr>
+            </table>`,
+            (d, c) => `<div style="margin:20px 0; border:2px dashed ${c}; padding:20px; font-size:13px;">
+                <p><b>Work Order for:</b> ${d.pDesc}</p><p><b>Execution Scope:</b> ${d.pScope}</p>
+                <p><b>Client:</b> ${d.cName}</p><hr><b>Total Project Consideration: ₹${d.fVal}</b></div>`
+        ]
+    };
+
+    function loadLogo(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { logoImg = e.target.result; update(); }; reader.readAsDataURL(input.files[0]); } }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = colors[id % 5];
+        const d = {
+            hName: document.getElementById('h_name').value, hAddr: document.getElementById('h_addr').value, hCont: document.getElementById('h_cont').value,
+           logo: logoImg ? `<img src="${logoImg}" width="120" style="width:120px; height:auto;">` : `<b>LOGO</b>`,
+            wNo: document.getElementById('w_no').value, wDate: document.getElementById('w_date').value,
+            cName: document.getElementById('c_name').value, cAddr: document.getElementById('c_addr').value, cCont: document.getElementById('c_cont').value,
+            pDesc: document.getElementById('p_desc').value, pScope: document.getElementById('p_scope').value,
+            pTime: document.getElementById('p_time').value, pStart: document.getElementById('p_start').value, pEnd: document.getElementById('p_end').value,
+            fVal: document.getElementById('f_val').value, fPay: document.getElementById('f_pay').value, tCond: document.getElementById('t_cond').value
+        };
+
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const content = Modules.contents[Math.floor(id / 125) % 4](d, color);
+
+        document.getElementById('render-target').innerHTML = `
+            <div style="${border} padding:40px; min-height:280mm; background:white;">
+                ${header} ${content}
+                <div style="margin:20px 0; font-size:11px;"><b>Terms & Conditions:</b><br>${d.tCond}</div>
+                <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:12px;">
+                    <div style="width:180px; border-top:1px solid #000; padding-top:5px;">Client Signature<br><b>${d.cName}</b></div>
+                    <div style="width:180px; border-top:1px solid #000; padding-top:5px;">Company Signature<br><b>${d.hName}</b></div>
+                </div>
+            </div>`;
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = url; link.download = 'WorkOrder.doc'; link.click();
+    }
+
+    const grid = document.getElementById('tpl-grid');
+    for (let i = 1; i <= 500; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'tpl-btn'; btn.style.background = colors[(i - 1) % 5]; btn.innerText = i;
+        btn.onclick = () => { activeStyle = i; update(); };
+        grid.appendChild(btn);
+    }
+    document.getElementById('w_date').valueAsDate = new Date();
+    update();
+</script>
+</body>
+</html>

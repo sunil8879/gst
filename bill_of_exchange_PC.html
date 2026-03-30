@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BILL OF EXCHANGE - 500 TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #1e3a8a; --s: #1e293b; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        
+        .template-grid { 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; 
+            margin: 20px 0; max-height: 200px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px;
+        }
+        .tpl-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 9px; }
+
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Bill of Exchange Manager</h1>
+
+        <!-- Header & Drawer -->
+        <h3>1. Drawer (Issuer) Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Drawer Name</label><input type="text" id="b_name" value="Global Exports Pvt Ltd" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Contact</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="finance@global.com" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.global.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Drawer Address</label><input type="text" id="b_addr" value="Innovation Towers, BKC, Mumbai" oninput="update()"></div>
+        </div>
+
+        <!-- Drawee & Payee -->
+        <h3>2. Drawee (Payer) & 3. Payee Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Drawee Name (Payer)</label><input type="text" id="c_name" value="ABC Distributors Ltd" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Drawee Address</label><input type="text" id="c_addr" value="Industrial Estate, Sector 5, Kolkata" oninput="update()"></div>
+            <div class="field"><label>Payee Name (Receiver)</label><input type="text" id="p_name" value="HDFC Bank - A/c 5501" oninput="update()"></div>
+            <div class="field"><label>Drawee Contact</label><input type="text" id="c_phone" value="+91 88888 77777" oninput="update()"></div>
+        </div>
+
+        <!-- Bill Specs -->
+        <h3>4. Bill Info & 5. Payment Terms</h3>
+        <div class="form-grid">
+            <div class="field"><label>Bill Number</label><input type="text" id="v_no" value="BOE-2024-09" oninput="update()"></div>
+            <div class="field"><label>Bill Date</label><input type="date" id="v_date" oninput="update()"></div>
+            <div class="field"><label>Place of Issue</label><input type="text" id="v_place" value="Mumbai" oninput="update()"></div>
+            <div class="field"><label>Amount (Figures)</label><input type="number" id="v_amt" value="150000" oninput="handleAmount(this.value)"></div>
+            <div class="field"><label>Payable On</label><select id="v_on" onchange="update()"><option>On Demand</option><option>After Sight</option><option>Fixed Date</option></select></div>
+            <div class="field"><label>Due Date</label><input type="date" id="v_due" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Amount in Words</label><input type="text" id="v_words" value="One Lakh Fifty Thousand Only" oninput="update()"></div>
+        </div>
+
+        <!-- Acceptance -->
+        <h3>6. Acceptance Section</h3>
+        <div class="form-grid">
+            <div class="field"><label>Accepted By</label><input type="text" id="a_name" value="ABC Distributors Ltd" oninput="update()"></div>
+            <div class="field"><label>Acceptance Date</label><input type="date" id="a_date" oninput="update()"></div>
+        </div>
+
+        <p style="font-weight:bold; margin-top:20px;">CHOOSE FROM 500 TEMPLATE COMBINATIONS:</p>
+        <div class="template-grid" id="tpl-grid"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="alert('BOE Configuration Saved!')"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const themeColors = ["#1e3a8a", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
+
+    // --- Permutation Modules ---
+    const Modules = {
+        borders: [
+            (c) => `border: 10px solid ${c}; outline: 2px solid ${c}; outline-offset: 4px;`,
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #ddd;`,
+            (c) => `border: 4px double ${c};`,
+            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #000;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}</td><td align="right"><h1>BILL OF EXCHANGE</h1><b style="color:${c}">${d.bName}</b></td></tr></table>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:30px; margin:-40px -40px 20px -40px; text-align:center;">${d.logo}<h1>BILL OF EXCHANGE</h1></div>`,
+            (d, c) => `<center>${d.logo}<h2 style="border-bottom:2px solid ${c}; padding-bottom:5px;">${d.bName}</h2></center>`,
+            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>BILL OF EXCHANGE</h1></td><td align="right" style="padding-left:10px;">${d.logo}</td></tr></table>`,
+            (d, c) => `<div style="border-bottom:10px double ${c}; padding-bottom:10px;">${d.logo} <b>${d.bName}</b></div>`
+        ],
+        statements: [
+            (d, c) => `<div style="font-size:18px; margin:40px 0; line-height:1.8; text-align:justify; padding:20px; border:1px solid #eee;">On <b>${d.vDue}</b>, pay the sum of <b style="color:${c}">₹ ${parseFloat(d.vAmt).toLocaleString('en-IN')}</b> (${d.vWords}) to <b>${d.pName}</b> or order, for value received.</div>`,
+            (d, c) => `<div style="font-size:16px; margin:30px 0; text-align:center; font-style:italic; background:#f9f9f9; padding:30px;">"Pay the sum of ₹ ${d.vAmt} to ${d.pName} or order on ${d.vDue}."</div>`,
+            (d, c) => `<div style="margin:40px 0; padding-left:20px; border-left:10px solid ${c}; font-size:18px;">At ${d.vOn}, pay to ${d.pName} the amount of ${d.vWords} only.</div>`,
+            (d, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:30px 0;"><tr bgcolor="#f0f0f0"><td style="padding:40px; font-size:20px; text-align:center;">PAY ₹ ${d.vAmt} TO ${d.pName.toUpperCase()} OR ORDER</td></tr></table>`
+        ]
+    };
+
+    function handleAmount(val) {
+        document.getElementById('v_words').value = numberToWords(val) + " Only";
+        update();
+    }
+
+    function numberToWords(n) {
+        if (n == 0) return 'Zero';
+        var a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+        var b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+        function g(n) { return n<20?a[n]:b[Math.floor(n/10)]+(n%10!=0?" "+a[n%10]:""); }
+        function h(n,s) { return n==0?"":(n>99?a[Math.floor(n/100)]+" Hundred "+g(n%100):g(n))+s; }
+        let res = h(Math.floor(n/10000000)," Crore ")+h(Math.floor((n/100000)%100)," Lakh ")+h(Math.floor((n/1000)%100)," Thousand ")+h(Math.floor((n/100)%10)," Hundred ");
+        res += (n%100!=0 && n>100?"and ":"")+g(n%100);
+        return res.trim();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoImg = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = themeColors[id % 5];
+        const d = {
+            bName: document.getElementById('b_name').value,
+            bAddr: document.getElementById('b_addr').value,
+            bCont: document.getElementById('b_phone').value + " | " + document.getElementById('b_email').value,
+            bWeb: document.getElementById('b_web').value,
+            logo: logoImg ? `<img src="${logoImg}" width="100" height="50" style="width:100px; height:50px;">` : "<h2>LOGO</h2>",
+            vNo: document.getElementById('v_no').value,
+            vDate: document.getElementById('v_date').value,
+            vDue: document.getElementById('v_due').value,
+            vAmt: document.getElementById('v_amt').value,
+            vWords: document.getElementById('v_words').value,
+            vPlace: document.getElementById('v_place').value,
+            vOn: document.getElementById('v_on').value,
+            cName: document.getElementById('c_name').value,
+            cAddr: document.getElementById('c_addr').value,
+            pName: document.getElementById('p_name').value,
+            aName: document.getElementById('a_name').value,
+            aDate: document.getElementById('a_date').value
+        };
+
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const statement = Modules.statements[Math.floor(id / 125) % 4](d, color);
+
+        const finalHtml = `
+            <div style="${border} padding:40px; min-height:280mm; box-sizing:border-box; background:white; font-family:Arial;">
+                ${header}
+                <br>
+                <table width="100%" style="font-size:12px;">
+                    <tr>
+                        <td width="50%"><b>DRAWER (Issuer):</b><br>${d.bName}<br>${d.bAddr}<br>${d.bCont}</td>
+                        <td width="50%" align="right"><b>DRAWEE (Payer):</b><br>${d.cName}<br>${d.cAddr}</td>
+                    </tr>
+                </table>
+                <br>
+                <table width="100%" style="background:#eee; padding:10px; font-size:12px;">
+                    <tr><td><b>Bill No:</b> ${d.vNo}</td><td><b>Date:</b> ${d.vDate}</td><td align="right"><b>Place:</b> ${d.vPlace}</td></tr>
+                </table>
+                ${statement}
+                <br>
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            <div style="border:2px solid #000; padding:15px; width:220px;">
+                                <center><b>ACCEPTED</b></center><br>
+                                Name: ${d.aName}<br>Date: ${d.aDate}<br><br>Sign: ________________
+                            </div>
+                        </td>
+                        <td width="50%" align="right" valign="bottom">
+                            <b>Drawer Signature</b><br><br><br>
+                            _______________________<br>${d.bName}
+                        </td>
+                    </tr>
+                </table>
+            </div>`;
+
+        document.getElementById('render-target').innerHTML = finalHtml;
+    }
+
+    function init() {
+        const grid = document.getElementById('tpl-grid');
+        for (let i = 1; i <= 500; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = themeColors[(i-1) % 5];
+            btn.innerText = i;
+            btn.onclick = () => { activeStyle = i; update(); };
+            grid.appendChild(btn);
+        }
+        document.getElementById('v_date').valueAsDate = new Date();
+        document.getElementById('v_due').valueAsDate = new Date();
+        document.getElementById('a_date').valueAsDate = new Date();
+        update();
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:5px;font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `BOE_${document.getElementById('v_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VOUCHER PRO - 500 STYLES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #1e40af; --s: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .field { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        input, select, textarea { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; outline: none; }
+        h3 { background: #0f172a; color: white; padding: 8px; font-size: 11px; border-radius: 4px; text-transform: uppercase; margin: 20px 0 10px 0; }
+        .template-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 150px; overflow-y: auto; background: #e2e8f0; padding: 10px; border-radius: 8px; }
+        .tpl-btn { padding: 8px 0; border: none; cursor: pointer; color: white; font-size: 9px; font-weight: bold; border-radius: 3px; }
+        .tpl-btn.active { outline: 2px solid black; transform: scale(1.1); z-index: 5; }
+        .preview-box { display: flex; justify-content: center; background: #475569; padding: 40px 10px; margin-top: 20px; border-radius: 10px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .btn-act { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h1>Voucher Pro (500 Permutations)</h1>
+    
+    <h3>1. Company Header Details</h3>
+    <div class="form-grid">
+        <div class="field"><label>Logo</label><input type="file" accept="image/*" onchange="loadLogo(this)"></div>
+        <div class="field"><label>Company Name</label><input type="text" id="h_name" value="Global Trade Solutions" oninput="update()"></div>
+        <div class="field"><label>Address</label><input type="text" id="h_addr" value="Corporate Park, Suite 501, Mumbai" oninput="update()"></div>
+        <div class="field"><label>Email</label><input type="text" id="h_email" value="finance@globaltrade.com" oninput="update()"></div>
+        <div class="field"><label>Website</label><input type="text" id="h_web" value="www.globaltrade.com" oninput="update()"></div>
+        <div class="field"><label>Contact No</label><input type="text" id="h_phone" value="+91 22 4567 8900" oninput="update()"></div>
+        <div class="field"><label>GSTIN</label><input type="text" id="h_gst" value="27AAACG1234A1Z5" oninput="update()"></div>
+    </div>
+
+    <h3>2. Voucher Basic Info</h3>
+    <div class="form-grid">
+        <div class="field"><label>Voucher No</label><input type="text" id="v_no" value="VCH-2025-001" oninput="update()"></div>
+        <div class="field"><label>Voucher Type</label><select id="v_type" onchange="update()"><option>PAYMENT</option><option>RECEIPT</option><option>JOURNAL</option><option>EXPENSE</option><option>CONTRA</option></select></div>
+        <div class="field"><label>Date</label><input type="date" id="v_date" oninput="update()"></div>
+    </div>
+
+    <h3>3. Party & Account Details</h3>
+    <div class="form-grid">
+        <div class="field"><label>Party Name</label><input type="text" id="p_name" value="Supreme Logistics Ltd" oninput="update()"></div>
+        <div class="field"><label>Ledger Name</label><input type="text" id="p_ledger" value="Freight & Carriage" oninput="update()"></div>
+        <div class="field"><label>Party GSTIN</label><input type="text" id="p_gst" value="27BBBPG5678D1Z2" oninput="update()"></div>
+        <div class="field"><label>Party Email</label><input type="text" id="p_email" value="ops@supreme.com" oninput="update()"></div>
+        <div class="field"><label>Party Contact</label><input type="text" id="p_phone" value="+91 98765 43210" oninput="update()"></div>
+        <div class="field" style="grid-column: span 2;"><label>Party Address</label><input type="text" id="p_addr" value="Plot 12, Industrial Area, Pune" oninput="update()"></div>
+    </div>
+
+    <h3>4. Transaction & Payment Details</h3>
+    <div class="form-grid">
+        <div class="field" style="grid-column: span 2;"><label>Description / Narration</label><input type="text" id="v_desc" value="Being payment for consignment #9988 delivered on 12th Oct" oninput="update()"></div>
+        <div class="field"><label>Debit Amount (₹)</label><input type="number" id="v_dr" value="15000" oninput="update()"></div>
+        <div class="field"><label>Credit Amount (₹)</label><input type="number" id="v_cr" value="0" oninput="update()"></div>
+        <div class="field"><label>Mode</label><select id="v_mode" onchange="update()"><option>Bank Transfer</option><option>Cash</option><option>UPI</option><option>Card</option></select></div>
+        <div class="field"><label>Ref / Trans ID</label><input type="text" id="v_ref" value="UTR9982100" oninput="update()"></div>
+        <div class="field"><label>Bank Name</label><input type="text" id="v_bank" value="State Bank of India" oninput="update()"></div>
+    </div>
+
+    <h3>5. Authorization</h3>
+    <div class="form-grid">
+        <div class="field"><label>Prepared By</label><input type="text" id="a_prep" value="Accountant" oninput="update()"></div>
+        <div class="field"><label>Approved By</label><input type="text" id="a_appr" value="Finance Head" oninput="update()"></div>
+    </div>
+
+    <div class="template-grid" id="tpl-grid"></div>
+
+    <div class="btn-group">
+        <button class="btn-act" style="background:#10b981;" onclick="window.print()"><i class="fas fa-save"></i> SAVE PDF</button>
+        <button class="btn-act" style="background:#2563eb;" onclick="exportWord()"><i class="fas fa-file-word"></i> SAVE WORD</button>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const colors = ["#1e40af", "#0f172a", "#b91c1c", "#065f46", "#7e22ce"];
+
+    const Modules = {
+        borders: [
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border: 1px solid #ddd; box-shadow: 12px 12px 0px ${c};`,
+            (c) => `border: 4px double ${c}; padding: 5px; outline: 1px solid #000; outline-offset: 3px;`,
+            (c) => `border-left: 20px solid ${c}; border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;`,
+            (c) => `border: 2px solid #000; border-radius: 20px;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}</td><td align="right"><h2>${d.hName}</h2><small>${d.hAddr}<br>GST: ${d.hGst}</small></td></tr></table><hr color="${c}">`,
+            (d, c) => `<div style="background:${c}; color:white; padding:20px; margin:-40px -40px 20px -40px; text-align:center;">${d.logo}<h2>${d.hName}</h2><p style="font-size:10px;">${d.hEmail} | ${d.hWeb} | ${d.hPhone}</p></div>`,
+            (d, c) => `<div style="text-align:center;">${d.logo}<h1>${d.hName}</h1><p>${d.hAddr}<br>GST: ${d.hGst}</p><hr color="${c}"></div>`,
+            (d, c) => `<table width="100%"><tr><td><h1 style="color:${c}">${d.vType}</h1></td><td align="right">${d.logo}<b>${d.hName}</b><br><small>${d.hPhone}</small></td></tr></table>`,
+            (d, c) => `<div style="border-left:10px solid ${c}; padding-left:15px;"><h2>${d.hName}</h2><p>${d.hEmail} | GST: ${d.hGst}</p></div>`
+        ],
+        contents: [
+            (d, c) => `<div style="margin:20px 0; font-size:12px; display:flex; justify-content:space-between;">
+                <div><b>Voucher No:</b> ${d.vNo}<br><b>Date:</b> ${d.vDate}</div>
+                <div><b>Account:</b> ${d.pLedger}<br><b>Type:</b> ${d.vType}</div>
+                </div>
+                <table width="100%" border="1" cellpadding="8" style="border-collapse:collapse; font-size:12px;">
+                <tr bgcolor="#f1f5f9"><th>Account & Particulars</th><th>Debit (₹)</th><th>Credit (₹)</th></tr>
+                <tr height="100"><td valign="top"><b>${d.pName}</b><br>GSTIN: ${d.pGst}<br>Contact: ${d.pPhone} | ${d.pEmail}<br>Address: ${d.pAddr}<br><br><i>Narration: ${d.vDesc}</i></td><td align="center"><b>${d.vDr}</b></td><td align="center"><b>${d.vCr}</b></td></tr>
+                <tr bgcolor="#f1f5f9"><td><b>Total</b></td><td align="center"><b>${d.vDr}</b></td><td align="center"><b>${d.vCr}</b></td></tr>
+                </table>`,
+            (d, c) => `<div style="background:#f8fafc; padding:15px; margin:20px 0; border:1px solid #ddd;"><b>Party:</b> ${d.pName} [${d.pLedger}]<br><b>Ref:</b> ${d.vRef} | <b>Bank:</b> ${d.vBank}</div>
+                <div style="border:1px solid #ddd; padding:15px;"><b>Description:</b> ${d.vDesc}<br><br><h2 style="color:${c}">Voucher Total: ₹ ${d.vDr > 0 ? d.vDr : d.vCr}</h2></div>`,
+            (d, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin-top:20px;" cellpadding="10">
+                <tr><td><b>Voucher No:</b> ${d.vNo}</td><td><b>Date:</b> ${d.vDate}</td><td><b>Mode:</b> ${d.vMode}</td></tr>
+                <tr><td colspan="3"><b>Account:</b> ${d.pName}<br><b>Address:</b> ${d.pAddr}<br><b>GSTIN:</b> ${d.pGst}</td></tr>
+                <tr bgcolor="#eee"><td colspan="2"><b>Narration:</b> ${d.vDesc}</td><td align="center"><b>Total: ₹ ${d.vDr > 0 ? d.vDr : d.vCr}</b></td></tr>
+                </table>`,
+            (d, c) => `<div style="margin:20px 0; border:2px solid ${c}; padding:15px;"><h3>${d.vType}</h3><p><b>Acc Name:</b> ${d.pName} | <b>Ledger:</b> ${d.pLedger}</p>
+                <p><b>Contact:</b> ${d.pPhone} | <b>Email:</b> ${d.pEmail}</p>
+                <div style="border-top:1px dashed #ccc; padding-top:10px;"><b>Details:</b> ${d.vDesc}</div>
+                <hr><b>Voucher Value: ₹ ${d.vDr > 0 ? d.vDr : d.vCr}</b><br><small>Ref: ${d.vRef} | ${d.vBank}</small></div>`
+        ]
+    };
+
+    function loadLogo(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { logoImg = e.target.result; update(); }; reader.readAsDataURL(input.files[0]); } }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = colors[id % 5];
+        const d = {
+            hName: document.getElementById('h_name').value, hAddr: document.getElementById('h_addr').value, hEmail: document.getElementById('h_email').value,
+            hWeb: document.getElementById('h_web').value, hPhone: document.getElementById('h_phone').value, hGst: document.getElementById('h_gst').value,
+         logo: logoImg ? `<img src="${logoImg}" width="120" style="width:120px; height:auto;">` : `<b>LOGO</b>`,
+            vNo: document.getElementById('v_no').value, vType: document.getElementById('v_type').value, vDate: document.getElementById('v_date').value,
+            pName: document.getElementById('p_name').value, pLedger: document.getElementById('p_ledger').value, pGst: document.getElementById('p_gst').value,
+            pEmail: document.getElementById('p_email').value, pPhone: document.getElementById('p_phone').value, pAddr: document.getElementById('p_addr').value,
+            vDesc: document.getElementById('v_desc').value, vDr: document.getElementById('v_dr').value, vCr: document.getElementById('v_cr').value,
+            vMode: document.getElementById('v_mode').value, vRef: document.getElementById('v_ref').value, vBank: document.getElementById('v_bank').value,
+            aPrep: document.getElementById('a_prep').value, aAppr: document.getElementById('a_appr').value
+        };
+
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const content = Modules.contents[Math.floor(id / 125) % 4](d, color);
+
+        document.getElementById('render-target').innerHTML = `
+            <div style="${border} padding:40px; min-height:280mm; background:white;">
+                ${header} ${content}
+                <div style="margin-top:50px; display:flex; justify-content:space-between; font-size:12px; text-align:center;">
+                    <div style="width:150px; border-top:1px solid #000; padding-top:5px;">Prepared By<br><b>${d.aPrep}</b></div>
+                    <div style="width:150px; border-top:1px solid #000; padding-top:5px;">Receiver's Signature</div>
+                    <div style="width:150px; border-top:1px solid #000; padding-top:5px;">Approved By<br><b>${d.aAppr}</b></div>
+                </div>
+            </div>`;
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = url; link.download = 'Voucher.doc'; link.click();
+    }
+
+    const grid = document.getElementById('tpl-grid');
+    for (let i = 1; i <= 500; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'tpl-btn'; btn.style.background = colors[(i - 1) % 5]; btn.innerText = i;
+        btn.onclick = () => { activeStyle = i; update(); document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+        grid.appendChild(btn);
+    }
+    document.getElementById('v_date').valueAsDate = new Date();
+    update();
+</script>
+</body>
+</html>

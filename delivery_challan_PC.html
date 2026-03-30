@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELIVERY CHALLAN - 500 TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        
+        /* UI Table */
+        .ui-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        .ui-table th { background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
+        .ui-table input { border: none; width: 100%; background: transparent; }
+
+        /* Template Grid */
+        .template-grid { 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; 
+            margin: 20px 0; max-height: 200px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px;
+        }
+        .tpl-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 9px; text-transform: uppercase; }
+
+        /* Preview area */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Delivery Challan Pro - 500 Engine</h1>
+
+        <!-- Header -->
+        <h3>1. Header (My Business Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Business Name</label><input type="text" id="b_name" value="Elite Logistics Solutions" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Phone</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.elitelogistics.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="Plot 45, Industrial Area, New Delhi" oninput="update()"></div>
+        </div>
+
+        <!-- Details -->
+        <h3>2. Challan & 3. Consignee Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Challan Number</label><input type="text" id="q_no" value="DC-2024-101" oninput="update()"></div>
+            <div class="field"><label>Challan Date</label><input type="date" id="q_date" oninput="update()"></div>
+            <div class="field"><label>Place of Supply</label><input type="text" id="q_pos" value="Maharashtra (27)" oninput="update()"></div>
+            <div class="field"><label>Consignee Name</label><input type="text" id="c_name" value="Global Traders Inc" oninput="update()"></div>
+            <div class="field"><label>Consignee GSTIN</label><input type="text" id="c_gst" value="27QWERT5544P1Z2" oninput="update()"></div>
+            <div class="field"><label>Consignee Email</label><input type="text" id="c_email" value="ops@globaltraders.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Delivery Address</label><input type="text" id="c_addr" value="Warehouse 4, Gateway Port, Mumbai" oninput="update()"></div>
+        </div>
+
+        <!-- Transport -->
+        <h3>4. Transport Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Transporter Name</label><input type="text" id="t_name" value="FastTrack Cargo" oninput="update()"></div>
+            <div class="field"><label>Vehicle Number</label><input type="text" id="t_veh" value="DL-01-AB-1234" oninput="update()"></div>
+            <div class="field"><label>Mode (Road/Air/etc)</label><input type="text" id="t_mode" value="Road" oninput="update()"></div>
+            <div class="field"><label>E-Way Bill No.</label><input type="text" id="t_eway" value="1214 5566 7788" oninput="update()"></div>
+        </div>
+
+        <!-- Goods Table -->
+        <h3>5. Goods Table (Dynamic)</h3>
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th width="5%">No</th><th width="50%">Description</th><th width="15%">HSN</th><th width="10%">Qty</th><th width="10%">Unit</th><th></th>
+                </tr>
+            </thead>
+            <tbody id="ui_rows"></tbody>
+        </table>
+        <button onclick="addRow()" style="margin-top:10px; cursor:pointer; padding: 5px 15px;">+ Add Goods</button>
+
+        <!-- Declaration -->
+        <h3>6. Declaration</h3>
+        <div class="form-grid">
+            <div class="field" style="grid-column: span 2;">
+                <label>Reason for Transport</label>
+                <select id="f_dec" onchange="update()">
+                    <option>Goods sent for delivery</option>
+                    <option>Goods sent for job work</option>
+                    <option>Goods sent for approval basis</option>
+                    <option>Goods sent for transfer to branch</option>
+                </select>
+            </div>
+            <div class="field" style="grid-column: span 2;"><label>Thank You Message</label><input type="text" id="f_thank" value="Thank you for your business!" oninput="update()"></div>
+        </div>
+
+        <p style="font-weight:bold; margin-top:20px;">CHOOSE FROM 500 TEMPLATE COMBINATIONS:</p>
+        <div class="template-grid" id="tpl-grid"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="alert('Challan Saved!')"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const themeColors = ["#1e40af", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
+
+    // ==========================================
+    // THE MODULAR ENGINE (COMPONENTS)
+    // ==========================================
+    const Modules = {
+        borders: [
+            (c) => `border: 8px solid ${c}; outline: 2px solid ${c}; outline-offset: 4px;`,
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #eee;`,
+            (c) => `border: 4px double ${c};`,
+            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #000;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}<h1>${d.biz}</h1></td><td align="right" style="font-size:11px;">${d.addr}<br>GST: ${d.gst}<br>PH: ${d.phone}</td></tr></table>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:30px; margin:-30px -30px 20px -30px; text-align:center;">${d.logo}<h1>DELIVERY CHALLAN</h1></div>`,
+            (d, c) => `<center>${d.logo}<h2 style="border-bottom:2px solid ${c}">${d.biz}</h2><p>${d.addr}</p></center>`,
+            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>CHALLAN</h1></td><td align="right">${d.logo}<br><b>${d.biz}</b></td></tr></table>`,
+            (d, c) => `<div style="border-bottom:10px double ${c}; padding-bottom:10px;">${d.logo} <b style="font-size:20px;">${d.biz}</b><br>${d.web}</div>`
+        ],
+        tables: [
+            (rows, c) => `<table width="100%" style="border-collapse:collapse; margin:20px 0;"><tr bgcolor="${c}" style="color:white;"><th>No</th><th>Description of Goods</th><th>HSN/SAC</th><th>Qty</th><th>Unit</th></tr>${rows}</table>`,
+            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; border-color:#eee;">${rows}</table>`,
+            (rows, c) => `<div style="border:2px solid ${c}; border-radius:10px; overflow:hidden;"><table width="100%">${rows}</table></div>`,
+            (rows, c) => `<table width="100%" style="margin:20px 0;"><tr style="border-bottom:3px solid ${c}"><th>No</th><th>Item Details</th><th>HSN</th><th>Qty</th><th>Unit</th></tr>${rows}</table>`
+        ]
+    };
+
+    function addRow() {
+        const tbody = document.getElementById('ui_rows');
+        const id = Date.now();
+        const html = `<tr class="item-row" id="row_${id}">
+            <td align="center">${tbody.children.length + 1}</td>
+            <td><input type="text" class="i-desc" value="Industrial Goods Item" oninput="update()"></td>
+            <td><input type="text" class="i-hsn" value="8481" oninput="update()"></td>
+            <td><input type="number" class="i-qty" value="10" oninput="update()"></td>
+            <td><input type="text" class="i-unit" value="Units" oninput="update()"></td>
+            <td><button onclick="document.getElementById('row_${id}').remove(); update();" style="color:red;">&times;</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', html);
+        update();
+    }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = themeColors[id % 5];
+        const d = {
+            biz: document.getElementById('b_name').value,
+            logo: logoImg ? `<img src="${logoImg}" width="100" height="50" style="width:100px; height:50px;">` : "<h2>LOGO</h2>",
+            addr: document.getElementById('b_addr').value,
+            gst: document.getElementById('b_gst').value,
+            phone: document.getElementById('b_phone').value,
+            web: document.getElementById('b_web').value,
+            chNo: document.getElementById('q_no').value,
+            chDate: document.getElementById('q_date').value,
+            pos: document.getElementById('q_pos').value,
+            cName: document.getElementById('c_name').value,
+            cAddr: document.getElementById('c_addr').value,
+            cGst: document.getElementById('c_gst').value,
+            tName: document.getElementById('t_name').value,
+            tVeh: document.getElementById('t_veh').value,
+            tMode: document.getElementById('t_mode').value,
+            tEway: document.getElementById('t_eway').value,
+            dec: document.getElementById('f_dec').value,
+            thank: document.getElementById('f_thank').value
+        };
+
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const tableLogic = Modules.tables[Math.floor(id / 125) % 4];
+
+        const rows = Array.from(document.querySelectorAll('.item-row')).map((row, i) => `
+            <tr><td align="center">${i+1}</td><td>${row.querySelector('.i-desc').value}</td><td align="center">${row.querySelector('.i-hsn').value}</td><td align="center">${row.querySelector('.i-qty').value}</td><td align="center">${row.querySelector('.i-unit').value}</td></tr>
+        `).join('');
+
+        const finalHtml = `
+            <div style="${border} padding:35px; min-height:280mm; box-sizing:border-box; background:white; font-family:Arial;">
+                ${header}
+                <br>
+                <table width="100%" style="font-size:12px;">
+                    <tr>
+                        <td width="55%"><b>CONSIGNEE / SHIP TO:</b><br>${d.cName}<br>${d.cAddr}<br>GST: ${d.cGst}</td>
+                        <td align="right"><b>CHALLAN NO:</b> ${d.chNo}<br><b>DATE:</b> ${d.chDate}<br><b>POS:</b> ${d.pos}</td>
+                    </tr>
+                </table>
+                <br>
+                <div style="background:#f4f4f4; padding:10px; border:1px solid #ddd; font-size:11px;">
+                    <b>TRANSPORT DETAILS:</b><br>
+                    Transporter: ${d.tName} | Vehicle: ${d.tVeh}<br>
+                    Mode: ${d.tMode} | E-Way Bill: ${d.tEway}
+                </div>
+                ${tableLogic(rows, color)}
+                <div style="font-size:11px; margin-top:10px;">
+                    <b>DECLARATION:</b><br>${d.dec}<br><br>
+                    <i>${d.thank}</i>
+                </div>
+                <table width="100%" style="margin-top:60px; font-size:12px;">
+                    <tr>
+                        <td width="50%">Receiver's Signature & Stamp<br><br><br>__________________________</td>
+                        <td align="right">For <b>${d.biz}</b><br><br><br>Authorized Signatory</td>
+                    </tr>
+                </table>
+            </div>`;
+
+        document.getElementById('render-target').innerHTML = finalHtml;
+    }
+
+    function init() {
+        const grid = document.getElementById('tpl-grid');
+        for (let i = 1; i <= 500; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = themeColors[(i-1) % 5];
+            btn.innerText = i;
+            btn.onclick = () => { activeStyle = i; update(); };
+            grid.appendChild(btn);
+        }
+        document.getElementById('q_date').valueAsDate = new Date();
+        addRow();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoImg = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:5px;font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Challan_${document.getElementById('q_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

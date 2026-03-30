@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEBIT NOTES TEMPLATES PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--p); }
+        
+        .ui-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        .ui-table th { background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
+        .ui-table input { border: none; width: 100%; background: transparent; padding: 5px; box-sizing: border-box; }
+
+        .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
+        .tpl-btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .tpl-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        
+        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media print { .no-print { display: none !important; } body { padding: 0; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Debit Note Designer</h1>
+
+        <!-- 1. Header -->
+        <h3>1. Header (My Business Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Business Name</label><input type="text" id="b_name" value="Global Supply Chain Ltd" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Contact No</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="billing@globalsupply.com" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.globalsupply.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="Plot 88, Sector 18, Gurgaon, Haryana" oninput="update()"></div>
+        </div>
+
+        <!-- 2. Details -->
+        <h3>2. Debit Note & 3. Supplier Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Debit Note #</label><input type="text" id="dn_no" value="DN-2024-005" oninput="update()"></div>
+            <div class="field"><label>Date</label><input type="date" id="dn_date" oninput="update()"></div>
+            <div class="field"><label>Supplier Name</label><input type="text" id="c_name" value="Industrial Parts Mfg" oninput="update()"></div>
+            <div class="field"><label>Supplier GSTIN</label><input type="text" id="c_gst" value="06QWERT5544P1Z2" oninput="update()"></div>
+            <div class="field"><label>Supplier Email</label><input type="text" id="c_email" value="sales@industrialparts.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Supplier Address</label><input type="text" id="c_addr" value="Phase 3, Industrial Area, Manesar" oninput="update()"></div>
+        </div>
+
+        <!-- 3. Reference -->
+        <h3>4. Reference Invoice Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Original Invoice #</label><input type="text" id="ref_no" value="INV-998" oninput="update()"></div>
+            <div class="field"><label>Original Invoice Date</label><input type="date" id="ref_date" oninput="update()"></div>
+            <div class="field"><label>Reason for Debit Note</label>
+                <select id="ref_reason" onchange="update()">
+                    <option>Undercharged invoice</option>
+                    <option>Price revision</option>
+                    <option>Additional quantity billed</option>
+                    <option>Tax adjustment</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 4. Table -->
+        <h3>5. Adjustment Table (Dynamic Math)</h3>
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th width="5%">No</th><th width="35%">Item Description</th><th width="10%">HSN</th><th width="8%">Qty</th><th width="12%">Rate</th><th width="10%">GST %</th><th width="15%">Total</th><th width="5%"></th>
+                </tr>
+            </thead>
+            <tbody id="ui_rows"></tbody>
+        </table>
+        <button onclick="addRow()" style="margin-top:10px; cursor:pointer; padding:8px 15px;">+ Add New Item</button>
+
+        <!-- 5. Summary -->
+        <h3>6. Summary & Templates</h3>
+        <div class="form-grid">
+            <div class="field"><label>Total Taxable</label><input type="text" id="s_sub" readonly style="background:#f0f0f0;"></div>
+            <div class="field"><label>Total GST</label><input type="text" id="s_tax" readonly style="background:#f0f0f0;"></div>
+            <div class="field"><label>Grand Total</label><input type="text" id="s_grand" readonly style="font-weight:bold; color:red; background:#f0f0f0;"></div>
+        </div>
+
+        <div class="template-grid" id="btn-container"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="alert('Data Saved Locally')"><i class="fas fa-save"></i> Save Data</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word Export</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoData = "";
+    let activeId = 1;
+    const colors = ["#2563eb","#52525b","#1e3a8a","#1e293b","#854d0e","#475569","#4338ca","#1e3a8a","#64748b","#0d9488","#3b82f6","#334155","#444444","#0891b2","#be123c","#000000","#0d9488","#1e3a8a","#854d0e","#2563eb","#1e293b","#0f766e","#1e3a8a","#0284c7","#2563eb"];
+    const names = ["Corporate Blue", "Minimal Clean", "Card Style Modern", "Sidebar Business", "Premium Dark", "Structured Grid", "Gradient Business", "Classic Accounting", "Compact Professional", "Bold Header", "Rounded Modern", "Split Column", "Elegant Minimal", "Tech Startup", "Highlight Section", "Legal Contract", "Soft Pastel", "Table-Focused", "Luxury Gold", "Split Header", "Dashboard Inspired", "Thin Border", "Executive Business", "Bright Business", "Smart Signature"];
+
+    function addRow() {
+        const tbody = document.getElementById('ui_rows');
+        const id = Date.now();
+        const row = `<tr class="item-row" id="row_${id}">
+            <td align="center">${tbody.children.length + 1}</td>
+            <td><input type="text" class="i-desc" value="Price Difference Adjustment" oninput="update()"></td>
+            <td><input type="text" class="i-hsn" value="9983" oninput="update()"></td>
+            <td><input type="number" class="i-qty" value="1" oninput="calculate()"></td>
+            <td><input type="number" class="i-rate" value="1000" oninput="calculate()"></td>
+            <td><input type="number" class="i-gst" value="18" oninput="calculate()"></td>
+            <td><input type="text" class="i-total" value="1180.00" readonly></td>
+            <td align="center"><button onclick="document.getElementById('row_${id}').remove(); calculate();" style="color:red; background:none; border:none; cursor:pointer;">&times;</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+        calculate();
+    }
+
+    function calculate() {
+        let subtotal = 0; let taxTotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const q = parseFloat(row.querySelector('.i-qty').value) || 0;
+            const r = parseFloat(row.querySelector('.i-rate').value) || 0;
+            const g = parseFloat(row.querySelector('.i-gst').value) || 0;
+            const taxable = q * r;
+            const tax = taxable * (g / 100);
+            row.querySelector('.i-total').value = (taxable + tax).toFixed(2);
+            subtotal += taxable; taxTotal += tax;
+        });
+        document.getElementById('s_sub').value = subtotal.toFixed(2);
+        document.getElementById('s_tax').value = taxTotal.toFixed(2);
+        document.getElementById('s_grand').value = (subtotal + taxTotal).toFixed(2);
+        update();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoData = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function init() {
+        const container = document.getElementById('btn-container');
+        names.forEach((name, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = colors[i];
+            btn.innerText = name;
+            btn.onclick = () => { activeId = i + 1; update(); };
+            container.appendChild(btn);
+        });
+        document.getElementById('dn_date').valueAsDate = new Date();
+        document.getElementById('ref_date').valueAsDate = new Date();
+        addRow();
+    }
+
+    function update() {
+        const items = [];
+        document.querySelectorAll('.item-row').forEach((row, i) => {
+            items.push({ no: i + 1, desc: row.querySelector('.i-desc').value, hsn: row.querySelector('.i-hsn').value, qty: row.querySelector('.i-qty').value, rate: row.querySelector('.i-rate').value, gst: row.querySelector('.i-gst').value, total: row.querySelector('.i-total').value });
+        });
+
+        const d = {
+            bName: document.getElementById('b_name').value, bAddr: document.getElementById('b_addr').value, bGst: document.getElementById('b_gst').value, bPhone: document.getElementById('b_phone').value, bEmail: document.getElementById('b_email').value, bWeb: document.getElementById('b_web').value,
+            logo: logoData ? `<img src="${logoData}" width="120" height="60" style="width:120px; height:60px;">` : "<h2>LOGO</h2>",
+            dnNo: document.getElementById('dn_no').value, dnDate: document.getElementById('dn_date').value, cName: document.getElementById('c_name').value, cGst: document.getElementById('c_gst').value, cAddr: document.getElementById('c_addr').value, cEmail: document.getElementById('c_email').value,
+            refNo: document.getElementById('ref_no').value, refDate: document.getElementById('ref_date').value, reason: document.getElementById('ref_reason').value,
+            items: items, sSub: document.getElementById('s_sub').value, sTax: document.getElementById('s_tax').value, sGrand: document.getElementById('s_grand').value
+        };
+        document.getElementById('render-target').innerHTML = renderTemplate(activeId, d, colors[activeId-1]);
+    }
+
+    function renderTemplate(id, d, color) {
+        const borderStyles = [`border:8px solid ${color}; outline:2px solid ${color}; outline-offset:4px;`,`border:1px solid #ddd;`,`border:4px double ${color};`,`border-left:25px solid ${color}; border-right:1px solid #eee;`,`border:10px solid #111; border-top:40px solid ${color};`,`border:2px solid ${color}; border-radius:25px;`,`border:6px inset ${color};`,`border:2px solid #000;`,`border-bottom:20px solid ${color}; border-top:1px solid #eee;`,`border:2px dashed ${color};`,`border:4px solid ${color}; border-radius:50px 0 50px 0;`,`border-left:10px ridge ${color};`,`border:1px solid #eee; border-top:15px double ${color};`,`border-top:8px solid ${color}; border-left:8px solid ${color};`,`border:1px solid #000; box-shadow:10px 10px 0px ${color};`,`border:3px solid black; padding:10px;`,`border:2px solid ${color}; border-radius:20px;`,`border-bottom:5px solid ${color}; border-top:5px solid ${color};`,`border:10px double ${color}; padding:15px;`,`border:2px solid #222; box-shadow: inset 0 0 20px ${color}33;`,`border:1px solid #ccc; background: linear-gradient(to bottom, #fff 96%, ${color} 4%);`,`border:12px solid #222; border-top-color: ${color};`,`border-bottom: 10px solid ${color};`,`border: 4px solid ${color}; border-radius: 15px;`,`border: 15px solid ${color}; border-style: solid none;`];
+        const wrapS = `<div style="${borderStyles[id - 1]} padding:30px; min-height:280mm; box-sizing:border-box; background:white; font-family:Arial; color:#333; position:relative;">`;
+        const wrapE = `</div>`;
+        
+        const seller = `<div style="font-size:11px; line-height:1.4;"><b>${d.bName}</b><br>${d.bAddr}<br><b>GSTIN:</b> ${d.bGst} | <b>PH:</b> ${d.bPhone}<br>${d.bEmail} | ${d.bWeb}</div>`;
+        const customer = `<div style="font-size:11px; border-left:3px solid ${color}; padding-left:15px;"><b>SUPPLIER / ISSUED TO:</b><br><b style="font-size:14px;">${d.cName}</b><br>${d.cAddr}<br><b>GST:</b> ${d.cGst}</div>`;
+        const refInfo = `<div style="background:rgba(0,0,0,0.03); padding:10px; border:1px solid #ddd; margin:15px 0; font-size:11px;"><b>REF INVOICE:</b> ${d.refNo} (${d.refDate})<br><b>REASON FOR NOTE:</b> ${d.reason}</div>`;
+        
+        const rows = d.items.map(it => `<tr><td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.no}</td><td style="border:1px solid #ccc; padding:8px;">${it.desc}</td><td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.hsn}</td><td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.qty}</td><td style="border:1px solid #ccc; padding:8px; text-align:right;">${it.rate}</td><td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.gst}%</td><td style="border:1px solid #ccc; padding:8px; text-align:right;">${it.total}</td></tr>`).join('');
+        const table = `<table width="100%" style="border-collapse:collapse; margin:20px 0; font-size:11px;"><tr style="background:${color}; color:white;"><th>No</th><th>Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Tax%</th><th>Total</th></tr>${rows}</table>`;
+        
+        const totals = `<table width="100%" style="font-size:12px; border-collapse:collapse; margin-top:20px;"><tr><td width="60%" valign="top"><b>Declaration:</b> This debit note is issued against the above invoice.<br><br><i>Thank you for your business.</i></td><td width="40%"><table width="100%" style="text-align:right; font-weight:bold;"><tr><td>Total Taxable:</td><td>₹ ${d.sSub}</td></tr><tr><td>Total GST:</td><td>₹ ${d.sTax}</td></tr><tr style="font-size:18px; color:${color}; border-top:2px solid #333;"><td>TOTAL DEBIT:</td><td>₹ ${d.sGrand}</td></tr></table></td></tr></table><div style="margin-top:50px; text-align:right;"><b>Authorized Signatory</b><br><br><br>__________________________</div>`;
+
+     switch(id) {
+            case 1: // Corporate Blue
+                return wrapS + `<table width="100%" bgcolor="${color}" style="color:white; padding:20px; margin:-30px -30px 20px -30px;"><tr><td>${d.logo}</td><td align="right"><h1>DEBIT NOTE</h1><b>NO: ${d.dnNo}</b></td></tr></table><table width="100%"><tr><td>${seller}</td><td align="right"><b>Date:</b> ${d.dnDate}</td></tr></table><hr>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 2: // Minimal Clean
+                return wrapS + `<center>${d.logo}<h2 style="color:#666; letter-spacing:5px;">DEBIT NOTE</h2><hr>${seller}</center><br><table width="100%"><tr><td>${customer}</td><td align="right" valign="top"><b>Note No:</b> ${d.dnNo}<br><b>Date:</b> ${d.dnDate}</td></tr></table>${refInfo}${table}${totals}` + wrapE;
+
+            case 3: // Card Style
+                return wrapS + `<div style="background:white; border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px;"><table width="100%"><tr><td>${d.logo}</td><td align="right">${seller}</td></tr></table></div><div style="background:white; border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px;"><b>DEBIT NOTE # ${d.dnNo}</b><br>${d.dnDate}</div><div style="background:white; border:1px solid #ddd; padding:15px; border-radius:10px;">${customer}${refInfo}</div>${table}${totals}` + wrapE;
+
+            case 4: // Sidebar Business
+                return wrapS + `<table width="100%" height="100%"><tr><td width="30%" bgcolor="${color}" style="color:white; padding:20px;" valign="top">${d.logo}<br><h3>${d.bName}</h3><hr>${seller}<br><br><b>DEBIT NOTE NO:</b><br>${d.dnNo}</td><td width="70%" style="padding:20px;" valign="top"><h1>DEBIT NOTE</h1>${customer}${refInfo}${table}${totals}</td></tr></table>` + wrapE;
+
+            case 5: // Premium Dark
+                return wrapS + `<div style="background:#000; color:white; padding:20px; margin:-30px -30px 20px -30px;"><table width="100%"><tr><td>${d.logo}</td><td align="right"><h1>DEBIT NOTE</h1><b># ${d.dnNo}</b></td></tr></table></div><div style="padding-top:10px;">${seller}<hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 6: // Structured Grid
+                return wrapS + `<table width="100%" border="1" style="border-collapse:collapse; margin-bottom:15px;"><tr><td style="padding:15px;">${seller}</td><td style="padding:15px;" align="right"><b>DEBIT NOTE DETAILS</b><br>No: ${d.dnNo}<br>Date: ${d.dnDate}</td></tr></table><br>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 7: // Gradient Business
+                return wrapS + `<div style="background:linear-gradient(to right, ${color}, #4338ca); padding:20px; margin:-30px -30px 20px -30px; color:white;"><table width="100%"><tr><td><h2>DEBIT NOTE</h2></td><td align="right"><b># ${d.dnNo}</b></td></tr></table></div><table width="100%"><tr><td>${seller}</td><td align="right">${customer}</td></tr></table>${refInfo}${table}${totals}` + wrapE;
+
+            case 8: // Classic Accounting
+                return wrapS + `<div style="font-family:'Times New Roman'; border:1px solid #000; padding:10px;"><table width="100%"><tr><td>${seller}</td><td align="right">${d.logo}</td></tr></table><center><h2>DEBIT MEMORANDUM # ${d.dnNo}</h2></center>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 9: // Compact Professional
+                return wrapS + `<div style="font-size:11px;"><table width="100%"><tr><td><b>${d.bName}</b><br>Debit Note: <b>${d.dnNo}</b></td><td align="right">${d.logo}</td></tr></table><hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 10: // Bold Header
+                return wrapS + `<div style="background:${color}; color:white; padding:30px; margin:-30px -30px 20px -30px;"><table width="100%"><tr><td><h1 style="margin:0;">${d.bName}</h1></td><td align="right"><b>VOUCHER NO: ${d.dnNo}</b></td></tr></table></div>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 11: // Rounded Modern
+                return wrapS + `<div style="border-radius:30px; border:2px solid ${color}; padding:20px;">${d.logo} <div align="right"><b>DEBIT NOTE NO: ${d.dnNo}</b></div>${seller}<hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 12: // Split Column
+                return wrapS + `<table width="100%"><tr><td width="50%" style="border-right:1px solid #eee;">${seller}<br><b># ${d.dnNo}</b></td><td width="50%" align="right">${d.logo}<br><h1>DEBIT NOTE</h1></td></tr></table><hr>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 13: // Elegant Minimal
+                return wrapS + `<div style="padding:40px; text-align:center;">${d.logo}<h1>DEBIT NOTE # ${d.dnNo}</h1><hr>${seller}<br>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 14: // Tech Startup
+                return wrapS + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><b>${d.bName}</b><br>ID: ${d.dnNo}</td></tr></table><div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:10px; margin:15px 0;">${customer}${refInfo}</div>${table}${totals}` + wrapE;
+
+            case 15: // Highlight Section
+                return wrapS + `<div style="border:2px solid ${color}; padding:15px; margin-bottom:10px;"><b>DEBIT NOTE NO: ${d.dnNo}</b><br>${seller}</div><div style="border:2px solid ${color}; padding:15px; margin-bottom:10px;">${customer}</div>${refInfo}${table}${totals}` + wrapE;
+
+            case 16: // Legal Contract
+                return wrapS + `<div style="font-family:serif; text-align:justify;"><center><h3>DEBIT ADVICE # ${d.dnNo}</h3></center><br>This document certifies a required debit adjustment by <b>${d.bName}</b>.<br><hr>${refInfo}${customer}${table}${totals}</div>` + wrapE;
+
+            case 17: // Soft Pastel
+                return wrapS + `<div style="background:${color}11; padding:20px; border-radius:15px;"><b>Note Ref: ${d.dnNo}</b><hr>${seller}<hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 18: // Table-Focused
+                return wrapS + `<table width="100%" border="1" style="border-collapse:collapse;"><tr><td colspan="2" align="center" bgcolor="#f2f2f2"><b>${d.bName} - DEBIT NOTE # ${d.dnNo}</b></td></tr><tr><td width="50%">${seller}</td><td width="50%">${customer}</td></tr></table>${refInfo}${table}${totals}` + wrapE;
+
+            case 19: // Luxury Gold
+                return wrapS + `<div style="border:10px double #d4af37; padding:15px;"><center>${d.logo}<h1 style="color:#d4af37; font-family:serif;">DEBIT VOUCHER ${d.dnNo}</h1></center><br>${seller}<hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 20: // Split Header
+                return wrapS + `<table width="100%"><tr><td><h1>ADJUSTMENT</h1><b># ${d.dnNo}</b></td><td align="right">${d.logo}</td></tr></table><table width="100%"><tr><td width="50%">${seller}</td><td width="50%" align="right" valign="top">${customer}</td></tr></table><hr>${refInfo}${table}${totals}` + wrapE;
+
+            case 21: // Dashboard Inspired
+                return wrapS + `<div style="background:#f4f4f4; padding:20px; border-radius:12px; margin-bottom:15px;">${seller} <div align="right"><b>REF: ${d.dnNo}</b></div></div><div style="background:#fff; border:1px solid #eee; padding:15px; border-radius:12px;">${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 22: // Thin Border
+                return wrapS + `<div style="border:1px solid #ccc; padding:20px;">${d.logo} <h2>DEBIT NOTE # ${d.dnNo}</h2>${seller}<hr>${customer}${refInfo}${table}${totals}</div>` + wrapE;
+
+            case 23: // Executive Business
+                return wrapS + `<table width="100%"><tr><td width="60%">${seller}</td><td align="right" width="40%"><b>DEBIT NOTE</b><br># ${d.dnNo}<br>${d.dnDate}</td></tr></table><hr>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 24: // Bright Business
+                return wrapS + `<div style="background:${color}; color:white; padding:20px; margin:-30px -30px 10px -30px;"><table width="100%"><tr><td><h2>${d.bName}</h2></td><td align="right"># ${d.dnNo}</td></tr></table></div><br>${customer}${refInfo}${table}${totals}` + wrapE;
+
+            case 25: // Smart Signature
+                return wrapS + `<center>${d.logo}<h1>${d.bName}</h1><b>DEBIT VOUCHER: ${d.dnNo}</b></center><hr color="${color}">${customer}${refInfo}${table}${totals}` + wrapE;
+
+            default:
+                return wrapS + `<table width="100%"><tr><td>${d.logo}<h2>${d.bName}</h2></td><td align="right"># ${d.dnNo}</td></tr></table><hr>${customer}${refInfo}${table}${totals}` + wrapE;
+        }
+}
+
+    function saveToLocal() {
+        const data = { b: document.getElementById('b_name').value, g: document.getElementById('b_gst').value, a: document.getElementById('b_addr').value };
+        localStorage.setItem('dn_settings', JSON.stringify(data));
+        alert("Company Details Saved Locally!");
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td,th{border:1px solid #ccc; padding:5px; font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `DebitNote_${document.getElementById('dn_no').value}.doc`;
+        link.click();
+    }
+    window.onload = init;
+</script>
+</body>
+</html>

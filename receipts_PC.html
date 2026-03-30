@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RECEIPT - 500 TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; box-sizing: border-box; }
+        input:focus { border-color: var(--p); }
+
+        /* Template Selector */
+        .template-grid { 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; 
+            margin: 20px 0; max-height: 200px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px;
+        }
+        .tpl-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 9px; text-transform: uppercase; }
+
+        /* Preview Display */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 148mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Receipt Pro - 500 Engine</h1>
+
+        <!-- Header -->
+        <h3>1. Header (My Business Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Business Name</label><input type="text" id="b_name" value="Global Services Pvt Ltd" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Phone</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="billing@globalservices.com" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.globalservices.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Business Address</label><input type="text" id="b_addr" value="Floor 5, Innovation Hub, New Delhi" oninput="update()"></div>
+        </div>
+
+        <!-- Details -->
+        <h3>2. Receipt & Customer Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Receipt Number</label><input type="text" id="r_no" value="RCP-5502" readonly></div>
+            <div class="field"><label>Receipt Date</label><input type="date" id="r_date" oninput="update()"></div>
+            <div class="field"><label>Customer Name</label><input type="text" id="c_name" value="Acme Corporation" oninput="update()"></div>
+            <div class="field"><label>Customer GSTIN</label><input type="text" id="c_gst" value="URP" oninput="update()"></div>
+            <div class="field"><label>Cust. Phone</label><input type="text" id="c_phone" value="+91 88888 77777" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Customer Address</label><input type="text" id="c_addr" value="Commercial Park, Mumbai, MH" oninput="update()"></div>
+        </div>
+
+        <!-- Payment -->
+        <h3>3. Payment Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Amount (Figures)</label><input type="number" id="p_amt" value="5000" oninput="handleAmount(this.value)"></div>
+            <div class="field" style="grid-column: span 2;"><label>Amount in Words</label><input type="text" id="p_words" value="Five Thousand Only" oninput="update()"></div>
+            <div class="field"><label>Payment Mode</label><select id="p_mode" onchange="update()"><option>Cash</option><option>UPI / GPay</option><option>Bank Transfer</option><option>Card</option></select></div>
+            <div class="field"><label>Invoice Ref #</label><input type="text" id="p_inv" value="INV-101" oninput="update()"></div>
+            <div class="field"><label>Balance Due</label><input type="text" id="p_due" value="0.00" oninput="update()"></div>
+        </div>
+
+        <!-- Footer -->
+        <h3>4. Terms & Footer</h3>
+        <div class="form-grid">
+            <div class="field" style="grid-column: span 2;"><label>Terms & Conditions</label><textarea id="f_terms" rows="2" oninput="update()">1. This is a digital receipt. 2. Subject to New Delhi jurisdiction.</textarea></div>
+            <div class="field" style="grid-column: span 2;"><label>Thank You Message</label><input type="text" id="f_thank" value="Thank you for your business!" oninput="update()"></div>
+        </div>
+
+        <p style="font-weight:bold; margin-top:20px;">SELECT FROM 500 RECEIPT STYLES:</p>
+        <div class="template-grid" id="tpl-grid"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="alert('Data Saved')"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const themeColors = ["#2563eb", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
+
+    // --- Permutation Modules ---
+    const Modules = {
+        borders: [
+            (c) => `border: 8px solid ${c}; outline: 2px solid ${c}; outline-offset: 4px;`,
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #eee;`,
+            (c) => `border: 4px double ${c};`,
+            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #000;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}<h1>RECEIPT</h1></td><td align="right" style="font-size:11px;"><b>${d.biz}</b><br>${d.addr}<br>GST: ${d.gst}</td></tr></table>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:30px; margin:-30px -30px 20px -30px; text-align:center;">${d.logo}<h1>PAYMENT RECEIPT</h1>${d.web}</div>`,
+            (d, c) => `<center>${d.logo}<h2 style="border-bottom:2px solid ${c}; padding-bottom:5px;">${d.biz}</h2><p>${d.addr}</p></center>`,
+            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>OFFICIAL RECEIPT</h1></td><td align="right" style="padding-right:10px;">${d.logo}<br><b>${d.biz}</b></td></tr></table>`,
+            (d, c) => `<div style="border-bottom:10px double ${c}; padding-bottom:10px;">${d.logo} <b style="font-size:20px;">${d.biz}</b><br>${d.email} | ${d.phone}</div>`
+        ],
+        bodyStyles: [
+            (d, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; font-size:14px;">
+                <tr bgcolor="#f9f9f9"><td style="padding:15px;"><b>Receipt No:</b> ${d.rNo}</td><td style="padding:15px;" align="right"><b>Date:</b> ${d.rDate}</td></tr>
+                <tr><td colspan="2" style="padding:20px;">Received with thanks from <b>${d.cName}</b>, the sum of <b>${d.pWords}</b> towards <b>Invoice ${d.pInv}</b>.</td></tr>
+                <tr bgcolor="#f9f9f9"><td style="padding:15px;"><b>Amount Received:</b></td><td style="padding:15px;" align="right"><b style="font-size:24px; color:${c}">₹ ${d.pAmt}</b></td></tr>
+            </table>`,
+            (d, c) => `<div style="border:2px solid ${c}; padding:20px; margin:20px 0; border-radius:10px;">
+                <p><b>No:</b> ${d.rNo} | <b>Date:</b> ${d.rDate}</p>
+                <p><b>From:</b> ${d.cName}</p><hr>
+                <h1 style="text-align:center; color:${c}">₹ ${d.pAmt}</h1>
+                <p style="text-align:center;"><i>(${d.pWords})</i></p>
+            </div>`,
+            (d, c) => `<div style="margin:20px 0;">
+                <table width="100%" cellpadding="10" border="0">
+                <tr><td style="background:#eee;"><b>Customer</b></td><td>${d.cName}</td></tr>
+                <tr><td style="background:#eee;"><b>Sum</b></td><td>${d.pWords}</td></tr>
+                <tr><td style="background:#eee;"><b>Total</b></td><td style="font-size:20px; font-weight:bold;">₹ ${d.pAmt}</td></tr>
+                </table>
+            </div>`,
+            (d, c) => `<div style="background:${c}11; padding:20px; border-left:10px solid ${c}; margin:20px 0;">
+                <h3>Transaction Details:</h3>
+                <p>Received ₹ ${d.pAmt} via ${d.pMode} from ${d.cName}.</p>
+                <p>Balance Due: ₹ ${d.due}</p>
+            </div>`
+        ]
+    };
+
+    function handleAmount(val) {
+        document.getElementById('p_words').value = numberToWords(val) + " Only";
+        update();
+    }
+
+    function numberToWords(n) {
+        if (n == 0) return 'Zero';
+        var a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+        var b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+        function g(n) { return n<20?a[n]:b[Math.floor(n/10)]+(n%10!=0?" "+a[n%10]:""); }
+        function h(n,s) { return n==0?"":(n>99?a[Math.floor(n/100)]+" Hundred "+g(n%100):g(n))+s; }
+        let res = h(Math.floor(n/10000000)," Crore ")+h(Math.floor((n/100000)%100)," Lakh ")+h(Math.floor((n/1000)%100)," Thousand ")+h(Math.floor((n/100)%10)," Hundred ");
+        res += (n%100!=0 && n>100?"and ":"")+g(n%100);
+        return res.trim();
+    }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = themeColors[id % 5];
+        const d = {
+            biz: document.getElementById('b_name').value,
+            addr: document.getElementById('b_addr').value,
+            gst: document.getElementById('b_gst').value,
+            phone: document.getElementById('b_phone').value,
+            email: document.getElementById('b_email').value,
+            web: document.getElementById('b_web').value,
+            logo: logoImg ? `<img src="${logoImg}" width="120" height="60" style="width:120px; height:60px;">` : "<h2>LOGO</h2>",
+            rNo: document.getElementById('r_no').value,
+            rDate: document.getElementById('r_date').value,
+            cName: document.getElementById('c_name').value,
+            cAddr: document.getElementById('c_addr').value,
+            pAmt: document.getElementById('p_amt').value,
+            pWords: document.getElementById('p_words').value,
+            pMode: document.getElementById('p_mode').value,
+            pInv: document.getElementById('p_inv').value,
+            due: document.getElementById('p_due').value,
+            thank: document.getElementById('f_thank').value,
+            terms: document.getElementById('f_terms').value
+        };
+
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const bodyLogic = Modules.bodyStyles[Math.floor(id / 125) % 4];
+
+        const finalHtml = `
+            <div style="${border} padding:35px; min-height:148mm; box-sizing:border-box; background:white; font-family:Arial; color:#333;">
+                ${header}
+                <br>
+                ${bodyLogic(d, color)}
+                <div style="font-size:11px; margin-top:10px;">
+                    <b>Terms:</b> ${d.terms}<br>
+                    <b>Payment:</b> Received via ${d.pMode} | <b>Ref:</b> ${d.pInv}<br>
+                    <b style="color:red;">Balance Due: ₹ ${d.due}</b>
+                </div>
+                <table width="100%" style="margin-top:40px; font-size:12px;">
+                    <tr>
+                        <td><i>${d.thank}</i></td>
+                        <td align="right">For <b>${d.biz}</b><br><br><br>Authorized Signatory</td>
+                    </tr>
+                </table>
+            </div>`;
+
+        document.getElementById('render-target').innerHTML = finalHtml;
+    }
+
+    function init() {
+        const grid = document.getElementById('tpl-grid');
+        for (let i = 1; i <= 500; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = themeColors[(i-1) % 5];
+            btn.innerText = i;
+            btn.onclick = () => { activeStyle = i; update(); };
+            grid.appendChild(btn);
+        }
+        document.getElementById('r_no').value = "RCP-" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('r_date').valueAsDate = new Date();
+        update();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoImg = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:5px;font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Receipt_${document.getElementById('r_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

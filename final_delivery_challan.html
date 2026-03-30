@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELIVERY CHALLAN TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        input:focus { border-color: var(--p); }
+
+        /* UI Table */
+        .ui-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        .ui-table th { background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
+        .ui-table input { border: none; width: 100%; background: transparent; }
+
+        /* Template Buttons */
+        .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 30px 0; }
+        .tpl-btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .tpl-btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        /* Preview Display */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+
+        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media print { .no-print { display: none; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Delivery Challan Manager</h1>
+
+        <!-- 1. Header -->
+        <h3>1. Header (Business Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Business Name</label><input type="text" id="b_name" value="Elite Logistics Solutions" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Phone</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.elitelogistics.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Business Address</label><input type="text" id="b_addr" value="Plot 45, Industrial Area Phase II, New Delhi" oninput="update()"></div>
+        </div>
+
+        <!-- 2. Challan Details -->
+        <h3>2. Challan & 3. Consignee Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Challan Number</label><input type="text" id="q_no" value="DC-2024-001" oninput="update()"></div>
+            <div class="field"><label>Challan Date</label><input type="date" id="q_date" oninput="update()"></div>
+            <div class="field"><label>Place of Supply</label><input type="text" id="q_pos" value="Maharashtra (27)" oninput="update()"></div>
+            <div class="field"><label>Customer Name</label><input type="text" id="c_name" value="Global Traders Inc" oninput="update()"></div>
+            <div class="field"><label>Customer GSTIN</label><input type="text" id="c_gst" value="27QWERT5544P1Z2" oninput="update()"></div>
+            <div class="field"><label>Cust. Contact</label><input type="text" id="c_phone" value="+91 88888 77777" oninput="update()"></div>
+            <div class="field"><label>Cust. Email</label><input type="text" id="c_email" value="ops@globaltraders.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 1;"><label>Cust. Website</label><input type="text" id="c_web" value="www.globaltraders.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Delivery Address</label><input type="text" id="c_addr" value="Warehouse 4, Gateway Port, Mumbai" oninput="update()"></div>
+        </div>
+
+        <!-- 4. Transport Details -->
+        <h3>4. Transport Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Transporter Name</label><input type="text" id="t_name" value="FastTrack Cargo" oninput="update()"></div>
+            <div class="field"><label>Vehicle Number</label><input type="text" id="t_veh" value="DL-01-AB-1234" oninput="update()"></div>
+            <div class="field"><label>Transport Mode</label><select id="t_mode" onchange="update()"><option>Road</option><option>Rail</option><option>Air</option><option>Ship</option></select></div>
+            <div class="field"><label>E-Way Bill No.</label><input type="text" id="t_eway" value="1214 5566 7788" oninput="update()"></div>
+        </div>
+
+        <!-- 5. Goods Table -->
+        <h3>5. Goods Table (Dynamic Rows)</h3>
+        <table class="ui-table">
+            <!-- Search for this in your HTML and replace it -->
+<thead>
+    <tr>
+        <th width="5%">No</th>
+        <th width="40%">Description</th>
+        <th width="10%">HSN</th>
+        <th width="8%">Qty</th>
+        <th width="8%">Unit</th>
+        <th width="12%">Rate</th>
+        <th width="12%">Value</th>
+        <th width="5%"></th>
+    </tr>
+</thead>
+            <tbody id="ui_rows"></tbody>
+        </table>
+        <button onclick="addRow()" style="margin-top:10px; cursor:pointer; padding: 8px 15px;">+ Add Goods Item</button>
+
+        <!-- 6. Declaration & Footer -->
+        <h3>6. Declaration & Footer</h3>
+        <div class="form-grid">
+            <div class="field" style="grid-column: span 2;"><label>Declaration / Reason for Transport</label>
+                <select id="f_dec" onchange="update()">
+                    <option>Goods sent for delivery</option>
+                    <option>Goods sent for job work</option>
+                    <option>Goods sent for approval basis</option>
+                    <option>Goods sent for transfer to branch</option>
+                </select>
+            </div>
+            <div class="field" style="grid-column: span 2;"><label>Thank You Message</label><input type="text" id="f_thank" value="Thank you for your business!" oninput="update()"></div>
+        </div>
+
+        <h3>7. Select Template Design</h3>
+        <div class="template-grid" id="btn-container"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Data</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> Download Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoData = "";
+    let activeTpl = 1;
+    const colors = ["#2563eb","#52525b","#7f1d1d","#404040","#854d0e","#0d9488","#4338ca","#78350f","#14b8a6","#2563eb","#166534","#1e1b4b","#0891b2","#4682b4","#4b5563","#0f172a","#ea580c","#6d28d9","#334155","#166534","#2563eb","#000000","#1e3a8a","#475569","#2563eb"];
+    const names = ["Corporate Blue", "Minimal Clean", "Traditional Trade", "Retail Transport", "Premium Elegant", "Card Style", "Startup Style", "Border Frame", "Soft Pastel", "Gradient Header", "Compact Transport", "Prof Accounting", "Left Accent", "Center Highlight", "Box Section", "Premium Corporate", "Logistics Pro", "Sidebar Modern", "Clean Professional", "Ledger Style", "Modern Tech", "Bold Header", "Simple Local", "Modern Elegant", "Logistics Ultra"];
+
+ function addRow() {
+    const tbody = document.getElementById('ui_rows');
+    const id = Date.now();
+    const row = `<tr class="item-row" id="row_${id}">
+        <td align="center">${tbody.children.length + 1}</td>
+        <td><input type="text" class="i-desc" value="Goods Item Description" oninput="update()"></td>
+        <td><input type="text" class="i-hsn" value="8481" oninput="update()"></td>
+        <td><input type="number" class="i-qty" value="1" oninput="update()"></td>
+        <td><input type="text" class="i-unit" value="Units" oninput="update()"></td>
+        <td><input type="number" class="i-rate" value="0" oninput="update()"></td>
+        <td><input type="text" class="i-value" value="0.00" readonly style="background:#f0f0f0;"></td>
+        <td align="center"><button onclick="document.getElementById('row_${id}').remove(); update();" style="color:red; cursor:pointer;">&times;</button></td>
+    </tr>`;
+    tbody.insertAdjacentHTML('beforeend', row);
+    update();
+}
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoData = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function init() {
+        const container = document.getElementById('btn-container');
+        names.forEach((name, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = colors[i];
+            btn.innerText = name;
+            btn.onclick = () => { activeTpl = i + 1; update(); };
+            container.appendChild(btn);
+        });
+        document.getElementById('q_date').valueAsDate = new Date();
+        addRow();
+    }
+
+    function update() {
+        const itms = [];
+      // Replace the old loop with this one inside function update()
+document.querySelectorAll('.item-row').forEach((row, i) => {
+    const qty = parseFloat(row.querySelector('.i-qty').value) || 0;
+    const rate = parseFloat(row.querySelector('.i-rate').value) || 0;
+    const val = (qty * rate).toFixed(2);
+    
+    // This updates the "Total" box you see on the screen automatically
+    if(row.querySelector('.i-value')) row.querySelector('.i-value').value = val;
+
+    itms.push({ 
+        no: i+1, 
+        desc: row.querySelector('.i-desc').value, 
+        hsn: row.querySelector('.i-hsn').value, 
+        qty: qty, 
+        unit: row.querySelector('.i-unit').value,
+        rate: rate.toFixed(2),
+        value: val
+    });
+});
+
+        const d = {
+            biz: document.getElementById('b_name').value, 
+            logo: logoData ? `<img src="${logoData}" width="120" height="60" style="width:120px; height:60px;">` : "<h2>LOGO</h2>",
+            addr: document.getElementById('b_addr').value, gst: document.getElementById('b_gst').value, phone: document.getElementById('b_phone').value, web: document.getElementById('b_web').value,
+            chNo: document.getElementById('q_no').value, chDate: document.getElementById('q_date').value, pos: document.getElementById('q_pos').value,
+            cName: document.getElementById('c_name').value, cGst: document.getElementById('c_gst').value, cAddr: document.getElementById('c_addr').value, cPhone: document.getElementById('c_phone').value, cEmail: document.getElementById('c_email').value, cWeb: document.getElementById('c_web').value,
+            tName: document.getElementById('t_name').value, tVeh: document.getElementById('t_veh').value, tMode: document.getElementById('t_mode').value, tEway: document.getElementById('t_eway').value,
+            items: itms, dec: document.getElementById('f_dec').value, thank: document.getElementById('f_thank').value
+        };
+        document.getElementById('render-target').innerHTML = renderTemplate(activeTpl, d, colors[activeTpl-1]);
+    }
+
+  function renderTemplate(id, d, color) {
+        const bLine = `border: 8px solid ${color}; outline: 2px solid ${color}; outline-offset: 4px;`;
+        const wrapS = (bg, border = bLine) => `<div style="background:${bg}; ${border} padding:30px; min-height:280mm; box-sizing:border-box; font-family:Arial; color:#333; position:relative;">`;
+        const wrapE = `</div>`;
+        
+        const seller = `<div style="font-size:11px; line-height:1.4;"><b>${d.biz}</b><br>${d.addr}<br><b>GSTIN:</b> ${d.gst}<br><b>PH:</b> ${d.phone} | <b>Web:</b> ${d.web}</div>`;
+        const consignee = `<div style="font-size:11px; line-height:1.4;"><b>CONSIGNEE:</b><br><b style="font-size:14px;">${d.cName}</b><br>${d.cAddr}<br><b>GST:</b> ${d.cGst} | <b>PH:</b> ${d.cPhone}</div>`;
+        const transport = `<div style="font-size:11px; border:1px solid #ddd; padding:10px; background:rgba(255,255,255,0.5); margin:10px 0;"><b>TRANSPORT:</b> ${d.tName} | <b>VEHICLE:</b> ${d.tVeh}<br><b>MODE:</b> ${d.tMode} | <b>E-WAY BILL:</b> ${d.tEway}</div>`;
+        
+        const rows = d.items.map(it => `<tr>
+            <td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.no}</td>
+            <td style="border:1px solid #ccc; padding:8px;">${it.desc}</td>
+            <td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.hsn}</td>
+            <td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.qty}</td>
+            <td style="border:1px solid #ccc; padding:8px; text-align:center;">${it.unit}</td>
+            <td style="border:1px solid #ccc; padding:8px; text-align:right;">${it.rate}</td>
+            <td style="border:1px solid #ccc; padding:8px; text-align:right;">${it.value}</td>
+        </tr>`).join('');
+
+        const table = `<table width="100%" style="border-collapse:collapse; margin:20px 0; font-size:12px;">
+            <tr style="background:${color}; color:white;">
+                <th style="padding:10px;">No</th><th style="text-align:left;">Description of Goods</th><th>HSN</th><th>Qty</th><th>Unit</th><th>Rate</th><th>Value</th>
+            </tr>${rows}</table>`;
+        
+        const foot = `<div style="margin-top:20px; font-size:11px; border-top:1px solid #eee; padding-top:10px;"><b>DECLARATION:</b> ${d.dec}<br><br><i>${d.thank}</i></div>
+            <table width="100%" style="margin-top:50px; font-size:11px; font-family:Arial;"><tr>
+            <td width="33%"><b>Receiver's Signature</b><br><br><br>________________</td>
+            <td width="33%" align="center"><b>Company Stamp</b><br><br>( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</td>
+            <td width="33%" align="right"><b>For ${d.biz}</b><br><br><br>________________</td>
+            </tr></table>`;
+
+        switch(id) {
+            case 1: return wrapS("#fff") + `<table width="100%"><tr><td>${d.logo}<h1>${d.biz}</h1></td><td align="right">${seller}</td></tr></table><hr>${consignee}<br>${transport}${table}${foot}` + wrapE;
+            case 2: return wrapS("#fff", "border:1px solid #ddd;") + `<center>${d.logo}<h2 style="color:${color}">${d.biz}</h2><p>${d.addr}</p></center><div style="margin:30px 0;">${consignee}</div><table width="100%"><tr><td>${transport}</td><td align="right" valign="top"><b>Challan:</b> ${d.chNo}</td></tr></table>${table}${foot}` + wrapE;
+            case 3: return wrapS("#fffaf0") + `<table width="100%"><tr><td>${seller}</td><td align="right">${d.logo}</td></tr></table><center><h1 style="color:${color}; text-decoration:underline;">TRADE CHALLAN</h1></center><table width="100%"><tr><td>${consignee}</td><td align="right">${transport}</td></tr></table>${table}${foot}` + wrapE;
+            case 4: return wrapS("#fff") + `<center>${d.logo}<h3 style="background:#444; color:white; padding:5px;">DELIVERY CHALLAN</h3><b>${d.biz}</b><br>${d.addr}</center><hr style="border:1px dashed #000;">${consignee}<br>${transport}${table}${foot}` + wrapE;
+            case 5: return wrapS("#fffff0") + `<div style="text-align:center; border-bottom:2px solid #d4af37; padding-bottom:15px; margin-bottom:20px;">${d.logo}<h1 style="color:#d4af37; font-family:serif;">Premium Delivery Document</h1></div><table width="100%"><tr><td>${seller}</td><td align="right">${consignee}</td></tr></table>${transport}${table}${foot}` + wrapE;
+            case 6: return wrapS("#f3f4f6") + `<div style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">${d.logo} ${seller}</div><div style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">${consignee}</div>${transport}${table}${foot}` + wrapE;
+            case 7: return wrapS("linear-gradient(135deg, #f8fafc, #ffffff)") + `<table width="100%"><tr><td width="15%">${d.logo}</td><td><b>${d.biz}</b><br>${d.web}</td><td align="right"><h3># ${d.chNo}</h3></td></tr></table><br><div style="border-top:4px solid ${color}; padding-top:15px;">${consignee}</div>${transport}${table}${foot}` + wrapE;
+            case 8: return wrapS("#fffbeb", `border:15px double ${color};`) + `<center>${d.logo}<h2>GOODS VOUCHER</h2></center><hr color="${color}"><table width="100%"><tr><td>${seller}</td><td align="right">${consignee}</td></tr></table>${transport}${table}${foot}` + wrapE;
+            case 9: return wrapS("#f0fdfa") + `<div style="background:${color}22; padding:20px; border-radius:30px; margin-bottom:15px;"><table width="100%"><tr><td>${d.logo}</td><td align="right"><b>${d.biz}</b></td></tr></table></div><table width="100%"><tr><td>${consignee}</td><td align="right">${transport}</td></tr></table>${table}${foot}` + wrapE;
+            case 10: return wrapS("#fff") + `<div style="background:linear-gradient(to right, ${color}, #fff); padding:20px; margin:-30px -30px 20px -30px; color:white;"><h2>CHALLAN</h2># ${d.chNo}</div>${seller}<hr>${consignee}${transport}${table}${foot}` + wrapE;
+            case 11: return wrapS("#f9fafb") + `<div style="font-size:11px; border:1px solid #ccc; padding:15px;">${d.logo}<br><b>${d.biz}</b><hr>${consignee}<br>${transport}${table}${foot}</div>` + wrapE;
+            case 12: return wrapS("#f4f4f4") + `<table width="100%" border="1" style="border-collapse:collapse; background:white;"><tr><td style="padding:15px;">${seller}</td><td style="padding:15px;" align="right">${d.logo}</td></tr></table><br>${consignee}${transport}${table}${foot}` + wrapE;
+            case 13: return `<table width="100%" style="min-height:280mm; background:white; border:10px solid ${color};"><tr><td width="30%" bgcolor="${color}" style="color:white; padding:30px;" valign="top">${d.logo}<br><h2>${d.biz}</h2><br>${seller}</td><td width="70%" style="padding:30px;" valign="top"><h1>CHALLAN</h1><hr>${consignee}<br>${transport}${table}${foot}</td></tr></table>`;
+            case 14: return wrapS("#fff") + `<center>${d.logo}<br><div style="background:${color}; color:white; display:inline-block; padding:5px 40px;"><h1>GOODS NOTE</h1></div><br><br>${seller}<br><hr>${consignee}${transport}${table}${foot}</center>` + wrapE;
+            case 15: return wrapS("#fff") + `<div style="border:2px solid #000; padding:15px; margin-bottom:10px;">${d.logo} <b>From:</b><br>${seller}</div><div style="border:2px solid #000; padding:15px; margin-bottom:10px;"><b>To:</b><br>${consignee}</div><div style="border:2px solid #000; padding:15px;">${transport}</div>${table}${foot}` + wrapE;
+            case 16: return wrapS("#f8f9fa") + `<table width="100%"><tr><td><h1>GOODS RECEIPT</h1></td><td align="right">${d.logo}</td></tr></table><hr size="5" color="${color}">${seller}<br>${consignee}${transport}${table}${foot}` + wrapE;
+            case 17: return wrapS("#fff") + `<div style="border:4px solid #ea580c; padding:15px; margin-bottom:15px;">${transport}</div><table width="100%"><tr><td>${seller}</td><td align="right">${consignee}</td></tr></table>${table}${foot}` + wrapE;
+            case 18: return `<table width="100%" style="min-height:280mm; background:white; border:10px double ${color};"><tr><td width="65%" style="padding:30px;" valign="top"><h1>CHALLAN</h1>${consignee}<br>${transport}${table}${foot}</td><td width="35%" bgcolor="${color}" style="color:white; padding:30px;" valign="top">${d.logo}<br>${seller}</td></tr></table>`;
+            case 19: return wrapS("#fff") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><b>Ref:</b> ${d.chNo}</td></tr></table><br>${seller}<hr>${consignee}${transport}${table}${foot}` + wrapE;
+            case 20: return wrapS("#fefce8") + `<div style="background:#eee; padding:10px; border:1px solid #166534;"><center><h2>LEDGER VOUCHER</h2></center></div><br>${seller}<br><table width="100%" border="1" style="border-collapse:collapse;"><tr><td>${consignee}</td></tr></table><br>${transport}${table}${foot}` + wrapE;
+            case 21: return wrapS("#f3f4f6") + `<div style="font-family:monospace; border-top:10px solid ${color};">${d.logo}<h1>SYSTEM.CHALLAN_v1.0</h1><table width="100%"><tr><td>${seller}</td><td align="right">${consignee}</td></tr></table>${transport}${table}${foot}` + wrapE;
+            case 22: return wrapS("#fff") + `<div style="background:#000; color:white; padding:20px; margin:-25px -25px 20px -25px;"><table width="100%"><tr><td>${d.logo}</td><td align="right"><h1>DELIVERY</h1></td></tr></table></div>${seller}<br>${consignee}${transport}${table}${foot}` + wrapE;
+            case 23: return wrapS("#fff") + `<center><h2>${d.biz}</h2><p>${d.addr}</p><hr>${d.logo}</center><br><table width="100%"><tr><td>${consignee}</td><td align="right"># ${d.chNo}</td></tr></table>${transport}${table}${foot}` + wrapE;
+            case 24: return wrapS("#f9f9fb") + `<div style="border-radius:20px; background:white; padding:20px; border:1px solid #eee;">${d.logo} <h2>Shipment Note</h2><table width="100%"><tr><td>${seller}</td><td align="right">${consignee}</td></tr></table>${transport}</div>${table}${foot}` + wrapE;
+            case 25: return wrapS("#f1f5f9") + `<table width="100%"><tr><td>${d.logo}</td><td align="right" style="color:${color}; font-size:25px;"><b>Logistics Hub</b></td></tr></table><br>${seller}<br><div style="background:white; padding:20px; border-radius:20px;">${consignee}${transport}${table}</div>${foot}` + wrapE;
+            default: return wrapS("#fff") + `<table width="100%"><tr><td>${d.logo}<h2>${d.biz}</h2></td><td align="right"># ${d.chNo}</td></tr></table><hr>${consignee}<br>${transport}${table}${foot}` + wrapE;
+        }
+    }
+
+    function saveToLocal() {
+        const data = { b: document.getElementById('b_name').value, g: document.getElementById('b_gst').value, a: document.getElementById('b_addr').value };
+        localStorage.setItem('challan_settings', JSON.stringify(data));
+        alert("Shop Details Saved!");
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td,th{border:1px solid #ccc; padding:5px; font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Challan_${document.getElementById('q_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

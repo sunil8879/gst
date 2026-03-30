@@ -985,6 +985,22 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
         font-size: 0.8rem !important;
     }
 }
+
+
+
+
+/* Featured Templates Styling */
+.featured-section { margin-top: 60px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 30px; padding-bottom: 50px; }
+.featured-grid { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+.select-btn { 
+    padding: 15px 25px; border: none; border-radius: 6px; cursor: pointer; 
+    font-weight: 700; color: white; text-transform: uppercase; font-size: 13px; 
+    font-family: inherit; appearance: none; -webkit-appearance: none; 
+    text-align: center; min-width: 220px; outline: none; transition: 0.3s;
+}
+.select-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+.smart-bg { background: #1e40af; } /* Matches Primary Blue */
+.explore-bg { background: #0f172a; } /* Matches Secondary Slate */
 </style>
 </head>
 <body>
@@ -2131,6 +2147,46 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 </div>
 <div class="img-wrapper">
     <img src="GSTR.jpg" alt="Final GSTR" class="manual-img">
+</div>
+
+
+
+<!-- Featured Templates Section -->
+<div class="no-print featured-section">
+    <h2 style="color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Featured Templates</h2>
+    <div class="featured-grid">
+        
+        <!-- SMART TEMPLATES Dropdown -->
+        <select class="select-btn smart-bg" onchange="if(this.value) window.location.href=this.value">
+            <option value="" selected disabled>SMART TEMPLATES</option>
+            <option value="final_billbook.html">Bill Book</option>
+            <option value="final_bill_of_exchange.html">Bill of Exchange</option>
+            <option value="final_credit_note.html">Credit Note</option>
+            <option value="final_delivery_challan.html">Delivery Challan</option>
+            <option value="final_debit_notes.html">Debit Note</option>
+            <option value="final_purchase_order.html">Purchase Order</option>
+            <option value="final_quotation.html">Quotation</option>
+            <option value="final_receipts.html">Receipt</option>
+            <option value="final_voucher.html">Voucher</option>
+            <option value="final_work_order.html">Work Order</option>
+        </select>
+
+        <!-- EXPLORE TEMPLATES Dropdown -->
+        <select class="select-btn explore-bg" onchange="if(this.value) window.location.href=this.value">
+            <option value="" selected disabled>EXPLORE TEMPLATES</option>
+            <option value="billbook_PC.html">Bill Book</option>
+            <option value="bill_of_exchange_PC.html">Bill of Exchange</option>
+            <option value="credit_note_PC.html">Credit Note</option>
+            <option value="delivery_challan_PC.html">Delivery Challan</option>
+            <option value="debit_note_PC.html">Debit Note</option>
+            <option value="purchase_order_PC.html">Purchase Order</option>
+            <option value="quotation_PC.html">Quotation</option>
+            <option value="receipts_PC.html">Receipt</option>
+            <option value="voucher_PC.html">Voucher</option>
+            <option value="work_order_PC.html">Work Order</option>
+        </select>
+
+    </div>
 </div>
  </div>
 

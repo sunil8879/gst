@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORK ORDER TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        input:focus { border-color: var(--p); }
+
+        /* Template Grid */
+        .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 30px 0; }
+        .tpl-btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .tpl-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Preview Display */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+
+        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media print { .no-print { display: none; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Work Order Manager</h1>
+
+        <h3>1. Header (My Company Info)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Company Name</label><input type="text" id="b_name" value="Apex Builders & Devs" oninput="update()"></div>
+            <div class="field"><label>Contact Details</label><input type="text" id="b_contact" value="+91 98765 43210 | contact@apex.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="Suite 405, Skyline Tower, New Delhi" oninput="update()"></div>
+        </div>
+
+        <h3>2. Work Order & 3. Client Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Work Order #</label><input type="text" id="w_no" value="WO-2024-001" oninput="update()"></div>
+            <div class="field"><label>Date</label><input type="date" id="w_date" oninput="update()"></div>
+            <div class="field"><label>Client Name</label><input type="text" id="c_name" value="Mr. James Wilson" oninput="update()"></div>
+            <div class="field"><label>Client Contact</label><input type="text" id="c_contact" value="+91 88888 77777" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Client Address</label><input type="text" id="c_addr" value="Sector 22, Rohini, Delhi 110085" oninput="update()"></div>
+        </div>
+
+        <h3>4. Project Details</h3>
+        <div class="form-grid">
+            <div class="field" style="grid-column: span 2;"><label>Work Description</label><input type="text" id="p_desc" value="Interior Renovation and Smart Home Setup" oninput="update()"></div>
+            <div class="field"><label>Timeline</label><input type="text" id="p_time" value="45 Working Days" oninput="update()"></div>
+            <div class="field"><label>Start Date</label><input type="date" id="p_start" oninput="update()"></div>
+            <div class="field"><label>End Date</label><input type="date" id="p_end" oninput="update()"></div>
+            <div class="field" style="grid-column: span 3;"><label>Scope of Work</label><textarea id="p_scope" rows="3" oninput="update()">Includes full electrical rewiring, installation of smart lighting, wall painting, and modular kitchen installation as per architect's plan.</textarea></div>
+        </div>
+
+        <h3>5. Financials & 6. Terms</h3>
+        <div class="form-grid">
+            <div class="field"><label>Project Value (INR)</label><input type="text" id="f_val" value="₹ 4,50,000.00" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Payment Terms</label><input type="text" id="f_pay" value="30% Advance, 40% Mid-Project, 30% Completion" oninput="update()"></div>
+            <div class="field" style="grid-column: span 3;"><label>Terms & Conditions</label><textarea id="f_terms" rows="2" oninput="update()">1. Valid only for the described scope. 2. Delays caused by client approvals will extend the timeline.</textarea></div>
+        </div>
+
+        <div class="template-grid" id="btn-container"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Data</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word Export</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoData = "";
+    let activeId = 1;
+    const tplColors = ["#1e40af","#52525b","#1e3a8a","#1e293b","#854d0e","#475569","#4338ca","#1e3a8a","#64748b","#0d9488","#3b82f6","#334155","#444444","#0891b2","#be123c","#000000","#0d9488","#1e3a8a","#854d0e","#2563eb","#1e293b","#0f766e","#1e3a8a","#0284c7","#2563eb"];
+    const tplNames = ["Corporate Blue", "Minimal Professional", "Modern Card", "Left Sidebar", "Elegant Dark", "Box Grid", "Gradient Modern", "Business Classic", "Compact Professional", "Bold Header", "Soft Corporate", "Vertical Split", "Minimal White Space", "Tech Startup", "Highlighted Sections", "Formal Contract", "Soft Pastel", "Table Structured", "Premium Gold", "Split Header", "Corporate Dashboard", "Modern Minimal Border", "Clean Executive", "Bright Business", "Smart Signature"];
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoData = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function init() {
+        const container = document.getElementById('btn-container');
+        tplNames.forEach((name, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = tplColors[i];
+            btn.innerText = name;
+            btn.onclick = () => { activeId = i + 1; update(); };
+            container.appendChild(btn);
+        });
+        document.getElementById('w_date').valueAsDate = new Date();
+        document.getElementById('p_start').valueAsDate = new Date();
+        update();
+    }
+
+    function update() {
+        const d = {
+            bName: document.getElementById('b_name').value,
+            bAddr: document.getElementById('b_addr').value,
+            bCont: document.getElementById('b_contact').value,
+            logo: logoData ? `<img src="${logoData}" width="120" height="60" style="width:120px; height:60px;">` : "<h2>LOGO</h2>",
+            wNo: document.getElementById('w_no').value,
+            wDate: document.getElementById('w_date').value,
+            cName: document.getElementById('c_name').value,
+            cAddr: document.getElementById('c_addr').value,
+            cCont: document.getElementById('c_contact').value,
+            pDesc: document.getElementById('p_desc').value,
+            pScope: document.getElementById('p_scope').value,
+            pTime: document.getElementById('p_time').value,
+            pStart: document.getElementById('p_start').value,
+            pEnd: document.getElementById('p_end').value,
+            fVal: document.getElementById('f_val').value,
+            fPay: document.getElementById('f_pay').value,
+            fTerms: document.getElementById('f_terms').value
+        };
+        document.getElementById('render-target').innerHTML = renderTemplate(activeId, d, tplColors[activeId-1]);
+    }
+
+    function renderTemplate(id, d, color) {
+        const bLine = `border: 6px solid ${color}; outline: 2px solid ${color}; outline-offset: 4px;`;
+        const wrapS = (bg, border = bLine) => `<div style="background:${bg}; ${border} padding:30px; min-height:280mm; box-sizing:border-box; font-family:Arial; color:#333; position:relative;">`;
+        const wrapE = `</div>`;
+        
+        const headerBlock = `<table width="100%"><tr><td>${d.logo}<h1>${d.bName}</h1></td><td align="right">${d.bAddr}<br>${d.bCont}</td></tr></table>`;
+        const infoTable = `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; border:1px solid #ddd;">
+            <tr bgcolor="#f9f9f9"><td style="padding:10px"><b>Order No:</b> ${d.wNo}</td><td style="padding:10px"><b>Date:</b> ${d.wDate}</td></tr>
+            <tr><td style="padding:10px" width="50%"><b>Client:</b><br>${d.cName}<br>${d.cAddr}<br>PH: ${d.cCont}</td><td style="padding:10px"><b>Project:</b><br>${d.pDesc}<br>Timeline: ${d.pTime}</td></tr>
+        </table>`;
+        const projectBlock = `<div style="margin:20px 0; border:1px solid #eee; padding:15px; background:#fff;"><b>SCOPE OF WORK:</b><br>${d.pScope}<br><br><b>Timeline:</b> ${d.pStart} to ${d.pEnd}</div>`;
+        const financials = `<div style="background:#f1f5f9; padding:15px; border-left:5px solid ${color};"><b>Project Value:</b> ${d.fVal}<br><b>Payment Terms:</b> ${d.fPay}</div>`;
+        const terms = `<div style="margin-top:20px; font-size:11px;"><b>TERMS:</b><br>${d.fTerms}</div>`;
+        const approval = `<table width="100%" style="margin-top:60px;"><tr><td>Client Signature<br><br>________________</td><td align="right">Company Signature<br><br>________________</td></tr></table>`;
+
+        // Switch for 25 Unique Structural Designs
+       switch(id) {
+            case 1: // Corporate Blue Template
+                return wrapS("#fff", `border-top:15px solid ${color}; border-bottom:15px solid ${color}; border-left:1px solid #eee; border-right:1px solid #eee;`) + `${headerBlock}<hr color="${color}">${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            case 2: // Minimal Professional Template
+                return wrapS("#fff", "border:1px solid #ddd;") + `<center>${d.logo}<h2 style="margin:5px 0;">${d.bName}</h2><p style="color:#666;">${d.bAddr}</p></center><br>${infoTable}<div style="margin:20px 0; border-top:1px solid #eee; border-bottom:1px solid #eee; padding:10px 0;">${projectBlock}</div>${financials}${terms}${approval}` + wrapE;
+
+            case 3: // Modern Card Layout
+                return wrapS("#f3f4f6", "none") + `<div style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">${headerBlock}</div><div style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">${infoTable}</div><div style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd;">${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 4: // Left Sidebar Design
+                return wrapS("#fff") + `<table width="100%" height="100%"><tr><td width="30%" bgcolor="${color}" style="color:white; padding:20px;" valign="top">${d.logo}<br><h3>${d.bName}</h3><p>${d.bAddr}</p><hr>Ref: ${d.wNo}</td><td width="70%" style="padding:20px;" valign="top"><h1>WORK ORDER</h1><br>${infoTable}${projectBlock}${financials}${terms}${approval}</td></tr></table>` + wrapE;
+
+            case 5: // Elegant Dark Theme
+                return wrapS("#111", "border:8px solid #d4af37;") + `<div style="color:white;"> <center>${d.logo}<h1 style="color:#d4af37; font-family:serif;">WORK ORDER</h1><p>${d.bName}</p></center><hr color="#d4af37"><div style="background:#222; padding:15px;">${infoTable}</div>${projectBlock}${financials}${terms}${approval}</div>` + wrapE;
+
+            case 6: // Box Grid Layout
+                return wrapS("#fff", `border:2px solid ${color};`) + `<div style="display:table; width:100%;"><div style="display:table-row;"><div style="display:table-cell; border:1px solid #eee; padding:10px;">${d.logo}</div><div style="display:table-cell; border:1px solid #eee; padding:10px;">${d.bName}</div></div></div>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            case 7: // Gradient Modern Template
+                return wrapS("linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", `border:4px solid white;`) + `<div style="background:rgba(255,255,255,0.8); padding:20px; border-radius:20px;">${headerBlock}<hr>${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 8: // Business Classic Template
+                return wrapS("#fff", `border:2px solid #000;`) + `<div style="font-family:'Times New Roman'; text-align:justify;">${headerBlock}<hr><h2><u>WORK ORDER FORM</u></h2>${infoTable}${projectBlock}${financials}${terms}${approval}</div>` + wrapE;
+
+            case 9: // Compact Professional Layout
+                return wrapS("#f9fafb", "border-right:10px solid #64748b;") + `<div style="font-size:11px;">${headerBlock}${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 10: // Bold Header Template
+                return wrapS("#fff", `border:1px solid #eee;`) + `<div style="background:${color}; color:white; padding:30px; margin:-30px -30px 20px -30px;"><center><h1>${d.bName}</h1></center></div>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            case 11: // Soft Corporate Design
+                return wrapS("#f0f9ff", "none") + `<div style="background:white; border-radius:30px; padding:25px; border:1px solid #bae6fd;">${headerBlock}<br>${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 12: // Vertical Split Layout
+                return wrapS("#fff") + `<table width="100%"><tr><td width="45%" valign="top" style="border-right:2px solid #eee; padding-right:15px;">${d.logo}<br>${d.bName}<br>${d.bAddr}</td><td width="55%" style="padding-left:15px;"><h1>WORK ORDER</h1>${infoTable}</td></tr></table>${projectBlock}${financials}${approval}` + wrapE;
+
+            case 13: // Minimal White Space Template
+                return wrapS("#fff", "none") + `<div style="padding:40px;">${d.logo}<br><h2>${d.bName}</h2><br><br>${infoTable}<br>${projectBlock}<br>${financials}${approval}</div>` + wrapE;
+
+            case 14: // Tech Startup Style
+                return wrapS("linear-gradient(to bottom, #ecfeff, #fff)") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><b>${d.bName}</b></td></tr></table><div style="background:white; border-radius:15px; padding:20px; border:1px solid #e0f2f1; margin-top:20px;">${infoTable}${projectBlock}</div><br>${financials}${approval}` + wrapE;
+
+            case 15: // Highlighted Sections Template
+                return wrapS("#fff", `border:1px solid #eee;`) + `<div style="border:2px solid ${color}; padding:10px; margin-bottom:10px;">${headerBlock}</div><div style="border:2px solid ${color}; padding:10px; margin-bottom:10px;">${infoTable}</div><div style="border:2px solid ${color}; padding:10px;">${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 16: // Formal Contract Style
+                return wrapS("#fff", "border:1px solid #000;") + `<center><h3>SERVICE AGREEMENT & WORK ORDER</h3></center><br>This agreement is made between <b>${d.bName}</b> and <b>${d.cName}</b>.<br>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            case 17: // Soft Pastel Design
+                return wrapS("#fff5f5", "none") + `<div style="background:white; border-radius:20px; padding:20px; border:3px solid #feb2b2;">${headerBlock}<hr>${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 18: // Table Structured Layout
+                return wrapS("#fff", `border:2px solid #333;`) + `${headerBlock}<table width="100%" border="1" style="border-collapse:collapse; margin-top:20px;"><tr><td style="padding:10px; background:#eee;"><b>ORDER DETAILS</b></td></tr><tr><td style="padding:10px;">${infoTable}</td></tr><tr><td style="padding:10px; background:#eee;"><b>PROJECT SCOPE</b></td></tr><tr><td style="padding:10px;">${projectBlock}</td></tr></table>${approval}` + wrapE;
+
+            case 19: // Premium Gold Style
+                return wrapS("#000", "border:10px double #d4af37;") + `<div style="color:white; padding:10px;"><center>${d.logo}<h1 style="color:#d4af37;">PREMIUM WORK ORDER</h1></center><br>${headerBlock}<div style="background:#222; padding:15px;">${infoTable}${projectBlock}${financials}</div>${approval}</div>` + wrapE;
+
+            case 20: // Split Header Template
+                return wrapS("#fff") + `<table width="100%"><tr><td><h1>WORK ORDER</h1></td><td align="right">${d.logo}</td></tr></table><table width="100%"><tr><td width="50%">${d.bName}</td><td width="50%" align="right">${d.cName}</td></tr></table><hr>${infoTable}${projectBlock}${financials}${approval}` + wrapE;
+
+            case 21: // Corporate Dashboard Layout
+                return wrapS("#f8fafc") + `<div style="background:white; border:1px solid #ddd; padding:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">${headerBlock}</div><br><div style="background:white; border:1px solid #ddd; padding:20px;">${infoTable}</div><br>${projectBlock}${financials}${approval}` + wrapE;
+
+            case 22: // Modern Minimal Border Style
+                return wrapS("#fff", `border:1px solid #000;`) + `<div style="border:1px solid #ccc; padding:20px; margin:10px;">${headerBlock}<hr>${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 23: // Clean Executive Template
+                return wrapS("#f1f5f9", `border-left:15px solid ${color};`) + `<div style="background:white; padding:20px;">${headerBlock}<hr>${infoTable}${projectBlock}${financials}${approval}</div>` + wrapE;
+
+            case 24: // Bright Business Theme
+                return wrapS("#fff") + `<div style="background:#0ea5e9; color:white; padding:20px; margin:-30px -30px 20px -30px;"><h2>${d.bName}</h2></div>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            case 25: // Smart Signature Template
+                return wrapS("#fff", `border:10px double ${color}; padding:10px;`) + `<center>${d.logo}<h1>${d.bName}</h1><p>OFFICIAL WORK ORDER</p></center><hr>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+
+            default:
+                return wrapS("#fff") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><h2>WORK ORDER</h2>Ref: ${d.wNo}</td></tr></table><hr>${infoTable}${projectBlock}${financials}${terms}${approval}` + wrapE;
+        }
+}
+
+    function saveToLocal() {
+        const data = { b: document.getElementById('b_name').value, a: document.getElementById('b_addr').value, c: document.getElementById('b_contact').value };
+        localStorage.setItem('wo_settings', JSON.stringify(data));
+        alert("Company Details Saved Locally!");
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td,th{border:1px solid #ccc; padding:5px; font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `WorkOrder_${document.getElementById('w_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BILL BOOK TEMPLATES PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
+
+        /* Table UI */
+        .ui-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        .ui-table th { background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
+        .ui-table input { border: none; width: 100%; background: transparent; }
+
+        /* Template Buttons */
+        .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 30px 0; }
+        .tpl-btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .tpl-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        /* Preview Target */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        
+        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media print { .no-print { display: none; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Bill Book Templates Pro</h1>
+
+        <!-- 1. Header -->
+        <h3>1. Header (My Business Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Shop Name</label><input type="text" id="b_name" value="The Mega Store" oninput="calculate()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="calculate()"></div>
+            <div class="field"><label>Phone</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="calculate()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="billing@store.com" oninput="calculate()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.megastore.com" oninput="calculate()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="MG Road, Central Market, New Delhi" oninput="calculate()"></div>
+        </div>
+
+        <!-- 2. Details -->
+        <h3>2. Bill & 3. Customer Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Bill Number</label><input type="text" id="q_no" value="BILL-9901" oninput="calculate()"></div>
+            <div class="field"><label>Date & Time</label><input type="text" id="q_date" value="20-Oct-2024 | 02:30 PM" oninput="calculate()"></div>
+            <div class="field"><label>Customer Name</label><input type="text" id="c_name" value="Walking Customer" oninput="calculate()"></div>
+            <div class="field"><label>Customer GSTIN</label><input type="text" id="c_gst" value="URP" oninput="calculate()"></div>
+            <div class="field"><label>Cust. Phone</label><input type="text" id="c_phone" value="" oninput="calculate()"></div>
+            <div class="field"><label>Place of Supply</label><input type="text" id="q_pos" value="Local" oninput="calculate()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Customer Address</label><input type="text" id="c_addr" value="Local City Area" oninput="calculate()"></div>
+        </div>
+
+        <!-- 4. Table -->
+        <h3>4. Item List (Dynamic Math)</h3>
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th width="5%">No</th><th width="40%">Item Name</th><th width="10%">HSN</th><th width="8%">Qty</th><th width="12%">Rate</th><th width="10%">Disc%</th><th width="12%">Amount</th><th width="5%"></th>
+                </tr>
+            </thead>
+            <tbody id="ui_rows"></tbody>
+        </table>
+        <button onclick="addRow()" style="margin-top:10px; cursor:pointer;">+ Add New Item</button>
+
+        <!-- 5. Summary -->
+        <h3>5. Summary & Calculations</h3>
+        <div class="form-grid">
+            <div class="field"><label>Tax Rate (GST %)</label><input type="number" id="s_gst_rate" value="18" oninput="calculate()"></div>
+            <div class="field"><label>Balance Due</label><input type="text" id="s_due" value="0.00" oninput="calculate()"></div>
+            <div class="field"><label>Payment Mode</label><select id="s_pay_mode" onchange="calculate()"><option>Cash</option><option>UPI / GPay</option><option>Card</option><option>Bank Transfer</option></select></div>
+            <div class="field" style="grid-column: span 2;"><label>Thank You Message</label><input type="text" id="f_thank" value="Thank you for visiting our store." oninput="calculate()"></div>
+            <div class="field"><label>Grand Total</label><input type="text" id="disp_grand" readonly style="font-weight:bold; color:red; background:#f0f0f0;"></div>
+        </div>
+
+        <div class="template-grid" id="tpl-grid"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Data</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> Export Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoData = "";
+    let activeTpl = 1;
+    
+    const tplConfigs = [
+        { n: "Classic Business Blue", c: "#1e40af", bg: "#ffffff" }, { n: "Minimal Clean Layout", c: "#64748b", bg: "#ffffff" },
+        { n: "Traditional Indian", c: "#7f1d1d", bg: "#fffaf0" }, { n: "Startup Style", c: "#4338ca", bg: "#f8fafc" },
+        { n: "Bold Header Design", c: "#1e3a8a", bg: "#ffffff" }, { n: "Dual Column Biz", c: "#334155", bg: "#f1f5f9" },
+        { n: "Soft Pastel Layout", c: "#0d9488", bg: "#f0fdfa" }, { n: "Modern Card Style", c: "#0f766e", bg: "#f3f4f6" },
+        { n: "Grey Corporate", c: "#374151", bg: "#e5e7eb" }, { n: "Compact Retail", c: "#14532d", bg: "#f9fafb" },
+        { n: "Elegant Business", c: "#1e1b4b", bg: "#f5f5f4" }, { n: "Color Block Layout", c: "#2563eb", bg: "#ffffff" },
+        { n: "Soft Gradient", c: "#1d4ed8", bg: "#ffffff" }, { n: "Invoice Style", c: "#475569", bg: "#f1f5f9" },
+        { n: "Border Frame", c: "#78350f", bg: "#fffbeb" }, { n: "Professional Acc.", c: "#1e3a8a", bg: "#ffffff" },
+        { n: "Left Accent Design", c: "#0891b2", bg: "#ffffff" }, { n: "Premium Gold", c: "#854d0e", bg: "#fffff0" },
+        { n: "Retail POS Style", c: "#262626", bg: "#ffffff" }, { n: "Modern Startup", c: "#1d4ed8", bg: "#f8fafc" },
+        { n: "Box Section", c: "#334155", bg: "#ffffff" }, { n: "Simple Bold Text", c: "#171717", bg: "#ffffff" },
+        { n: "Gradient Sidebar", c: "#6d28d9", bg: "#ffffff" }, { n: "Business Ledger", c: "#166534", bg: "#fefce8" },
+        { n: "Ultra Modern", c: "#2563eb", bg: "#f9fafb" }
+    ];
+
+    function addRow() {
+        const tbody = document.getElementById('ui_rows');
+        const id = Date.now();
+        const html = `<tr class="item-row" id="row_${id}">
+            <td align="center">${tbody.children.length + 1}</td>
+            <td><input type="text" class="i-name" value="Item Name" oninput="calculate()"></td>
+            <td><input type="text" class="i-hsn" value="9983" oninput="calculate()"></td>
+            <td><input type="number" class="i-qty" value="1" oninput="calculate()"></td>
+            <td><input type="number" class="i-rate" value="100.00" oninput="calculate()"></td>
+            <td><input type="number" class="i-disc" value="0" oninput="calculate()"></td>
+            <td><input type="text" class="i-amt" readonly value="100.00"></td>
+            <td align="center"><button onclick="document.getElementById('row_${id}').remove(); calculate();" style="color:red; background:none; border:none; cursor:pointer;">&times;</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', html);
+        calculate();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoData = e.target.result; calculate(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function calculate() {
+        let subtotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const q = parseFloat(row.querySelector('.i-qty').value) || 0;
+            const r = parseFloat(row.querySelector('.i-rate').value) || 0;
+            const d = parseFloat(row.querySelector('.i-disc').value) || 0;
+            let amt = (q * r);
+            amt = amt - (amt * (d / 100));
+            row.querySelector('.i-amt').value = amt.toFixed(2);
+            subtotal += amt;
+        });
+
+        const gstR = parseFloat(document.getElementById('s_gst_rate').value) || 0;
+        const taxTotal = subtotal * (gstR / 100);
+        const grand = subtotal + taxTotal;
+        document.getElementById('disp_grand').value = grand.toFixed(2);
+
+        const items = [];
+        document.querySelectorAll('.item-row').forEach((row, i) => {
+            items.push({ no: i+1, name: row.querySelector('.i-name').value, hsn: row.querySelector('.i-hsn').value, qty: row.querySelector('.i-qty').value, rate: row.querySelector('.i-rate').value, disc: row.querySelector('.i-disc').value, amt: row.querySelector('.i-amt').value });
+        });
+
+        const d = {
+            shop: document.getElementById('b_name').value, logo: logoData ? `<img src="${logoData}" style="max-height:60px;">` : "<h2>LOGO</h2>",
+            addr: document.getElementById('b_addr').value, gst: document.getElementById('b_gst').value, phone: document.getElementById('b_phone').value,
+            email: document.getElementById('b_email').value, web: document.getElementById('b_web').value, billNo: document.getElementById('q_no').value,
+            billDate: document.getElementById('q_date').value, cName: document.getElementById('c_name').value, cAddr: document.getElementById('c_addr').value,
+            cGst: document.getElementById('c_gst').value, cPhone: document.getElementById('c_phone').value,
+            items: items, taxable: subtotal.toFixed(2), cgst: (taxTotal/2).toFixed(2), sgst: (taxTotal/2).toFixed(2), igst: "0.00",
+            grand: grand.toFixed(2), payMode: document.getElementById('s_pay_mode').value, due: document.getElementById('s_due').value, thank: document.getElementById('f_thank').value
+        };
+        renderPreview(d);
+    }
+
+function renderPreview(d) {
+    const config = tplConfigs[activeTpl - 1];
+    const container = document.getElementById('render-target');
+    
+    // --- SHARED DATA BLOCKS: Ensures all fields exist in all 25 templates ---
+    const logoHtml = `<div style="margin-bottom:10px;">${d.logo}</div>`;
+    
+    const sellerInfo = `
+        <div style="font-size:11px; line-height:1.4; font-family:Arial;">
+            <b style="font-size:16px; color:${config.c}; text-transform:uppercase;">${d.shop}</b><br>
+            ${d.addr}<br>
+            <b>GSTIN:</b> ${d.gst} | <b>PH:</b> ${d.phone}<br>
+            <b>Email:</b> ${d.email} | <b>Web:</b> ${d.web}
+        </div>`;
+
+    const customerInfo = `
+        <div style="font-size:11px; line-height:1.4; font-family:Arial;">
+            <b style="text-transform:uppercase; color:#666;">Bill To:</b><br>
+            <b style="font-size:14px;">${d.cName}</b><br>
+            ${d.cAddr}<br>
+            <b>GSTIN:</b> ${d.cGst} | <b>PH:</b> ${d.cPhone}
+        </div>`;
+
+    const billDetails = `
+        <div style="font-size:11px; text-align:right; font-family:Arial;">
+            <b>Bill No:</b> ${d.billNo}<br>
+            <b>Date:</b> ${d.billDate}
+        </div>`;
+
+    const tableRows = d.items.map(it => `
+        <tr style="border-bottom:1px solid #ddd;">
+            <td style="padding:8px; border:1px solid #ccc; text-align:center;">${it.no}</td>
+            <td style="padding:8px; border:1px solid #ccc;">${it.name}</td>
+            <td style="padding:8px; border:1px solid #ccc; text-align:center;">${it.hsn}</td>
+            <td style="padding:8px; border:1px solid #ccc; text-align:center;">${it.qty}</td>
+            <td style="padding:8px; border:1px solid #ccc; text-align:right;">${it.rate}</td>
+            <td style="padding:8px; border:1px solid #ccc; text-align:center;">${it.disc}%</td>
+            <td style="padding:8px; border:1px solid #ccc; text-align:right;">${it.amt}</td>
+        </tr>`).join('');
+
+    const mainTable = `
+        <table width="100%" style="border-collapse:collapse; margin:20px 0; font-size:11px; font-family:Arial;">
+            <tr style="background:${config.c}; color:white;">
+                <th style="padding:10px; border:1px solid #ccc;">No</th>
+                <th style="padding:10px; border:1px solid #ccc; text-align:left;">Item Name</th>
+                <th style="padding:10px; border:1px solid #ccc;">HSN/SAC</th>
+                <th style="padding:10px; border:1px solid #ccc;">Qty</th>
+                <th style="padding:10px; border:1px solid #ccc;">Rate</th>
+                <th style="padding:10px; border:1px solid #ccc;">Disc</th>
+                <th style="padding:10px; border:1px solid #ccc;">Amount</th>
+            </tr>
+            ${tableRows}
+        </table>`;
+
+    const totalsBlock = `
+        <table width="100%" style="font-size:11px; font-family:Arial; border-collapse:collapse; margin-top:10px;">
+            <tr>
+                <td width="55%" valign="top">
+                    <div style="border:1px solid #eee; padding:10px; background:rgba(255,255,255,0.5);">
+                        <b>Payment Mode:</b> ${d.payMode}<br>
+                        <b style="color:red;">Balance Due: ₹ ${d.due}</b><br><br>
+                        <i>${d.thank}</i>
+                    </div>
+                </td>
+                <td width="45%">
+                    <table width="100%" style="text-align:right; font-weight:bold;">
+                        <tr><td style="padding:2px;">Taxable Value:</td><td>₹ ${d.taxable}</td></tr>
+                        <tr><td style="padding:2px;">CGST:</td><td>₹ ${d.cgst}</td></tr>
+                        <tr><td style="padding:2px;">SGST:</td><td>₹ ${d.sgst}</td></tr>
+                        <tr><td style="padding:2px;">IGST:</td><td>₹ ${d.igst}</td></tr>
+                        <tr style="font-size:16px; color:${config.c}; border-top:2px solid #333;">
+                            <td style="padding-top:10px;">GRAND TOTAL:</td><td style="padding-top:10px;">₹ ${d.grand}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>`;
+
+    const signatory = `
+        <div style="margin-top:50px; text-align:right; font-size:12px; font-family:Arial;">
+            <b>For ${d.shop}</b><br><br><br>
+            <span>Authorized Signatory</span>
+        </div>`;
+
+    // --- TEMPLATE LAYOUT GENERATOR ---
+    let layoutHTML = "";
+    const wrapS = (bg, border = "none") => `<div style="background:${bg}; min-height:285mm; padding:30px; box-sizing:border-box; border:${border}; position:relative; font-family:Arial; color:#333;">`;
+    const wrapE = `</div>`;
+
+    switch(activeTpl) {
+        case 1: // Classic Business Blue
+            layoutHTML = wrapS("#fff", `1px solid #eee`) + `<table width="100%"><tr><td>${logoHtml}<h1>${d.shop}</h1></td><td align="right">${sellerInfo}</td></tr></table><hr>${customerInfo}${billDetails}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 2: // Minimal Clean
+            layoutHTML = wrapS("#fff", "none") + `<h2>${d.shop}</h2><p>${d.addr}</p><br><br>${customerInfo}<br>${billDetails}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 3: // Traditional Indian
+            layoutHTML = wrapS("#fffaf0", `3px solid ${config.c}`) + `<center><h1 style="color:${config.c}">CASH MEMO</h1></center><table width="100%"><tr><td>${sellerInfo}</td><td align="right">${logoHtml}</td></tr></table><hr>${customerInfo}${billDetails}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 4: // Startup Style
+            layoutHTML = wrapS("linear-gradient(135deg, #f8fafc, #ffffff)", `1px solid ${config.c}`) + `<table width="100%"><tr><td>${logoHtml}</td><td align="right">${sellerInfo}</td></tr></table><div style="background:${config.c}; color:white; padding:10px; margin:20px 0;"># ${d.billNo}</div>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 5: // Bold Header
+            layoutHTML = wrapS("#fff") + `<div style="background:${config.c}; color:white; padding:30px; margin:-30px -30px 20px -30px;"><table width="100%"><tr><td>${logoHtml}<h1>${d.shop}</h1></td><td align="right">${d.web}</td></tr></table></div>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 6: // Dual Column
+            layoutHTML = wrapS("#f1f5f9") + `<table width="100%"><tr><td width="50%">${sellerInfo}</td><td width="50%" align="right">${billDetails}<br>${customerInfo}</td></tr></table>${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 7: // Soft Pastel
+            layoutHTML = wrapS("#f0fdfa", `2px solid ${config.c}`) + `<center><div style="background:white; border-radius:50px; padding:20px; border:1px solid ${config.c}">${d.shop}</div></center><br>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 8: // Modern Card
+            layoutHTML = wrapS("#f3f4f6") + `<div style="background:white; padding:20px; border-radius:15px; margin-bottom:10px;">${sellerInfo}</div><div style="background:white; padding:20px; border-radius:15px; margin-bottom:10px;">${customerInfo}${billDetails}</div>${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 9: // Grey Corporate
+            layoutHTML = wrapS("#e5e7eb") + `<table width="100%" bgcolor="#333" style="color:white; padding:20px;"><tr><td><h1>${d.shop}</h1></td><td align="right">${d.billNo}</td></tr></table><br>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 10: // Compact Retail
+            layoutHTML = wrapS("#f9fafb", "1px dashed #000") + `<center><b>${d.shop}</b><br>${d.addr}</center><hr>${billDetails}<br>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 11: // Elegant Business
+            layoutHTML = wrapS("#f5f5f4", `1px solid #ccc`) + `<div style="font-family:Georgia;">${logoHtml}<h1>${d.shop}</h1><p>${d.addr}</p><hr>${customerInfo}${mainTable}${totalsBlock}${signatory}</div>` + wrapE; break;
+        case 12: // Color Block
+            layoutHTML = wrapS("#fff") + `<div style="background:${config.c}; color:white; padding:20px; margin:-30px;"><h2>${d.shop}</h2></div><br><br><div style="background:#eee; padding:15px;">${customerInfo}</div>${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 13: // Soft Gradient
+            layoutHTML = wrapS("#fff") + `<div style="background:linear-gradient(to right, ${config.c}, #fff); height:80px; padding:20px; color:white;"><h1>${d.shop}</h1></div><br>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 14: // Invoice Style
+            layoutHTML = wrapS("#f1f5f9") + `<div style="text-align:right;"><h1>INVOICE</h1></div><hr>${sellerInfo}<br>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 15: // Border Frame
+            layoutHTML = wrapS("#fffbeb", `15px double ${config.c}`) + `${logoHtml}<center><h2>SALES VOUCHER</h2></center><table width="100%"><tr><td>${sellerInfo}</td><td align="right">${customerInfo}</td></tr></table>${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 16: // Prof Accounting
+            layoutHTML = wrapS("#fff", "1px solid #ccc") + `<table width="100%" border="1" style="border-collapse:collapse;"><tr><td style="padding:20px;">${sellerInfo}</td><td style="padding:20px;">${billDetails}</td></tr></table>${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 17: // Left Accent
+            layoutHTML = wrapS("#fff", "none") + `<div style="border-left:15px solid ${config.c}; padding-left:20px;"><h1>${d.shop}</h1>${sellerInfo}<br>${customerInfo}${mainTable}${totalsBlock}${signatory}</div>` + wrapE; break;
+        case 18: // Premium Gold
+            layoutHTML = wrapS("#fffff0", `5px solid ${config.c}`) + `<center><div style="border:1px solid ${config.c}; padding:20px; display:inline-block;"><h1>${d.shop}</h1></div></center><br>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 19: // Retail POS
+            layoutHTML = wrapS("#fff", "2px solid #000") + `<div style="font-family:monospace;"><h3>${d.shop}</h3><p>------------------</p>${sellerInfo}${mainTable}${totalsBlock}${signatory}</div>` + wrapE; break;
+        case 20: // Modern Startup
+            layoutHTML = wrapS("#f8fafc") + `<table width="100%"><tr><td>${logoHtml}</td><td><h1>INVOICE</h1></td></tr></table><br>${sellerInfo}<hr>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 21: // Box Section
+            layoutHTML = wrapS("#fff") + `<div style="border:2px solid #333; padding:15px; margin-bottom:10px;">${sellerInfo}</div><div style="border:2px solid #333; padding:15px;">${customerInfo}${mainTable}${totalsBlock}${signatory}</div>` + wrapE; break;
+        case 22: // Simple Bold
+            layoutHTML = wrapS("#fff") + `<h1 style="font-size:40px; margin:0;">${d.shop}</h1><p>${d.addr}</p><hr size="10" color="black">${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 23: // Gradient Sidebar
+            layoutHTML = `<table width="100%" height="100%" style="min-height:280mm; background:white; font-family:Arial;"><tr><td width="30%" bgcolor="${config.c}" style="color:white; padding:30px; background:linear-gradient(to bottom, ${config.c}, #222);" valign="top">${d.logo}<br><h2>${d.shop}</h2><br>${sellerInfo}</td><td width="70%" style="padding:30px;" valign="top"><h1>BILL</h1><hr>${customerInfo}${mainTable}${totalsBlock}${signatory}</td></tr></table>`; break;
+        case 24: // Business Ledger
+            layoutHTML = wrapS("#fefce8", "2px solid #166534") + `<center><h2>LEDGER VOUCHER</h2></center><hr>${sellerInfo}<br>${customerInfo}${mainTable}${totalsBlock}${signatory}` + wrapE; break;
+        case 25: // Ultra Modern Clean
+            layoutHTML = wrapS("#fff") + `<div style="display:flex; justify-content:space-between; align-items:center;"><div>${d.logo}</div><div align="right">${sellerInfo}</div></div><br><div style="background:#f9fafb; padding:20px; border-radius:20px; border:1px solid #eee;">${customerInfo}${mainTable}${totalsBlock}${signatory}</div>` + wrapE; break;
+
+default: html = wrap(`<table width="100%"><tr><td>${sellerBlock}</td><td align="right">${billDetails}</td></tr></table><hr>${customerBlock}${mainTable}${totalsBlock}`); break;
+    }
+
+    container.innerHTML = ([1,3,4,6,15,23,24].includes(activeTpl) ? "" : logoHtml) + layoutHTML;
+}
+
+    function saveToLocal() {
+        const data = { b: document.getElementById('b_name').value, g: document.getElementById('b_gst').value, a: document.getElementById('b_addr').value };
+        localStorage.setItem('bill_settings', JSON.stringify(data));
+        alert("Shop Details Saved!");
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td,th{border:1px solid #ccc; padding:5px; font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Bill_${Date.now()}.doc`;
+        link.click();
+    }
+
+    window.onload = () => {
+        const grid = document.getElementById('tpl-grid');
+        tplConfigs.forEach((t, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = t.c;
+            btn.innerText = t.n;
+            btn.onclick = () => { activeTpl = i + 1; calculate(); };
+            grid.appendChild(btn);
+        });
+        addRow();
+    };
+</script>
+</body>
+</html>

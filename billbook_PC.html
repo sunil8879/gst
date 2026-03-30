@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BILL BOOK - 500 TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        
+        /* UI Table */
+        .ui-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        .ui-table th { background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
+        .ui-table input { border: none; width: 100%; background: transparent; }
+
+        /* Template Grid - Scrollable */
+        .template-grid { 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; 
+            margin: 20px 0; max-height: 200px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px;
+        }
+        .tpl-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 9px; text-transform: uppercase; }
+
+        /* Preview Area */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Bill Book Pro - 500 Styles</h1>
+
+        <!-- SECTION 1: HEADER -->
+        <h3>1. Shop Information</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Shop Name</label><input type="text" id="b_name" value="The Mega Store" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Phone</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="sales@store.com" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.store.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="MG Road, Central Market, New Delhi" oninput="update()"></div>
+        </div>
+
+        <!-- SECTION 2 & 3: DETAILS -->
+        <h3>2. Bill & 3. Customer Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Bill Number</label><input type="text" id="q_no" value="BILL-501" oninput="update()"></div>
+            <div class="field"><label>Date & Time</label><input type="text" id="q_date" value="22-Oct-2024 | 10:30 AM" oninput="update()"></div>
+            <div class="field"><label>Customer Name</label><input type="text" id="c_name" value="Jane Smith" oninput="update()"></div>
+            <div class="field"><label>Customer GSTIN</label><input type="text" id="c_gst" value="URP" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Customer Address</label><input type="text" id="c_addr" value="Warehouse 4, Port Road, Mumbai" oninput="update()"></div>
+        </div>
+
+        <!-- SECTION 4: ITEMS -->
+        <h3>4. Items (Dynamic Math)</h3>
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th width="5%">No</th><th>Item Name</th><th>HSN</th><th width="8%">Qty</th><th width="12%">Rate</th><th width="10%">Disc%</th><th width="12%">Total</th><th></th>
+                </tr>
+            </thead>
+            <tbody id="ui_rows"></tbody>
+        </table>
+        <button onclick="addRow()" style="margin-top:10px; cursor:pointer;">+ Add Item</button>
+
+        <!-- SECTION 5: SUMMARY -->
+        <h3>5. Summary & Taxes</h3>
+        <div class="form-grid">
+            <div class="field"><label>CGST (%)</label><input type="number" id="s_cgst_p" value="9" oninput="calculate()"></div>
+            <div class="field"><label>SGST (%)</label><input type="number" id="s_sgst_p" value="9" oninput="calculate()"></div>
+            <div class="field"><label>IGST (%)</label><input type="number" id="s_igst_p" value="0" oninput="calculate()"></div>
+            <div class="field"><label>Mode of Payment</label><input type="text" id="s_pay" value="Cash" oninput="update()"></div>
+            <div class="field"><label>Balance Due</label><input type="text" id="s_due" value="0.00" oninput="update()"></div>
+            <div class="field"><label>Grand Total</label><input type="text" id="disp_grand" readonly style="font-weight:bold; color:red; background:#f0f0f0;"></div>
+        </div>
+
+        <p style="font-weight:bold; margin-top:20px;">CHOOSE FROM 500 TEMPLATE COMBINATIONS:</p>
+        <div class="template-grid" id="tpl-buttons"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="alert('Data Saved')"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const themeColors = ["#1e40af", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
+
+    // ==========================================
+    // THE MODULAR ENGINE (COMPONENTS)
+    // ==========================================
+    const Modules = {
+        borders: [
+            (c) => `border: 8px solid ${c}; outline: 2px solid ${c}; outline-offset: 4px;`,
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #eee;`,
+            (c) => `border: 4px double ${c};`,
+            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #333;`
+        ],
+        headers: [
+            (d, c) => `<table width="100%"><tr><td>${d.logo}<h1>${d.shop}</h1></td><td align="right" style="font-size:11px;">${d.addr}<br>GST: ${d.gst}<br>PH: ${d.phone}</td></tr></table>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:30px; margin:-30px -30px 20px -30px; text-align:center;">${d.logo}<h1>${d.shop}</h1>${d.web}</div>`,
+            (d, c) => `<center>${d.logo}<h2 style="border-bottom:2px solid ${c}">${d.shop}</h2><p>${d.addr}</p></center>`,
+            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>INVOICE</h1></td><td align="right">${d.logo}<br><b>${d.shop}</b></td></tr></table>`,
+            (d, c) => `<div style="border-bottom:10px double ${c}; padding-bottom:10px;">${d.logo} <b style="font-size:20px;">${d.shop}</b><br>${d.email}</div>`
+        ],
+        tables: [
+            (rows, c) => `<table width="100%" style="border-collapse:collapse; margin:20px 0;"><tr bgcolor="${c}" style="color:white;"><th>No</th><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Total</th></tr>${rows}</table>`,
+            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; border-color:#eee;">${rows}</table>`,
+            (rows, c) => `<div style="border:2px solid ${c}; border-radius:10px; overflow:hidden;"><table width="100%">${rows}</table></div>`,
+            (rows, c) => `<table width="100%" style="margin:20px 0;"><tr style="border-bottom:3px solid ${c}"><th>No</th><th>Item</th><th>Qty</th><th>Total</th></tr>${rows}</table>`
+        ]
+    };
+
+    function addRow() {
+        const tbody = document.getElementById('ui_rows');
+        const id = Date.now();
+        const html = `<tr class="item-row" id="row_${id}">
+            <td align="center">${tbody.children.length + 1}</td>
+            <td><input type="text" class="i-name" value="Product Item" oninput="update()"></td>
+            <td><input type="text" class="i-hsn" value="9983" oninput="update()"></td>
+            <td><input type="number" class="i-qty" value="1" oninput="calculate()"></td>
+            <td><input type="number" class="i-rate" value="1000" oninput="calculate()"></td>
+            <td><input type="number" class="i-disc" value="0" oninput="calculate()"></td>
+            <td><input type="text" class="i-amt" readonly></td>
+            <td><button onclick="document.getElementById('row_${id}').remove(); calculate();" style="color:red;">&times;</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', html);
+        calculate();
+    }
+
+    function calculate() {
+        let subtotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const q = parseFloat(row.querySelector('.i-qty').value) || 0;
+            const r = parseFloat(row.querySelector('.i-rate').value) || 0;
+            const d = parseFloat(row.querySelector('.i-disc').value) || 0;
+            let line = (q * r) - ((q * r) * (d / 100));
+            row.querySelector('.i-amt').value = line.toFixed(2);
+            subtotal += line;
+        });
+
+        const cgstP = parseFloat(document.getElementById('s_cgst_p').value) || 0;
+        const sgstP = parseFloat(document.getElementById('s_sgst_p').value) || 0;
+        const igstP = parseFloat(document.getElementById('s_igst_p').value) || 0;
+
+        const tax = subtotal * ((cgstP + sgstP + igstP) / 100);
+        document.getElementById('disp_grand').value = (subtotal + tax).toFixed(2);
+        update();
+    }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = themeColors[id % 5];
+        
+        const d = {
+            shop: document.getElementById('b_name').value,
+            logo: logoImg ? `<img src="${logoImg}" width="100" height="50" style="width:100px; height:50px;">` : "<h2>LOGO</h2>",
+            addr: document.getElementById('b_addr').value,
+            gst: document.getElementById('b_gst').value,
+            phone: document.getElementById('b_phone').value,
+            email: document.getElementById('b_email').value,
+            web: document.getElementById('b_web').value,
+            billNo: document.getElementById('q_no').value,
+            billDate: document.getElementById('q_date').value,
+            cName: document.getElementById('c_name').value,
+            cAddr: document.getElementById('c_addr').value,
+            cGst: document.getElementById('c_gst').value,
+            payMode: document.getElementById('s_pay_mode').value,
+            due: document.getElementById('s_due').value,
+            thank: document.getElementById('f_thank').value,
+            grand: document.getElementById('disp_grand').value
+        };
+
+        // Permutation Logic
+        const border = Modules.borders[Math.floor(id / 5) % 5](color);
+        const header = Modules.headers[Math.floor(id / 25) % 5](d, color);
+        const table  = Modules.tables[Math.floor(id / 125) % 4];
+
+        const rows = Array.from(document.querySelectorAll('.item-row')).map((row, i) => `
+            <tr><td align="center">${i+1}</td><td>${row.querySelector('.i-name').value}</td><td align="center">${row.querySelector('.i-hsn').value}</td><td align="center">${row.querySelector('.i-qty').value}</td><td align="right">${row.querySelector('.i-rate').value}</td><td align="right">${row.querySelector('.i-amt').value}</td></tr>
+        `).join('');
+
+        const finalHtml = `
+            <div style="${border} padding:30px; min-height:280mm; box-sizing:border-box; background:white; font-family:Arial;">
+                ${header}
+                <br>
+                <table width="100%"><tr><td><b>BILL TO:</b><br>${d.cName}<br>${d.cAddr}<br>GST: ${d.cGst}</td><td align="right"><b>NO:</b> ${d.billNo}<br><b>DATE:</b> ${d.billDate}</td></tr></table>
+                ${table(rows, color)}
+                <table width="100%"><tr><td><b>Payment:</b> ${d.payMode}<br><b>Due:</b> ₹ ${d.due}</td><td align="right"><h2 style="color:${color}">TOTAL: ₹ ${d.grand}</h2></td></tr></table>
+                <div style="margin-top:50px; text-align:right;"><i>${d.thank}</i><br><br><b>Authorized Signatory</b><br><br>________________</div>
+            </div>`;
+
+        document.getElementById('render-target').innerHTML = finalHtml;
+    }
+
+    function init() {
+        const grid = document.getElementById('tpl-buttons');
+        for (let i = 1; i <= 500; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = themeColors[(i-1) % 5];
+            btn.innerText = i;
+            btn.onclick = () => { activeStyle = i; update(); };
+            grid.appendChild(btn);
+        }
+        addRow();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoImg = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:5px;font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Bill_${Date.now()}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

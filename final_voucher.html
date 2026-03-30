@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOUCHER TEMPLATES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #2563eb; --s: #1e293b; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .no-print { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; text-transform: uppercase; color: var(--s); border-bottom: 3px solid var(--p); padding-bottom: 10px; }
+        h3 { background: var(--s); color: white; padding: 10px; border-radius: 5px; font-size: 14px; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input, textarea, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        input:focus { border-color: var(--p); }
+
+        /* Template Grid */
+        .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 30px 0; }
+        .tpl-btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .tpl-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Preview Display */
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
+        #render-target { background: white; width: 210mm; min-height: 148mm; padding: 15mm; box-sizing: border-box; }
+        .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+
+        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media print { .no-print { display: none; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="editor-panel">
+        <h1>Voucher Manager</h1>
+
+        <!-- Header -->
+        <h3>1. Header (Company Information)</h3>
+        <div class="form-grid">
+            <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
+            <div class="field"><label>Company Name</label><input type="text" id="b_name" value="Global FinCorp Solutions" oninput="update()"></div>
+            <div class="field"><label>GSTIN</label><input type="text" id="b_gst" value="27ABCDE1234F1Z1" oninput="update()"></div>
+            <div class="field"><label>Email</label><input type="text" id="b_email" value="finance@globalservices.com" oninput="update()"></div>
+            <div class="field"><label>Website</label><input type="text" id="b_web" value="www.globalservices.com" oninput="update()"></div>
+            <div class="field"><label>Contact No</label><input type="text" id="b_phone" value="+91 98765 43210" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="Innovation Plaza, Business District, New Delhi" oninput="update()"></div>
+        </div>
+
+        <!-- Voucher Details -->
+        <h3>2. Voucher & 3. Party Details</h3>
+        <div class="form-grid">
+            <div class="field"><label>Voucher Number</label><input type="text" id="v_no" value="VCH-9921" oninput="update()"></div>
+            <div class="field"><label>Voucher Type</label><select id="v_type" onchange="update()"><option>Payment Voucher</option><option>Receipt Voucher</option><option>Journal Voucher</option><option>Expense Voucher</option><option>Contra Voucher</option></select></div>
+            <div class="field"><label>Date</label><input type="date" id="v_date" oninput="update()"></div>
+            <div class="field"><label>Account / Party Name</label><input type="text" id="p_name" value="Mr. Robert Downey" oninput="update()"></div>
+            <div class="field"><label>Ledger Name</label><input type="text" id="p_ledger" value="Consultancy Fees A/c" oninput="update()"></div>
+            <div class="field"><label>Party GSTIN</label><input type="text" id="p_gst" value="27QWERT5544P1Z2" oninput="update()"></div>
+            <div class="field"><label>Party Contact</label><input type="text" id="p_phone" value="+91 88888 77777" oninput="update()"></div>
+            <div class="field" style="grid-column: span 1;"><label>Party Email</label><input type="text" id="p_email" value="robert@mail.com" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Party Address</label><input type="text" id="p_addr" value="Warehouse 4, Gateway Road, Mumbai" oninput="update()"></div>
+        </div>
+
+        <!-- Transaction -->
+        <h3>4. Transaction & 5. Payment Details</h3>
+        <div class="form-grid">
+            <div class="field" style="grid-column: span 2;"><label>Narration / Description</label><input type="text" id="t_desc" value="Being professional consultancy charges paid for the month of Oct 2024" oninput="update()"></div>
+            <div class="field"><label>Debit Amount (₹)</label><input type="text" id="t_deb" value="25,000.00" oninput="update()"></div>
+            <div class="field"><label>Credit Amount (₹)</label><input type="text" id="t_cre" value="0.00" oninput="update()"></div>
+            <div class="field"><label>Payment Mode</label><select id="t_mode" onchange="update()"><option>Cash</option><option>Bank Transfer</option><option>UPI / GPay</option><option>Credit Card</option></select></div>
+            <div class="field"><label>Ref / Transaction ID</label><input type="text" id="t_ref" value="TXN11223344" oninput="update()"></div>
+            <div class="field"><label>Bank Name</label><input type="text" id="t_bank" value="HDFC Bank Ltd" oninput="update()"></div>
+        </div>
+
+        <!-- Footer -->
+        <h3>6. Terms & Authorization</h3>
+        <div class="form-grid">
+            <div class="field"><label>Prepared By</label><input type="text" id="a_prep" value="Accountant" oninput="update()"></div>
+            <div class="field"><label>Approved By</label><input type="text" id="a_appr" value="Manager" oninput="update()"></div>
+            <div class="field" style="grid-column: span 2;"><label>Terms & Conditions</label><textarea id="f_terms" rows="2" oninput="update()">1. This voucher is valid only with authorized seal. 2. Subject to company audit protocols.</textarea></div>
+            <div class="field" style="grid-column: span 2;"><label>Thank You Message</label><input type="text" id="f_thank" value="Thank you for your transaction with Global FinCorp Solutions." oninput="update()"></div>
+        </div>
+
+        <div class="template-grid" id="btn-container"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
+            <button class="btn-act" style="background:#10b981" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Data</button>
+            <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word Export</button>
+        </div>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoData = "";
+    let activeId = 1;
+    const tplColors = ["#2563eb","#52525b","#1e3a8a","#1e293b","#854d0e","#475569","#4338ca","#1e3a8a","#64748b","#0d9488","#3b82f6","#334155","#444444","#0891b2","#be123c","#000000","#0d9488","#1e3a8a","#854d0e","#2563eb","#1e293b","#0f766e","#1e3a8a","#0284c7","#2563eb"];
+    const tplNames = ["Corporate Blue", "Minimal Accounting", "Modern Box", "Left Sidebar", "Elegant Dark", "Grid Structured", "Gradient Business", "Classic Accounting", "Compact Voucher", "Bold Header", "Rounded Section", "Split Column", "Minimal Elegant", "Tech Startup", "Highlight Section", "Legal Document", "Pastel Business", "Table-Based", "Premium Gold", "Split Header", "Dashboard Inspired", "Thin Border", "Executive Design", "Bright Business", "Smart Signature"];
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoData = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function init() {
+        const container = document.getElementById('btn-container');
+        tplNames.forEach((name, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn';
+            btn.style.background = tplColors[i];
+            btn.innerText = name;
+            btn.onclick = () => { activeId = i + 1; update(); };
+            container.appendChild(btn);
+        });
+        document.getElementById('v_date').valueAsDate = new Date();
+        update();
+    }
+
+    function update() {
+        const d = {
+            bName: document.getElementById('b_name').value,
+            bAddr: document.getElementById('b_addr').value,
+            bEmail: document.getElementById('b_email').value,
+            bWeb: document.getElementById('b_web').value,
+            bPhone: document.getElementById('b_phone').value,
+            bGst: document.getElementById('b_gst').value,
+            logo: logoData ? `<img src="${logoData}" width="120" height="60" style="width:120px; height:60px;">` : "<h2>LOGO</h2>",
+            vNo: document.getElementById('v_no').value,
+            vType: document.getElementById('v_type').value,
+            vDate: document.getElementById('v_date').value,
+            pName: document.getElementById('p_name').value,
+            pLedger: document.getElementById('p_ledger').value,
+            pGst: document.getElementById('p_gst').value,
+            pEmail: document.getElementById('p_email').value,
+            pAddr: document.getElementById('p_addr').value,
+            pPhone: document.getElementById('p_phone').value,
+            tDesc: document.getElementById('t_desc').value,
+            tDeb: document.getElementById('t_deb').value,
+            tCre: document.getElementById('t_cre').value,
+            tMode: document.getElementById('t_mode').value,
+            tRef: document.getElementById('t_ref').value,
+            tBank: document.getElementById('t_bank').value,
+            aPrep: document.getElementById('a_prep').value,
+            aAppr: document.getElementById('a_appr').value,
+            fTerms: document.getElementById('f_terms').value,
+            fThank: document.getElementById('f_thank').value
+        };
+        document.getElementById('render-target').innerHTML = renderTemplate(activeId, d, tplColors[activeId-1]);
+    }
+
+    function renderTemplate(id, d, color) {
+        const bLine = `border: 6px solid ${color}; outline: 2px solid ${color}; outline-offset: 4px;`;
+        const wrapS = (bg, border = bLine) => `<div style="background:${bg}; ${border} padding:30px; min-height:140mm; box-sizing:border-box; font-family:Arial; color:#333; position:relative;">`;
+        const wrapE = `</div>`;
+        
+        const sellerInfo = `<div style="font-size:11px;"><b>${d.bName}</b><br>${d.bAddr}<br>GST: ${d.bGst} | PH: ${d.bPhone}<br>Email: ${d.bEmail} | Web: ${d.bWeb}</div>`;
+        const partyInfo = `<div style="font-size:11px; border:1px solid #eee; padding:10px; background:rgba(255,255,255,0.6);"><b>ACCOUNT / PARTY DETAILS:</b><br><b style="font-size:14px;">${d.pName}</b> (${d.pLedger})<br>${d.pAddr}<br>GST: ${d.pGst} | PH: ${d.pPhone}</div>`;
+        const transTable = `<table width="100%" style="border-collapse:collapse; margin:15px 0; font-size:12px;">
+            <tr style="background:${color}; color:white;"><th style="padding:10px; border:1px solid #ccc; text-align:left;">Description / Narration</th><th style="padding:10px; border:1px solid #ccc;">Debit (₹)</th><th style="padding:10px; border:1px solid #ccc;">Credit (₹)</th></tr>
+            <tr><td style="padding:15px; border:1px solid #ccc;">${d.tDesc}</td><td style="padding:15px; border:1px solid #ccc; text-align:right; font-weight:bold;">${d.tDeb}</td><td style="padding:15px; border:1px solid #ccc; text-align:right; font-weight:bold;">${d.tCre}</td></tr>
+            </table>`;
+        const payInfo = `<div style="font-size:11px; margin-bottom:20px;"><b>PAYMENT INFO:</b> Mode: ${d.tMode} | Ref No: ${d.tRef} | Bank: ${d.tBank}</div>`;
+        const authSign = `<div style="font-size:10px; margin-top:30px;"><table width="100%"><tr><td>Prepared By: ${d.aPrep}<br>Approved By: ${d.aAppr}</td><td align="right">Authorized Signatory<br><br>________________</td></tr></table></div>`;
+        const footer = `<div style="margin-top:20px; font-size:10px; border-top:1px solid #eee; padding-top:10px;"><b>Terms:</b> ${d.fTerms}<br><i>${d.fThank}</i></div>`;
+
+       switch(id) {
+            case 1: // Corporate Blue
+                return wrapS("#fff") + `<table width="100%" bgcolor="${color}" style="color:white; padding:20px; margin:-30px -30px 20px -30px;"><tr><td>${d.logo}</td><td align="right"><h1>${d.vType}</h1></td></tr></table><table width="100%"><tr><td>${sellerInfo}</td><td align="right"><b>Voucher #</b> ${d.vNo}<br><b>Date:</b> ${d.vDate}</td></tr></table><hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 2: // Minimal Accounting
+                return wrapS("#fff", "border:1px solid #ddd;") + `<center>${d.logo}<h2 style="color:${color}; letter-spacing:5px;">${d.vType.toUpperCase()}</h2>${sellerInfo}</center><br><div style="margin:20px 0;">${partyInfo}</div>${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 3: // Modern Box Layout
+                return wrapS("linear-gradient(135deg, #f8fafc, #ffffff)") + `<div style="background:white; border:1px solid #eee; padding:15px; border-radius:10px; margin-bottom:10px;"><table width="100%"><tr><td>${d.logo}</td><td align="right">${sellerInfo}</td></tr></table></div><div style="background:white; border:1px solid #eee; padding:15px; border-radius:10px; margin-bottom:10px;">${partyInfo}</div>${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 4: // Left Sidebar
+                return wrapS("#fff") + `<table width="100%" height="100%"><tr><td width="30%" bgcolor="${color}" style="color:white; padding:20px;" valign="top">${d.logo}<br><h3>${d.bName}</h3><p style="font-size:10px;">${d.bAddr}</p><hr>Ref: ${d.vNo}</td><td width="70%" style="padding:20px;" valign="top"><h1>${d.vType}</h1>${partyInfo}${transTable}${payInfo}${authSign}${footer}</td></tr></table>` + wrapE;
+
+            case 5: // Elegant Dark
+                return wrapS("#111", `border:8px solid ${color};`) + `<div style="color:white;"><center>${d.logo}<h1 style="color:#d4af37">${d.vType}</h1><p>${d.bName}</p></center><hr color="#d4af37"><div style="background:#fff; color:#333; padding:20px;">${partyInfo}${transTable}${payInfo}${authSign}${footer}</div></div>` + wrapE;
+
+            case 6: // Grid Structured
+                return wrapS("#f8fafc", `border:2px solid ${color};`) + `<table width="100%" cellspacing="10"><tr><td style="background:white; border:1px solid #eee; padding:15px;">${sellerInfo}</td><td style="background:white; border:1px solid #eee; padding:15px;"><b>Voucher Info</b><br>${d.vType}<br># ${d.vNo}</td></tr></table>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 7: // Gradient Business
+                return wrapS("linear-gradient(to bottom, #f3f4f6, #fff)") + `<div style="background:white; padding:20px; border-top:5px solid ${color};">${d.logo}<table width="100%"><tr><td>${sellerInfo}</td><td align="right">${partyInfo}</td></tr></table>${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 8: // Classic Accounting
+                return wrapS("#fff", "border:2px solid #000;") + `<div style="font-family:'Times New Roman';"><table width="100%"><tr><td>${sellerInfo}</td><td align="right">${d.logo}</td></tr></table><center><h2><u>${d.vType.toUpperCase()}</u></h2></center>${partyInfo}${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 9: // Compact Voucher
+                return wrapS("#f9fafb", "border-bottom:15px solid #1e293b;") + `<div style="font-size:11px;"><table width="100%"><tr><td><b>${d.bName}</b><br>${d.vNo}</td><td align="right">${d.logo}</td></tr></table><hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 10: // Bold Header
+                return wrapS("#fff") + `<div style="background:${color}; color:white; padding:30px; margin:-30px -30px 20px -30px;"><center><h1>${d.vType.toUpperCase()}</h1></center></div>${sellerInfo}<hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 11: // Rounded Section
+                return wrapS("#f0f9ff", "none") + `<div style="background:white; border-radius:30px; padding:20px; border:1px solid #bae6fd;">${d.logo}${sellerInfo}<hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 12: // Split Column
+                return wrapS("#fff") + `<table width="100%"><tr><td width="45%" valign="top" style="border-right:2px solid #eee; padding-right:15px;">${d.logo}<br>${sellerInfo}</td><td width="55%" style="padding-left:15px;"><h1>${d.vType}</h1>${partyInfo}${transTable}</td></tr></table>${payInfo}${authSign}${footer}` + wrapE;
+
+            case 13: // Minimal Elegant
+                return wrapS("#fff", "border:none; border-left:15px solid " + color) + `<h1>${d.vType}</h1>${sellerInfo}<hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 14: // Tech Startup
+                return wrapS("linear-gradient(to bottom, #ecfeff, #fff)") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><b>${d.bName}</b></td></tr></table><div style="background:white; border-radius:15px; padding:20px; border:1px solid #e0f2f1; margin-top:10px;">${partyInfo}${transTable}</div>${payInfo}${authSign}${footer}` + wrapE;
+
+            case 15: // Highlight Section
+                return wrapS("#fff", `border:1px solid #eee;`) + `<div style="border:2px solid ${color}; padding:10px; margin-bottom:10px;">${sellerInfo}</div><div style="border:2px solid ${color}; padding:10px; margin-bottom:10px;">${partyInfo}</div>${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 16: // Legal Document
+                return wrapS("#fff", "border:1px solid #000;") + `<center><h3>OFFICIAL FINANCIAL VOUCHER</h3></center><br>This is to certify a transaction by <b>${d.bName}</b>.<br>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 17: // Pastel Business
+                return wrapS("#fff5f5", "none") + `<div style="background:white; border-radius:20px; padding:20px; border:3px solid #feb2b2;">${sellerInfo}<hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 18: // Table-Based
+                return wrapS("#fff", `border:2px solid ${color};`) + `<table width="100%" border="1" style="border-collapse:collapse;"><tr><td colspan="2" align="center"><b>${d.bName}</b></td></tr><tr><td>${sellerInfo}</td><td>${partyInfo}</td></tr><tr><td colspan="2">${transTable}</td></tr><tr><td colspan="2">${payInfo}${authSign}${footer}</td></tr></table>` + wrapE;
+
+            case 19: // Premium Gold
+                return wrapS("#000", "border:10px double #d4af37;") + `<div style="color:white; padding:10px;"><center>${d.logo}<h1 style="color:#d4af37;">PREMIUM VOUCHER</h1></center><br>${sellerInfo}<div style="background:#222; padding:15px;">${partyInfo}${transTable}${payInfo}</div>${authSign}${footer}</div>` + wrapE;
+
+            case 20: // Split Header
+                return wrapS("#fff") + `<table width="100%"><tr><td><h1>${d.vType}</h1></td><td align="right">${d.logo}</td></tr></table><table width="100%"><tr><td width="50%">${d.bName}</td><td width="50%" align="right">${d.pName}</td></tr></table><hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 21: // Dashboard Inspired
+                return wrapS("#f8fafc") + `<div style="background:white; border:1px solid #ddd; padding:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">${sellerInfo}</div><br><div style="background:white; border:1px solid #ddd; padding:20px;">${partyInfo}</div>${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 22: // Thin Border
+                return wrapS("#fff", `border:1px solid #000;`) + `<div style="border:1px solid #ccc; padding:20px; margin:10px;">${sellerInfo}<hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}</div>` + wrapE;
+
+            case 23: // Executive Design
+                return wrapS("linear-gradient(to bottom, #f1f5f9, #fff)") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><b>${d.vType}</b><br># ${d.vNo}</td></tr></table><hr>${sellerInfo}<br>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 24: // Bright Business
+                return wrapS("#fff") + `<div style="background:#0ea5e9; color:white; padding:20px; margin:-30px -30px 20px -30px;"><h2>${d.bName}</h2></div>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            case 25: // Smart Signature
+                return wrapS("#fff", `border:10px double ${color}; padding:10px;`) + `<center>${d.logo}<h1>${d.bName}</h1><p>OFFICIAL VOUCHER</p></center><hr>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+
+            default:
+                return wrapS("#fff") + `<table width="100%"><tr><td>${d.logo}</td><td align="right"><h2>${d.vType}</h2>Ref: ${d.vNo}</td></tr></table><hr>${sellerInfo}<br>${partyInfo}${transTable}${payInfo}${authSign}${footer}` + wrapE;
+        }
+}
+    function saveToLocal() {
+        const data = { b: document.getElementById('b_name').value, g: document.getElementById('b_gst').value, a: document.getElementById('b_addr').value };
+        localStorage.setItem('vch_settings', JSON.stringify(data));
+        alert("Company Details Saved Locally!");
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse; width:100%;} td,th{border:1px solid #ccc; padding:5px; font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Voucher_${document.getElementById('v_no').value}.doc`;
+        link.click();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
