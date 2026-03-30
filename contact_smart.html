@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Smart Invoice Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1877F2;
+            --teal: #008080;
+            --aquamarine: #7FFFD4;
+            --white: #ffffff;
+            --electric-blue: #0077ff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, var(--teal), var(--primary-blue));
+            overflow-x: hidden;
+        }
+
+        /* The Dazzling Title Box */
+        .header-container {
+            width: 100%;
+            padding: 50px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .title-box {
+            border: 8px solid var(--aquamarine);
+            padding: 30px 60px;
+            background: linear-gradient(135deg, rgba(0, 128, 128, 0.8), rgba(0, 51, 102, 0.9));
+            box-shadow: 0 0 30px var(--aquamarine), inset 0 0 20px var(--aquamarine);
+            transform: perspective(1000px) rotateX(10deg);
+            text-align: center;
+            border-radius: 15px;
+            animation: glow 3s infinite alternate;
+        }
+
+        .main-title {
+            color: var(--white);
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            /* High Intensity 3D Bevel Effect */
+            text-shadow: 
+                0 1px 0 #ccc, 
+                0 2px 0 #c9c9c9, 
+                0 3px 0 #bbb, 
+                0 4px 0 #b9b9b9, 
+                0 5px 0 #aaa, 
+                0 6px 1px rgba(0,0,0,.1), 
+                0 0 5px rgba(0,0,0,.1), 
+                0 1px 3px rgba(0,0,0,.3), 
+                0 3px 5px rgba(0,0,0,.2), 
+                0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 
+                0 20px 20px rgba(0,0,0,.15),
+                0 0 20px var(--aquamarine);
+        }
+
+        .sub-title {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--aquamarine);
+            font-weight: 400;
+            margin-top: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Split Layout */
+        .contact-section {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Left Content */
+        .content-left {
+            flex: 1;
+            padding: 60px;
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .content-left h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--aquamarine);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--aquamarine);
+            display: inline-block;
+            align-self: center;
+            padding-bottom: 10px;
+        }
+
+        .content-left p {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .info-card {
+            background: linear-gradient(45deg, var(--teal), var(--primary-blue));
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 30px;
+            border-left: 10px solid var(--aquamarine);
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .contact-detail {
+            font-size: 1.3rem;
+            margin: 10px 0;
+            color: var(--aquamarine);
+        }
+
+        .contact-detail strong {
+            color: white;
+        }
+
+        /* Right Image */
+        .content-right {
+            flex: 1;
+            background: url('contact.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .content-right::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,51,102,0.4), transparent);
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px var(--aquamarine), inset 0 0 10px var(--aquamarine); }
+            to { box-shadow: 0 0 40px var(--aquamarine), inset 0 0 30px var(--aquamarine); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .contact-section { flex-direction: column; }
+            .content-right { min-height: 400px; }
+            .main-title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <div class="title-box">
+            <h1 class="main-title">SMART INVOICE PRO</h1>
+            <span class="sub-title">Invoice right, Future bright.</span>
+        </div>
+    </div>
+
+    <section class="contact-section">
+        <!-- Left Side: Writeup -->
+        <div class="content-left">
+            <h2>CONTACT US</h2>
+            
+            <p>We’re here to help you get the most out of Smart Invoice Pro. Whether you have a question, need technical assistance, or want to share feedback, our team is ready to support you. Our goal is to make invoicing, GST management, and business tracking simple and reliable for every user.</p>
+
+            <p>If you are facing any issues while creating invoices, managing customer details, or using any feature in the app, please feel free to reach out to us. We value your suggestions and continuously improve the platform based on feedback from business owners, accountants, and professionals who use Smart Invoice Pro every day.</p>
+
+            <p><strong>You can contact us for:</strong></p>
+            <ul>
+                <li>Technical support and troubleshooting</li>
+                <li>Questions about features or updates</li>
+                <li>Business or partnership inquiries</li>
+                <li>Suggestions to improve the app</li>
+            </ul>
+
+            <p>We aim to respond as quickly as possible and ensure that your experience with Smart Invoice Pro remains smooth and productive.</p>
+
+            <div class="info-card">
+                <div class="contact-detail"><strong>Email ID:</strong> contact@smart.com</div>
+                <div class="contact-detail"><strong>Contact No:</strong> 1234567890</div>
+                <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">
+                    Our support team is available Monday to Friday, 9:00 AM to 6:00 PM. We strive to respond to all email inquiries within 24-48 business hours.
+                </p>
+            </div>
+
+            <p style="text-align: center; margin-top: 40px; font-weight: bold; color: var(--aquamarine);">
+                Thank you for choosing Smart Invoice Pro to support your business operations.
+            </p>
+        </div>
+
+        <!-- Right Side: Image -->
+        <div class="content-right">
+            <!-- image is handled via CSS background for full coverage -->
+        </div>
+    </section>
+
+</body>
+</html>

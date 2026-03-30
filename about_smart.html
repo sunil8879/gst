@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Smart Invoice Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #1877F2;
+            --vibrant-teal: #008080;
+            --electric-aquamarine: #7FFFD4;
+            --pure-white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, var(--deep-blue), var(--vibrant-teal));
+            color: var(--pure-white);
+            overflow-x: hidden;
+        }
+
+        /* --- THE DAZZLING 3D TITLE BOX --- */
+        .header-section {
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+        }
+
+        .title-container-box {
+            background: linear-gradient(145deg, var(--deep-blue), var(--vibrant-teal));
+            border: 5px solid var(--electric-aquamarine);
+            padding: 40px 80px;
+            position: relative;
+            box-shadow: 
+                0 0 20px var(--vibrant-teal),
+                0 0 40px var(--electric-aquamarine),
+                inset 0 0 15px rgba(127, 255, 212, 0.5);
+            border-radius: 4px; /* Crisp rectangular feel */
+            transform: perspective(1000px) rotateX(5deg);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .main-title {
+            margin: 0;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--pure-white);
+            line-height: 1;
+            /* High Intensity 3D Bevel Text Effect */
+            text-shadow: 
+                0 1px 0 #ccc, 
+                0 2px 0 #c9c9c9, 
+                0 3px 0 #bbb, 
+                0 4px 0 #b9b9b9, 
+                0 5px 0 #aaa, 
+                0 6px 1px rgba(0,0,0,.1), 
+                0 0 5px rgba(0,0,0,.1), 
+                0 1px 3px rgba(0,0,0,.3), 
+                0 3px 5px rgba(0,0,0,.2), 
+                0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 
+                0 20px 20px rgba(0,0,0,.15);
+        }
+
+        .sub-tagline {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--electric-aquamarine);
+            font-weight: 300;
+            margin-top: 15px;
+            text-shadow: 0 0 10px var(--electric-aquamarine);
+        }
+
+        /* --- SPLIT LAYOUT --- */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* LEFT SIDE: Writeup */
+        .content-left {
+            flex: 1.2;
+            padding: 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(127, 255, 212, 0.2);
+            z-index: 2;
+        }
+
+        .about-heading {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--electric-aquamarine);
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .about-heading::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--pure-white);
+            margin: 10px auto;
+            box-shadow: 0 0 10px var(--electric-aquamarine);
+        }
+
+        .writeup-body {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            text-align: justify;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .writeup-body p {
+            margin-bottom: 25px;
+        }
+
+        .highlight {
+            color: var(--electric-aquamarine);
+            font-weight: 700;
+        }
+
+        /* RIGHT SIDE: Image */
+        .content-right {
+            flex: 0.8;
+            background: url('contact.jpg') no-repeat center center;
+            background-size: cover;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            box-shadow: -15px 0 50px rgba(0,0,0,0.5);
+        }
+
+        .content-right::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, var(--deep-blue), transparent);
+            opacity: 0.4;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: perspective(1000px) rotateX(5deg) translateY(0px); }
+            50% { transform: perspective(1000px) rotateX(5deg) translateY(-10px); }
+            100% { transform: perspective(1000px) rotateX(5deg) translateY(0px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-layout { flex-direction: column; }
+            .content-right { height: 500px; order: 2; }
+            .content-left { padding: 40px; order: 1; }
+            .main-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with 3D Bevel Title -->
+    <header class="header-section">
+        <div class="title-container-box">
+            <h1 class="main-title">SMART INVOICE PRO</h1>
+            <span class="sub-tagline">Invoice right, Future bright.</span>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <!-- Left Side: Writeup -->
+        <section class="content-left">
+            <h2 class="about-heading">About Smart Invoice Pro</h2>
+            
+            <div class="writeup-body">
+                <p>
+                    <span class="highlight">Smart Invoice Pro</span> is a modern invoicing and business management solution designed to simplify the way small businesses create invoices, track sales, and manage GST-related tasks. Our goal is to provide an easy-to-use platform that helps entrepreneurs, traders, freelancers, and professionals handle their billing processes efficiently without needing complex accounting knowledge.
+                </p>
+
+                <p>
+                    Many small businesses struggle with maintaining proper records, generating GST-compliant invoices, and keeping track of their financial transactions. Smart Invoice Pro is built to solve these challenges by offering a <span class="highlight">clean interface, smart automation features,</span> and reliable tools that make daily business operations smoother. Users can quickly generate invoices, manage customer information, monitor sales performance, and keep organized records for future reference.
+                </p>
+
+                <p>
+                    The platform is designed with simplicity and practicality in mind. Instead of overwhelming users with unnecessary complexity, Smart Invoice Pro focuses on the features that businesses actually need in their day-to-day operations. Our aim is to <span class="highlight">save time, reduce errors,</span> and help business owners concentrate more on growing their business rather than worrying about paperwork.
+                </p>
+
+                <p>
+                    We continuously work on improving the software by listening to feedback from users and understanding real business requirements. As technology evolves, Smart Invoice Pro will keep introducing new features that improve efficiency, accuracy, and convenience for its users.
+                </p>
+
+                <p style="border-left: 4px solid var(--electric-aquamarine); padding-left: 20px; font-style: italic; color: var(--electric-aquamarine);">
+                    Our vision is to create a dependable invoicing solution that supports small and growing businesses in managing their billing and records in a smarter and more organized way.
+                </p>
+            </div>
+        </section>
+
+        <!-- Right Side: Full Image -->
+        <section class="content-right">
+        </section>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Smart Invoice Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #1877F2;
+            --teal: #008080;
+            --aquamarine: #7FFFD4;
+            --white: #ffffff;
+            --electric-glow: rgba(127, 255, 212, 0.6);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--deep-blue), var(--teal));
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* --- THE DAZZLING 3D TITLE BOX --- */
+        .header-container {
+            width: 100%;
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--aquamarine);
+        }
+
+        .rectangular-title-box {
+            border: 8px solid var(--aquamarine);
+            padding: 30px 60px;
+            background: linear-gradient(145deg, #004d4d, #001a33);
+            box-shadow: 
+                0 0 30px var(--electric-glow),
+                inset 0 0 20px var(--electric-glow);
+            text-align: center;
+            border-radius: 0px; /* Sharp rectangular design */
+            transform: perspective(1000px) rotateX(10deg);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        .main-3d-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--white);
+            font-size: 3.8rem;
+            font-weight: 900;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            /* HIGH INTENSITY BEVEL EFFECT */
+            text-shadow: 
+                0 1px 0 #ccc, 
+                0 2px 0 #c9c9c9, 
+                0 3px 0 #bbb, 
+                0 4px 0 #b9b9b9, 
+                0 5px 0 #aaa, 
+                0 6px 1px rgba(0,0,0,.1), 
+                0 0 5px rgba(0,0,0,.1), 
+                0 1px 3px rgba(0,0,0,.3), 
+                0 3px 5px rgba(0,0,0,.2), 
+                0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 
+                0 20px 20px rgba(0,0,0,.15);
+        }
+
+        .sub-tagline {
+            display: block;
+            font-size: 1.6rem;
+            color: var(--aquamarine);
+            font-weight: 700;
+            margin-top: 10px;
+            text-transform: italic;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* --- SPLIT SCREEN LAYOUT --- */
+        .page-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* LEFT SIDE: Writeup */
+        .content-left {
+            flex: 1.2;
+            padding: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid var(--aquamarine);
+            z-index: 5;
+        }
+
+        .policy-title {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--aquamarine);
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            font-weight: 900;
+            text-shadow: 0 0 15px var(--electric-glow);
+            border-bottom: 4px double var(--aquamarine);
+            display: block;
+            padding-bottom: 10px;
+        }
+
+        .content-left p {
+            line-height: 2;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            text-align: justify;
+            color: #e0ffff; /* Light Aquamarine Tint */
+        }
+
+        .important-note {
+            background: linear-gradient(to right, transparent, rgba(127, 255, 212, 0.1), transparent);
+            border-left: 4px solid var(--aquamarine);
+            padding: 20px;
+            margin: 30px 0;
+            font-style: italic;
+        }
+
+        /* RIGHT SIDE: Full Image */
+        .content-right {
+            flex: 0.8;
+            background: url('contact.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            box-shadow: -15px 0 40px rgba(0,0,0,0.6);
+        }
+
+        .content-right::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent, var(--deep-blue));
+            opacity: 0.4;
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 20px var(--electric-glow), inset 0 0 10px var(--electric-glow); }
+            to { box-shadow: 0 0 50px var(--aquamarine), inset 0 0 30px var(--aquamarine); }
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 1200px) {
+            .page-wrapper { flex-direction: column; }
+            .content-right { height: 500px; order: 2; }
+            .content-left { order: 1; padding: 40px; }
+            .main-3d-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-container">
+        <div class="rectangular-title-box">
+            <h1 class="main-3d-title">SMART INVOICE PRO</h1>
+            <span class="sub-tagline">Invoice right, Future bright.</span>
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+        <!-- Left Side: Privacy Writeup -->
+        <main class="content-left">
+            <h2 class="policy-title">Privacy Policy</h2>
+            
+            <p>At <strong>Smart Invoice Pro</strong>, protecting user privacy and safeguarding personal information is very important to us. This Privacy Policy explains how we collect, use, and protect the information provided by users while using our platform.</p>
+
+            <p>When you use Smart Invoice Pro, we may collect certain information such as your name, business details, email address, contact number, and invoice-related data that you voluntarily provide while using the application. This information is used to operate the platform effectively, improve user experience, and provide essential services related to invoicing and business management.</p>
+
+            <div class="important-note">
+                We take reasonable security measures to protect user data from unauthorized access, misuse, or disclosure. Access to personal information is limited and handled with care to maintain confidentiality. Our system is designed to store and process data in a secure manner.
+            </div>
+
+            <p>Smart Invoice Pro does not sell or share user data with third parties for marketing purposes. Information may only be used for improving the service, providing technical support, or complying with applicable legal requirements when necessary.</p>
+
+            <p>Users are responsible for maintaining the confidentiality of their login credentials and account information. We recommend using strong passwords and keeping account access secure.</p>
+
+            <p style="border-top: 1px solid var(--aquamarine); padding-top: 20px; text-align: center; font-weight: bold; color: var(--aquamarine);">
+                By using Smart Invoice Pro, you agree to the collection and use of information as described in this Privacy Policy. We may update this policy from time to time to reflect improvements or changes in our services.
+            </p>
+        </main>
+
+        <!-- Right Side: Full Image -->
+        <aside class="content-right">
+            <!-- image is handled via CSS background -->
+        </aside>
+    </div>
+
+</body>
+</html>

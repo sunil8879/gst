@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclaimer - Smart Invoice Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-deep: #1877F2;
+            --teal-main: #006666;
+            --aquamarine-neon: #7FFFD4;
+            --white-pure: #ffffff;
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--blue-deep), var(--teal-main));
+            color: var(--white-pure);
+            overflow-x: hidden;
+        }
+
+        /* --- THE DAZZLING 3D TITLE BOX --- */
+        .title-outer-wrapper {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .title-box-rectangular {
+            border: 6px solid var(--aquamarine-neon);
+            padding: 30px 50px;
+            background: linear-gradient(145deg, #003333, #001a33);
+            box-shadow: 
+                0 0 20px var(--aquamarine-neon),
+                inset 0 0 30px rgba(127, 255, 212, 0.3);
+            text-align: center;
+            position: relative;
+            transform: perspective(800px) rotateX(2deg);
+            border-radius: 5px;
+        }
+
+        .main-3d-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            line-height: 1.1;
+            /* High Intensity Bevel Effect */
+            color: #f1f1f1;
+            text-shadow: 
+                0 1px 0 #bbb, 0 2px 0 #b5b5b5, 0 3px 0 #aaa, 0 4px 0 #a5a5a5,
+                0 5px 0 #999, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2),
+                0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2),
+                0 20px 20px rgba(0,0,0,.15), 0 0 15px var(--aquamarine-neon);
+        }
+
+        .sub-3d-title {
+            display: block;
+            font-size: 1.3rem;
+            color: var(--aquamarine-neon);
+            margin-top: 10px;
+            font-weight: 400;
+            letter-spacing: 5px;
+            text-shadow: 0 0 8px var(--aquamarine-neon);
+        }
+
+        /* --- MAIN CONTENT SECTION --- */
+        .page-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Side: Disclaimer Writeup */
+        .left-content {
+            flex: 1;
+            padding: 60px 80px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(127, 255, 212, 0.1);
+            z-index: 10;
+        }
+
+        .disclaimer-heading {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--aquamarine-neon);
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .disclaimer-heading::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--white-pure);
+            margin: 15px auto;
+            box-shadow: 0 0 10px var(--aquamarine-neon);
+        }
+
+        .disclaimer-body {
+            font-size: 1.1rem;
+            line-height: 2;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: justify;
+        }
+
+        .disclaimer-body p {
+            margin-bottom: 25px;
+        }
+
+        .highlight-card {
+            background: rgba(0, 128, 128, 0.3);
+            border-left: 5px solid var(--aquamarine-neon);
+            padding: 20px;
+            margin: 30px 0;
+            font-style: italic;
+        }
+
+        /* Right Side: Image Full Placement */
+        .right-image-panel {
+            flex: 1;
+            background: url('contact.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .right-image-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to left, rgba(0, 26, 51, 0.2), rgba(0, 102, 102, 0.5));
+        }
+
+        /* --- FOOTER DECORATION --- */
+        .disclaimer-footer {
+            margin-top: 40px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--aquamarine-neon);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1100px) {
+            .page-container { flex-direction: column; }
+            .right-image-panel { height: 400px; order: 2; }
+            .left-content { padding: 40px; order: 1; }
+            .main-3d-title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Flamboyant 3D Header -->
+    <header class="title-outer-wrapper">
+        <div class="title-box-rectangular">
+            <h1 class="main-3d-title">SMART INVOICE PRO</h1>
+            <span class="sub-3d-title">Invoice right, Future bright.</span>
+        </div>
+    </header>
+
+    <main class="page-container">
+        
+        <!-- Left Section: Legal Writeup -->
+        <section class="left-content">
+            <h2 class="disclaimer-heading">Disclaimer</h2>
+            
+            <div class="disclaimer-body">
+                <p>The information, tools, and services provided through <strong>Smart Invoice Pro</strong> are intended to assist users in creating invoices and managing basic business records. While we strive to ensure that the platform functions accurately and reliably, Smart Invoice Pro does not guarantee that all information generated through the system will be free from errors or suitable for every business situation.</p>
+
+                <div class="highlight-card">
+                    Users are responsible for reviewing all invoices, financial details, and data entered into the application before using them for official, financial, or legal purposes.
+                </div>
+
+                <p>Smart Invoice Pro should not be considered a substitute for professional advice from accountants, tax consultants, or legal professionals. Businesses are encouraged to consult qualified experts when dealing with taxation matters, compliance requirements, or financial decisions.</p>
+
+                <p>Smart Invoice Pro is not responsible for any losses, damages, or issues that may arise from the use of the platform, including errors in data entry, incorrect information provided by users, or technical issues beyond our control. While we make every effort to maintain system availability and performance, we cannot guarantee uninterrupted or error-free access at all times.</p>
+
+                <p>By using Smart Invoice Pro, users agree that they understand these limitations and accept responsibility for how they use the platform. We recommend regularly verifying your business records and maintaining backups of important data to ensure smooth business operations.</p>
+
+                <div class="disclaimer-footer">
+                    Effective: 2024 © Smart Invoice Pro Operations
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Section: Full Image -->
+        <section class="right-image-panel">
+            <!-- image: contact.jpg is loaded via CSS -->
+        </section>
+
+    </main>
+
+</body>
+</html>
