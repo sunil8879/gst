@@ -942,6 +942,49 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
         flex-direction: column !important;
     }
 }
+
+
+
+
+
+
+
+
+/* --- FLOATING INSTALL BUTTON --- */
+#install-pwa {
+    position: fixed !important;
+    bottom: 25px !important;
+    right: 20px !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 15px 25px !important;
+    z-index: 99999 !important; /* Ensures it stays above all modals */
+    border-radius: 50px !important; /* Pill shape for floating look */
+    font-size: 0.9rem !important;
+    box-shadow: 6px 6px 0px #000 !important;
+    background: #007BFF !important; /* Keeping your blue color */
+    border: 3px solid black !important;
+    margin: 0 !important;
+    display: none; /* Will be triggered by existing JS */
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+#install-pwa:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0px #000 !important;
+}
+
+/* Adjust position slightly for very small phones so it doesn't cover footer text */
+@media (max-width: 480px) {
+    #install-pwa {
+        bottom: 20px !important;
+        right: 15px !important;
+        padding: 12px 20px !important;
+        font-size: 0.8rem !important;
+    }
+}
 </style>
 </head>
 <body>
