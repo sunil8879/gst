@@ -21,16 +21,17 @@
         .ui-table td { border: 1px solid #e2e8f0; padding: 5px; }
         .ui-table input { border: none; width: 100%; background: transparent; }
 
-        .template-grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; 
-            margin: 20px 0; max-height: 200px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px;
-        }
+        .template-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin: 20px 0; max-height: 150px; overflow-y: auto; padding: 10px; background: #eee; border-radius: 8px; }
         .tpl-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 9px; text-transform: uppercase; }
 
         .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; border-radius: 12px; margin-top: 30px; }
         #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
         .btn-act { padding: 15px 35px; border: none; border-radius: 50px; cursor: pointer; font-weight: 900; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 14px; }
         
+        .featured-section { margin-top: 60px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 30px; padding-bottom: 50px; }
+        .featured-grid { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+        .select-btn { padding: 15px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; font-size: 13px; min-width: 220px; }
+
         @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
     </style>
 </head>
@@ -40,7 +41,6 @@
     <div class="editor-panel">
         <h1>Purchase Order Pro - 500 Engine</h1>
 
-        <!-- Header -->
         <h3>1. Buyer Information (My Company)</h3>
         <div class="form-grid">
             <div class="field"><label>Logo</label><input type="file" id="logo-input" accept="image/*" onchange="loadLogo(this)"></div>
@@ -52,7 +52,6 @@
             <div class="field" style="grid-column: span 2;"><label>Address</label><input type="text" id="b_addr" value="Innovation Plaza, Sector 62, Noida, UP" oninput="update()"></div>
         </div>
 
-        <!-- PO Details -->
         <h3>2. PO & 3. Supplier Details</h3>
         <div class="form-grid">
             <div class="field"><label>PO Number</label><input type="text" id="q_no" value="PO-2024-771" oninput="update()"></div>
@@ -62,40 +61,36 @@
             <div class="field"><label>Supplier Name</label><input type="text" id="s_name" value="Industrial Spares Mfg" oninput="update()"></div>
             <div class="field"><label>Supplier GSTIN</label><input type="text" id="s_gst" value="27QWERT5544P1Z2" oninput="update()"></div>
             <div class="field"><label>Supplier Contact</label><input type="text" id="s_phone" value="+91 88888 77777" oninput="update()"></div>
-            <div class="field" style="grid-column: span 1;"><label>Supplier Email</label><input type="text" id="s_email" value="sales@industrialspares.com" oninput="update()"></div>
+            <div class="field"><label>Supplier Email</label><input type="text" id="s_email" value="sales@industrialspares.com" oninput="update()"></div>
             <div class="field" style="grid-column: span 2;"><label>Supplier Address</label><input type="text" id="s_addr" value="Plot 12, Industrial Area, Pune, MH" oninput="update()"></div>
         </div>
 
-        <!-- Items Table -->
         <h3>4. Order Items (Dynamic Calculations)</h3>
         <table class="ui-table">
             <thead>
-                <tr>
-                    <th width="5%">No</th><th>Description</th><th>HSN</th><th width="8%">Qty</th><th width="12%">Rate</th><th width="15%">Amount</th><th></th>
-                </tr>
+                <tr><th width="5%">No</th><th>Description</th><th>HSN</th><th width="8%">Qty</th><th width="12%">Rate</th><th width="15%">Amount</th><th></th></tr>
             </thead>
             <tbody id="ui_rows"></tbody>
         </table>
         <button onclick="addRow()" style="margin-top:10px; cursor:pointer; padding: 5px 15px;">+ Add Item</button>
 
-        <!-- Summary & Terms -->
         <h3>5. Summary & 6. Terms</h3>
         <div class="form-grid">
             <div class="field"><label>Discount (Value)</label><input type="number" id="s_disc" value="0" oninput="calculate()"></div>
             <div class="field"><label>CGST (%)</label><input type="number" id="s_cgst_p" value="9" oninput="calculate()"></div>
             <div class="field"><label>SGST (%)</label><input type="number" id="s_sgst_p" value="9" oninput="calculate()"></div>
             <div class="field"><label>IGST (%)</label><input type="number" id="s_igst_p" value="0" oninput="calculate()"></div>
-            <div class="field"><label>Grand Total</label><input type="text" id="disp_grand" readonly style="font-weight:bold; color:red; background:#f0f0f0;"></div>
             <div class="field"><label>Payment Terms</label><input type="text" id="e_pay" value="30% Advance, 70% on Delivery" oninput="update()"></div>
             <div class="field"><label>Delivery Terms</label><input type="text" id="e_del" value="F.O.R Destination" oninput="update()"></div>
+            <div class="field"><label>Grand Total</label><input type="text" id="disp_grand" readonly style="font-weight:bold; color:red; background:#f0f0f0;"></div>
             <div class="field" style="grid-column: span 3;"><label>Terms & Conditions</label><textarea id="e_terms" rows="2" oninput="update()">1. Goods must match HSN specifications. 2. Quality inspection at delivery.</textarea></div>
         </div>
 
-        <p style="font-weight:bold; margin-top:20px;">SELECT FROM 500 TEMPLATE COMBINATIONS:</p>
+        <p style="font-weight:bold; margin-top:20px;">SELECT TEMPLATE (1-500):</p>
         <div class="template-grid" id="tpl-grid"></div>
 
         <div style="display:flex; gap:15px; justify-content:center; margin-bottom:40px;">
-            <button class="btn-act" style="background:#10b981" onclick="alert('PO Details Saved')"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-act" style="background:#10b981" onclick="window.print()"><i class="fas fa-save"></i> Save PDF</button>
             <button class="btn-act" style="background:#2563eb" onclick="exportWord()"><i class="fas fa-file-word"></i> MS Word</button>
         </div>
     </div>
@@ -105,32 +100,63 @@
     <div id="render-target"></div>
 </div>
 
+<div class="no-print featured-section">
+    <h2 style="color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Featured Templates</h2>
+    <div class="featured-grid">
+        <select class="select-btn" style="background:#1e40af" onchange="if(this.value) window.location.href=this.value">
+            <option value="" selected disabled>SMART TEMPLATES</option>
+            <option value="final_billbook.html">Bill Book</option>
+            <option value="final_bill_of_exchange.html">Bill of Exchange</option>
+            <option value="final_credit_note.html">Credit Note</option>
+            <option value="final_delivery_challan.html">Delivery Challan</option>
+            <option value="final_debit_notes.html">Debit Note</option>
+            <option value="final_purchase_order.html">Purchase Order</option>
+            <option value="final_quotation.html">Quotation</option>
+            <option value="final_receipts.html">Receipt</option>
+            <option value="final_voucher.html">Voucher</option>
+            <option value="final_work_order.html">Work Order</option>
+        </select>
+        <select class="select-btn" style="background:#0f172a" onchange="if(this.value) window.location.href=this.value">
+            <option value="" selected disabled>EXPLORE TEMPLATES</option>
+            <option value="billbook_PC.html">Bill Book</option>
+            <option value="bill_of_exchange_PC.html">Bill of Exchange</option>
+            <option value="credit_note_PC.html">Credit Note</option>
+            <option value="delivery_challan_PC.html">Delivery Challan</option>
+            <option value="debit_note_PC.html">Debit Note</option>
+            <option value="purchase_order_PC.html">Purchase Order</option>
+            <option value="quotation_PC.html">Quotation</option>
+            <option value="receipts_PC.html">Receipt</option>
+            <option value="voucher_PC.html">Voucher</option>
+            <option value="work_order_PC.html">Work Order</option>
+        </select>
+    </div>
+</div>
+
 <script>
     let logoImg = "";
     let activeStyle = 1;
-    const themeColors = ["#1e40af", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
+    const colors = ["#1e40af", "#b91c1c", "#047857", "#7c3aed", "#1e293b"];
 
-    // --- Permutation Modules ---
     const Modules = {
         borders: [
-            (c) => `border: 10px solid ${c}; outline: 2px solid ${c}; outline-offset: 4px;`,
-            (c) => `border: 2px solid ${c};`,
-            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #eee;`,
-            (c) => `border: 4px double ${c};`,
-            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #000;`
+            (c) => `border: 10px solid ${c}; padding: 30px;`,
+            (c) => `border: 2px solid ${c}; padding: 30px;`,
+            (c) => `border-left: 20px solid ${c}; border-right: 1px solid #eee; padding: 30px;`,
+            (c) => `border: 4px double ${c}; padding: 30px;`,
+            (c) => `box-shadow: 15px 15px 0px ${c}; border: 2px solid #000; padding: 30px;`
         ],
         headers: [
-            (d, c) => `<table width="100%"><tr><td>${d.logo}<h1>PURCHASE ORDER</h1></td><td align="right" style="font-size:11px;">${d.bAddr}<br>GST: ${d.bGst}<br>PH: ${d.bPhone}</td></tr></table>`,
-            (d, c) => `<div style="background:${c}; color:white; padding:30px; margin:-30px -30px 20px -30px; text-align:center;">${d.logo}<h1>PURCHASE ORDER</h1>${d.bWeb}</div>`,
+            (d, c) => `<table width="100%"><tr><td>${d.logo}<h1>PURCHASE ORDER</h1></td><td align="right" style="font-size:11px;">${d.bAddr}<br>GST: ${d.bGst}</td></tr></table>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:20px; margin:-30px -30px 20px -30px; text-align:center;">${d.logo}<h1>PURCHASE ORDER</h1><small>${d.bWeb}</small></div>`,
             (d, c) => `<center>${d.logo}<h2 style="border-bottom:2px solid ${c}">${d.bName}</h2><p>${d.bAddr}</p></center>`,
-            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>PO DOCUMENT</h1></td><td align="right" style="padding-right:10px;">${d.logo}<br><b>${d.bName}</b></td></tr></table>`,
-            (d, c) => `<div style="border-bottom:10px double ${c}; padding-bottom:10px;">${d.logo} <b style="font-size:20px;">${d.bName}</b><br>${d.bEmail}</div>`
+            (d, c) => `<table width="100%"><tr><td bgcolor="${c}" style="color:white; padding:20px;"><h1>PO DOCUMENT</h1></td><td align="right">${d.logo}<br><b>${d.bName}</b></td></tr></table>`,
+            (d, c) => `<div style="border-bottom:5px solid ${c}; padding-bottom:10px;">${d.logo} <b>${d.bName}</b><br>${d.bEmail}</div>`
         ],
         tables: [
-            (rows, c) => `<table width="100%" style="border-collapse:collapse; margin:20px 0;"><tr bgcolor="${c}" style="color:white;"><th>No</th><th>Item Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Total</th></tr>${rows}</table>`,
-            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; border-color:#eee;">${rows}</table>`,
-            (rows, c) => `<div style="border:2px solid ${c}; border-radius:10px; overflow:hidden; margin:20px 0;"><table width="100%">${rows}</table></div>`,
-            (rows, c) => `<table width="100%" style="margin:20px 0;"><tr style="border-bottom:3px solid ${c}"><th>No</th><th>Description</th><th>HSN</th><th>Qty</th><th>Amount</th></tr>${rows}</table>`
+            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:15px 0;"><thead><tr bgcolor="${c}" style="color:white"><th>No</th><th>Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`,
+            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:15px 0; border-color:#eee;"><tbody>${rows}</tbody></table>`,
+            (rows, c) => `<div style="border:2px solid ${c}; border-radius:10px; overflow:hidden;"><table width="100%" border="1" style="border-collapse:collapse;">${rows}</table></div>`,
+            (rows, c) => `<table width="100%" style="border-collapse:collapse; margin:15px 0;"><thead style="border-bottom:3px solid ${c}"><tr><th>No</th><th>Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`
         ]
     };
 
@@ -144,57 +170,49 @@
             <td><input type="number" class="i-qty" value="1" oninput="calculate()"></td>
             <td><input type="number" class="i-rate" value="1000" oninput="calculate()"></td>
             <td><input type="text" class="i-amt" readonly></td>
-            <td><button onclick="document.getElementById('row_${id}').remove(); calculate();" style="color:red;">&times;</button></td>
+            <td><button onclick="document.getElementById('row_${id}').remove(); calculate();" style="color:red; background:none; border:none; cursor:pointer;">&times;</button></td>
         </tr>`;
         tbody.insertAdjacentHTML('beforeend', html);
         calculate();
     }
 
     function calculate() {
-        let subtotal = 0;
+        let st = 0;
         document.querySelectorAll('.item-row').forEach(row => {
-            const q = parseFloat(row.querySelector('.i-qty').value) || 0;
-            const r = parseFloat(row.querySelector('.i-rate').value) || 0;
-            const line = q * r;
+            let q = parseFloat(row.querySelector('.i-qty').value) || 0;
+            let r = parseFloat(row.querySelector('.i-rate').value) || 0;
+            let line = q * r;
             row.querySelector('.i-amt').value = line.toFixed(2);
-            subtotal += line;
+            st += line;
         });
-
-        const disc = parseFloat(document.getElementById('s_disc').value) || 0;
-        const cgstP = parseFloat(document.getElementById('s_cgst_p').value) || 0;
-        const sgstP = parseFloat(document.getElementById('s_sgst_p').value) || 0;
-        const igstP = parseFloat(document.getElementById('s_igst_p').value) || 0;
-
-        const afterDisc = subtotal - disc;
-        const tax = afterDisc * ((cgstP + sgstP + igstP) / 100);
-        document.getElementById('disp_grand').value = (afterDisc + tax).toFixed(2);
+        const d = parseFloat(document.getElementById('s_disc').value) || 0;
+        const cp = parseFloat(document.getElementById('s_cgst_p').value) || 0;
+        const sp = parseFloat(document.getElementById('s_sgst_p').value) || 0;
+        const ip = parseFloat(document.getElementById('s_igst_p').value) || 0;
+        const tax = (st - d) * ((cp + sp + ip) / 100);
+        document.getElementById('disp_grand').value = (st - d + tax).toFixed(2);
         update();
+    }
+
+    function loadLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { logoImg = e.target.result; update(); };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function update() {
         const id = activeStyle - 1;
-        const color = themeColors[id % 5];
+        const color = colors[id % 5];
         const d = {
-            bName: document.getElementById('b_name').value,
-            bAddr: document.getElementById('b_addr').value,
-            bGst: document.getElementById('b_gst').value,
-            bPhone: document.getElementById('b_phone').value,
-            bEmail: document.getElementById('b_email').value,
-            bWeb: document.getElementById('b_web').value,
-            logo: logoImg ? `<img src="${logoImg}" width="100" height="50" style="width:100px; height:50px;">` : "<h2>LOGO</h2>",
-            poNo: document.getElementById('po_no').value,
-            poDate: document.getElementById('po_date').value,
-            delDate: document.getElementById('del_date').value,
-            delPlace: document.getElementById('del_pos').value,
-            sName: document.getElementById('s_name').value,
-            sAddr: document.getElementById('s_addr').value,
-            sGst: document.getElementById('s_gst').value,
-            sEmail: document.getElementById('s_email').value,
-            pTerms: document.getElementById('e_pay').value,
-            dTerms: document.getElementById('e_del').value,
-            tAndC: document.getElementById('e_terms').value,
-            thank: document.getElementById('f_thank').value,
-            sub: (parseFloat(document.getElementById('s_sub_val')?.value || 0)).toFixed(2),
+            bName: document.getElementById('b_name').value, bAddr: document.getElementById('b_addr').value, bGst: document.getElementById('b_gst').value,
+            bPhone: document.getElementById('b_phone').value, bEmail: document.getElementById('b_email').value, bWeb: document.getElementById('b_web').value,
+            logo: logoImg ? `<img src="${logoImg}" width="120" style="width:120px; height:auto;">` : "<b>LOGO</b>",
+            poNo: document.getElementById('q_no').value, poDate: document.getElementById('q_date').value,
+            delDate: document.getElementById('del_date').value, delPlace: document.getElementById('del_pos').value,
+            sName: document.getElementById('s_name').value, sAddr: document.getElementById('s_addr').value, sGst: document.getElementById('s_gst').value, sEmail: document.getElementById('s_email').value,
+            pTerms: document.getElementById('e_pay').value, dTerms: document.getElementById('e_del').value, tAndC: document.getElementById('e_terms').value,
             grand: document.getElementById('disp_grand').value
         };
 
@@ -206,76 +224,44 @@
             <tr><td align="center">${i+1}</td><td>${row.querySelector('.i-desc').value}</td><td align="center">${row.querySelector('.i-hsn').value}</td><td align="center">${row.querySelector('.i-qty').value}</td><td align="right">${row.querySelector('.i-rate').value}</td><td align="right">${row.querySelector('.i-amt').value}</td></tr>
         `).join('');
 
-        const finalHtml = `
-            <div style="${border} padding:35px; min-height:280mm; box-sizing:border-box; background:white; font-family:Arial; color:#333;">
+        document.getElementById('render-target').innerHTML = `
+            <div style="${border} min-height:280mm; background:white; font-family:Arial;">
                 ${header}
-                <br>
-                <table width="100%" style="font-size:12px;">
+                <table width="100%" style="font-size:12px; margin-top:10px;">
                     <tr>
-                        <td width="50%"><b>SUPPLIER:</b><br>${d.sName}<br>${d.sAddr}<br>GST: ${d.sGst}<br>Email: ${d.sEmail}</td>
-                        <td align="right"><b>PO NO:</b> ${d.poNo}<br><b>PO DATE:</b> ${d.poDate}<br><b>DELIVERY BY:</b> ${d.delDate}<br><b>DESTINATION:</b> ${d.delPlace}</td>
+                        <td width="50%"><b>SUPPLIER:</b><br>${d.sName}<br>${d.sAddr}<br>GST: ${d.sGst}</td>
+                        <td align="right"><b>PO NO:</b> ${d.poNo}<br><b>DATE:</b> ${d.poDate}<br><b>DELIVERY:</b> ${d.delDate}</td>
                     </tr>
                 </table>
-                <br>
                 ${tableLogic(rows, color)}
                 <table width="100%" style="font-size:12px;">
                     <tr>
-                        <td width="60%" valign="top">
-                            <b>PAYMENT TERMS:</b> ${d.pTerms}<br>
-                            <b>DELIVERY TERMS:</b> ${d.dTerms}<br><br>
-                            <b>T&C:</b> ${d.tAndC}
-                        </td>
-                        <td align="right">
-                            <h2 style="color:${color}">GRAND TOTAL: ₹ ${parseFloat(d.grand).toLocaleString('en-IN')}.00</h2>
-                            <p><i>${d.thank}</i></p>
-                        </td>
+                        <td width="60%"><b>Payment Terms:</b> ${d.pTerms}<br><b>Delivery Place:</b> ${d.delPlace}<br><br><b>T&C:</b> ${d.tAndC}</td>
+                        <td align="right" valign="top"><h2 style="color:${color}">TOTAL: ₹ ${d.grand}</h2></td>
                     </tr>
                 </table>
-                <div style="margin-top:60px; text-align:right;">
-                    <b>Authorized Signatory</b><br><br><br>
-                    __________________________<br>For ${d.bName}
-                </div>
+                <div style="margin-top:60px; text-align:right;"><b>Authorized Signatory</b><br><br>________________</div>
             </div>`;
-
-        document.getElementById('render-target').innerHTML = finalHtml;
-    }
-
-    function init() {
-        const grid = document.getElementById('tpl-grid');
-        for (let i = 1; i <= 500; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'tpl-btn';
-            btn.style.background = themeColors[(i-1) % 5];
-            btn.innerText = i;
-            btn.onclick = () => { activeStyle = i; update(); };
-            grid.appendChild(btn);
-        }
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('po_date').value = today;
-        document.getElementById('del_date').value = today;
-        addRow();
-    }
-
-    function loadLogo(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => { logoImg = e.target.result; update(); };
-            reader.readAsDataURL(input.files[0]);
-        }
     }
 
     function exportWord() {
         const content = document.getElementById('render-target').innerHTML;
-        const source = `<html><head><meta charset='utf-8'><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:5px;font-family:Arial;}</style></head><body>${content}</body></html>`;
+        const source = `<html><head><meta charset='utf-8'></head><body>${content}</body></html>`;
         const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `PO_${document.getElementById('po_no').value}.doc`;
-        link.click();
+        const link = document.createElement('a'); link.href = url; link.download = 'PurchaseOrder.doc'; link.click();
     }
 
-    window.onload = init;
+    const grid = document.getElementById('tpl-grid');
+    for (let i = 1; i <= 500; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'tpl-btn'; btn.style.background = colors[(i - 1) % 5]; btn.innerText = i;
+        btn.onclick = () => { activeStyle = i; update(); };
+        grid.appendChild(btn);
+    }
+    document.getElementById('q_date').valueAsDate = new Date();
+    document.getElementById('del_date').valueAsDate = new Date();
+    window.onload = () => { addRow(); update(); };
 </script>
 </body>
 </html>
