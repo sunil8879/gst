@@ -1060,6 +1060,11 @@ option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
         grid-template-columns: 1fr !important;
     }
 }
+
+
+
+.tools-container { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; }
+.exciting-tools-btn { text-align-last: center !important; margin: 10px auto !important; }
 </style>
 </head>
 <body>
@@ -14966,13 +14971,11 @@ window.addEventListener('load', generateSecureInvoiceID);
 
 
 // Logout function
-function googleLogout() {
-    google.accounts.id.disableAutoSelect();
-    // Since there is no database, we reload the page to reset the login state
-localStorage.removeItem('wasLoggedIn');
+async function googleLogout() {
+    await supabaseClient.auth.signOut(); // SIGN OUT FROM SUPABASE
+    localStorage.removeItem('wasLoggedIn');
     location.reload(); 
 }
-
 
 
 
