@@ -35,47 +35,34 @@
 
 
 
-/* --- MOBILE FIX FOR SMALL BUTTONS & VISIBLE PREVIEW --- */
 @media screen and (max-width: 768px) {
-    /* 1. Prevent right-side overflow */
+    /* 1. Kill the horizontal scroll */
     html, body { overflow-x: hidden !important; width: 100%; position: relative; }
-    .no-print { padding: 10px !important; width: 100% !important; }
 
-    /* 2. Stack Buttons & Make them Smaller */
-    .btn-group, [style*="display: flex"], [style*="display:flex"] {
-        flex-direction: column !important;
-        gap: 8px !important; /* Tight gap */
+    /* 2. Make buttons narrow and centered */
+    .btn-group {
+        flex-direction: column !important; /* Stack vertically */
+        align-items: center !important;    /* Center the narrow buttons */
+        gap: 10px !important;
     }
+
     .btn-act {
-        width: 100% !important;
-        padding: 10px 15px !important; /* Reduced padding */
-        font-size: 11px !important;    /* Smaller font */
-        height: auto !important;
-        border-radius: 4px !important;
+        width: 200px !important;           /* FIXED SMALL WIDTH (not 100%) */
+        padding: 10px !important;
+        font-size: 11px !important;
+        justify-content: center !important;
     }
-    .btn-group .field { width: 100% !important; }
 
-    /* 3. Fix Preview Visibility & Shrink to Fit */
-    .preview-box {
-        padding: 10px 0 !important;
-        background: #334155 !important;
-        margin-top: 20px !important;
-        min-height: 400px !important; /* Ensures space is reserved */
-        overflow: hidden !important;
+    /* Keep the format dropdown same size as buttons */
+    .btn-group .field, #download_format {
+        width: 200px !important; 
     }
+
+    /* 3. Shrink the document so it fits the screen */
     #render-target {
-        width: 210mm !important; /* Keep internal size for quality */
-        zoom: 0.42;             /* Shrinks to fit mobile screen */
+        zoom: 0.42; 
         -moz-transform: scale(0.42);
-        -moz-transform-origin: top center;
-        margin: 0 auto !important;
-        display: block !important;
-    }
-
-    /* 4. Fix the 500 template grid height so it doesn't push preview too far */
-    .template-grid {
-        max-height: 120px !important;
-        grid-template-columns: repeat(5, 1fr) !important; /* 5 columns instead of 10 on phone */
+        transform-origin: top center;
     }
 }
     </style>
