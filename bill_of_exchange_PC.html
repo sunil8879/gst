@@ -84,6 +84,52 @@ button img, button svg {
     max-width: 100% !important;
     height: auto !important;
 }
+
+
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 768px) {
+    /* 1. Stack all buttons and containers vertically */
+    .btn-group, .featured-grid, .form-grid, .btn-group, .template-grid { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+    }
+
+    /* 2. Make buttons and inputs full width */
+    .btn-act, .select-btn, input, select, textarea, .field, .tpl-btn { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        margin: 5px 0 !important;
+    }
+
+    /* 3. THE WIDTH FIX: Force the preview to fill the screen instead of scaling */
+    .preview-box { 
+        padding: 10px 5px !important; 
+    }
+
+    #render-target { 
+        width: 100% !important;      /* Forces preview to screen width */
+        min-width: 100% !important; 
+        min-height: auto !important; 
+        padding: 5mm !important;     /* Reduces padding so it's not cramped */
+        transform: none !important;  /* Stops the "tiny" shrinking effect */
+    }
+
+    /* 4. Fix Table Overflow: Allows the table to scroll if it's too wide for the phone */
+    #render-target table {
+        display: block !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -289,6 +335,57 @@ button img, button svg {
     }
 
     window.onload = init;
+</script>
+
+
+
+
+
+
+<!-- MASTER OVERFLOW & BUTTON STACKING FIX -->
+@media screen and (max-width: 768px) {
+    /* Stack all buttons and inputs vertically */
+    .btn-group, .featured-grid, .form-grid, .btn-group { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+    }
+    .btn-act, .select-btn, input, select, textarea, .field { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+    }
+    /* Center the preview container */
+    .preview-box { 
+        display: flex !important; 
+        justify-content: center !important; 
+        overflow: hidden !important; 
+        padding: 10px 0 !important;
+    }
+    #render-target { 
+        transform-origin: top center !important; /* THE FIX: Scale from center, not left */
+        margin: 0 auto !important; 
+    }
+}
+</style>
+<script>
+    function masterScaler() {
+        const target = document.getElementById('render-target');
+        const container = document.querySelector('.preview-box');
+        if (!target || window.innerWidth > 768) return;
+
+        const screenWidth = window.innerWidth;
+        const a4Width = 800; // Standard A4 pixel width
+        // Calculate scale with a 5% safety gap (0.95) to prevent border cutting
+        const scale = (screenWidth / a4Width) * 0.95; 
+
+        target.style.transform = `scale(${scale})`;
+        container.style.height = (target.offsetHeight * scale) + 'px';
+    }
+
+    window.addEventListener('load', masterScaler);
+    window.addEventListener('resize', masterScaler);
+    // Re-scale if the user clicks a style button
+    document.addEventListener('click', () => setTimeout(masterScaler, 50));
 </script>
 </body>
 </html>
