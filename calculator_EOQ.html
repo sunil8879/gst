@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOQ MASTER | Economic Order Quantity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #1e3a8a;
+            --light-blue: #3b82f6;
+            --aqua: #7FFFD4;
+            --white: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--white);
+            background-image: var(--bg-gradient);
+            margin: 0;
+            color: var(--blue);
+            line-height: 1.6;
+        }
+
+        .hero {
+            background: var(--blue);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        /* Calculator Styles */
+        .calc-wrapper {
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: var(--card-shadow);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            margin-top: -80px;
+            border: 1px solid rgba(127, 255, 212, 0.3);
+        }
+
+        @media (max-width: 900px) {
+            .calc-wrapper { grid-template-columns: 1fr; margin-top: 0; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+
+        .input-panel {
+            padding: 60px;
+            background: var(--white);
+        }
+
+        .output-panel {
+            background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+            padding: 60px;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .output-panel::after {
+            content: "\f0d1";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            font-size: 15rem;
+            opacity: 0.05;
+            color: var(--white);
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group label i {
+            color: var(--light-blue);
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--blue);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--aqua);
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.3);
+        }
+
+        .eoq-label {
+            font-size: 1.4rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .eoq-value {
+            font-size: 6rem;
+            font-weight: 800;
+            color: var(--aqua);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .eoq-unit {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        /* Definitions Section */
+        .section-title {
+            text-align: center;
+            margin: 80px 0 40px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 6px;
+            background: var(--aqua);
+            display: block;
+            margin: 10px auto;
+            border-radius: 3px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            border: 1px solid #f0f0f0;
+            transition: 0.3s;
+        }
+
+        .info-card:hover { transform: translateY(-10px); border-color: var(--aqua); }
+
+        .info-card i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--blue), var(--light-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-card h3 { margin-top: 0; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; }
+
+        /* Example Section */
+        .example-box {
+            background: var(--blue);
+            color: white;
+            border-radius: 30px;
+            padding: 50px;
+            margin-top: 60px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        @media (max-width: 800px) { .example-box { flex-direction: column; text-align: center; } }
+
+        .formula-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            border-left: 5px solid var(--aqua);
+            min-width: 300px;
+        }
+
+        .example-text b { color: var(--aqua); }
+
+        /* High/Low Logic */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 700px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+        .status-box {
+            padding: 40px;
+            border-radius: 25px;
+            color: white;
+        }
+
+        .status-low { background: #334155; }
+        .status-high { background: #0f172a; border-top: 8px solid var(--aqua); }
+
+        .status-box h4 {
+            margin-top: 0;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <p>Optimization Intelligence</p>
+    <h1>Economic Order Quantity</h1>
+    <p><i class="fas fa-microchip"></i> Inventory Efficiency AI</p>
+</header>
+
+<div class="container">
+    
+    <!-- Calculator Section -->
+    <div class="calc-wrapper animate-fadeIn">
+        <div class="input-panel">
+            <div class="input-group">
+                <label><i class="fas fa-boxes"></i> Annual Demand (D)</label>
+                <input type="number" id="demand" value="10000" oninput="calculateEOQ()" placeholder="Units required per year">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-file-invoice-dollar"></i> Ordering Cost (S)</label>
+                <input type="number" id="orderCost" value="500" oninput="calculateEOQ()" placeholder="Cost per order (₹)">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-warehouse"></i> Holding Cost (H)</label>
+                <input type="number" id="holdCost" value="20" oninput="calculateEOQ()" placeholder="Storage cost per unit (₹)">
+            </div>
+        </div>
+        <div class="output-panel">
+            <div class="eoq-label">Optimal Order Size</div>
+            <div class="eoq-value" id="eoq-result">707</div>
+            <div class="eoq-unit">Units Per Order</div>
+            <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8; max-width: 300px;">
+                Ordering this amount minimizes your total costs for ordering and holding inventory.
+            </div>
+        </div>
+    </div>
+
+    <!-- Meaning of Terms -->
+    <h2 class="section-title">The Variables of Wealth</h2>
+    <div class="grid-3">
+        <div class="info-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>D: Annual Demand</h3>
+            <p>This represents the total quantity of a product your business plans to sell or use over a 12-month period. Accuracy is key to avoiding overstock.</p>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-shuttle-van"></i>
+            <h3>S: Ordering Cost</h3>
+            <p>The fixed cost incurred every time you place an order. Includes shipping, handling, administrative work, and quality inspection fees.</p>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-coins"></i>
+            <h3>H: Holding Cost</h3>
+            <p>The cost of "carrying" stock in your warehouse. Includes rent, insurance, security, and the risk of the product becoming obsolete or damaged.</p>
+        </div>
+    </div>
+
+    <!-- Numerical Example -->
+    <div class="example-box animate-fadeIn">
+        <div class="formula-display">
+            EOQ = √ (2DS / H)
+        </div>
+        <div class="example-text">
+            <h2>Practical Application</h2>
+            <p>Using the default inputs: Demand of <b>10,000 units</b>, Order Cost of <b>₹500</b>, and Holding Cost of <b>₹20</b>:</p>
+            <p>1. Multiply 2 × 10,000 × 500 = <b>10,000,000</b></p>
+            <p>2. Divide by 20 = <b>500,000</b></p>
+            <p>3. Square Root of 500,000 = <b>707.10</b></p>
+            <p>Result: <b>707 Units</b> is your Economic Order Quantity.</p>
+        </div>
+    </div>
+
+    <!-- Impact Analysis -->
+    <h2 class="section-title">Strategic Impact Analysis</h2>
+    <div class="comparison-grid">
+        <div class="status-box status-low">
+            <h4><i class="fas fa-arrow-down" style="color: #f87171;"></i> If EOQ is too LOW</h4>
+            <p>Ordering too little too often creates "Order Fatigue":</p>
+            <ul>
+                <li>Skyrocketing administrative and shipping costs.</li>
+                <li>Increased risk of stockouts and lost customers.</li>
+                <li>Inability to leverage bulk purchase discounts.</li>
+            </ul>
+        </div>
+        <div class="status-box status-high">
+            <h4><i class="fas fa-arrow-up" style="color: var(--aqua);"></i> If EOQ is too HIGH</h4>
+            <p>Ordering too much at once creates "Dead Inventory":</p>
+            <ul>
+                <li>Massive amounts of capital tied up in stock.</li>
+                <li>Increased warehouse costs (rent/cooling/insurance).</li>
+                <li>High risk of spoilage, damage, or fashion/tech changes.</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function calculateEOQ() {
+        const D = parseFloat(document.getElementById('demand').value) || 0;
+        const S = parseFloat(document.getElementById('orderCost').value) || 0;
+        const H = parseFloat(document.getElementById('holdCost').value) || 0;
+
+        if (H > 0) {
+            const eoq = Math.sqrt((2 * D * S) / H);
+            document.getElementById('eoq-result').innerText = Math.round(eoq).toLocaleString();
+        } else {
+            document.getElementById('eoq-result').innerText = "0";
+        }
+    }
+
+    // Initialize on load
+    window.onload = calculateEOQ;
+</script>
+
+</body>
+</html>

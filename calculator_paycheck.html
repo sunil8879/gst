@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYCHECK MASTER | Real-Time Salary & Tax AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #7FFFD4;
+            --navy: #0f172a;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--navy);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Hero Header */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: clamp(60px, 12vw, 100px) 20px;
+            text-align: center;
+            border-bottom: 8px solid var(--accent);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--accent);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: -60px auto 100px;
+            padding: 0 20px;
+        }
+
+        /* Calculator Card */
+        .calc-card {
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.12);
+            display: flex;
+            flex-wrap: wrap;
+            overflow: visible;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 60px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: clamp(30px, 5vw, 60px);
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 400px;
+            background: #f0fffb;
+            padding: clamp(30px, 5vw, 60px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-left: 2px solid var(--accent);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: #f8fafc;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 15px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Results Display */
+        .net-pay-banner {
+            background: var(--navy);
+            color: white;
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 8px solid var(--accent);
+        }
+
+        .net-pay-banner p { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px;}
+        .net-pay-banner h2 { font-size: clamp(2.2rem, 5vw, 3.5rem); color: white; margin: 0; }
+
+        .breakdown-list { width: 100%; font-weight: 600; font-size: 0.95rem; }
+        .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .deduction { color: #ef4444; }
+        .income { color: #059669; }
+
+        /* General Content Box */
+        .content-box {
+            background: var(--white);
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 30px;
+            margin-bottom: 40px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            min-height: auto;
+        }
+
+        .section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            border-bottom: 5px solid var(--accent);
+            padding-bottom: 5px;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .glossary-card {
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 20px;
+            border-top: 6px solid var(--primary);
+        }
+
+        .example-box {
+            background: var(--navy);
+            color: white;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 30px;
+            border-right: 15px solid var(--accent);
+        }
+
+        .math-text {
+            background: rgba(255,255,255,0.08);
+            padding: 25px;
+            border-radius: 15px;
+            font-family: monospace;
+            font-size: 1.05rem;
+            margin: 20px 0;
+            line-height: 1.8;
+            border-left: 5px solid var(--accent);
+            overflow-x: auto;
+        }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 60px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Advanced Payroll Engine</p>
+        <h1>Paycheck Master</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Main Calculator -->
+        <div class="calc-card">
+            <div class="input-side">
+                <h3 style="margin-top:0; color: var(--primary);"><i class="fas fa-plus-circle"></i> Earnings (Monthly)</h3>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Basic Salary</label>
+                        <input type="number" id="basic" value="50000" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>HRA</label>
+                        <input type="number" id="hra" value="20000" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>DA</label>
+                        <input type="number" id="da" value="0" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>Special Allowance</label>
+                        <input type="number" id="special" value="10000" oninput="calculate()">
+                    </div>
+                </div>
+
+                <h3 style="margin-top:20px; color: #ef4444;"><i class="fas fa-shield-alt"></i> Automatic Tax Engine</h3>
+                <p style="font-size: 0.85rem; color: #64748b;">The engine is using <b>New Tax Regime (2024-25)</b> slabs + 4% Cess + 87A Rebate logic.</p>
+            </div>
+
+            <div class="result-side">
+                <div class="net-pay-banner">
+                    <p>Net Take-Home Pay</p>
+                    <h2 id="netPay">₹ 70,370</h2>
+                </div>
+                
+                <div class="breakdown-list">
+                    <div class="row"><span>Gross Monthly Salary:</span><span class="income" id="resGross">₹ 80,000</span></div>
+                    <div class="row"><span>EPF (12% of Basic+DA):</span><span class="deduction" id="resEpf">- ₹ 6,000</span></div>
+                    <div class="row"><span>Professional Tax:</span><span class="deduction" id="resPt">- ₹ 200</span></div>
+                    <div class="row"><span>Estimated TDS (Income Tax):</span><span class="deduction" id="resTds">- ₹ 3,430</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meaning of Terms -->
+        <div class="content-box">
+            <div class="section-title"><i class="fas fa-info-circle"></i> Components Explained</div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <b>EPF Contribution</b>
+                    <p>Calculated as 12% of your (Basic Salary + DA). This is your mandatory contribution toward your retirement corpus.</p>
+                </div>
+                <div class="glossary-card">
+                    <b>TDS (Tax Deducted at Source)</b>
+                    <p>The monthly portion of your annual income tax. We calculate your annual tax first, then divide by 12 for the monthly deduction.</p>
+                </div>
+                <div class="glossary-card">
+                    <b>Standard Deduction</b>
+                    <p>A flat ₹50,000 is subtracted from your annual gross salary automatically before tax is calculated. This is available in the New Regime.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example with Real Math -->
+        <div class="content-box">
+            <div class="section-title"><i class="fas fa-calculator"></i> Real Math Walkthrough</div>
+            <div class="example-box">
+                <p><b>Profile:</b> Monthly Gross of ₹80,000 (Annual: ₹9,60,000)</p>
+                <div class="math-text">
+                    1. <b>Annual Taxable Income:</b> 9,60,000 - 50,000 (Std Ded) = <b>₹9,10,000</b><br>
+                    2. <b>Slab Calculation (New Regime):</b><br>
+                    &nbsp;&nbsp; - 0 to 3L: Nil<br>
+                    &nbsp;&nbsp; - 3L to 6L (5%): ₹15,000<br>
+                    &nbsp;&nbsp; - 6L to 9L (10%): ₹30,000<br>
+                    &nbsp;&nbsp; - 9L to 9.1L (15%): ₹1,500<br>
+                    3. <b>Total Tax:</b> 46,500 + 4% Cess (1,860) = <b>₹48,360 Yearly</b><br>
+                    4. <b>Monthly TDS:</b> 48,360 ÷ 12 = <b>₹4,030</b><br>
+                    ------------------------------------------------<br>
+                    <b>MONTHLY TAKE HOME: 80,000 (Gross) - 6,000 (EPF) - 200 (PT) - 4,030 (TDS) = ₹69,770</b>
+                </div>
+                <p>Note: If your annual taxable income is ≤ ₹7,00,000, your TDS will be ₹0 due to the 87A rebate.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const basic = parseFloat(document.getElementById('basic').value) || 0;
+            const hra = parseFloat(document.getElementById('hra').value) || 0;
+            const da = parseFloat(document.getElementById('da').value) || 0;
+            const special = parseFloat(document.getElementById('special').value) || 0;
+
+            // 1. Gross Salary
+            const monthlyGross = basic + hra + da + special;
+            const annualGross = monthlyGross * 12;
+
+            // 2. EPF (12% of Basic + DA)
+            const epf = (basic + da) * 0.12;
+
+            // 3. Professional Tax
+            let pt = 0;
+            if (monthlyGross > 10000) pt = 200;
+            else if (monthlyGross > 7500) pt = 175;
+
+            // 4. INCOME TAX ENGINE (New Regime 2024-25)
+            const standardDeduction = 50000;
+            const taxableIncome = Math.max(0, annualGross - standardDeduction);
+            
+            let annualTax = 0;
+            
+            // Tax Rebate u/s 87A: Nil tax if income <= 7L
+            if (taxableIncome > 700000) {
+                // Slabs
+                if (taxableIncome > 1500000) {
+                    annualTax = 150000 + (taxableIncome - 1500000) * 0.30;
+                } else if (taxableIncome > 1200000) {
+                    annualTax = 90000 + (taxableIncome - 1200000) * 0.20;
+                } else if (taxableIncome > 900000) {
+                    annualTax = 45000 + (taxableIncome - 900000) * 0.15;
+                } else if (taxableIncome > 600000) {
+                    annualTax = 15000 + (taxableIncome - 600000) * 0.10;
+                } else if (taxableIncome > 300000) {
+                    annualTax = (taxableIncome - 300000) * 0.05;
+                }
+                
+                // Add 4% Health & Education Cess
+                annualTax = annualTax * 1.04;
+            }
+
+            const monthlyTDS = annualTax / 12;
+
+            // 5. Net Salary
+            const net = monthlyGross - epf - pt - monthlyTDS;
+
+            // Update UI
+            const fmt = (v) => "₹ " + Math.round(v).toLocaleString('en-IN');
+            
+            document.getElementById('resGross').innerText = fmt(monthlyGross);
+            document.getElementById('resEpf').innerText = "- " + fmt(epf);
+            document.getElementById('resPt').innerText = "- " + fmt(pt);
+            document.getElementById('resTds').innerText = "- " + fmt(monthlyTDS);
+            document.getElementById('netPay').innerText = fmt(net);
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>

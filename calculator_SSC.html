@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAFETY STOCK MASTER | Inventory Protection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --deep-navy: #0f172a;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--deep-navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* flamboyant Header */
+        .hero {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px solid var(--aqua);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Calculator Section */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 30px 70px rgba(0, 51, 102, 0.15);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-top: -120px;
+            margin-bottom: 60px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 50px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: var(--soft-aqua);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 500px) { .input-grid { grid-template-columns: 1fr; } }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .input-group i {
+            margin-right: 8px;
+            color: var(--primary-blue);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 700;
+            background: #f8fafc;
+            transition: 0.3s;
+            color: var(--primary-blue);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--aqua);
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Result Display */
+        .safety-badge {
+            background: var(--primary-blue);
+            color: var(--aqua);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        #safety-val {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--deep-navy);
+            line-height: 1;
+        }
+
+        .unit-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 2px;
+        }
+
+        /* Info Sections */
+        .section-box {
+            margin-bottom: 50px;
+            padding: 20px 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            border-bottom: 5px solid var(--aqua);
+        }
+
+        .section-header i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .term-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            border-top: 6px solid var(--primary-blue);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        .term-card:hover { transform: translateY(-5px); }
+
+        .term-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        /* Example Section */
+        .example-box {
+            background: var(--deep-navy);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 25px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .math-display {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--aqua);
+            font-size: 1.2rem;
+        }
+
+        .math-display b { color: var(--aqua); }
+
+        /* Strategic Impact */
+        .impact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .impact-card {
+            padding: 35px;
+            border-radius: 25px;
+            color: var(--white);
+        }
+
+        .impact-low { background: #334155; }
+        .impact-high { background: var(--primary-blue); }
+
+        .impact-card h4 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+        }
+
+        .impact-card ul { padding-left: 20px; margin-top: 15px; }
+        .impact-card li { margin-bottom: 10px; }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 60px 15px; }
+            .calc-wrapper { margin-top: -60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Risk Mitigation Tool</p>
+        <h1>Safety Stock Master</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Main Calculator -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-chart-line"></i> Max Daily Usage</label>
+                        <input type="number" id="maxUsage" value="40" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-truck-loading"></i> Max Lead Time</label>
+                        <input type="number" id="maxLead" value="8" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-shopping-basket"></i> Avg Daily Usage</label>
+                        <input type="number" id="avgUsage" value="20" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-alt"></i> Avg Lead Time</label>
+                        <input type="number" id="avgLead" value="5" oninput="calculate()">
+                    </div>
+                </div>
+            </div>
+            <div class="result-side">
+                <div class="safety-badge">PROTECTION BUFFER</div>
+                <div id="safety-val">220</div>
+                <div class="unit-label">Units</div>
+                <p style="margin-top: 20px; font-weight: 600; color: var(--primary-blue);">Recommended Safety Stock</p>
+            </div>
+        </div>
+
+        <!-- Meaning of Terms -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-book"></i>
+                <h2>Defining the Parameters</h2>
+            </div>
+            <div class="terms-grid">
+                <div class="term-card">
+                    <h4>Maximum Daily Usage</h4>
+                    <p>The absolute peak number of units sold during your busiest day (e.g., during a holiday or sale event).</p>
+                </div>
+                <div class="term-card">
+                    <h4>Maximum Lead Time</h4>
+                    <p>The "Worst Case Scenario" for delivery. The longest time your supplier has ever taken to restock you.</p>
+                </div>
+                <div class="term-card">
+                    <h4>Average Daily Usage</h4>
+                    <p>Your typical, every-day sales volume under normal operating conditions.</p>
+                </div>
+                <div class="term-card">
+                    <h4>Average Lead Time</h4>
+                    <p>The standard time it takes for an order to arrive from your supplier under normal conditions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-vial"></i>
+                <h2>Numerical Case Study</h2>
+            </div>
+            <div class="example-box">
+                <p>Assume your store experiences a sudden rush and logistics delays:</p>
+                <div class="math-display">
+                    Max Usage (40) × Max Lead (8) = <b>320</b><br>
+                    Avg Usage (20) × Avg Lead (5) = <b>100</b><br><br>
+                    Safety Stock = 320 - 100 = <b>220 Units</b>
+                </div>
+                <p>✅ <b>Action:</b> You should always have <b>220 units</b> set aside. This "buffer" ensures that even if sales hit the roof and the truck is late, your shelves stay full.</p>
+            </div>
+        </div>
+
+        <!-- Analysis -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-balance-scale"></i>
+                <h2>Impact Analysis</h2>
+            </div>
+            <div class="impact-container">
+                <div class="impact-card impact-low">
+                    <h4><i class="fas fa-exclamation-triangle"></i> If Safety Stock is LOW</h4>
+                    <ul>
+                        <li><b>Stockout Risk:</b> A single shipping delay could leave you with empty shelves.</li>
+                        <li><b>Customer Churn:</b> Customers will switch to competitors if items are unavailable.</li>
+                        <li><b>Panic Ordering:</b> You may pay high "rush fees" to restock quickly.</li>
+                    </ul>
+                </div>
+                <div class="impact-card impact-high">
+                    <h4><i class="fas fa-coins"></i> If Safety Stock is HIGH</h4>
+                    <ul>
+                        <li><b>Tied Capital:</b> Your cash is "rotting" on shelves instead of being invested elsewhere.</li>
+                        <li><b>Holding Costs:</b> You pay extra for warehouse space, insurance, and security.</li>
+                        <li><b>Waste Risk:</b> Items may expire or become obsolete before they are ever sold.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const maxU = parseFloat(document.getElementById('maxUsage').value) || 0;
+            const maxL = parseFloat(document.getElementById('maxLead').value) || 0;
+            const avgU = parseFloat(document.getElementById('avgUsage').value) || 0;
+            const avgL = parseFloat(document.getElementById('avgLead').value) || 0;
+
+            let ss = (maxU * maxL) - (avgU * avgL);
+            
+            // Safety stock cannot logically be negative
+            if (ss < 0) ss = 0;
+
+            document.getElementById('safety-val').innerText = Math.ceil(ss).toLocaleString();
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>

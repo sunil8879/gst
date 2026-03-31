@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEP MASTER | Break-Even Point Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --deep-navy: #0f172a;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --text-gray: #475569;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--deep-navy);
+            line-height: 1.6;
+        }
+
+        /* flamboyant Hero Header */
+        .hero {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px solid var(--aqua);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Calculator Section - Responsive Flex */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 60px;
+            margin-top: -100px; /* Overlaps hero for style */
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 50px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: var(--soft-aqua);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: var(--text-gray);
+        }
+
+        .input-group i {
+            margin-right: 10px;
+            color: var(--primary-blue);
+        }
+
+        input {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #f1f5f9;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 600;
+            background: #f8fafc;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--aqua);
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.4);
+        }
+
+        .result-badge {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            background: var(--aqua);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-bottom: 15px;
+        }
+
+        #bep-val {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--deep-navy);
+            line-height: 1;
+        }
+
+        .result-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        /* Detailed Explainers */
+        .section-box {
+            margin-bottom: 50px;
+            padding: 20px 0;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .title-row h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            border-bottom: 5px solid var(--aqua);
+        }
+
+        .title-row i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .term-card {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 20px;
+            border-top: 6px solid var(--primary-blue);
+            transition: 0.3s;
+        }
+
+        .term-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .term-card h4 {
+            margin: 0 0 15px 0;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        /* Example Box - Styled for Wow factor */
+        .example-box {
+            background: var(--deep-navy);
+            color: white;
+            padding: 45px;
+            border-radius: 25px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .example-box b { color: var(--aqua); }
+
+        .math-block {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.3rem;
+        }
+
+        /* Strategic Analysis Boxes */
+        .impact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .impact-card {
+            padding: 35px;
+            border-radius: 25px;
+            color: white;
+        }
+
+        .impact-low { background: #334155; }
+        .impact-high { background: var(--primary-blue); }
+
+        .impact-card h4 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .impact-card ul { padding-left: 20px; }
+        .impact-card li { margin-bottom: 12px; }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 60px 15px; }
+            .calc-wrapper { margin-top: -50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Profitability Engineering</p>
+        <h1>Break-Even Point Master</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Calculator Card -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div class="input-group">
+                    <label><i class="fas fa-building"></i> Total Fixed Costs (Annual)</label>
+                    <input type="number" id="fixed-cost" value="50000" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-tag"></i> Selling Price Per Unit</label>
+                    <input type="number" id="price-unit" value="200" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-box-open"></i> Variable Cost Per Unit</label>
+                    <input type="number" id="var-unit" value="120" oninput="calculate()">
+                </div>
+            </div>
+            <div class="result-side">
+                <div class="result-badge">SAFETY THRESHOLD</div>
+                <div id="bep-val">625</div>
+                <div class="result-text">Units Must Be Sold</div>
+                <p style="margin-top: 15px; opacity: 0.8;">To reach the zero-profit, zero-loss point.</p>
+            </div>
+        </div>
+
+        <!-- Terms Meaning -->
+        <div class="section-box">
+            <div class="title-row">
+                <i class="fas fa-info-circle"></i>
+                <h2>Key Terminology</h2>
+            </div>
+            <div class="terms-grid">
+                <div class="term-card">
+                    <h4>Fixed Costs</h4>
+                    <p>These are "Life Support" costs. They stay the same even if you sell nothing. Examples: Office rent, permanent staff salaries, insurance, and equipment leases.</p>
+                </div>
+                <div class="term-card">
+                    <h4>Selling Price Per Unit</h4>
+                    <p>The total amount of money your customer pays for exactly one item. This is the top-line revenue generated per transaction.</p>
+                </div>
+                <div class="term-card">
+                    <h4>Variable Cost Per Unit</h4>
+                    <p>Costs that "breathe" with your sales. If you produce more, these go up. Examples: Raw materials, packaging, delivery fees, and sales commissions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="section-box">
+            <div class="title-row">
+                <i class="fas fa-vial"></i>
+                <h2>Numerical Case Study</h2>
+            </div>
+            <div class="example-box">
+                <p>Formula: <b>Fixed Costs ÷ (Price - Variable Cost)</b></p>
+                <p>Let's calculate based on a startup business:</p>
+                <ul>
+                    <li>Fixed Costs: <b>₹50,000</b></li>
+                    <li>Selling Price: <b>₹200</b></li>
+                    <li>Variable Cost: <b>₹120</b></li>
+                </ul>
+                <div class="math-block">
+                    50,000 / (200 - 120) <br>
+                    50,000 / 80 = 625
+                </div>
+                <p>✅ Analysis: You need to sell <b>625 units</b> just to pay your bills. Every unit sold after 625 adds directly to your profit!</p>
+            </div>
+        </div>
+
+        <!-- Analysis -->
+        <div class="section-box">
+            <div class="title-row">
+                <i class="fas fa-chart-line"></i>
+                <h2>Impact Analysis</h2>
+            </div>
+            <div class="impact-container">
+                <div class="impact-card impact-low">
+                    <h4><i class="fas fa-smile"></i> If BEP is LOW</h4>
+                    <ul>
+                        <li><b>Safety:</b> You can survive market downturns much easier.</li>
+                        <li><b>Speed:</b> You start making profit very early in the month.</li>
+                        <li><b>Flexibility:</b> You have room to lower prices to fight competitors.</li>
+                    </ul>
+                </div>
+                <div class="impact-card impact-high">
+                    <h4><i class="fas fa-exclamation-triangle"></i> If BEP is HIGH</h4>
+                    <ul>
+                        <li><b>Risk:</b> A small dip in sales could lead to a massive financial loss.</li>
+                        <li><b>Pressure:</b> Your sales team needs to maintain high volume constantly.</li>
+                        <li><b>Urgency:</b> You should look for ways to cut fixed costs (like cheaper rent) or increase price.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const fixed = parseFloat(document.getElementById('fixed-cost').value) || 0;
+            const price = parseFloat(document.getElementById('price-unit').value) || 0;
+            const variable = parseFloat(document.getElementById('var-unit').value) || 0;
+
+            const margin = price - variable;
+            const resultDisplay = document.getElementById('bep-val');
+
+            if (margin <= 0) {
+                resultDisplay.innerText = "Error";
+                resultDisplay.style.fontSize = "3rem";
+                resultDisplay.style.color = "red";
+            } else {
+                const bep = fixed / margin;
+                resultDisplay.innerText = Math.ceil(bep).toLocaleString();
+                resultDisplay.style.fontSize = "5rem";
+                resultDisplay.style.color = "var(--deep-navy)";
+            }
+        }
+    </script>
+</body>
+</html>

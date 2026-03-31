@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAX MASTER PRO | Indian Income Tax AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #7FFFD4;
+            --navy: #0f172a;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--navy);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Hero Header - Uses relative height to prevent cutting */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: clamp(40px, 10vw, 80px) 20px;
+            text-align: center;
+            border-bottom: 8px solid var(--accent);
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--accent);
+            font-size: 1rem;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Regime Toggle */
+        .regime-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: -30px auto 40px;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--primary);
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent);
+            color: var(--navy);
+            transform: translateY(-5px);
+        }
+
+        /* Calculator Card - Uses flex-wrap to prevent side-clipping */
+        .calc-card {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+            display: flex;
+            flex-wrap: wrap;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 40px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: clamp(20px, 5vw, 50px);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: #f0fffb;
+            padding: clamp(20px, 5vw, 50px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-left: 2px solid var(--accent);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: #f8fafc;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 15px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Results Display */
+        .tax-banner {
+            background: var(--navy);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tax-banner h2 { font-size: clamp(2rem, 4vw, 3.5rem); color: var(--accent); margin: 0; }
+        .tax-banner p { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }
+
+        .breakdown-list { width: 100%; font-weight: 600; font-size: 0.95rem; }
+        .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+
+        /* General Content Box - NO FIXED HEIGHTS */
+        .content-box {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+        }
+
+        .section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-bottom: 4px solid var(--accent);
+            padding-bottom: 5px;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .glossary-card {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .example-box {
+            background: var(--navy);
+            color: white;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 20px;
+            border-right: 12px solid var(--accent);
+        }
+
+        .math-text {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 25px 15px; }
+            .hero { padding: 50px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Fiscal Intelligence Unit</p>
+        <h1>Income Tax Master</h1>
+    </header>
+
+    <div class="main-content">
+        
+        <!-- Regime Switcher -->
+        <div class="regime-box">
+            <button id="btnNew" class="toggle-btn active" onclick="setRegime('new')">New Regime (Default)</button>
+            <button id="btnOld" class="toggle-btn" onclick="setRegime('old')">Old Tax Regime</button>
+        </div>
+
+        <!-- Main Calculator -->
+        <div class="calc-card">
+            <div class="input-side">
+                <div class="input-group">
+                    <label><i class="fas fa-money-bill-wave"></i> Gross Salary Income</label>
+                    <input type="number" id="salary" value="1000000" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-chart-line"></i> Other Income (Business/Capital Gains)</label>
+                    <input type="number" id="other" value="0" oninput="calculate()">
+                </div>
+                
+                <div id="oldRegimeInputs" style="display:none; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+                    <p style="font-weight: 800; font-size: 0.8rem; color: var(--primary); margin-bottom: 15px;">DEDUCTIONS (OLD REGIME ONLY)</p>
+                    <div class="input-group">
+                        <label>Section 80C (Capped at 1.5L)</label>
+                        <input type="number" id="ded80c" value="0" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>Other (80D / Home Loan / NPS)</label>
+                        <input type="number" id="dedOther" value="0" oninput="calculate()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-side">
+                <div class="tax-banner">
+                    <p>Net Tax Payable</p>
+                    <h2 id="totalTax">₹ 54,600</h2>
+                </div>
+                
+                <div class="breakdown-list">
+                    <div class="row"><span>Taxable Income:</span><span id="resTaxInc">₹ 9,50,000</span></div>
+                    <div class="row"><span>Slab Tax:</span><span id="resSlabTax">₹ 52,500</span></div>
+                    <div class="row"><span>Cess (4%):</span><span id="resCess">₹ 2,100</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meaning of Terms -->
+        <div class="content-box">
+            <div class="section-title"><i class="fas fa-book-open"></i> Meaning of Terms</div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <b>Gross Income</b>
+                    <p>The total sum of your earnings from salary, business, interest, and any other sources before any deductions are applied.</p>
+                </div>
+                <div class="glossary-card">
+                    <b>Standard Deduction</b>
+                    <p>A flat ₹50,000 deduction allowed to all salaried employees. This reduces your taxable income automatically.</p>
+                </div>
+                <div class="glossary-card">
+                    <b>Rebate 87A</b>
+                    <p>A special tax waiver. In the New Regime, if your taxable income is ₹7,00,000 or less, your tax becomes zero.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="content-box">
+            <div class="section-title"><i class="fas fa-calculator"></i> Numerical Example</div>
+            <div class="example-box">
+                <p><b>Profile:</b> Salary of ₹10,00,000 (New Regime)</p>
+                <div class="math-text">
+                    1. Taxable = 10,00,000 - 50,000 (Deduction) = 9,50,000<br>
+                    2. 3L to 6L (5%) = 15,000<br>
+                    3. 6L to 9L (10%) = 30,000<br>
+                    4. 9L to 9.5L (15%) = 7,500<br>
+                    Total Slab Tax = 52,500<br>
+                    Add 4% Cess = 2,100<br>
+                    -------------------------<br>
+                    FINAL TAX = ₹ 54,600
+                </div>
+                <p>✅ <b>Result:</b> The tax is calculated on every rupee within specific slabs to minimize the burden.</p>
+            </div>
+        </div>
+
+        <!-- Impact Section -->
+        <div class="content-box">
+            <div class="section-title"><i class="fas fa-balance-scale"></i> Strategic Comparison</div>
+            <div class="glossary-grid">
+                <div class="glossary-card" style="background:#f0fffb">
+                    <b>If Tax is LOW</b>
+                    <p>Indicates efficient use of slabs or eligibility for Section 87A rebate. High disposable income for investments.</p>
+                </div>
+                <div class="glossary-card" style="background:#fffafa">
+                    <b>If Tax is HIGH</b>
+                    <p>Often occurs when income crosses higher slabs (above 15L). You may need to evaluate the Old Regime if you have high home loan interest or insurance payments.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentRegime = 'new';
+
+        function setRegime(mode) {
+            currentRegime = mode;
+            document.getElementById('btnNew').classList.toggle('active', mode === 'new');
+            document.getElementById('btnOld').classList.toggle('active', mode === 'old');
+            document.getElementById('oldRegimeInputs').style.display = (mode === 'old') ? 'block' : 'none';
+            calculate();
+        }
+
+        function calculate() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const other = parseFloat(document.getElementById('other').value) || 0;
+            
+            const gross = salary + other;
+            let deductions = 50000; // Standard Deduction
+
+            if (currentRegime === 'old') {
+                const c80 = Math.min(150000, parseFloat(document.getElementById('ded80c').value) || 0);
+                const oDed = parseFloat(document.getElementById('dedOther').value) || 0;
+                deductions += (c80 + oDed);
+            }
+
+            const taxable = Math.max(0, gross - deductions);
+            let tax = 0;
+
+            if (currentRegime === 'new') {
+                // New Slabs 2024-25
+                if (taxable <= 300000) tax = 0;
+                else if (taxable <= 600000) tax = (taxable - 300000) * 0.05;
+                else if (taxable <= 900000) tax = 15000 + (taxable - 600000) * 0.10;
+                else if (taxable <= 1200000) tax = 45000 + (taxable - 900000) * 0.15;
+                else if (taxable <= 1500000) tax = 90000 + (taxable - 1200000) * 0.20;
+                else tax = 150000 + (taxable - 1500000) * 0.30;
+
+                // 87A Rebate New Regime (Up to 7L)
+                if (taxable <= 700000) tax = 0;
+            } else {
+                // Old Slabs
+                if (taxable <= 250000) tax = 0;
+                else if (taxable <= 500000) tax = (taxable - 250000) * 0.05;
+                else if (taxable <= 1000000) tax = 12500 + (taxable - 500000) * 0.20;
+                else tax = 112500 + (taxable - 1000000) * 0.30;
+
+                // 87A Rebate Old Regime (Up to 5L)
+                if (taxable <= 500000) tax = 0;
+            }
+
+            const cess = tax * 0.04;
+            const final = tax + cess;
+
+            // Update UI
+            const fmt = (v) => "₹ " + Math.round(v).toLocaleString('en-IN');
+            document.getElementById('resTaxInc').innerText = fmt(taxable);
+            document.getElementById('resSlabTax').innerText = fmt(tax);
+            document.getElementById('resCess').innerText = fmt(cess);
+            document.getElementById('totalTax').innerText = fmt(final);
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>

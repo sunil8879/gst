@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITR MASTER | Inventory Turnover Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --deep-navy: #0f172a;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--deep-navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Header */
+        .hero {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px solid var(--aqua);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Calculator Section */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-top: -120px;
+            margin-bottom: 60px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 50px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: var(--soft-aqua);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .input-group i {
+            margin-right: 10px;
+            color: var(--primary-blue);
+            width: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 700;
+            background: #f8fafc;
+            transition: 0.3s;
+            color: var(--primary-blue);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--aqua);
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Result Display */
+        .itr-circle {
+            width: 200px;
+            height: 200px;
+            background: var(--white);
+            border: 10px solid var(--aqua);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        #itr-val {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--deep-navy);
+            line-height: 1;
+        }
+
+        .itr-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+        }
+
+        /* Info Sections */
+        .section-box {
+            margin-bottom: 50px;
+            padding: 20px 0;
+            overflow: visible; /* Prevents text cutting */
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            border-bottom: 5px solid var(--aqua);
+        }
+
+        .section-header i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        /* Cards Grid */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .term-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            border-left: 8px solid var(--primary-blue);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        .term-card:hover { transform: translateY(-5px); }
+
+        .term-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        /* Numerical Example Section */
+        .example-box {
+            background: var(--deep-navy);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 25px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .math-display {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--aqua);
+        }
+
+        .math-display b { color: var(--aqua); }
+
+        /* Strategic Impact Analysis */
+        .analysis-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .analysis-card {
+            padding: 35px;
+            border-radius: 25px;
+            color: var(--white);
+        }
+
+        .impact-low { background: #334155; }
+        .impact-high { background: var(--primary-blue); }
+
+        .analysis-card h4 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+        }
+
+        .analysis-card ul {
+            padding-left: 20px;
+            margin: 15px 0 0 0;
+        }
+
+        .analysis-card li {
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 60px 15px; }
+            .calc-wrapper { margin-top: -60px; }
+            .itr-circle { width: 160px; height: 160px; }
+            #itr-val { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Efficiency Analytics</p>
+        <h1>Inventory Turnover Master</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Calculator Tool -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div class="input-group">
+                    <label><i class="fas fa-receipt"></i> Cost of Goods Sold (Annual)</label>
+                    <input type="number" id="cogs" value="800000" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-door-open"></i> Opening Inventory</label>
+                    <input type="number" id="opening" value="150000" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-door-closed"></i> Closing Inventory</label>
+                    <input type="number" id="closing" value="250000" oninput="calculate()">
+                </div>
+            </div>
+            <div class="result-side">
+                <div class="itr-circle">
+                    <span id="itr-val">4.0</span>
+                    <span class="itr-label">Turns / Year</span>
+                </div>
+                <div style="font-weight: 800; font-size: 1.1rem; color: var(--primary-blue);">ITR STATUS</div>
+                <p id="itr-msg" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Your inventory is replaced 4 times annually.</p>
+            </div>
+        </div>
+
+        <!-- Terminology -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-info-circle"></i>
+                <h2>Key Terminology</h2>
+            </div>
+            <div class="terms-grid">
+                <div class="term-card">
+                    <h4>Cost of Goods Sold (COGS)</h4>
+                    <p>The direct costs of producing the goods sold by a company. This includes the cost of the materials and labor directly used to create the good. It excludes indirect expenses, such as distribution costs and sales force costs.</p>
+                </div>
+                <div class="term-card">
+                    <h4>Average Inventory</h4>
+                    <p>The median value of inventory throughout a specific period. Since inventory levels fluctuate, we take the starting (Opening) and ending (Closing) values and divide by two to get a representative baseline.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Real-World Example</h2>
+            </div>
+            <div class="example-box">
+                <p>Suppose a retail store has a <b>COGS of ₹8,00,000</b>. They started the year with <b>₹1,50,000</b> in stock and ended with <b>₹2,50,000</b>.</p>
+                
+                <div class="math-display">
+                    <b>Step 1 (Find Average Inventory):</b><br>
+                    (1,50,000 + 2,50,000) / 2 = <b>₹2,00,000</b><br><br>
+                    <b>Step 2 (Find Ratio):</b><br>
+                    8,00,000 / 2,00,000 = <b>4.0</b>
+                </div>
+                <p>✅ <b>Result:</b> The store "cleans out" and refills its entire warehouse <b>4 times every year</b>.</p>
+            </div>
+        </div>
+
+        <!-- Impact Analysis -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-chart-pie"></i>
+                <h2>Strategic Impact Analysis</h2>
+            </div>
+            <div class="analysis-container">
+                <div class="analysis-card impact-low">
+                    <h4><i class="fas fa-exclamation-circle"></i> If ITR is LOW</h4>
+                    <p>A low ratio suggests weak sales or excessive inventory levels:</p>
+                    <ul>
+                        <li><b>Dead Capital:</b> Your money is "rotting" on shelves instead of being invested.</li>
+                        <li><b>High Costs:</b> You are paying more for warehouse space, insurance, and security.</li>
+                        <li><b>Obsolescence:</b> Risk of items becoming outdated, damaged, or expired increases.</li>
+                    </ul>
+                </div>
+                <div class="analysis-card impact-high">
+                    <h4><i class="fas fa-rocket"></i> If ITR is HIGH</h4>
+                    <p>A high ratio usually indicates strong sales and high efficiency:</p>
+                    <ul>
+                        <li><b>Lean Business:</b> You have very little capital tied up in unsold products.</li>
+                        <li><b>Fresh Stock:</b> Customers always see the newest products.</li>
+                        <li><b>The Risk:</b> If too high, you might be losing sales because items are frequently "Out of Stock."</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const cogs = parseFloat(document.getElementById('cogs').value) || 0;
+            const opening = parseFloat(document.getElementById('opening').value) || 0;
+            const closing = parseFloat(document.getElementById('closing').value) || 0;
+
+            const avgInventory = (opening + closing) / 2;
+            const resultDisplay = document.getElementById('itr-val');
+            const msgDisplay = document.getElementById('itr-msg');
+
+            if (avgInventory <= 0) {
+                resultDisplay.innerText = "0.0";
+                msgDisplay.innerText = "Waiting for valid inventory data...";
+            } else {
+                const itr = cogs / avgInventory;
+                resultDisplay.innerText = itr.toFixed(1);
+                msgDisplay.innerText = `Your inventory is replaced approximately ${itr.toFixed(1)} times annually.`;
+            }
+        }
+        
+        // Run once on load
+        window.onload = calculate;
+    </script>
+</body>
+</html>

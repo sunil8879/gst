@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPS WEALTH MASTER | National Pension System Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --electric-blue: #2563eb;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --navy: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* flamboyant Header */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 100px 20px;
+            text-align: center;
+            border-bottom: 12px solid var(--aqua);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            font-weight: 800;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 100px;
+            padding: 0 20px;
+        }
+
+        /* Calculator Card */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 80px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 50px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 400px;
+            background: linear-gradient(180deg, var(--soft-aqua) 0%, #ffffff 100%);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #64748b;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #f1f5f9;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 700;
+            background: #f8fafc;
+            transition: 0.3s;
+            color: var(--primary-blue);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--aqua);
+            background: var(--white);
+            box-shadow: 0 10px 30px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Results Display Styles */
+        .corpus-box {
+            background: var(--navy);
+            color: white;
+            padding: 30px;
+            border-radius: 25px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 8px solid var(--aqua);
+        }
+
+        .corpus-box h2 { font-size: 3rem; color: var(--aqua); margin: 0; }
+        .corpus-box p { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 5px; }
+
+        .split-results {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .split-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .split-card b { font-size: 1.2rem; display: block; color: var(--primary-blue); }
+        .split-card span { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: #94a3b8; }
+
+        .pension-banner {
+            margin-top: 30px;
+            background: var(--aqua);
+            color: var(--navy);
+            width: 100%;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .pension-banner h3 { margin: 0; font-size: 2rem; }
+
+        /* Information Sections */
+        .section-box { margin-bottom: 60px; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 { font-size: 2rem; margin: 0; position: relative; }
+        .section-header h2::after {
+            content: ''; position: absolute; bottom: -10px; left: 0; width: 80px; height: 6px; background: var(--aqua); border-radius: 10px;
+        }
+
+        .section-header i { font-size: 2.5rem; color: var(--primary-blue); }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+        .card:hover { transform: translateY(-10px); border-color: var(--aqua); }
+
+        /* Numerical Example Area */
+        .example-container {
+            background: var(--navy);
+            color: white;
+            padding: 60px;
+            border-radius: 40px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .math-block {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            border-left: 5px solid var(--aqua);
+        }
+
+        .math-block b { color: var(--aqua); }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 80px 15px; }
+            .example-container { padding: 30px; }
+            .split-results { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Retirement Wealth Builder</p>
+        <h1>NPS Master Calculator</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Calculator Tool -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div class="input-group">
+                    <label><i class="fas fa-coins"></i> Monthly Contribution (₹)</label>
+                    <input type="number" id="monthlyInv" value="5000" oninput="calculate()">
+                </div>
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-hourglass-half"></i> Investment Period (Years)</label>
+                        <input type="number" id="years" value="30" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-percentage"></i> Expected Return (%)</label>
+                        <input type="number" id="returnRate" value="10" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-hand-holding-usd"></i> Annuity Purchase (%)</label>
+                        <input type="number" id="annuityPct" value="40" oninput="calculate()" min="40" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-chart-line"></i> Annuity Rate (%)</label>
+                        <input type="number" id="annuityRate" value="6" oninput="calculate()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-side">
+                <div class="corpus-box">
+                    <p>Total NPS Corpus</p>
+                    <h2 id="totalCorpus">₹ 1,13,96,627</h2>
+                </div>
+
+                <div class="split-results">
+                    <div class="split-card">
+                        <span>Lump Sum (60%)</span>
+                        <b id="lumpSum">₹ 68,37,976</b>
+                    </div>
+                    <div class="split-card">
+                        <span>Annuity (40%)</span>
+                        <b id="annuityAmt">₹ 45,58,651</b>
+                    </div>
+                </div>
+
+                <div class="pension-banner">
+                    <p style="margin:0; font-size: 0.8rem; text-transform: uppercase;">Estimated Monthly Pension</p>
+                    <h3 id="monthlyPension">₹ 22,793</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Definition Section -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-book-open"></i>
+                <h2>Decoding the NPS Components</h2>
+            </div>
+            <div class="info-grid">
+                <div class="card">
+                    <h4>Monthly Contribution</h4>
+                    <p>The fixed amount you set aside every month. NPS utilizes power of compounding, so even small amounts like ₹5,000 can grow into crores.</p>
+                </div>
+                <div class="card">
+                    <h4>NPS Corpus</h4>
+                    <p>The final "Wealth Pot" accumulated at age 60. This includes your total principal invested plus the market-linked returns earned over decades.</p>
+                </div>
+                <div class="card">
+                    <h4>Annuity (The Pension Engine)</h4>
+                    <p>The portion of your money you "give back" to an insurance company at retirement in exchange for a guaranteed monthly salary for life.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rules Section -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-gavel"></i>
+                <h2>Latest NPS Rules & Regulations</h2>
+            </div>
+            <div class="info-grid">
+                <div class="card" style="border-left: 5px solid var(--primary-blue);">
+                    <i class="fas fa-user-check" style="font-size: 1.5rem; color: var(--primary-blue);"></i>
+                    <p><b>Age Criteria:</b> Open to all Indian citizens aged 18 to 70 years.</p>
+                </div>
+                <div class="card" style="border-left: 5px solid var(--primary-blue);">
+                    <i class="fas fa-percentage" style="font-size: 1.5rem; color: var(--primary-blue);"></i>
+                    <p><b>Withdrawal Rule:</b> At 60, you can take 60% cash (Tax-Free). 40% MUST be used for pension.</p>
+                </div>
+                <div class="card" style="border-left: 5px solid var(--primary-blue);">
+                    <i class="fas fa-shield-alt" style="font-size: 1.5rem; color: var(--primary-blue);"></i>
+                    <p><b>Tax Benefits:</b> Additional tax deduction of ₹50,000 under Section 80CCD (1B).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Math Visualization</h2>
+            </div>
+            <div class="example-container">
+                <p><b>Scenario: The "Power of 30"</b></p>
+                <p>If you invest ₹5,000/month for 30 years with a 10% market return:</p>
+                
+                <div class="math-block">
+                    1. <b>Accumulation:</b> (5000 × [(1 + 0.00833)^360 - 1] / 0.00833) = <b>₹ 1.13 Crores</b><br>
+                    2. <b>The Split:</b> 60% (₹ 68 Lakhs) goes to your bank. 40% (₹ 45 Lakhs) goes to Annuity.<br>
+                    3. <b>The Pension:</b> (₹ 45 Lakhs × 6%) / 12 months = <b>₹ 22,792 / Month</b>
+                </div>
+                <p>✅ Total benefit: Life-long monthly income + massive instant cash!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const P = parseFloat(document.getElementById('monthlyInv').value) || 0;
+            const years = parseFloat(document.getElementById('years').value) || 0;
+            const annualRate = parseFloat(document.getElementById('returnRate').value) || 0;
+            const annuityPctInput = parseFloat(document.getElementById('annuityPct').value) || 40;
+            const annuityRate = parseFloat(document.getElementById('annuityRate').value) || 0;
+
+            const n = years * 12;
+            const r = (annualRate / 100) / 12;
+
+            let corpus = 0;
+            if (r > 0) {
+                corpus = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+            } else {
+                corpus = P * n;
+            }
+
+            const annuityPct = annuityPctInput / 100;
+            const lumpPct = 1 - annuityPct;
+
+            const annuityAmt = corpus * annuityPct;
+            const lumpSum = corpus * lumpPct;
+            const monthlyPension = (annuityAmt * (annuityRate / 100)) / 12;
+
+            // Update UI
+            document.getElementById('totalCorpus').innerText = "₹ " + Math.round(corpus).toLocaleString('en-IN');
+            document.getElementById('lumpSum').innerText = "₹ " + Math.round(lumpSum).toLocaleString('en-IN');
+            document.getElementById('annuityAmt').innerText = "₹ " + Math.round(annuityAmt).toLocaleString('en-IN');
+            document.getElementById('monthlyPension').innerText = "₹ " + Math.round(monthlyPension).toLocaleString('en-IN');
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRATUITY MASTER | Professional Retirement Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --electric-blue: #2563eb;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --text-navy: #0f172a;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--text-navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* flamboyant Hero Header */
+        .hero {
+            background: linear-gradient(135deg, var(--text-navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px solid var(--aqua);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Calculator Card */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 30px 70px rgba(0, 51, 102, 0.15);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-top: -120px;
+            margin-bottom: 60px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 50px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: var(--soft-aqua);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 700;
+            background: #f8fafc;
+            transition: 0.3s;
+            color: var(--primary-blue);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--aqua);
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Result Display */
+        .gratuity-display {
+            background: var(--primary-blue);
+            color: var(--aqua);
+            padding: 40px;
+            border-radius: 25px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #result-val {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            display: block;
+            line-height: 1;
+        }
+
+        .limit-msg {
+            font-size: 0.75rem;
+            color: var(--white);
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Sections */
+        .section-box {
+            margin-bottom: 50px;
+            padding: 20px 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-title h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            border-bottom: 5px solid var(--aqua);
+        }
+
+        .section-title i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        /* Info Cards */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            border-top: 6px solid var(--primary-blue);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        .info-card:hover { transform: translateY(-5px); }
+
+        .info-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        /* Examples Box */
+        .example-box {
+            background: var(--text-navy);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 25px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .math-block {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--aqua);
+            font-size: 1.1rem;
+        }
+
+        .math-block b { color: var(--aqua); }
+
+        /* Rules Tags */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .rule-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+        }
+
+        .rule-item i { color: var(--electric-blue); font-size: 1.5rem; }
+
+        @media (max-width: 768px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .hero { padding: 60px 15px; }
+            .calc-wrapper { margin-top: -60px; }
+            .rules-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>RETIREMENT EMPOWERMENT</p>
+        <h1>Gratuity Master Calculator</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Calculator Card -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label><i class="fas fa-wallet"></i> Basic Monthly Salary</label>
+                        <input type="number" id="basic" value="40000" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-chart-line"></i> Monthly DA</label>
+                        <input type="number" id="da" value="0" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-alt"></i> Years of Service</label>
+                        <input type="number" id="years" value="10" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-day"></i> Months (Extra)</label>
+                        <input type="number" id="months" value="0" oninput="calculate()" max="11">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-user-tie"></i> Employment Sector</label>
+                    <select id="sector" onchange="calculate()">
+                        <option value="private">Private Sector (Max Limit ₹20L)</option>
+                        <option value="govt">Central Govt Employee (Max Limit ₹25L)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="result-side">
+                <div class="gratuity-display">
+                    <span class="itr-label" style="color:white; opacity: 0.8; font-weight: 800; text-transform: uppercase;">Estimated Gratuity</span>
+                    <span id="result-val">₹ 2,30,769</span>
+                    <div class="limit-msg" id="limit-note">Statutory Limit: ₹ 20,00,000</div>
+                </div>
+                <p style="margin-top: 20px; font-weight: 800; color: var(--primary-blue);">15/26 Rule Applied</p>
+                <small>Calculated based on 26 working days per month.</small>
+            </div>
+        </div>
+
+        <!-- Definition Section -->
+        <div class="section-box">
+            <div class="section-title">
+                <i class="fas fa-info-circle"></i>
+                <h2>Decoding the Terms</h2>
+            </div>
+            <div class="grid-cards">
+                <div class="info-card">
+                    <h4>Last Drawn Salary</h4>
+                    <p>Includes only <b>Basic Salary + Dearness Allowance (DA)</b>. It strictly excludes HRA, Bonuses, Incentives, or Overtime pay.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Years of Service</h4>
+                    <p>Total time spent with the employer. Under law, if you work more than 6 months in your final year, it is rounded <b>UP</b> to the next year.</p>
+                </div>
+                <div class="info-card">
+                    <h4>The 15/26 Factor</h4>
+                    <p>The law considers 26 working days in a month. Gratuity is calculated as 15 days of salary for every completed year of work.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rules Section -->
+        <div class="section-box">
+            <div class="section-title">
+                <i class="fas fa-gavel"></i>
+                <h2>Rules & Regulations</h2>
+            </div>
+            <div class="rules-grid">
+                <div class="rule-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <b>Eligibility</b><br>
+                        Requires minimum <b>5 years</b> of continuous service.
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <div>
+                        <b>Exemptions</b><br>
+                        The 5-year rule is waived in cases of <b>Death or Disability</b>.
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <b>Rounding Rule</b><br>
+                        10 years 7 months is treated as <b>11 years</b>.
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-university"></i>
+                    <div>
+                        <b>Tax Exemption</b><br>
+                        Gratuity received up to the statutory limit is tax-free.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Section -->
+        <div class="section-box">
+            <div class="section-header" style="display:flex; align-items:center; gap:15px;">
+                <i class="fas fa-lightbulb" style="color:var(--primary-blue); font-size: 2rem;"></i>
+                <h2 style="margin:0; border-bottom:5px solid var(--aqua);">Calculation Examples</h2>
+            </div>
+            <br>
+            <div class="example-box">
+                <p><b>Case Study: Private Sector Professional</b></p>
+                <p>Salary: ₹50,000 | Tenure: 10 Years 7 Months (Rounded to 11 Years)</p>
+                <div class="math-block">
+                    Formula: (Basic + DA) × (15/26) × Years<br>
+                    50,000 × 0.5769 × 11 = <b>₹ 3,17,307</b>
+                </div>
+                <p>✅ Since this is below ₹20,00,000, the full amount is payable.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const basic = parseFloat(document.getElementById('basic').value) || 0;
+            const da = parseFloat(document.getElementById('da').value) || 0;
+            const yrs = parseInt(document.getElementById('years').value) || 0;
+            const months = parseInt(document.getElementById('months').value) || 0;
+            const sector = document.getElementById('sector').value;
+
+            // 1. Calculate Effective Years (Rounding Rule)
+            let effectiveYears = yrs;
+            if (months >= 6) {
+                effectiveYears += 1;
+            }
+
+            // 2. Gratuity Formula
+            const lastDrawn = basic + da;
+            let gratuity = lastDrawn * (15 / 26) * effectiveYears;
+
+            // 3. Apply Statutory Limits
+            let limit = 2000000; // Private
+            if (sector === 'govt') {
+                limit = 2500000; // Govt (2024 Rule)
+            }
+
+            if (gratuity > limit) {
+                gratuity = limit;
+                document.getElementById('limit-note').innerText = "Max Limit Reached: ₹ " + limit.toLocaleString('en-IN');
+                document.getElementById('limit-note').style.background = "#ff4757";
+            } else {
+                document.getElementById('limit-note').innerText = "Statutory Limit: ₹ " + limit.toLocaleString('en-IN');
+                document.getElementById('limit-note').style.background = "rgba(255,255,255,0.1)";
+            }
+
+            // 4. Update UI
+            document.getElementById('result-val').innerText = "₹ " + Math.round(gratuity).toLocaleString('en-IN');
+        }
+
+        // Initialize
+        window.onload = calculate;
+    </script>
+</body>
+</html>
