@@ -1023,6 +1023,42 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 .exciting-tools-btn { background: black; color: white; width: 250px; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
 optgroup { color: #64748b; font-size: 11px; text-transform: uppercase; background: white; }
 option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
+
+
+
+
+
+
+/* --- MOBILE RESPONSIVE FIX (Break-point: 768px) --- */
+@media screen and (max-width: 768px) {
+    /* 1. Force the A4 Preview to fit the screen width */
+    #render-target {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 5mm !important; /* Reduce padding for small screens */
+        overflow-x: hidden !important;
+    }
+
+    /* 2. Adjust the container to prevent horizontal scrolling */
+    .preview-box {
+        padding: 10px 5px !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    /* 3. Scale down the internal content so it doesn't leak out */
+    #render-target * {
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+    }
+
+    /* 4. Ensure the UI grid stacks vertically on phones */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
 </style>
 </head>
 <body>
