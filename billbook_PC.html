@@ -313,5 +313,103 @@ button img, button svg {
     document.getElementById('q_date').valueAsDate = new Date();
     addRow();
 </script>
+
+
+
+
+
+
+
+
+
+
+<!-- MASTER OVERFLOW & BUTTON STACKING FIX -->
+<style>
+    /* 1. Prevent global horizontal scroll */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        position: relative;
+    }
+
+    /* 2. Make the input container responsive */
+    .no-print {
+        max-width: 95% !important;
+        padding: 15px !important;
+        margin: 10px auto !important;
+    }
+
+    /* 3. Force vertical stacking for ALL button groups and grids on mobile */
+    @media screen and (max-width: 768px) {
+        .btn-group, .featured-grid, .form-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .btn-act, .select-btn, .field, input, select, textarea {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 5px 0 !important;
+        }
+
+        /* 4. Fix Table Overflow */
+        .ui-table {
+            display: block !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+        }
+
+        /* 5. THE A4 PREVIEW FIX: Auto-scale to fit screen */
+        .preview-box {
+            padding: 10px 5px !important;
+            overflow: hidden !important;
+            display: block !important;
+        }
+
+        #render-target {
+            transform-origin: top left !important;
+            margin: 0 auto !important;
+        }
+    }
+</style>
+
+<script>
+    /**
+     * MASTER PREVIEW SCALER
+     * Calculates the width of the screen and shrinks the A4 preview 
+     * so it never overflows.
+     */
+    function scalePreview() {
+        const target = document.getElementById('render-target');
+        const container = document.querySelector('.preview-box');
+        if (!target || !container || window.innerWidth > 768) {
+            if(target) target.style.transform = 'none';
+            if(container) container.style.height = 'auto';
+            return;
+        }
+
+        const screenWidth = window.innerWidth - 20; // 10px padding on each side
+        const a4Width = 794; // approx 210mm in pixels
+        const scale = screenWidth / a4Width;
+
+        if (scale < 1) {
+            target.style.transform = `scale(${scale})`;
+            // Adjust container height to match scaled content
+            container.style.height = (target.offsetHeight * scale) + 'px';
+        }
+    }
+
+    // Run on load and on resize
+    window.addEventListener('load', scalePreview);
+    window.addEventListener('resize', scalePreview);
+    
+    // Also run when style template changes
+    const observer = new MutationObserver(scalePreview);
+    if(document.getElementById('render-target')) {
+        observer.observe(document.getElementById('render-target'), { childList: true, subtree: true });
+    }
+</script>
 </body>
 </html>
