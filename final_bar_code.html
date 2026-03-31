@@ -35,31 +35,49 @@
 
 
 
+/* --- MOBILE FIX FOR SMALL BUTTONS & VISIBLE PREVIEW --- */
+@media screen and (max-width: 768px) {
+    /* 1. Prevent right-side overflow */
+    html, body { overflow-x: hidden !important; width: 100%; position: relative; }
+    .no-print { padding: 10px !important; width: 100% !important; }
 
-/* 12. VERTICAL STACK FOR TOOL PAGES (BILLBOOK, QUOTATION, ETC.) */
-    /* Forces any flex-row buttons to become a vertical column */
-    .featured-grid, 
-    .button-group, 
-    .tools-container,
-    div[style*="display: flex"], 
-    div[style*="display:flex"] {
+    /* 2. Stack Buttons & Make them Smaller */
+    .btn-group, [style*="display: flex"], [style*="display:flex"] {
         flex-direction: column !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 15px !important;
+        gap: 8px !important; /* Tight gap */
+    }
+    .btn-act {
         width: 100% !important;
+        padding: 10px 15px !important; /* Reduced padding */
+        font-size: 11px !important;    /* Smaller font */
+        height: auto !important;
+        border-radius: 4px !important;
+    }
+    .btn-group .field { width: 100% !important; }
+
+    /* 3. Fix Preview Visibility & Shrink to Fit */
+    .preview-box {
+        padding: 10px 0 !important;
+        background: #334155 !important;
+        margin-top: 20px !important;
+        min-height: 400px !important; /* Ensures space is reserved */
+        overflow: hidden !important;
+    }
+    #render-target {
+        width: 210mm !important; /* Keep internal size for quality */
+        zoom: 0.42;             /* Shrinks to fit mobile screen */
+        -moz-transform: scale(0.42);
+        -moz-transform-origin: top center;
+        margin: 0 auto !important;
+        display: block !important;
     }
 
-    /* Makes every button and the tool dropdown full width */
-    .select-btn, 
-    .exciting-tools-btn, 
-    button {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 5px 0 !important;
-        box-sizing: border-box !important;
+    /* 4. Fix the 500 template grid height so it doesn't push preview too far */
+    .template-grid {
+        max-height: 120px !important;
+        grid-template-columns: repeat(5, 1fr) !important; /* 5 columns instead of 10 on phone */
     }
-
+}
     </style>
 </head>
 <body>
