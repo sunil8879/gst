@@ -94,6 +94,44 @@ button img, button svg {
 
 
 
+
+
+
+@media screen and (max-width: 768px) {
+    /* 1. Stack all buttons and containers vertically */
+    .btn-group, .featured-grid, .form-grid, .btn-group, .template-grid { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+    }
+
+    /* 2. Make buttons and inputs full width */
+    .btn-act, .select-btn, input, select, textarea, .field, .tpl-btn { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        margin: 5px 0 !important;
+    }
+
+    /* 3. THE WIDTH FIX: Force the preview to fill the screen instead of scaling */
+    .preview-box { 
+        padding: 10px 5px !important; 
+    }
+
+    #render-target { 
+        width: 100% !important;      /* Forces preview to screen width */
+        min-width: 100% !important; 
+        min-height: auto !important; 
+        padding: 5mm !important;     /* Reduces padding so it's not cramped */
+        transform: none !important;  /* Stops the "tiny" shrinking effect */
+    }
+
+    /* 4. Fix Table Overflow: Allows the table to scroll if it's too wide for the phone */
+    #render-target table {
+        display: block !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+    }
+}
     </style>
 </head>
 <body>
