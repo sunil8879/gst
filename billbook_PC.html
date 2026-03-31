@@ -36,45 +36,61 @@
 
         @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
 
-/* 12. CLEAN BUTTON STACK FIX */
-/* This only targets visible button containers and forces them to fit the screen */
 
+
+
+
+/* --- START OF VERTICAL BUTTON FIX --- */
+/* 1. Only stack the specific button containers */
 .btn-group, 
 .featured-grid, 
 .button-group {
     display: flex !important;
-    flex-direction: column !important; /* Stacks vertically */
+    flex-direction: column !important;
     align-items: center !important;
     width: 100% !important;
-    gap: 10px !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
-/* Fixes the button overflow by allowing text to wrap and limiting width */
+/* 2. Fix the buttons to prevent horizontal overflow */
 .btn-act, 
 .select-btn, 
 .exciting-tools-btn,
-button:not(.tpl-btn) {
+button:not(.tpl-btn) { 
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important; /* Critical to stop overflow */
     box-sizing: border-box !important;
     white-space: normal !important; /* Allows text to wrap to 2nd line */
-    height: auto !important;
     text-align: center !important;
-    padding: 12px !important;
+    justify-content: center !important;
+    height: auto !important;
+    padding: 15px !important;
 }
 
-/* Keeps the page from scrolling left-to-right */
-body {
+/* 3. Ensure the main container and page don't scroll sideways */
+body, .no-print {
     overflow-x: hidden !important;
     width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-/* Keeps the 500-style grid safe so it doesn't become one long list */
-#tpl-grid {
+/* 4. Ensure the Preview (Invoice/Barcode) fits the screen */
+.preview-box, #render-target {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* 5. Keep the 500 tiny template buttons as a grid (don't stack these) */
+.template-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)) !important;
 }
-
+/* --- END OF VERTICAL BUTTON FIX --- */
 
     </style>
 </head>
