@@ -945,28 +945,29 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     div:has(> #fetch_hsn_input) {
         flex-direction: column !important;
     }
-/* 12. Exciting Tools Dropdown Fix */
-    .tools-container {
-        padding: 20px 10px !important;
+ /* 12. VERTICAL STACK FOR TOOL PAGES (BILLBOOK, QUOTATION, ETC.) */
+    /* Forces any flex-row buttons to become a vertical column */
+    .featured-grid, 
+    .button-group, 
+    .tools-container,
+    div[style*="display: flex"], 
+    div[style*="display:flex"] {
+        flex-direction: column !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
         width: 100% !important;
-        box-sizing: border-box !important;
     }
 
-    .exciting-tools-btn {
+    /* Makes every button and the tool dropdown full width */
+    .select-btn, 
+    .exciting-tools-btn, 
+    button {
         width: 100% !important;
         max-width: 100% !important;
-        font-size: 0.85rem !important;
-        padding: 15px 5px !important;
-        height: auto !important;
-        box-shadow: 4px 4px 0px #000 !important;
+        margin: 5px 0 !important;
+        box-sizing: border-box !important;
     }
-
-    /* Extra safety for very small screens */
-    .tools-container select {
-        display: block !important;
-        margin: 0 auto !important;
-    }
-
 }
 
 
