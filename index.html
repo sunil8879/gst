@@ -2451,13 +2451,11 @@ option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 <script>
 
 window.addEventListener('pageshow', (event) => {
-    // Reset Dropdown
-    const dropdown = document.querySelector('.exciting-tools-btn');
-    if (dropdown) dropdown.selectedIndex = 0;
+    // This now resets EVERY dropdown on the page
+    document.querySelectorAll('.exciting-tools-btn').forEach(el => el.selectedIndex = 0);
     
     // If we were logged in before, reload to trigger Supabase session check
     if (localStorage.getItem('wasLoggedIn') === 'true' && !currentUserId) {
-        // This forces the page to refresh once to re-establish the Google session
         console.log("Restoring session...");
     }
 });
