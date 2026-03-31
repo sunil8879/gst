@@ -376,7 +376,7 @@ button img, button svg {
         const screenWidth = window.innerWidth;
         const a4Width = 800; // Standard A4 pixel width
         // Calculate scale with a 5% safety gap (0.95) to prevent border cutting
-        const scale = (screenWidth / a4Width) * 0.98; 
+        const scale = (screenWidth / a4Width) * 1.25; 
 
         target.style.transform = `scale(${scale})`;
         container.style.height = (target.offsetHeight * scale) + 'px';
