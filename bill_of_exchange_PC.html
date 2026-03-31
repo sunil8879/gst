@@ -104,11 +104,12 @@ button img, button svg {
         display: flex !important; 
         justify-content: center !important; 
         overflow: hidden !important; 
-        padding: 15px 0 !important;
+        padding: 10px 0 !important;
     }
-    #render-target { 
-        transform-origin: top center !important; /* THE FIX: Scale from center, not left */
-        margin: 0 auto !important; 
+#render-target { 
+        transform-origin: top center !important;
+        margin: 0 auto 50px auto !important; /* Adds 50px space at the bottom */
+        box-sizing: border-box !important;   /* Includes the border in width calculation */
     }
 }
     </style>
