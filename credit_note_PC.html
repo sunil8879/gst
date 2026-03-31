@@ -112,7 +112,7 @@ button img, button svg {
         display: flex !important; 
         justify-content: center !important; 
         overflow: hidden !important; 
-        padding: 10px 0 !important;
+        padding: 1px 0 !important;
     }
     #render-target { 
         transform-origin: top center !important; /* THE FIX: Scale from center, not left */
@@ -376,7 +376,7 @@ button img, button svg {
         const screenWidth = window.innerWidth;
         const a4Width = 800; // Standard A4 pixel width
         // Calculate scale with a 5% safety gap (0.95) to prevent border cutting
-        const scale = (screenWidth / a4Width) * 0.95; 
+        const scale = (screenWidth / a4Width) * 0.98; 
 
         target.style.transform = `scale(${scale})`;
         container.style.height = (target.offsetHeight * scale) + 'px';
