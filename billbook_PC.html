@@ -38,68 +38,59 @@
 
 
 /* THE UNIVERSAL MOBILE/OVERFLOW FIX */
-/* 12. MOBILE BUTTON & OVERFLOW FIX (SURGICAL VERSION) */
+/* 12. SMART VERTICAL STACK (NO OVERFLOW, NO NUISANCE) */
 
-/* Only target specific button containers to stack vertically */
+/* 1. Only stack containers that are ALREADY visible */
 .btn-group, 
 .button-group, 
 .featured-grid, 
 .tools-container,
-.action-buttons,
-#tpl-grid {
-    display: flex !important;
-    flex-direction: column !important; /* Stack buttons vertically */
+.action-buttons {
+    display: flex; /* Remove !important so hidden items stay hidden */
+    flex-direction: column !important; 
     align-items: center !important;
-    width: 100% !important;
     gap: 12px !important;
+    width: 100% !important;
 }
 
-/* Force buttons to fit the screen and wrap text if too long */
+/* 2. Fix the buttons themselves so they don't overflow the screen */
 .btn-act, 
 .select-btn, 
-.exciting-tools-btn, 
+.exciting-tools-btn,
 button:not(.tpl-btn) { 
     width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Wrap long text to next line */
     height: auto !important;
-    white-space: normal !important; /* Allows text to wrap */
-    padding: 12px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     text-align: center !important;
-    box-sizing: border-box !important;
+    padding: 12px 15px !important;
+    margin: 5px 0 !important;
 }
 
-/* Fix the 500-style template grid so it doesn't overflow */
+/* 3. Fix the 500-template grid so it fits mobile */
 #tpl-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important;
-    max-height: 200px;
+    width: 100% !important;
+    max-height: 180px;
     overflow-y: auto;
-    width: 100% !important;
 }
 
-/* Prevent the whole page from shaking/scrolling sideways */
+/* 4. Prevent the "Horizontal Shake" on mobile */
 body, html {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    position: relative;
-}
-
-/* Ensure images/barcodes stay inside their boxes */
-#render-target, #render-target * {
     max-width: 100% !important;
-    height: auto !important;
+    overflow-x: hidden !important;
 }
 
-/* EXCLUSION: Prevent templates/headers from breaking */
-/* If "Explore Templates" or "Smart Templates" are inside specific containers, 
-   we ensure they don't get forced into weird flex behaviors */
-.template-header, .section-title {
-    width: 100% !important;
-    text-align: center;
-    display: block !important;
+/* 5. Ensure the preview area doesn't push the screen wide */
+.preview-box, #render-target, #capture-area {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
 }
 
 
