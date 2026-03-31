@@ -1001,6 +1001,23 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 .select-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 .smart-bg { background: #1e40af; } /* Matches Primary Blue */
 .explore-bg { background: #0f172a; } /* Matches Secondary Slate */
+
+
+
+
+
+/* Vertical layout for the new generator buttons */
+.generator-links { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px; 
+    margin-top: 20px; 
+}
+.generator-links .select-btn {
+    width: 460px; /* Combined width of the two dropdowns + gap */
+    max-width: 90%;
+}
 </style>
 </head>
 <body>
@@ -2153,12 +2170,12 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 <!-- Featured Templates Section -->
 <div class="no-print featured-section">
-    <h2 style="color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Featured Templates</h2>
+    <h2 style="color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">35. Featured Templates</h2>
     <div class="featured-grid">
         
         <!-- SMART TEMPLATES Dropdown -->
         <select class="select-btn smart-bg" onchange="if(this.value) window.location.href=this.value">
-            <option value="" selected disabled>SMART TEMPLATES</option>
+            <option value="" selected disabled>36. SMART TEMPLATES</option>
             <option value="final_billbook.html">Bill Book</option>
             <option value="final_bill_of_exchange.html">Bill of Exchange</option>
             <option value="final_credit_note.html">Credit Note</option>
@@ -2173,7 +2190,7 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
         <!-- EXPLORE TEMPLATES Dropdown -->
         <select class="select-btn explore-bg" onchange="if(this.value) window.location.href=this.value">
-            <option value="" selected disabled>EXPLORE TEMPLATES</option>
+            <option value="" selected disabled>37. EXPLORE TEMPLATES</option>
             <option value="billbook_PC.html">Bill Book</option>
             <option value="bill_of_exchange_PC.html">Bill of Exchange</option>
             <option value="credit_note_PC.html">Credit Note</option>
@@ -2186,6 +2203,15 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
             <option value="work_order_PC.html">Work Order</option>
         </select>
 
+    </div>
+ <!-- Generator Buttons (One below the other) -->
+    <div class="generator-links">
+        <button class="select-btn smart-bg" onclick="window.location.href='final_bar_code.html'">
+            38. BAR CODE GENERATOR
+        </button>
+        <button class="select-btn explore-bg" onclick="window.location.href='final_packing_slip.html'">
+            39. PACKING SLIP GENERATOR
+        </button>
     </div>
 </div>
  </div>

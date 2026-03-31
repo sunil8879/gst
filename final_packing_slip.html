@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACKING SLIP PRO - 500 STYLES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --p: #4f46e5; --s: #1e293b; --bg: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .no-print { max-width: 1200px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .field { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        input, select, textarea { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; outline: none; }
+        h3 { background: #0f172a; color: white; padding: 8px; font-size: 11px; border-radius: 4px; text-transform: uppercase; margin: 20px 0 10px 0; }
+        
+        .ui-table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 10px; }
+        .ui-table th { background: #f1f5f9; padding: 8px; border: 1px solid #cbd5e1; font-size: 11px; text-align: left; }
+        .ui-table td { border: 1px solid #cbd5e1; padding: 4px; }
+        .ui-table input { border: none; width: 100%; background: transparent; }
+
+        .template-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 150px; overflow-y: auto; background: #e2e8f0; padding: 10px; border-radius: 8px; }
+        .tpl-btn { padding: 8px 0; border: none; cursor: pointer; color: white; font-size: 9px; font-weight: bold; border-radius: 3px; }
+        .tpl-btn.active { outline: 2px solid black; transform: scale(1.1); z-index: 5; }
+
+        .preview-box { display: flex; justify-content: center; background: #334155; padding: 40px 10px; margin-top: 20px; border-radius: 10px; }
+        #render-target { background: white; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; }
+        
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .btn-act { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h1>Packing Slip Generator (500 Styles)</h1>
+    
+    <h3>1. Sender / Business Details</h3>
+    <div class="form-grid">
+        <div class="field"><label>Logo</label><input type="file" accept="image/*" onchange="loadLogo(this)"></div>
+        <div class="field"><label>Business Name</label><input type="text" id="b_name" value="Global Logistics Corp" oninput="update()"></div>
+        <div class="field"><label>Email</label><input type="text" id="b_email" value="shipping@globallogistics.com" oninput="update()"></div>
+        <div class="field"><label>Contact No</label><input type="text" id="b_phone" value="+1 800 123 4567" oninput="update()"></div>
+        <div class="field"><label>City</label><input type="text" id="b_city" value="New York" oninput="update()"></div>
+        <div class="field"><label>State</label><input type="text" id="b_state" value="NY" oninput="update()"></div>
+        <div class="field"><label>Country</label><input type="text" id="b_country" value="USA" oninput="update()"></div>
+        <div class="field" style="grid-column: span 1;"><label>Street Address</label><input type="text" id="b_addr" value="44 Logistics Way, Suite 10" oninput="update()"></div>
+    </div>
+
+    <h3>2. Customer / Receiver Details</h3>
+    <div class="form-grid">
+        <div class="field"><label>Customer Name</label><input type="text" id="c_name" value="Johnathan Doe" oninput="update()"></div>
+        <div class="field"><label>Contact No</label><input type="text" id="c_phone" value="+1 555 987 6543" oninput="update()"></div>
+        <div class="field"><label>City</label><input type="text" id="c_city" value="Los Angeles" oninput="update()"></div>
+        <div class="field"><label>State</label><input type="text" id="c_state" value="CA" oninput="update()"></div>
+        <div class="field"><label>Country</label><input type="text" id="c_country" value="USA" oninput="update()"></div>
+        <div class="field" style="grid-column: span 1;"><label>Shipping Address</label><input type="text" id="c_addr" value="123 Ocean Drive, Apt 4B" oninput="update()"></div>
+    </div>
+
+    <h3>3. Order Specifications</h3>
+    <div class="form-grid">
+        <div class="field"><label>Invoice No</label><input type="text" id="v_inv" value="INV-9901" oninput="update()"></div>
+        <div class="field"><label>Packing Slip No (Auto)</label><input type="text" id="v_slip" readonly style="background:#f1f5f9; font-weight:bold; color: #4f46e5;"></div>
+        <div class="field"><label>Order Number</label><input type="text" id="o_no" value="ORD-7762" oninput="update()"></div>
+        <div class="field"><label>Order Date</label><input type="date" id="o_date" oninput="update()"></div>
+        <div class="field"><label>Delivery Date</label><input type="date" id="o_del" oninput="update()"></div>
+        <div class="field"><label>Shipping Method</label><input type="text" id="o_method" value="Priority Ground" oninput="update()"></div>
+        <div class="field"><label>Package Number</label><input type="text" id="v_pkg" value="Box 1 of 1" oninput="update()"></div>
+    </div>
+
+    <h3>4. Item Table</h3>
+    <table class="ui-table">
+        <thead>
+            <tr><th width="5%">No</th><th>Description</th><th>SKU</th><th width="15%">Qty</th><th width="5%"></th></tr>
+        </thead>
+        <tbody id="ui_rows"></tbody>
+    </table>
+    <button onclick="addRow()" style="padding: 5px 15px; cursor: pointer; margin-bottom: 10px;">+ Add Item</button>
+
+    <div class="field"><label>Notes / Instructions</label><textarea id="v_notes" rows="2" oninput="update()">Please leave with building concierge if receiver is unavailable.</textarea></div>
+
+    <p style="font-weight:bold; margin-top:20px; font-size: 12px;">SELECT STYLE (1-500):</p>
+    <div class="template-grid" id="tpl-grid"></div>
+
+    <div class="btn-group">
+        <button class="btn-act" style="background:#10b981;" onclick="window.print()"><i class="fas fa-save"></i> SAVE PDF</button>
+        <button class="btn-act" style="background:#2563eb;" onclick="exportWord()"><i class="fas fa-file-word"></i> SAVE WORD</button>
+        <button class="btn-act" style="background:#ef4444;" onclick="resetTool()"><i class="fas fa-undo"></i> RESET</button>
+    </div>
+</div>
+
+<div class="preview-box no-print">
+    <div id="render-target"></div>
+</div>
+
+<script>
+    let logoImg = "";
+    let activeStyle = 1;
+    const colors = ["#4f46e5", "#0f172a", "#059669", "#dc2626", "#d97706"];
+
+    const Modules = {
+        borders: [
+            (c) => `border: 2px solid ${c};`,
+            (c) => `border: 1px solid #ddd; box-shadow: 10px 10px 0px ${c};`,
+            (c) => `border: 5px double ${c}; padding: 5px; outline: 1px solid #000; outline-offset: 3px;`,
+            (c) => `border-left: 20px solid ${c}; border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;`,
+            (c) => `border: 1px solid #000; border-radius: 15px;`
+        ],
+        headers: [
+            (d, c) => `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid ${c}; padding-bottom:10px;">
+                        <div>${d.logo}</div>
+                        <div style="text-align:right"><h2>PACKING SLIP</h2><small><b>${d.bName}</b><br>${d.bAddr}, ${d.bCity}<br>${d.bEmail} | ${d.bPhone}</small></div>
+                      </div>`,
+            (d, c) => `<div style="background:${c}; color:white; padding:20px; margin:-40px -40px 20px -40px; text-align:center;">${d.logo}<h2>${d.bName}</h2><p style="font-size:10px;">${d.bAddr}, ${d.bCity}, ${d.bState}, ${d.bCountry}<br>Email: ${d.bEmail} | Ph: ${d.bPhone}</p></div>`,
+            (d, c) => `<div style="text-align:center;">${d.logo}<h1>${d.bName}</h1><p>${d.bAddr}, ${d.bCity}, ${d.bCountry}</p><hr color="${c}"></div>`,
+            (d, c) => `<table width="100%"><tr><td><h1 style="color:${c}">PACKING MANIFEST</h1></td><td align="right">${d.logo}<b>${d.bName}</b><br><small>${d.bEmail}</small></td></tr></table>`,
+            (d, c) => `<div style="border-left:10px solid ${c}; padding-left:15px;"><h2>${d.bName}</h2><p>${d.bAddr}<br>Ph: ${d.bPhone}</p></div>`
+        ],
+        tables: [
+            (rows, c) => `<table width="100%" border="1" cellpadding="8" style="border-collapse:collapse; margin:20px 0; font-size:12px;"><thead><tr bgcolor="${c}" style="color:white"><th>Description</th><th>SKU</th><th width="80">Qty</th></tr></thead><tbody>${rows}</tbody></table>`,
+            (rows, c) => `<table width="100%" style="border-collapse:collapse; margin:20px 0; font-size:12px;"><thead style="border-bottom:2px solid ${c}"><tr><th>Description</th><th>SKU</th><th>Qty</th></tr></thead><tbody>${rows}</tbody></table>`,
+            (rows, c) => `<table width="100%" border="1" style="border-collapse:collapse; margin:20px 0; border-color:#eee; font-size:12px;"><tbody>${rows}</tbody></table>`,
+            (rows, c) => `<div style="border:1px solid #ddd; border-radius:8px; overflow:hidden;"><table width="100%" border="1" style="border-collapse:collapse; font-size:12px;">${rows}</table></div>`
+        ],
+        backgrounds: [
+            (c) => `#ffffff`, // Pure White
+            (c) => `${c}08`,   // Theme Tint
+            (c) => `#fdf6e3`, // Cream
+            (c) => `#f1f5f9`, // Gray
+            (c) => `#ffffff`  // White
+        ]
+    };
+
+    function generateSlipNo() {
+        const year = new Date().getFullYear();
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('v_slip').value = `PS-${year}-${rand}`;
+    }
+
+    function addRow() {
+        const id = Date.now();
+        const html = `<tr class="item-row" id="row_${id}">
+            <td align="center">.</td>
+            <td><input type="text" class="i-desc" value="Product Description" oninput="update()"></td>
+            <td><input type="text" class="i-sku" value="SKU-99" oninput="update()"></td>
+            <td><input type="number" class="i-qty" value="1" oninput="update()"></td>
+            <td><button onclick="document.getElementById('row_${id}').remove(); update();" style="border:none; color:red; cursor:pointer; background:none;">&times;</button></td>
+        </tr>`;
+        document.getElementById('ui_rows').insertAdjacentHTML('beforeend', html);
+        update();
+    }
+
+    function loadLogo(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { logoImg = e.target.result; update(); }; reader.readAsDataURL(input.files[0]); } }
+
+    function update() {
+        const id = activeStyle - 1;
+        const color = colors[id % 5];
+        
+        const d = {
+            bName: document.getElementById('b_name').value, 
+            bAddr: document.getElementById('b_addr').value, 
+            bCity: document.getElementById('b_city').value,
+            bState: document.getElementById('b_state').value, 
+            bCountry: document.getElementById('b_country').value, 
+            bPhone: document.getElementById('b_phone').value, 
+            bEmail: document.getElementById('b_email').value,
+            logo: logoImg ? `<img src="${logoImg}" width="100" style="width:100px; height:auto;">` : `<b>LOGO</b>`,
+            vInv: document.getElementById('v_inv').value, 
+            vSlip: document.getElementById('v_slip').value,
+            cName: document.getElementById('c_name').value, 
+            cAddr: document.getElementById('c_addr').value, 
+            cCity: document.getElementById('c_city').value,
+            cState: document.getElementById('c_state').value, 
+            cCountry: document.getElementById('c_country').value, 
+            cPhone: document.getElementById('c_phone').value,
+            oNo: document.getElementById('o_no').value, 
+            oDate: document.getElementById('o_date').value, 
+            oDel: document.getElementById('o_del').value,
+            oMethod: document.getElementById('o_method').value, 
+            vPkg: document.getElementById('v_pkg').value, 
+            vNotes: document.getElementById('v_notes').value
+        };
+
+        const bgColor = Modules.backgrounds[Math.floor(id / 5) % 5](color);
+        const border  = Modules.borders[Math.floor(id / 25) % 5](color);
+        const header  = Modules.headers[Math.floor(id / 125) % 5](d, color);
+        const table   = Modules.tables[id % 4];
+
+        const rows = Array.from(document.querySelectorAll('.item-row')).map((row) => `
+            <tr><td>${row.querySelector('.i-desc').value}</td><td align="center">${row.querySelector('.i-sku').value}</td><td align="center"><b>${row.querySelector('.i-qty').value}</b></td></tr>
+        `).join('');
+
+        document.getElementById('render-target').innerHTML = `
+            <div style="${border} background-color: ${bgColor}; padding:40px; min-height:280mm; box-sizing:border-box; font-family:sans-serif;">
+                ${header}
+                <div style="display:flex; justify-content:space-between; margin:20px 0; font-size:12px;">
+                    <div style="width:48%; border:1px solid #ddd; padding:12px; background: rgba(255,255,255,0.4);">
+                        <b style="color:${color}">SHIP TO (RECEIVER):</b><br>${d.cName}<br>${d.cAddr}<br>${d.cCity}, ${d.cState}<br>${d.cCountry}<br>Ph: ${d.cPhone}
+                    </div>
+                    <div style="width:48%; border:1px solid #ddd; padding:12px; background: rgba(255,255,255,0.4);">
+                        <b style="color:${color}">ORDER & SLIP INFO:</b><br>Order #: ${d.oNo}<br>Order Date: ${d.oDate}<br>Invoice #: ${d.vInv}<br><b>Packing Slip: ${d.vSlip}</b><br>Pkg: ${d.vPkg}
+                    </div>
+                </div>
+                <table width="100%" style="font-size:11px; background:rgba(0,0,0,0.03); padding:8px; border-radius:5px; margin-bottom:10px;">
+                    <tr><td><b>Carrier:</b> ${d.oMethod}</td><td align="right"><b>Est. Delivery:</b> ${d.oDel}</td></tr>
+                </table>
+                ${table(rows, color)}
+                <div style="margin-top:15px; font-size:11px; border-top:1px dashed #ccc; padding-top:8px;">
+                    <b>Special Notes:</b> ${d.vNotes}
+                </div>
+                <div style="margin-top:50px; display:flex; justify-content:space-between; font-size:11px; text-align:center;">
+                    <div style="width:180px; border-top:1px solid #000; padding-top:5px;">Checker Signature</div>
+                    <div style="width:180px; border-top:1px solid #000; padding-top:5px;">Recipient Signature</div>
+                </div>
+                <div style="margin-top:30px; font-size:10px; text-align:center; opacity:0.6;">
+                    From: ${d.bName} | Email: ${d.bEmail} | Ph: ${d.bPhone}<br>
+                    ${d.bAddr}, ${d.bCity}, ${d.bState}, ${d.bCountry}
+                </div>
+            </div>`;
+    }
+
+    function exportWord() {
+        const content = document.getElementById('render-target').innerHTML;
+        const source = `<html><head><meta charset='utf-8'></head><body>${content}</body></html>`;
+        const blob = new Blob(['\ufeff', source], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = url; link.download = 'PackingSlip.doc'; link.click();
+    }
+
+    function resetTool() { location.reload(); }
+
+    const grid = document.getElementById('tpl-grid');
+    for (let i = 1; i <= 500; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'tpl-btn'; btn.style.background = colors[(i - 1) % 5]; btn.innerText = i;
+        btn.onclick = () => { activeStyle = i; document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); update(); };
+        grid.appendChild(btn);
+    }
+
+    window.onload = () => { 
+        generateSlipNo();
+        document.getElementById('o_date').valueAsDate = new Date();
+        document.getElementById('o_del').valueAsDate = new Date();
+        addRow(); 
+    };
+</script>
+</body>
+</html>
