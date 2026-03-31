@@ -107,10 +107,14 @@ button img, button svg {
         padding: 10px 0 !important;
     }
 #render-target { 
-        transform-origin: top center !important;
-        margin: 0 auto 100px auto !important; /* Adds 50px space at the bottom */
-        box-sizing: border-box !important;   /* Includes the border in width calculation */
-    }
+    transform-origin: top center !important;
+    margin: 0 auto 50px auto !important; /* THE FIX: 50px gap at the bottom */
+    box-sizing: border-box !important;   /* THE FIX: Forces border to stay inside */
+    width: 210mm; 
+}
+
+/* Also add this to allow height to grow */
+#render-target div { min-height: 0 !important; }
 }
     </style>
 </head>

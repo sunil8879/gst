@@ -22256,6 +22256,17 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     }
 });
 
+
+
+
+// --- MOBILE BACK BUTTON AUTO-LOGIN FIX ---
+window.addEventListener('pageshow', (event) => {
+    if (window.innerWidth <= 768 && localStorage.getItem('wasLoggedIn') === 'true' && !currentUserId) {
+        supabaseClient.auth.getSession().then(res => {
+            if (res.data.session) location.reload();
+        });
+    }
+});
 </script>
 
 
