@@ -945,6 +945,37 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     div:has(> #fetch_hsn_input) {
         flex-direction: column !important;
     }
+/* 12. Exciting Tools Dropdown */
+    .tools-container {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 30px 0 !important;
+    }
+    .exciting-tools-btn {
+        width: 100% !important; /* Matches other mobile buttons */
+        max-width: 100% !important;
+        height: 50px !important;
+        margin: 0 auto !important;
+        font-size: 1rem !important;
+    }
+
+    /* 13. Document Preview Fix (Prevents Horizontal Overflow) */
+    .preview-box {
+        width: 100% !important;
+        padding: 10px 0 !important;
+        overflow-x: hidden !important; /* Kills the right-side scroll */
+    }
+    #render-target {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 10px !important;
+        /* Shrinks the A4 document to fit the phone screen width */
+        zoom: 0.5; 
+        -moz-transform: scale(0.5);
+        -moz-transform-origin: top center;
+    }
 }
 
 
