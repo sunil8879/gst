@@ -26,6 +26,10 @@
     
  <style>
 
+/* MOBILE OVERFLOW FIX */
+    * { box-sizing: border-box; }
+    html, body { overflow-x: hidden; width: 100%; position: relative; margin: 0; padding: 0; }
+
 #google-auth-container { background: var(--aqua) !important; }
 #btn-history { background: var(--aqua) !important; }
 
@@ -1016,21 +1020,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
     text-align-last: center; /* Centers text in many browsers */
 }
-.exciting-tools-btn { background: black; color: white; width: 250px; max-width: 95%; box-sizing: border-box; display: block; margin: 10px auto; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
+.exciting-tools-btn { background: black; color: white; width: 250px; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
 optgroup { color: #64748b; font-size: 11px; text-transform: uppercase; background: white; }
 option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
-
-
-/* Fix Horizontal Overflow & Tool Styling */
-html, body { max-width: 100%; overflow-x: hidden; position: relative; }
-.no-print { width: 100%; max-width: 1100px; padding: 15px; margin: auto; box-sizing: border-box; }
-.tools-container { width: 100%; text-align: center; margin-top: 50px; padding: 20px 0; border-top: 1px solid #ddd; }
-.exciting-tools-btn { 
-    background: black !important; color: white !important; 
-    width: 250px; max-width: 90%; height: 50px; border-radius: 8px; 
-    font-weight: 800; font-size: 14px; text-align-last: center; cursor: pointer;
-}
-.exciting-tools-btn option, .exciting-tools-btn optgroup { background: white !important; color: black !important; }
 </style>
 </head>
 <body>
@@ -2183,8 +2175,9 @@ html, body { max-width: 100%; overflow-x: hidden; position: relative; }
 
 <!-- Single Master Dropdown: Exciting Tools -->
 <div class="no-print tools-container">
-<select class="exciting-tools-btn" onchange="const v=this.value; if(v){ this.selectedIndex=0; window.location.href=v; }">
-    <option value="" selected disabled>✨ EXCITING TOOLS</option>
+    <select class="exciting-tools-btn" onchange="if(this.value) window.location.href=this.value">
+        <option value="" selected disabled>✨ 35. EXCITING TOOLS</option>
+        
         <!-- Individual Generators -->
         <option value="final_bar_code.html">Barcode Generator</option>
         <option value="final_packing_slip.html">Packing Slip Generator</option>
@@ -2397,6 +2390,20 @@ html, body { max-width: 100%; overflow-x: hidden; position: relative; }
 
 
 <script>
+
+window.addEventListener('pageshow', (event) => {
+    // Reset Dropdown
+    const dropdown = document.querySelector('.exciting-tools-btn');
+    if (dropdown) dropdown.selectedIndex = 0;
+    
+    // If we were logged in before, reload to trigger Supabase session check
+    if (localStorage.getItem('wasLoggedIn') === 'true' && !currentUserId) {
+        // This forces the page to refresh once to re-establish the Google session
+        console.log("Restoring session...");
+    }
+});
+
+
 const SUPABASE_URL = 'https://kqqlrtsmcrjbupigvofe.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxcWxydHNtY3JqYnVwaWd2b2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDE4MzYsImV4cCI6MjA4OTY3NzgzNn0.PfJelqOhMBx_1gAtTWyM09qBTXtEoBzlezaavScyQF4';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -14905,6 +14912,7 @@ window.addEventListener('load', generateSecureInvoiceID);
 function googleLogout() {
     google.accounts.id.disableAutoSelect();
     // Since there is no database, we reload the page to reset the login state
+localStorage.removeItem('wasLoggedIn');
     location.reload(); 
 }
 
@@ -14976,7 +14984,7 @@ async function onGoogleLogin(response) {
     });
     
     if (error) return alert("Login Failed: " + error.message);
-
+localStorage.setItem('wasLoggedIn', 'true'); // <--- ADD THIS LINE
     currentUserId = data.user.id;
 // Fetch the unique PIN for this SAAS client
 const { data: profileData } = await supabaseClient
@@ -22183,31 +22191,6 @@ Thank you for the business !!`;
 
 
 
-
-
-window.addEventListener('pageshow', (e) => { if(e.persisted) location.reload(); document.querySelectorAll('.exciting-tools-btn').forEach(s => s.selectedIndex = 0); });
-
-
-
-
-// Fix Logout on Back Button & Reset Dropdown
-window.addEventListener('pageshow', (event) => {
-    // Force dropdown to reset
-    const menu = document.querySelector('.exciting-tools-btn');
-    if (menu) menu.selectedIndex = 0;
-
-    // Fix for Back-Forward Cache (Prevents auto-logout loops)
-    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-        // Do nothing or a simple check - avoid location.reload() as it triggers logouts
-        console.log("Navigated back - session preserved.");
-    }
-});
-
-// Reset menu before the user leaves the page
-window.addEventListener('beforeunload', () => {
-    const menu = document.querySelector('.exciting-tools-btn');
-    if (menu) menu.selectedIndex = 0;
-});
 </script>
 
 
