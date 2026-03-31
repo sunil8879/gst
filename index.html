@@ -2171,8 +2171,8 @@ option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 
 <!-- Single Master Dropdown: Exciting Tools -->
 <div class="no-print tools-container">
- <select class="exciting-tools-btn" style="text-align-last: center;" onchange="if(this.value) { window.location.href=this.value; }">
-    <option value="" selected disabled>✨ EXCITING TOOLS</option>
+<select class="exciting-tools-btn" style="text-align-last: center;" onchange="const v=this.value; this.selectedIndex=0; if(v) window.location.href=v;">
+    <option value="" selected disabled>✨ 35. EXCITING TOOLS</option>
         <!-- Individual Generators -->
         <option value="final_bar_code.html">Barcode Generator</option>
         <option value="final_packing_slip.html">Packing Slip Generator</option>
@@ -22169,10 +22169,11 @@ Thank you for the business !!`;
 
 
 
-window.addEventListener('pageshow', () => {
-    const toolsBtn = document.querySelector('.exciting-tools-btn');
-    if(toolsBtn) toolsBtn.selectedIndex = 0;
-});
+
+
+
+
+window.addEventListener('pageshow', (e) => { if(e.persisted) location.reload(); document.querySelectorAll('.exciting-tools-btn').forEach(s => s.selectedIndex = 0); });
 
 </script>
 
