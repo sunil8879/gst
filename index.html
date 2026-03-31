@@ -1019,6 +1019,18 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 .exciting-tools-btn { background: black; color: white; width: 250px; max-width: 95%; box-sizing: border-box; display: block; margin: 10px auto; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
 optgroup { color: #64748b; font-size: 11px; text-transform: uppercase; background: white; }
 option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
+
+
+/* Fix Horizontal Overflow & Tool Styling */
+html, body { max-width: 100%; overflow-x: hidden; position: relative; }
+.no-print { width: 100%; max-width: 1100px; padding: 15px; margin: auto; box-sizing: border-box; }
+.tools-container { width: 100%; text-align: center; margin-top: 50px; padding: 20px 0; border-top: 1px solid #ddd; }
+.exciting-tools-btn { 
+    background: black !important; color: white !important; 
+    width: 250px; max-width: 90%; height: 50px; border-radius: 8px; 
+    font-weight: 800; font-size: 14px; text-align-last: center; cursor: pointer;
+}
+.exciting-tools-btn option, .exciting-tools-btn optgroup { background: white !important; color: black !important; }
 </style>
 </head>
 <body>
@@ -2171,8 +2183,8 @@ option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 
 <!-- Single Master Dropdown: Exciting Tools -->
 <div class="no-print tools-container">
-<select class="exciting-tools-btn" style="text-align-last: center;" onchange="const v=this.value; this.selectedIndex=0; if(v) window.location.href=v;">
-    <option value="" selected disabled>✨ 35. EXCITING TOOLS</option>
+<select class="exciting-tools-btn" onchange="const v=this.value; if(v){ this.selectedIndex=0; window.location.href=v; }">
+    <option value="" selected disabled>✨ EXCITING TOOLS</option>
         <!-- Individual Generators -->
         <option value="final_bar_code.html">Barcode Generator</option>
         <option value="final_packing_slip.html">Packing Slip Generator</option>
@@ -22175,6 +22187,27 @@ Thank you for the business !!`;
 
 window.addEventListener('pageshow', (e) => { if(e.persisted) location.reload(); document.querySelectorAll('.exciting-tools-btn').forEach(s => s.selectedIndex = 0); });
 
+
+
+
+// Fix Logout on Back Button & Reset Dropdown
+window.addEventListener('pageshow', (event) => {
+    // Force dropdown to reset
+    const menu = document.querySelector('.exciting-tools-btn');
+    if (menu) menu.selectedIndex = 0;
+
+    // Fix for Back-Forward Cache (Prevents auto-logout loops)
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        // Do nothing or a simple check - avoid location.reload() as it triggers logouts
+        console.log("Navigated back - session preserved.");
+    }
+});
+
+// Reset menu before the user leaves the page
+window.addEventListener('beforeunload', () => {
+    const menu = document.querySelector('.exciting-tools-btn');
+    if (menu) menu.selectedIndex = 0;
+});
 </script>
 
 
