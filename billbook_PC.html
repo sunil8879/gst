@@ -30,48 +30,67 @@
         .btn-act { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
 
         /* Featured Templates Dropdowns */
-        .featured-section { margin-top: 60px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 30px; padding-bottom: 50px; }
+        .featured-section {display: none !important; }
         .featured-grid { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
         .select-btn { padding: 15px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-transform: uppercase; font-size: 13px; min-width: 220px; }
 
-@media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
+        @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
 
-/* --- MOBILE ONLY CORRECTIONS --- */
-@media (max-width: 768px) {
-    /* Prevent side-to-side shaking */
-    html, body { overflow-x: hidden !important; width: 100%; position: relative; }
-    .no-print { padding: 15px; width: 100%; box-sizing: border-box; }
 
-    /* 12. VERTICAL STACK FOR BOTTOM BUTTONS */
-    .featured-grid, 
-    .btn-group,
-    .featured-section {
-        display: flex !important;
-        flex-direction: column !important; /* Forces Column View */
-        align-items: center !important;
-        gap: 15px !important;
-        width: 100% !important;
-    }
+/* 12. VERTICAL STACK FOR TOOL PAGES (REFINED) */
+/* This ensures buttons stack vertically and fit within the screen */
 
-    /* Force buttons and dropdowns to be full width and not overflow */
-    .select-btn, 
-    .btn-act, 
-    .tpl-btn,
-    .exciting-tools-btn,
-    button, 
-    select {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 5px 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Fix the 500 Styles grid so it doesn't stay 10 columns wide */
-    .template-grid {
-        grid-template-columns: repeat(5, 1fr) !important;
-    }
+/* 1. Target the containers for buttons and tools */
+.featured-grid, 
+.button-group, 
+.tools-container,
+.btn-group,
+#tpl-grid {
+    display: flex !important;
+    flex-direction: column !important; /* Force vertical stacking */
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+    padding: 10px 0 !important;
+    box-sizing: border-box !important;
 }
-</style>
+
+/* 2. Target the buttons themselves to make them responsive */
+.select-btn, 
+.exciting-tools-btn, 
+.btn-act,
+button,
+select {
+    width: 100% !important;      /* Make them full width of container */
+    max-width: 500px !important; /* Prevent them from becoming too wide on desktop */
+    margin: 5px 0 !important;
+    padding: 12px 15px !important;
+    height: auto !important;     /* Allow button to expand if text is long */
+    white-space: normal !important; /* Allow text to wrap inside the button */
+    word-wrap: break-word !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+/* 3. Specifically fix the Template Grid if it's overflowing */
+#tpl-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)) !important; /* Better than forced columns */
+    gap: 5px !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* 4. Ensure images or barcodes inside buttons don't break the width */
+button img, button svg {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
 
 
 
