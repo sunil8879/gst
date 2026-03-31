@@ -33,38 +33,33 @@
 
         @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { border: none !important; box-shadow: none; } }
 
-/* --- MOBILE REPAIR FOR THIS TOOL --- */
-@media screen and (max-width: 768px) {
-    /* 1. Prevent the page from pushing to the right */
-    html, body { overflow-x: hidden; width: 100%; position: relative; }
-    .no-print { padding: 15px !important; width: 100% !important; }
 
-    /* 2. Stack action buttons one below the other */
-    .btn-group {
+
+
+/* 12. VERTICAL STACK FOR TOOL PAGES (BILLBOOK, QUOTATION, ETC.) */
+    /* Forces any flex-row buttons to become a vertical column */
+    .featured-grid, 
+    .button-group, 
+    .tools-container,
+    div[style*="display: flex"], 
+    div[style*="display:flex"] {
         flex-direction: column !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
         width: 100% !important;
-        gap: 10px !important;
-    }
-    .btn-act, .btn-group .field {
-        width: 100% !important; /* Full width buttons */
-        margin: 0 !important;
     }
 
-    /* 3. Shrink the A4 document so it doesn't cause overflow */
-    .preview-box {
-        padding: 10px 0 !important;
+    /* Makes every button and the tool dropdown full width */
+    .select-btn, 
+    .exciting-tools-btn, 
+    button {
         width: 100% !important;
-        overflow-x: hidden !important;
-    }
-    #render-target {
-        width: 100% !important;
-        min-width: 100% !important;
         max-width: 100% !important;
-        transform: scale(0.45); /* Force shrink the document */
-        transform-origin: top center;
-        margin-bottom: -400px; /* Pull footer back up after scale */
+        margin: 5px 0 !important;
+        box-sizing: border-box !important;
     }
-}
+
     </style>
 </head>
 <body>
