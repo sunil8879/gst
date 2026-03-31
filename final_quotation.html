@@ -63,6 +63,60 @@
         display: block !important;
     }
 }
+
+/* 12. VERTICAL STACK FOR TOOL PAGES (REFINED) */
+/* This ensures buttons stack vertically and fit within the screen */
+
+/* 1. Target the containers for buttons and tools */
+.featured-grid, 
+.button-group, 
+.tools-container,
+.btn-group,
+#tpl-grid {
+    display: flex !important;
+    flex-direction: column !important; /* Force vertical stacking */
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+    padding: 10px 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Target the buttons themselves to make them responsive */
+.select-btn, 
+.exciting-tools-btn, 
+.btn-act,
+button,
+select {
+    width: 100% !important;      /* Make them full width of container */
+    max-width: 500px !important; /* Prevent them from becoming too wide on desktop */
+    margin: 5px 0 !important;
+    padding: 12px 15px !important;
+    height: auto !important;     /* Allow button to expand if text is long */
+    white-space: normal !important; /* Allow text to wrap inside the button */
+    word-wrap: break-word !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+/* 3. Specifically fix the Template Grid if it's overflowing */
+#tpl-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)) !important; /* Better than forced columns */
+    gap: 5px !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* 4. Ensure images or barcodes inside buttons don't break the width */
+button img, button svg {
+    max-width: 100% !important;
+    height: auto !important;
+}
     </style>
 </head>
 <body>
