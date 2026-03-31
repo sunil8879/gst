@@ -22228,6 +22228,34 @@ Thank you for the business !!`;
 
 
 
+
+// --- AUTO-RESTORE SESSION ON REFRESH ---
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (session && session.user) {
+        // Reuse your existing logic to show the app
+        const user = session.user;
+        currentUserId = user.id;
+        currentUserEmail = user.email;
+
+        // Update UI exactly as you do in onGoogleLogin
+        document.getElementById('login-view').style.display = 'none';
+        document.getElementById('logout-view').style.display = 'flex';
+        document.getElementById('user-photo').src = user.user_metadata.avatar_url;
+        document.getElementById('user-display-name').innerText = user.user_metadata.full_name;
+
+        document.querySelectorAll('.input-panel > *:not(#google-auth-container)').forEach(el => {
+            if (!el.id.endsWith('-modal') && el.id !== 'exporter-section') {
+                let displayType = el.classList.contains('form-row') ? 'grid' : 'block';
+                el.style.setProperty('display', displayType, 'important');
+            }
+        });
+        document.getElementById('visitor-box').style.display = 'none';
+        
+        // Refresh preview
+        if (typeof liveUpdate === "function") liveUpdate();
+    }
+});
+
 </script>
 
 
