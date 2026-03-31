@@ -90,6 +90,37 @@ button img, button svg {
     max-width: 100% !important;
     height: auto !important;
 }
+
+
+
+@media screen and (max-width: 768px) {
+    /* Stack all buttons and inputs vertically */
+    .btn-group, .featured-grid, .form-grid, .btn-group { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+    }
+    .btn-act, .select-btn, input, select, textarea, .field { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+    }
+    /* Center the preview container */
+    .preview-box { 
+        display: flex !important; 
+        justify-content: center !important; 
+        overflow: hidden !important; 
+        padding: 10px 0 !important;
+    }
+#render-target { 
+    transform-origin: top center !important;
+    margin: 0 auto 50px auto !important; /* THE FIX: 50px gap at the bottom */
+    box-sizing: border-box !important;   /* THE FIX: Forces border to stay inside */
+    width: 210mm; 
+}
+
+/* Also add this to allow height to grow */
+#render-target div { min-height: 0 !important; }
+}
     </style>
 </head>
 <body>
@@ -412,6 +443,29 @@ default: html = wrap(`<table width="100%"><tr><td>${sellerBlock}</td><td align="
         });
         addRow();
     };
+</script>
+
+
+
+<script>
+    function masterScaler() {
+        const target = document.getElementById('render-target');
+        const container = document.querySelector('.preview-box');
+        if (!target || window.innerWidth > 768) return;
+
+        const screenWidth = window.innerWidth;
+        const a4Width = 800; // Standard A4 pixel width
+        // Calculate scale with a 5% safety gap (0.95) to prevent border cutting
+        const scale = (screenWidth / a4Width) * 0.92; 
+
+        target.style.transform = `scale(${scale})`;
+        container.style.height = (target.offsetHeight * scale) + 'px';
+    }
+
+    window.addEventListener('load', masterScaler);
+    window.addEventListener('resize', masterScaler);
+    // Re-scale if the user clicks a style button
+    document.addEventListener('click', () => setTimeout(masterScaler, 50));
 </script>
 </body>
 </html>
