@@ -1006,18 +1006,19 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-/* Vertical layout for the new generator buttons */
-.generator-links { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 15px; 
-    margin-top: 20px; 
+/* Styled Tools Dropdown */
+.tools-container { margin-top: 60px; text-align: center; padding-bottom: 60px; border-top: 1px solid #e2e8f0; padding-top: 30px; }
+.exciting-tools-btn { 
+    padding: 16px 30px; border: none; border-radius: 8px; cursor: pointer; 
+    font-weight: 800; color: white; text-transform: uppercase; font-size: 14px; 
+    background: #1e40af; /* Deep Blue */
+    width: 400px; max-width: 95%; outline: none; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+    text-align-last: center; /* Centers text in many browsers */
 }
-.generator-links .select-btn {
-    width: 460px; /* Combined width of the two dropdowns + gap */
-    max-width: 90%;
-}
+.exciting-tools-btn { background: black; color: white; width: 250px; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
+optgroup { color: #64748b; font-size: 11px; text-transform: uppercase; background: white; }
+option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 </style>
 </head>
 <body>
@@ -2168,14 +2169,17 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
 
 
 
-<!-- Featured Templates Section -->
-<div class="no-print featured-section">
-    <h2 style="color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">35. Featured Templates</h2>
-    <div class="featured-grid">
+<!-- Single Master Dropdown: Exciting Tools -->
+<div class="no-print tools-container">
+    <select class="exciting-tools-btn" onchange="if(this.value) window.location.href=this.value">
+        <option value="" selected disabled>✨ 35. EXCITING TOOLS</option>
         
-        <!-- SMART TEMPLATES Dropdown -->
-        <select class="select-btn smart-bg" onchange="if(this.value) window.location.href=this.value">
-            <option value="" selected disabled>36. SMART TEMPLATES</option>
+        <!-- Individual Generators -->
+        <option value="final_bar_code.html">Barcode Generator</option>
+        <option value="final_packing_slip.html">Packing Slip Generator</option>
+        
+        <!-- Featured Templates Category -->
+        <optgroup label="─── SMART TEMPLATES ───">
             <option value="final_billbook.html">Bill Book</option>
             <option value="final_bill_of_exchange.html">Bill of Exchange</option>
             <option value="final_credit_note.html">Credit Note</option>
@@ -2186,11 +2190,9 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
             <option value="final_receipts.html">Receipt</option>
             <option value="final_voucher.html">Voucher</option>
             <option value="final_work_order.html">Work Order</option>
-        </select>
+        </optgroup>
 
-        <!-- EXPLORE TEMPLATES Dropdown -->
-        <select class="select-btn explore-bg" onchange="if(this.value) window.location.href=this.value">
-            <option value="" selected disabled>37. EXPLORE TEMPLATES</option>
+        <optgroup label="─── EXPLORE TEMPLATES ───">
             <option value="billbook_PC.html">Bill Book</option>
             <option value="bill_of_exchange_PC.html">Bill of Exchange</option>
             <option value="credit_note_PC.html">Credit Note</option>
@@ -2201,24 +2203,10 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
             <option value="receipts_PC.html">Receipt</option>
             <option value="voucher_PC.html">Voucher</option>
             <option value="work_order_PC.html">Work Order</option>
-        </select>
-
-    </div>
- <!-- Generator Buttons (One below the other) -->
-    <div class="generator-links">
-        <button class="select-btn smart-bg" onclick="window.location.href='final_bar_code.html'">
-            38. BAR CODE GENERATOR
-        </button>
-        <button class="select-btn explore-bg" onclick="window.location.href='final_packing_slip.html'">
-            39. PACKING SLIP GENERATOR
-        </button>
-    </div>
+        </optgroup>
+    </select>
 </div>
- </div>
-
-
-
-
+</div>
 
 
 <!-- Mapping Modal -->
