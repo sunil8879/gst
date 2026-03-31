@@ -1016,7 +1016,7 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
     text-align-last: center; /* Centers text in many browsers */
 }
-.exciting-tools-btn { background: black; color: white; width: 250px; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
+.exciting-tools-btn { background: black; color: white; width: 250px; max-width: 95%; box-sizing: border-box; display: block; margin: 10px auto; } .exciting-tools-btn option, .exciting-tools-btn optgroup { background: white; color: black; }
 optgroup { color: #64748b; font-size: 11px; text-transform: uppercase; background: white; }
 option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 </style>
@@ -2171,9 +2171,8 @@ option { color: #1e293b; font-size: 14px; text-transform: none; padding: 10px; }
 
 <!-- Single Master Dropdown: Exciting Tools -->
 <div class="no-print tools-container">
-    <select class="exciting-tools-btn" onchange="if(this.value) window.location.href=this.value">
-        <option value="" selected disabled>✨ 35. EXCITING TOOLS</option>
-        
+ <select class="exciting-tools-btn" style="text-align-last: center;" onchange="if(this.value) { window.location.href=this.value; }">
+    <option value="" selected disabled>✨ EXCITING TOOLS</option>
         <!-- Individual Generators -->
         <option value="final_bar_code.html">Barcode Generator</option>
         <option value="final_packing_slip.html">Packing Slip Generator</option>
@@ -22170,7 +22169,10 @@ Thank you for the business !!`;
 
 
 
-
+window.addEventListener('pageshow', () => {
+    const toolsBtn = document.querySelector('.exciting-tools-btn');
+    if(toolsBtn) toolsBtn.selectedIndex = 0;
+});
 
 </script>
 
