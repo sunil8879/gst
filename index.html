@@ -945,28 +945,28 @@ body, .card-slider-container, .ticker-wrap, #finance-ticker-wrap { background:#f
     div:has(> #fetch_hsn_input) {
         flex-direction: column !important;
     }
- /* 12. VERTICAL STACK FOR TOOL PAGES (BILLBOOK, QUOTATION, ETC.) */
-    /* Forces any flex-row buttons to become a vertical column */
-    .featured-grid, 
-    .button-group, 
-    .tools-container,
-    div[style*="display: flex"], 
-    div[style*="display:flex"] {
-        flex-direction: column !important;
-        display: flex !important;
+.btn-group, 
+    .editor-panel div[style*="display:flex"], 
+    .editor-panel div[style*="display: flex"] {
+        flex-direction: column !important; /* Forces buttons into a vertical column */
         align-items: center !important;
-        gap: 15px !important;
+        gap: 12px !important; /* Adds space between the stacked buttons */
         width: 100% !important;
     }
 
-    /* Makes every button and the tool dropdown full width */
-    .select-btn, 
-    .exciting-tools-btn, 
-    button {
-        width: 100% !important;
+    .btn-act, 
+    .btn-group .btn-act, 
+    .btn-group .field {
+        width: 100% !important; /* Makes each button full width of the screen */
         max-width: 100% !important;
-        margin: 5px 0 !important;
-        box-sizing: border-box !important;
+        margin: 0 !important;
+        justify-content: center !important; /* Centers text and icons inside button */
+    }
+
+    /* Fix for the download format dropdown if present */
+    #download_format {
+        width: 100% !important;
+        height: 45px !important;
     }
 }
 
