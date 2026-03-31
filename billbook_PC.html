@@ -36,60 +36,43 @@
 
         @media print { .no-print { display: none !important; } .preview-box { background: white; padding: 0; } #render-target { width: 100%; box-shadow: none; border:none !important; } }
 
+/* 12. CLEAN BUTTON STACK FIX */
+/* This only targets visible button containers and forces them to fit the screen */
 
-/* 12. UNIVERSAL OVERFLOW & VERTICAL STACK FIX */
+.btn-group, 
+.featured-grid, 
+.button-group {
+    display: flex !important;
+    flex-direction: column !important; /* Stacks vertically */
+    align-items: center !important;
+    width: 100% !important;
+    gap: 10px !important;
+}
 
-/* 1. Force buttons to behave like blocks (one per line) */
-/* We target the buttons directly so we don't have to guess the container names */
+/* Fixes the button overflow by allowing text to wrap and limiting width */
 .btn-act, 
 .select-btn, 
-.exciting-tools-btn, 
-.no-print button:not(.tpl-btn) { 
-    display: block !important;      /* Forces element to take up the full width */
-    width: 100% !important;         /* Ensures it fills the screen */
-    max-width: 100% !important; 
-    margin: 10px 0 !important;      /* Adds space between stacked buttons */
-    white-space: normal !important;  /* Allows long text to wrap to the next line */
-    height: auto !important;        /* Allows the button to grow taller for wrapped text */
+.exciting-tools-btn,
+button:not(.tpl-btn) {
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
+    white-space: normal !important; /* Allows text to wrap to 2nd line */
+    height: auto !important;
     text-align: center !important;
+    padding: 12px !important;
 }
 
-/* 2. Fix containers ONLY if they are already visible */
-/* We use flex-direction: column but DO NOT force display: flex */
-.btn-group, 
-.button-group, 
-.featured-grid, 
-.tools-container, 
-div[style*="display: flex"], 
-div[style*="display:flex"] {
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    /* Removed 'display: flex !important' to prevent hidden items from appearing */
+/* Keeps the page from scrolling left-to-right */
+body {
+    overflow-x: hidden !important;
+    width: 100% !important;
 }
 
-/* 3. Keep the 500 Style grid as a grid (not a single long column) */
+/* Keeps the 500-style grid safe so it doesn't become one long list */
 #tpl-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important;
-    gap: 5px !important;
-    width: 100% !important;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-/* 4. Prevent horizontal scrolling on the whole page */
-html, body {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-}
-
-/* 5. Ensure the Barcode/Label preview fits the screen */
-#render-target, #capture-area, .preview-box {
-    max-width: 100% !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
 }
 
 
