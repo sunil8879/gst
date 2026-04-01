@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPS PENSION MASTER | India EPFO Rules</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --electric-blue: #2563eb;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --navy: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            color: var(--navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Flamboyant Header */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--primary-blue) 100%);
+            color: var(--white);
+            padding: 100px 20px;
+            text-align: center;
+            border-bottom: 12px solid var(--aqua);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            font-weight: 800;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: -60px auto 100px;
+            padding: 0 20px;
+        }
+
+        /* Calculator Card */
+        .calc-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 80px;
+        }
+
+        .input-side {
+            flex: 1 1 500px;
+            padding: 60px;
+            background: var(--white);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: linear-gradient(180deg, var(--soft-aqua) 0%, #ffffff 100%);
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-left: 2px solid var(--aqua);
+            position: relative;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #64748b;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #f1f5f9;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 700;
+            background: #f8fafc;
+            transition: 0.3s;
+            color: var(--primary-blue);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--aqua);
+            background: var(--white);
+            box-shadow: 0 10px 30px rgba(127, 255, 212, 0.4);
+        }
+
+        /* Result Display */
+        .pension-badge {
+            background: var(--primary-blue);
+            color: var(--aqua);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.2);
+        }
+
+        #result-val {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .unit {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Content Sections */
+        .section-box {
+            margin-bottom: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            margin: 0;
+            position: relative;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 80px;
+            height: 6px;
+            background: var(--aqua);
+            border-radius: 10px;
+        }
+
+        .section-header i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+        .card:hover { transform: translateY(-10px); border-color: var(--aqua); }
+
+        .card h4 {
+            margin: 0 0 15px 0;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            font-size: 1.1rem;
+        }
+
+        /* Rules UI */
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) { .rules-list { grid-template-columns: 1fr; } }
+
+        .rule-item {
+            display: flex;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 20px;
+            border-left: 8px solid var(--primary-blue);
+        }
+
+        .rule-item i { font-size: 1.5rem; color: var(--electric-blue); }
+
+        /* Example Area */
+        .example-container {
+            background: var(--navy);
+            color: white;
+            padding: 60px;
+            border-radius: 40px;
+            border-right: 15px solid var(--aqua);
+        }
+
+        .math-block {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            border-left: 5px solid var(--aqua);
+        }
+
+        .math-block b { color: var(--aqua); }
+
+        @media (max-width: 600px) {
+            .input-side, .result-side { padding: 40px 25px; }
+            .hero { padding: 80px 15px; }
+            .example-container { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Post-Retirement Security</p>
+        <h1>EPS Pension Master</h1>
+    </header>
+
+    <div class="container">
+        
+        <!-- Interactive Calculator -->
+        <div class="calc-wrapper">
+            <div class="input-side">
+                <div class="input-group">
+                    <label><i class="fas fa-money-check-alt"></i> Pensionable Salary (Average of 60 months)</label>
+                    <input type="number" id="salary" value="15000" oninput="calculate()">
+                    <small style="color:#94a3b8; margin-top:5px; display:block;">Standard cap is ₹15,000</small>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-check"></i> Years of Service</label>
+                        <input type="number" id="years" value="20" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-day"></i> Extra Months</label>
+                        <input type="number" id="months" value="7" oninput="calculate()" max="11">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-user-clock"></i> Retirement Age</label>
+                    <select id="age" onchange="calculate()">
+                        <option value="58">58 Years (Normal)</option>
+                        <option value="57">57 Years</option>
+                        <option value="56">56 Years</option>
+                        <option value="55">55 Years</option>
+                        <option value="54">54 Years</option>
+                        <option value="53">53 Years</option>
+                        <option value="52">52 Years</option>
+                        <option value="51">51 Years</option>
+                        <option value="50">50 Years (Early)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="result-side">
+                <div class="pension-badge">MONTHLY PENSION</div>
+                <div id="result-val">4,286</div>
+                <div class="unit">Rupees / Month</div>
+                
+                <div id="bonus-info" style="margin-top:20px; font-size:0.8rem; background:var(--navy); color:white; padding:5px 15px; border-radius:50px; display:none;">
+                    +2 Year Bonus Service Applied!
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminology -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-book-open"></i>
+                <h2>Terminology Breakdown</h2>
+            </div>
+            <div class="terms-grid">
+                <div class="card">
+                    <h4>Pensionable Salary</h4>
+                    <p>The average of your basic pay + DA over the last 60 months. For most, this is capped at <b>₹15,000</b> by EPFO rules.</p>
+                </div>
+                <div class="card">
+                    <h4>Pensionable Service</h4>
+                    <p>The total years you contributed to EPS. If you work for 20 years or more, EPFO adds <b>2 bonus years</b> to your total.</p>
+                </div>
+                <div class="card">
+                    <h4>Divisor 70</h4>
+                    <p>A standardized mathematical factor set by the government to convert your total service and salary into a lifetime monthly benefit.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rules Section -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-gavel"></i>
+                <h2>EPFO Rules & Regulations</h2>
+            </div>
+            <div class="rules-list">
+                <div class="rule-item">
+                    <i class="fas fa-hourglass-start"></i>
+                    <div><b>10-Year Rule</b><br>You must complete minimum 10 years of service to be eligible for a monthly pension.</div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-birthday-cake"></i>
+                    <div><b>58-Year Rule</b><br>Normal pension starts at 58. Early pension starts at 50 with a 4% reduction per year.</div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-arrow-up"></i>
+                    <div><b>Rounding Rule</b><br>6 months or more service in the final year is rounded up to 1 full year.</div>
+                </div>
+                <div class="rule-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div><b>Min Pension</b><br>The Government of India guarantees a minimum pension of ₹1,000 per month.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Example -->
+        <div class="section-box">
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Calculation Logic</h2>
+            </div>
+            <div class="example-container">
+                <p><b>Example: The "Bonus" Scenario</b></p>
+                <p>An employee earns ₹40,000 salary but is capped at ₹15,000 for EPS. He works for 20 years and 7 months.</p>
+                
+                <div class="math-block">
+                    1. Rounding: 20y 7m → <b>21 Years</b><br>
+                    2. Bonus: Service ≥ 20y, so 21 + 2 = <b>23 Years</b><br>
+                    3. Formula: (15,000 × 23) / 70 <br>
+                    4. Result: 3,45,000 / 70 = <b>₹4,928 per month</b>
+                </div>
+                <p>✅ If he retires at 58, he gets the full amount. At 55, this is reduced by 12%.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            let salary = parseFloat(document.getElementById('salary').value) || 0;
+            let yrs = parseInt(document.getElementById('years').value) || 0;
+            let mnts = parseInt(document.getElementById('months').value) || 0;
+            let age = parseInt(document.getElementById('age').value) || 58;
+
+            // 1. Service Rounding
+            let effectiveService = yrs + (mnts >= 6 ? 1 : 0);
+
+            // 2. Bonus 2-Year Rule
+            if (yrs >= 20) {
+                effectiveService += 2;
+                document.getElementById('bonus-info').style.display = 'block';
+            } else {
+                document.getElementById('bonus-info').style.display = 'none';
+            }
+
+            // 3. Cap Service at 35 years
+            if (effectiveService > 35) effectiveService = 35;
+
+            // 4. Basic Pension Calculation
+            let pension = (salary * effectiveService) / 70;
+
+            // 5. Early Retirement Reduction (4% per year before 58)
+            if (age < 58) {
+                let diff = 58 - age;
+                let reduction = diff * 0.04;
+                pension = pension * (1 - reduction);
+            }
+
+            // 6. Minimum 10 years eligibility
+            if (yrs < 10) {
+                document.getElementById('result-val').innerText = "0";
+                document.getElementById('result-val').style.color = "#ef4444";
+                return;
+            } else {
+                document.getElementById('result-val').style.color = "var(--navy)";
+            }
+
+            // 7. Minimum Pension Rule
+            if (pension < 1000) pension = 1000;
+
+            // 8. Output
+            document.getElementById('result-val').innerText = Math.round(pension).toLocaleString('en-IN');
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>
