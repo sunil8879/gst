@@ -1992,7 +1992,7 @@ button { background-image: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(0
 <div id="glossary-box">
     <div class="gloss-nav">
         <button class="proc-btn" onclick="moveGlossary(-1)"><i class="fas fa-arrow-left"></i> PREV</button>
-        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/52</span>)</span>
+        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/59</span>)</span>
         <button class="proc-btn" onclick="moveGlossary(1)">NEXT <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="gloss-body">
@@ -18062,6 +18062,109 @@ The 5th character is the first letter of the surname (for individuals) or the fi
 The next 4 characters are sequential numbers ranging from 0001 to 9999.
 
 The 10th character is an alphabetic checksum digit.`
+    },
+
+
+{
+        n: "53. EXPORTS: LUT (LETTER OF UNDERTAKING)",
+        t: "Exporting under LUT (Zero-Rated Supply) allows a business to ship goods or services abroad without paying any IGST upfront. It is valid for one financial year (expiring every March 31st). Exporters must ship goods within 3 months of the invoice date and realize payment within 15 months to stay compliant.",
+        c: `VALIDITY RULE:
+Filed on: 15 July 2025
+Expires on: 31 March 2026 (New LUT needed for April 2026).
+
+SHIPMENT DEADLINE:
+Invoice Date: 10 June 2026
+Must Export by: 10 Sept 2026 (3 Months)
+
+PAYMENT DEADLINE:
+Must receive foreign currency within 15 months of export.
+
+Example:
+Raw material purchase GST = ₹1,00,000
+Export under LUT -> No GST on sales invoice.
+Action: Exporter applies for a refund of ₹1,00,000 blocked ITC.`
+    },
+    {
+        n: "54. EXPORTS: IGST PAYMENT OPTION",
+        t: "If an exporter doesn't have a valid LUT or prefers a faster refund, they choose to pay IGST on the export invoice. They can use their accumulated Input Tax Credit (ITC) to pay this tax. Once the shipping bill is processed by customs, the government automatically refunds the IGST amount to the bank account.",
+        c: `Example Calculation:
+ITC Available in Ledger = ₹1,00,000
+Export Invoice Value = ₹5,00,000
+IGST Rate = 18%
+IGST Payable = ₹90,000
+
+Payment Logic:
+Exporter pays ₹90,000 using ITC (Cash outflow = ₹0).
+After export, Govt refunds ₹90,000 in cash to the exporter's bank.
+Faster and simpler than the LUT refund process.`
+    },
+    {
+        n: "55. ICEGATE & SHIPPING BILL",
+        t: "ICEGATE (Indian Customs Electronic Gateway) is the official portal connecting exporters with Customs/CBIC. It handles all electronic documentation like Shipping Bills and Bills of Entry. A 'Shipping Bill' is the most critical document for an exporter; its presence in ICEGATE proves the export is genuine.",
+        c: `GENUINENESS CHECKLIST:
+1. Shipping Bill exists in ICEGATE? [YES]
+2. EGM (Export General Manifest) filed? [YES]
+3. Export proceeds received in Bank (eBRC)? [YES]
+
+If all 3 are 'YES', the export is legally verified.`
+    },
+    {
+        n: "56. CONTAINER NUMBER STRUCTURE",
+        t: "Standard shipping containers follow an 11-character identification code (ISO 6346). This includes an Owner Code, Category Identifier, Serial Number, and a mathematical Check Digit to prevent fraud and entry errors.",
+        c: `Example: MSCU 123456 7
+
+1. OWNER CODE (MSC): First 3 letters (Shipping Line: Mediterranean Shipping Co).
+2. CATEGORY (U): 4th letter (U = Freight Container, J = Detachable, Z = Trailer).
+3. SERIAL (123456): Next 6 digits (Unique owner number).
+4. CHECK DIGIT (7): Last digit (Calculated mathematically).`
+    },
+    {
+        n: "57. CONTAINER CHECK DIGIT FORMULA",
+        t: "Customs systems use a 'Modulo 11' formula to verify container numbers. Letters are converted to specific values (skipping multiples of 11), multiplied by powers of 2 (1, 2, 4, 8...), and the remainder determines the check digit.",
+        c: `Example: MSCU 663987
+Step 1 (Convert): M=24, S=30, C=13, U=32
+Step 2 (Multiply by 2^n):
+24x1 = 24
+30x2 = 60
+13x4 = 52
+32x8 = 256
+6x16 = 96
+6x32 = 192
+3x64 = 192
+9x128 = 1152
+8x256 = 2048
+7x512 = 3584
+
+Total Sum = 7656
+Divide by 11: 7656 ÷ 11 = Remainder 0
+Final Digit = 0`
+    },
+    {
+        n: "58. CIN (COMPANY IDENTIFICATION NUMBER)",
+        t: "A CIN is a 21-digit alphanumeric code issued by the ROC (Registrar of Companies). It reveals the listing status, industry code, state of registration, year of incorporation, and the company type.",
+        c: `Structure: L17120MH2010PLC123456
+
+L -> Listed (U = Unlisted)
+17120 -> Industry Code (NIC)
+MH -> Registered State (Maharashtra)
+2010 -> Year of Incorporation
+PLC -> Public Limited (PTC = Private, OPC = One Person)
+123456 -> Unique Registration Number`
+    },
+    {
+        n: "59. BARCODE TYPES (128 vs EAN)",
+        t: "Barcodes are used for rapid inventory tracking. Different standards allow for different data types. Code 128 is the most modern and flexible for internal logistics, while EAN-13 is the mandatory standard for retail products sold in stores.",
+        c: `1. CODE 128:
+   Supports: Letters + Numbers + Symbols
+   Used for: Invoices, Shipping Labels, Serial IDs.
+
+2. EAN-13 / UPC:
+   Supports: Exactly 13 (or 12) Numbers
+   Used for: Retail shelf products (requires GS1 registration).
+
+3. QR CODE:
+   Supports: Links, Full Text, Payment IDs.
+   Used for: GPay, Website redirects, Digital Invoices.`
     }
 ];
 
