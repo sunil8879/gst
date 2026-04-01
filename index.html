@@ -1992,7 +1992,7 @@ button { background-image: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(0
 <div id="glossary-box">
     <div class="gloss-nav">
         <button class="proc-btn" onclick="moveGlossary(-1)"><i class="fas fa-arrow-left"></i> PREV</button>
-        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/59</span>)</span>
+        <span style="letter-spacing:2px;">GST TERMINOLOGY GLOSSARY (<span id="gloss-count">1/52</span>)</span>
         <button class="proc-btn" onclick="moveGlossary(1)">NEXT <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="gloss-body">
@@ -15125,7 +15125,14 @@ document.querySelectorAll('input:not([type="file"]):not(#inv_no), textarea').for
         if(document.getElementById('s_email')) document.getElementById('s_email').value = sellerData.email || '';
         
         // Refresh preview panel
+// Refresh preview panel
         if (typeof liveUpdate === "function") liveUpdate();
+        
+        // --- ACTIVATE MANUAL & GLOSSARY ---
+        const flowWrap = document.getElementById('flow-wrap');
+        if(flowWrap) flowWrap.style.setProperty('display', 'block', 'important');
+        moveStep(0);
+        moveGlossary(0);
     }
 }
 // Replace End
@@ -17681,31 +17688,41 @@ const steps = [
     { t: "24. GSTR-1, GSTR-3B & GSTR-9", d: "The purpose of GSTR-1 is to report all outward sales made by a business. it has to be filed every month if the turnover is more than 5 crores and quarterly if the turnover is less than 5 crores. Data filed in GSTR-1 becomes visible to the buyer in GSTR-2B for claiming ITC. GSTR-3B is a summary return used to declare tax liability and pay GST. Filing frequency is Monthly OR Quarterly (QRMP scheme). This is the return where actual GST payment happens. GSTR-9 : Its a Yearly summary of all GST returns filed during the financial year. Its filed once in a year." },
     { t: "25. MANUAL & GLOSSARY", d: "Then comes the Manual & Glossary. Manual contains the sequence of steps of how to use this software and Glossary contains the basic theory about GST and related terminologies with numerical examples." },
     { t: "26. MASTER DATA EXPORT", d: "Next is the Export data section : The user has the option to back up his data from the different tables of supabase. Kindly note : The user will be able to export only his data." },
-    { t: "27. EXPORT SECTION", d: "Finally, Export section : The user has the option to view the data of domestic sales and sales via Export separately in sections like Business Dasboard, Invoice history, Charts, GSTR" }
+    { t: "27. EXPORT SECTION", d: "Finally, Export section : The user has the option to view the data of domestic sales and sales via Export separately in sections like Business Dasboard, Invoice history, Charts, GSTR" },
+{ 
+        t: "28. BUSINESS TOOLS SECTION", 
+        d: "In the Business tools section, there are templates for different formats like: Quotations, Purchase order, Vouchers, Receipts and so on. You can choose from as high as 500 templates as per your requirements. There are a total of 10 formats for you to see. You will also find a Bar code generator and Packing slip generator here, which will be useful in the inventory department, billing, and logistics." 
+    },
+    { 
+        t: "29. BUSINESS CALCULATORS SECTION", 
+        d: "In the biz calculator section, you can use calculators for Income tax, EPS, NPS, Gratuity calculator and so on. There are a total of 11 calculators at your service to help you manage your business finances effectively." 
+    }
 ];
 
 let currentStep = 0;
 function moveStep(dir) {
+    if (!steps || steps.length === 0) return;
     currentStep += dir;
     if (currentStep < 0) currentStep = steps.length - 1;
     if (currentStep >= steps.length) currentStep = 0;
     document.getElementById('step-title').innerText = steps[currentStep].t;
     document.getElementById('proc-text').innerHTML = steps[currentStep].d;
+    document.getElementById('process-box').style.display = 'block';
 }
 
 // Reveal step box only after login
-const oldLogin = onGoogleLogin;
-onGoogleLogin = async (resp) => {
-    await oldLogin(resp);
-    document.getElementById('process-box').style.display = 'block';
-document.getElementById('flow-wrap').style.setProperty('display', 'block', 'important');
-    moveStep(0);
+//const oldLogin = onGoogleLogin;
+//onGoogleLogin = async (resp) => {
+    //await oldLogin(resp);
+    //document.getElementById('process-box').style.display = 'block';
+//document.getElementById('flow-wrap').style.setProperty('display', 'block', 'important');
+    //moveStep(0);
 
 
 
- document.getElementById('glossary-box').style.display = 'block';
-    moveGlossary(0);
-};
+//document.getElementById('glossary-box').style.display = 'block';
+    //moveGlossary(0);
+//};
 
 const glossaryData = [
     {
@@ -18174,21 +18191,20 @@ PLC -> Public Limited (PTC = Private, OPC = One Person)
 
 let gIndex = 0;
 function moveGlossary(dir) {
+    if (!glossaryData || glossaryData.length === 0) return;
     gIndex += dir;
     if (gIndex < 0) gIndex = glossaryData.length - 1;
     if (gIndex >= glossaryData.length) gIndex = 0;
     
-    document.getElementById('gloss-count').innerText = (gIndex + 1) + "/50";
+    document.getElementById('gloss-count').innerText = (gIndex + 1) + "/" + glossaryData.length;
     document.getElementById('gloss-title').innerText = glossaryData[gIndex].n;
     document.getElementById('gloss-theory').innerText = glossaryData[gIndex].t;
     document.getElementById('gloss-calc').innerText = glossaryData[gIndex].c;
+    document.getElementById('glossary-box').style.display = 'block';
     
-    // Auto scroll glossary body to top when term changes
-    document.querySelector('.gloss-body').scrollTop = 0;
-
-
-};
-
+    const glossBody = document.querySelector('.gloss-body');
+    if (glossBody) glossBody.scrollTop = 0;
+}
 
 
 
