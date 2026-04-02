@@ -215,6 +215,54 @@
             .input-side, .result-side { padding: 30px 20px; }
             .dl-grid { grid-template-columns: 1fr; }
         }
+
+
+
+
+
+/* MOBILE COMPLIANCE FIXES */
+@media (max-width: 768px) {
+    /* 1. Prevent right side cutting by stacking vertically */
+    .main-card {
+        flex-direction: column;
+    }
+
+    /* 2. Ensure the QR side doesn't overflow screen width */
+    .result-side {
+        border-left: none;
+        border-top: 2px solid var(--aqua);
+        width: 100%;
+        padding: 20px;
+    }
+
+    /* 3. Force QR code to shrink to fit small screens */
+    #qrcode {
+        width: 100%;
+        max-width: 280px; /* Limits size on mobile */
+        margin: 0 auto 20px;
+    }
+
+    #qrcode canvas, #qrcode img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* 4. Smaller Download Buttons for Mobile */
+    .dl-grid {
+        gap: 5px; /* Tighter gap */
+    }
+
+    .btn-action {
+        padding: 8px 4px; /* Reduced padding */
+        font-size: 0.6rem; /* Smaller text */
+        letter-spacing: 0;
+    }
+
+    /* 5. Adjust Hero for mobile height */
+    .hero {
+        padding: 40px 15px;
+    }
+}
     </style>
 </head>
 <body>
