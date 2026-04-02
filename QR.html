@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR MASTER PRO | Professional Identity & Payment Engine</title>
+    
+    <!-- Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/ushelp/EasyQRCodeJS@master/dist/easy.qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --electric: #2563eb;
+            --aqua: #7FFFD4;
+            --soft-aqua: #f0fffb;
+            --white: #ffffff;
+            --navy: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            margin: 0; padding: 0;
+            color: var(--navy);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px solid var(--aqua);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--aqua);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 100px;
+            padding: 0 20px;
+        }
+
+        .main-card {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 80px;
+        }
+
+        .input-side {
+            flex: 1 1 650px;
+            padding: clamp(20px, 5vw, 50px);
+        }
+
+        .result-side {
+            flex: 1 1 350px;
+            background: linear-gradient(180deg, var(--soft-aqua) 0%, #ffffff 100%);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-left: 2px solid var(--aqua);
+        }
+
+        /* Mode Switch Styling */
+        .mode-toggle-box {
+            background: #e0f2fe;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #7dd3fc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #0ea5e9; }
+        input:checked + .slider:before { transform: translateX(30px); }
+
+        h3 { 
+            font-size: 0.9rem; 
+            text-transform: uppercase; 
+            color: var(--primary); 
+            border-bottom: 2px solid var(--aqua);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #f1f5f9;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: #f8fafc;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        input:focus { outline: none; border-color: var(--aqua); background: white; }
+
+        #qrcode {
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            background: var(--navy);
+            color: var(--aqua);
+        }
+
+        .btn-action:hover { background: var(--primary); color: white; transform: translateY(-3px); }
+
+        @media (max-width: 768px) {
+            .input-side, .result-side { padding: 30px 20px; }
+            .dl-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <p>Omnichannel Digital Identity</p>
+        <h1>QR Master Pro</h1>
+    </header>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="input-side">
+                
+                <!-- MODE SWITCHER -->
+                <div class="mode-toggle-box">
+                    <div>
+                        <span style="font-weight: 800; color: var(--primary); font-size: 0.9rem; display: block;">GPAY DIRECT PAYMENT MODE</span>
+                        <span style="font-size: 0.7rem; color: #0369a1;">OFF: Show Bio to Camera | ON: Instant Payment for GPay</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="payModeToggle" onchange="generateQR()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="section-box">
+                    <h3><i class="fas fa-id-badge"></i> 1. Content & Identity</h3>
+                    <div class="input-grid">
+                        <div class="input-group"><label>Full Name</label><input type="text" id="in_vcard" placeholder="Rahul Sharma" oninput="generateQR()"></div>
+                        <div class="input-group"><label>Designation</label><input type="text" id="in_desig" placeholder="CEO / Creative Director" oninput="generateQR()"></div>
+                        <div class="input-group"><label>WhatsApp Number</label><input type="text" id="in_wa" placeholder="91XXXXXXXXXX" oninput="generateQR()"></div>
+                        <div class="input-group"><label>Personal Message / Bio</label><input type="text" id="in_text" placeholder="Displays as bio" oninput="generateQR()"></div>
+                        <div class="input-group"><label>Website URL</label><input type="text" id="in_url" placeholder="https://..." oninput="generateQR()"></div>
+                        <div class="input-group"><label>Email Address</label><input type="email" id="in_email" placeholder="mail@site.com" oninput="generateQR()"></div>
+<!-- Add these inside the <div class="input-grid"> -->
+<div class="input-group"><label>LinkedIn Profile</label><input type="text" id="in_li" placeholder="linkedin.com/in/..." oninput="generateQR()"></div>
+<div class="input-group"><label>Instagram Profile</label><input type="text" id="in_ig" placeholder="instagram.com/..." oninput="generateQR()"></div>
+<div class="input-group"><label>MP3/Audio Link</label><input type="text" id="in_mp3" placeholder="Direct link to MP3" oninput="generateQR()"></div>
+<div class="input-group"><label>Video Link (YouTube/Drive)</label><input type="text" id="in_vid" placeholder="Link to video file" oninput="generateQR()"></div>
+<div class="input-group">
+    <label>Business Card (carrd.co)</label>
+    <input type="text" id="in_img" placeholder="https://sunilvasarkar.carrd.co" oninput="generateQR()">
+</div>
+                        <div class="input-group"><label>Payment ID (UPI)</label><input type="text" id="in_upi" placeholder="name@bank" oninput="generateQR()"></div>
+                        <div class="input-group">
+                            <label>QR Size</label>
+                            <select id="qrSize" onchange="generateQR()">
+                                <option value="250">Small</option>
+                                <option value="450" selected>Medium</option>
+                                <option value="800">Large</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top:15px;">
+                        <label>Upload Logo (Optional)</label>
+                        <input type="file" id="qrLogo" accept="image/*" onchange="generateQR()">
+                    </div>
+                </div>
+
+                <div class="section-box" style="margin-top:20px;">
+                    <h3><i class="fas fa-palette"></i> 2. Visual Style</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>QR Style (8 Presets)</label>
+                            <select id="qrStyle" onchange="generateQR()">
+                                <option value="rect">1. Classic Square</option>
+                                <option value="dot">2. Modern Dot Style</option>
+                                <option value="frame">3. Frame Style</option>
+                                <option value="logo">4. Logo-in-Center Style</option>
+                                <option value="minimal">5. Minimal Style</option>
+                                <option value="thick">6. Thick Block Style</option>
+                                <option value="compact">7. Compact Style</option>
+                                <option value="sharp">8. Sharp High-Contrast</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><label>QR Color</label><input type="color" id="qrColor" value="#1e3a8a" onchange="generateQR()"></div>
+                        <div class="input-group"><label>Background Color</label><input type="color" id="qrBg" value="#ffffff" onchange="generateQR()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-side">
+                <div id="qrcode"></div>
+                <div id="modeStatus" style="font-weight: 800; color: var(--primary); margin-bottom: 20px; font-size: 0.7rem;">IDENTITY MODE ACTIVE</div>
+                <div class="dl-grid">
+                    <button class="btn-action" onclick="download('png')">PNG</button>
+                    <button class="btn-action" onclick="download('svg')">SVG</button>
+                    <button class="btn-action" onclick="download('pdf')">PDF</button>
+                </div>
+            </div>
+        </div>
+
+
+<!-- TECHNICAL ENGINE LOGIC & ARCHITECTURE -->
+        <div style="background: #0f172a; padding: 40px; border-radius: 30px; margin-top: 40px; color: #e2e8f0; font-size: 0.85rem; border: 1px solid #1e3a8a;">
+            <h3 style="color: #7FFFD4; border-bottom: 1px solid #1e3a8a; padding-bottom: 15px; margin-top: 0; font-size: 1.1rem;">
+                <i class="fas fa-microchip"></i> QR ENGINE CORE LOGIC & TECHNICAL ARCHITECTURE
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; line-height: 1.7;">
+                
+                <!-- 1. DATA ENCODING LOGIC -->
+                <div>
+                    <h4 style="color: #7dd3fc; margin-bottom: 10px; text-transform: uppercase; font-size: 0.8rem;">1. Combinatorial Data Encoding</h4>
+                    <p>The engine utilizes <b>Permutations and Combinations</b> of bit-streams to map data into a 2D matrix. Depending on the input length, the system calculates the optimal <b>Version (1-40)</b> and <b>Mask Pattern</b>. This involves 8 different masking permutations to ensure that the scanner doesn't get confused by repeating patterns, optimizing the "Data-to-Module" ratio for maximum scan speed.</p>
+                </div>
+
+                <!-- 2. ERROR CORRECTION (REED-SOLOMON) -->
+                <div>
+                    <h4 style="color: #7dd3fc; margin-bottom: 10px; text-transform: uppercase; font-size: 0.8rem;">2. Reed-Solomon Error Correction</h4>
+                    <p>We have hard-coded <b>CorrectLevel.H (High)</b>. This uses complex polynomial mathematics (Galois Fields) to add redundant data blocks. This logic ensures that even if <b>30% of the QR code is damaged</b> or covered by your uploaded logo, the original information remains recoverable through mathematical reconstruction of the missing data packets.</p>
+                </div>
+
+                <!-- 3. CONDITIONAL ROUTING GATE -->
+                <div>
+                    <h4 style="color: #7dd3fc; margin-bottom: 10px; text-transform: uppercase; font-size: 0.8rem;">3. Conditional Logic Routing</h4>
+                    <p>The engine operates as a <b>Boolean Logic Gate</b>. It evaluates the state of the <code>payModeToggle</code>:
+                        <br>• <b>IF TRUE:</b> It generates a <i>URI Deep-Link</i> (<code>upi://pay</code>). This triggers the mobile OS to bypass the browser and launch the NPCI-PSP payment layer.
+                        <br>• <b>IF FALSE:</b> It compiles a <i>vCard 3.0 Meta-Object</i>. This uses a <b>Protocol Fixer</b> logic to inject <code>https://</code> prefixes, ensuring hardware-level recognition by smartphone camera sensors.</p>
+                </div>
+
+            </div>
+        </div>
+
+        
+        <div style="text-align: center; color: #94a3b8; font-weight: 600; padding: 20px 0; font-size: 0.9rem;">
+            @2026 - QR Master Pro Identity Engine
+        </div>
+    </div>
+
+    <script>
+    function generateQR() {
+            const d = {
+                url: document.getElementById('in_url').value.trim(),
+                txt: document.getElementById('in_text').value.trim(),
+                des: document.getElementById('in_desig').value.trim(),
+                em: document.getElementById('in_email').value.trim(),
+                wa: document.getElementById('in_wa').value.trim(),
+                upi: document.getElementById('in_upi').value.trim(),
+                vc: document.getElementById('in_vcard').value.trim(),
+                li: document.getElementById('in_li').value.trim(),
+                ig: document.getElementById('in_ig').value.trim(),
+                img: document.getElementById('in_img').value.trim(), // Business Card Field
+                mp3: document.getElementById('in_mp3').value.trim(),
+                vid: document.getElementById('in_vid').value.trim(),
+                isPayMode: document.getElementById('payModeToggle').checked
+            };
+
+            // Helper to ensure URLs have https:// so camera apps recognize them as links
+            const fixUrl = (u) => {
+                if(!u) return "";
+                return u.toLowerCase().startsWith('http') ? u : 'https://' + u;
+            };
+
+            let finalContent = "";
+            const statusLabel = document.getElementById('modeStatus');
+
+            // LOGIC: Check if Pay Mode is ON and UPI is provided
+            if (d.isPayMode && d.upi) {
+                finalContent = `upi://pay?pa=${d.upi}&pn=${encodeURIComponent(d.vc || 'User')}&cu=INR`;
+                statusLabel.innerText = "GPAY PAYMENT MODE ACTIVE";
+                statusLabel.style.color = "#0ea5e9";
+            } else {
+                // IDENTITY MODE: Professional vCard (Standard & Compatible)
+                let vcard = "BEGIN:VCARD\r\nVERSION:3.0\r\n";
+                vcard += "FN:" + (d.vc || 'Nexus User') + "\r\n";
+                if(d.des) vcard += "TITLE:" + d.des + "\r\n";
+                if(d.txt) vcard += "ORG:" + d.txt + "\r\n"; 
+                if(d.wa)  vcard += "TEL;TYPE=CELL:" + d.wa + "\r\n";
+                if(d.em)  vcard += "EMAIL;TYPE=INTERNET:" + d.em + "\r\n";
+                
+                // Add all clickable links using standard URL tags
+                if(d.url) vcard += "URL;type=WORK:" + fixUrl(d.url) + "\r\n";
+                if(d.li)  vcard += "URL;type=LINKEDIN:" + fixUrl(d.li) + "\r\n";
+                if(d.ig)  vcard += "URL;type=INSTAGRAM:" + fixUrl(d.ig) + "\r\n";
+                if(d.img) vcard += "URL;type=BusinessCard:" + fixUrl(d.img) + "\r\n";
+                if(d.mp3) vcard += "URL;type=AudioLink:" + fixUrl(d.mp3) + "\r\n";
+                if(d.vid) vcard += "URL;type=VideoLink:" + fixUrl(d.vid) + "\r\n";
+                
+                if(d.upi) vcard += "NOTE:Payment ID: " + d.upi + "\r\n";
+                vcard += "END:VCARD";
+                
+                finalContent = vcard;
+                statusLabel.innerText = "IDENTITY MODE ACTIVE";
+                statusLabel.style.color = "#1e3a8a";
+            }
+
+            const style = document.getElementById('qrStyle').value;
+            const color = document.getElementById('qrColor').value;
+            const bg = document.getElementById('qrBg').value;
+            const size = parseInt(document.getElementById('qrSize').value);
+            const logoInput = document.getElementById('qrLogo');
+
+            // Configuration for EasyQRCodeJS
+            let config = {
+                text: finalContent,
+                width: size,
+                height: size,
+                colorDark: color,
+                colorLight: bg,
+                correctLevel: QRCode.CorrectLevel.H,
+                dotScale: 1.0,
+                timing_draft: 'rect'
+            };
+
+            // Applying Visual Presets
+            switch (style) {
+                case 'dot': config.dotScale = 0.45; config.timing_draft = 'round'; break;
+                case 'frame': config.quietZone = 40; config.quietZoneColor = bg; break;
+                case 'logo': config.dotScale = 0.85; break;
+                case 'minimal': config.dotScale = 0.35; config.timing_draft = 'round'; break;
+                case 'thick': config.dotScale = 1.15; break;
+                case 'compact': config.dotScale = 0.75; break;
+                case 'sharp': config.dotScale = 1.0; break;
+                default: config.dotScale = 1.0; // rect
+            }
+
+            const container = document.getElementById("qrcode");
+            container.innerHTML = "";
+
+            // Handle Logo Image if uploaded
+            if (logoInput.files && logoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    config.logo = e.target.result;
+                    config.logoWidth = size * 0.22;
+                    config.logoHeight = size * 0.22;
+                    config.logoBackgroundColor = bg;
+                    new QRCode(container, config);
+                };
+                reader.readAsDataURL(logoInput.files[0]);
+            } else {
+                new QRCode(container, config);
+            }
+        }
+
+        function download(fmt) {
+            const canvas = document.querySelector('#qrcode canvas');
+            if(!canvas) return alert("Enter data first");
+            const link = document.createElement('a');
+            
+            if(fmt === 'png') {
+                link.download = 'Identity_QR.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            } else if(fmt === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                pdf.text("Professional Identity QR", 20, 20);
+                pdf.addImage(canvas.toDataURL("image/png"), 'PNG', 40, 40, 120, 120);
+                pdf.save("Identity_QR.pdf");
+            } else if(fmt === 'svg') {
+                const imgData = canvas.toDataURL("image/png");
+                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}"><image width="100%" height="100%" href="${imgData}" /></svg>`;
+                const blob = new Blob([svgContent], {type: 'image/svg+xml'});
+                link.download = 'Identity_QR.svg';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            }
+        }
+
+        window.onload = generateQR;
+    </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogoGen AI - Professional Suite</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ICONIFY: Gives access to millions of icons from all libraries -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Alice&family=Alfa+Slab+One&family=Allura&family=Amatic+SC&family=Anonymous+Pro&family=Anton&family=Archivo+Black&family=Audiowide&family=Bangers&family=Bebas+Neue&family=Be+Vietnam+Pro:wght@100;900&family=Bitter&family=Bodoni+Moda&family=Bungee&family=Cardo&family=Carter+One&family=Caveat&family=Cinzel&family=Comfortaa&family=Cookie&family=Cormorant+Garamond&family=Courgette&family=Courier+Prime&family=Crimson+Text&family=Dancing+Script&family=DM+Sans&family=DM+Serif+Display&family=Domine&family=EB+Garamond&family=Exo+2&family=Faustina&family=Fira+Code&family=Forum&family=Fraunces&family=Fredoka+One&family=Gloria+Hallelujah&family=Great+Vibes&family=Heebo&family=Inconsolata&family=Indie+Flower&family=Inter:wght@400;900&family=JetBrains+Mono&family=Jost&family=Kanit&family=Kaushan+Script&family=Lato&family=Lexend&family=Libre+Baskerville&family=Lobster&family=Lora&family=Major+Mono+Display&family=Manrope&family=Merriweather&family=Michroma&family=Monoton&family=Montserrat&family=Nanum+Gothic+Coding&family=Noto+Serif&family=Open+Sans&family=Orbitron&family=Oswald&family=Outfit:wght@100;900&family=Pacifico&family=Passion+One&family=Permanent+Marker&family=Phudu&family=Playfair+Display&family=Plus+Jakarta+Sans&family=Poppins:wght@100;900&family=Prata&family=Press+Start+2P&family=Public+Sans&family=Quicksand&family=Rajdhani&family=Raleway&family=Righteous&family=Roboto&family=Roboto+Mono&family=Rubik+Mono+One&family=Russo+One&family=Sacramento&family=Saira+Stencil+One&family=Satisfy&family=Shadows+Into+Light&family=Shrikhand&family=Source+Code+Pro&family=Space+Grotesk&family=Space+Mono&family=Spectral&family=Staatliches&family=Syne&family=Syncopate&family=Teko&family=Tenor+Sans&family=Titan+One&family=Ultra&family=Unbounded:wght@200;900&family=Volkhov&family=Work+Sans&family=Yellowtail&family=Yeseva+One&display=swap" rel="stylesheet">
+    <style>
+        .logo-card:hover .download-overlay { opacity: 1; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        iconify-icon { display: inline-block; width: 100%; height: 100%; }
+        .bg-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="bg-pattern font-sans text-gray-900">
+
+    <header class="bg-white/80 backdrop-blur-md border-b py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+        <h1 class="text-2xl font-black tracking-tighter text-indigo-600">LOGOGEN AI</h1>
+        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Advanced Logo Engine</div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-96 bg-white p-8 border-r shadow-2xl z-20">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Business Name</label>
+                    <input type="text" id="bizName" placeholder="e.g. Lumina" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all text-lg font-bold">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Tagline</label>
+                    <input type="text" id="tagline" placeholder="e.g. Future of Tech" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Industry</label>
+                    <select id="industry" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all cursor-pointer font-medium">
+                        <option value="tech">Technology & AI</option>
+                        <option value="realestate">Real Estate & Luxury Housing</option>
+                        <option value="food">Restaurant & Cafe</option>
+                        <option value="fashion">Fashion & Boutique</option>
+                        <option value="health">Medical & Wellness</option>
+                        <option value="finance">Finance & Crypto</option>
+                        <option value="edu">Education & Academy</option>
+                        <option value="travel">Travel & Adventure</option>
+                        <option value="sport">Fitness & Athletics</option>
+                        <option value="art">Design & Studio</option>
+                        <option value="beauty">Beauty & Cosmetics</option>
+                        <option value="legal">Law & Justice</option>
+                        <option value="pet">Pets & Animals</option>
+                        <option value="music">Music & DJ</option>
+                        <option value="nature">Nature & Ecology</option>
+                    </select>
+                </div>
+
+                <button onclick="generateLogos()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-indigo-200 transform hover:-translate-y-1 uppercase tracking-widest">
+                    Create My Brand
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div id="welcomeScreen" class="text-center py-40">
+                <h2 class="text-5xl font-black text-gray-200 uppercase italic">Enter Business Info</h2>
+            </div>
+            <div id="logoGrid" class="grid-container"></div>
+            <div id="loadMore" class="hidden text-center mt-12 pb-20">
+                <button onclick="renderBatch()" class="bg-black text-white font-bold px-12 py-4 rounded-full hover:scale-105 transition-all">
+                    Show More Ideas
+                </button>
+            </div>
+        </main>
+    </div>
+
+<script>
+ // This engine generates 500 unique, professional palettes using Golden Angle distribution
+const generate500Palettes = () => {
+    const palettes = [
+        // We keep your initial high-quality manual palettes first
+        { main: '#6366f1', secondary: '#1e1b4b', bg: '#ffffff', grad: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)' },
+        { main: '#10b981', secondary: '#064e3b', bg: '#ffffff', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
+        { main: '#f43f5e', secondary: '#4c0519', bg: '#ffffff', grad: 'linear-gradient(135deg, #fb7185 0%, #e11d48 100%)' },
+        { main: '#0ea5e9', secondary: '#0c4a6e', bg: '#ffffff', grad: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)' },
+        { main: '#f59e0b', secondary: '#451a03', bg: '#ffffff', grad: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)' }
+    ];
+
+    const hslToHex = (h, s, l) => {
+        l /= 100;
+        const a = s * Math.min(l, 1 - l) / 100;
+        const f = n => {
+            const k = (n + h / 30) % 12;
+            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+            return Math.round(255 * color).toString(16).padStart(2, '0');
+        };
+        return `#${f(0)}${f(8)}${f(4)}`;
+    };
+
+    // Generate 495 additional unique palettes
+    for (let i = 0; i < 495; i++) {
+        // Use the Golden Angle to distribute hues evenly (0-360)
+        const hue = (i * 137.508) % 360; 
+        
+        // Vary saturation and lightness for professional branding looks
+        const saturation = 60 + (i % 30); // 60% to 90%
+        const lightness = 40 + (i % 20);  // 40% to 60%
+        
+        const mainColor = hslToHex(hue, saturation, lightness);
+        const secondaryColor = hslToHex(hue, saturation, lightness - 25); // Darker version
+        const accentColor = hslToHex((hue + 15) % 360, saturation, lightness - 10);
+        
+        palettes.push({
+            main: mainColor,
+            secondary: secondaryColor,
+            bg: '#ffffff',
+            grad: `linear-gradient(135deg, ${mainColor} 0%, ${accentColor} 100%)`
+        });
+    }
+    return palettes;
+};
+
+// Initialize the 500 colors
+const colors = generate500Palettes();
+
+  const fonts = [
+    // --- SANS-SERIF (Modern, Clean) ---
+    { name: 'Inter, sans-serif' }, { name: 'Montserrat, sans-serif' }, { name: 'Open Sans, sans-serif' }, 
+    { name: 'Roboto, sans-serif' }, { name: 'Lato, sans-serif' }, { name: 'Oswald, sans-serif' }, 
+    { name: 'Raleway, sans-serif' }, { name: 'Quicksand, sans-serif' }, { name: 'Be Vietnam Pro, sans-serif' }, 
+    { name: 'Lexend, sans-serif' }, { name: 'Kanit, sans-serif' }, { name: 'Heebo, sans-serif' }, 
+    { name: 'Work Sans, sans-serif' }, { name: 'DM Sans, sans-serif' }, { name: 'Plus Jakarta Sans, sans-serif' }, 
+    { name: 'Public Sans, sans-serif' }, { name: 'Manrope, sans-serif' }, { name: 'Jost, sans-serif' }, 
+    { name: 'Space Grotesk, sans-serif' }, { name: 'Syne, sans-serif' }, { name: 'Outfit, sans-serif' },
+    { name: 'Poppins, sans-serif' }, { name: 'Exo 2, sans-serif' }, { name: 'Archivo Black, sans-serif' },
+
+    // --- SERIF (Elegant, High-End) ---
+    { name: 'Lora, serif' }, { name: 'Merriweather, serif' }, { name: 'PT Serif, serif' }, 
+    { name: 'Crimson Text, serif' }, { name: 'Noto Serif, serif' }, { name: 'Libre Baskerville, serif' }, 
+    { name: 'EB Garamond, serif' }, { name: 'Cormorant Garamond, serif' }, { name: 'Playfair Display, serif' }, 
+    { name: 'Bitter, serif' }, { name: 'DM Serif Display, serif' }, { name: 'Fraunces, serif' }, 
+    { name: 'Prata, serif' }, { name: 'Cinzel, serif' }, { name: 'Bodoni Moda, serif' }, 
+    { name: 'Spectral, serif' }, { name: 'Domine, serif' }, { name: 'Alice, serif' }, 
+    { name: 'Cardo, serif' }, { name: 'Faustina, serif' }, { name: 'Yeseva One, serif' },
+    { name: 'Volkhov, serif' }, { name: 'Tenor Sans, serif' }, { name: 'Forum, serif' },
+
+    // --- DISPLAY & BOLD (Branding, Logos) ---
+    { name: 'Bebas Neue, cursive' }, { name: 'Bungee, cursive' }, { name: 'Abril Fatface, cursive' }, 
+    { name: 'Fredoka One, cursive' }, { name: 'Righteous, cursive' }, { name: 'Comfortaa, cursive' }, 
+    { name: 'Russo One, cursive' }, { name: 'Bangers, cursive' }, { name: 'Carter One, cursive' }, 
+    { name: 'Shrikhand, cursive' }, { name: 'Monoton, cursive' }, { name: 'Titan One, cursive' }, 
+    { name: 'Alfa Slab One, cursive' }, { name: 'Ultra, cursive' }, { name: 'Passion One, cursive' },
+    { name: 'Anton, cursive' }, { name: 'Staatliches, cursive' }, { name: 'Saira Stencil One, cursive' },
+    { name: 'Syncopate, sans-serif' }, { name: 'Michroma, sans-serif' }, { name: 'Audiowide, cursive' }, 
+    { name: 'Orbitron, sans-serif' }, { name: 'Unbounded, sans-serif' }, { name: 'Phudu, cursive' },
+    { name: 'Rubik Mono One, sans-serif' }, { name: 'Press Start 2P, cursive' },
+
+    // --- MONOSPACE (Tech, Industrial) ---
+    { name: 'Fira Code, monospace' }, { name: 'Source Code Pro, monospace' }, { name: 'JetBrains Mono, monospace' }, 
+    { name: 'Inconsolata, monospace' }, { name: 'Courier Prime, monospace' }, { name: 'Space Mono, monospace' }, 
+    { name: 'Anonymous Pro, monospace' }, { name: 'Nanum Gothic Coding, monospace' }, { name: 'Major Mono Display, monospace' }, 
+    { name: 'Roboto Mono, monospace' },
+
+    // --- SCRIPT & HANDWRITTEN (Organic, Personal) ---
+    { name: 'Pacifico, cursive' }, { name: 'Permanent Marker, cursive' }, { name: 'Lobster, cursive' }, 
+    { name: 'Caveat, cursive' }, { name: 'Kaushan Script, cursive' }, { name: 'Shadows Into Light, cursive' }, 
+    { name: 'Amatic SC, cursive' }, { name: 'Gloria Hallelujah, cursive' }, { name: 'Indie Flower, cursive' }, 
+    { name: 'Dancing Script, cursive' }, { name: 'Great Vibes, cursive' }, { name: 'Sacramento, cursive' }, 
+    { name: 'Allura, cursive' }, { name: 'Cookie, cursive' }, { name: 'Satisfy, cursive' }, 
+    { name: 'Yellowtail, cursive' }, { name: 'Courgette, cursive' }, { name: 'Teko, sans-serif' },
+    { name: 'Rajdhani, sans-serif' }
+];
+
+const icons = {
+    tech: [
+        'ph:cpu-bold', 'lucide:cpu', 'mdi:robot-outline', 'ph:codepen-logo-bold', 'carbon:iot-platform', 'tabler:atom-2', 'ph:cube-bold', 'lucide:layers', 'mdi:database-sync', 'ph:terminal-window-bold',
+        'carbon:chip', 'tabler:binary', 'lucide:code-2', 'ph:circuit-board-bold', 'mdi:laptop', 'carbon:cloud-service-management', 'tabler:database', 'ph:device-mobile-bold', 'lucide:fingerprint', 'mdi:hard-disk',
+        'ph:hard-drives-bold', 'tabler:headset', 'lucide:mouse-pointer-2', 'ph:monitor-bold', 'mdi:nanotechnology', 'carbon:network-4', 'tabler:nfc', 'ph:nut-bold', 'lucide:puzzle', 'mdi:qrcode-scan',
+        'ph:radioactive-bold', 'tabler:router', 'lucide:rss', 'ph:scan-bold', 'mdi:server-network', 'carbon:software-resource', 'tabler:usb', 'ph:wifi-high-bold', 'lucide:zap', 'mdi:augmented-reality',
+        'ph:virtual-reality-bold', 'tabler:world-upload', 'lucide:webhook', 'ph:unite-bold', 'mdi:api', 'carbon:blockchain', 'tabler:braces', 'ph:broadcast-bold', 'lucide:cable', 'mdi:cast-connected',
+        'ph:cloud-check-bold', 'tabler:cloud-computing', 'lucide:command', 'ph:connect-without-contact-bold', 'mdi:console', 'carbon:data-analytics', 'tabler:desktop-analytics', 'ph:devices-bold', 'lucide:dribbble', 'mdi:ethernet',
+        'ph:eye-bold', 'tabler:file-code', 'lucide:filter', 'ph:flash-drive-bold', 'mdi:gamepad-variant', 'carbon:ibm-cloud', 'tabler:incoming-mail', 'ph:infinity-bold', 'lucide:key', 'mdi:keyboard-outline',
+        'ph:link-bold', 'tabler:lock-access', 'lucide:megaphone', 'ph:microphone-bold', 'mdi:modem', 'carbon:operations-record', 'tabler:package', 'ph:paper-plane-tilt-bold', 'lucide:phone-call', 'mdi:poker-chip',
+        'ph:power-bold', 'tabler:printer', 'lucide:radio', 'ph:selection-all-bold', 'mdi:settings-helper', 'carbon:term', 'tabler:tool', 'ph:user-focus-bold', 'lucide:video', 'mdi:vibrate',
+        'ph:watch-bold', 'tabler:wave-triangle', 'lucide:wind', 'ph:wrench-bold', 'mdi:xml', 'carbon:zoom-in', 'tabler:access-point', 'ph:activity-bold', 'lucide:airplay', 'mdi:antenna'
+    ],
+    realestate: [
+        'ph:house-line-bold', 'lucide:building-2', 'mdi:office-building-outline', 'tabler:key', 'ph:buildings-bold', 'carbon:home', 'mdi:castle', 'lucide:warehouse', 'ph:door-bold', 'tabler:wall',
+        'lucide:tent', 'mdi:home-city-outline', 'ph:garage-bold', 'carbon:building', 'tabler:fence', 'lucide:construction', 'ph:hammer-bold', 'mdi:home-group', 'ph:stairs-bold', 'tabler:home-2',
+        'lucide:lamp', 'mdi:home-map-marker', 'ph:paint-roller-bold', 'carbon:data-base', 'tabler:building-skyscraper', 'lucide:shrub', 'ph:tree-structure-bold', 'mdi:home-floor-1', 'ph:elevator-bold', 'tabler:armchair',
+        'lucide:sofa', 'mdi:balcony', 'ph:bathtub-bold', 'carbon:store', 'tabler:window', 'lucide:door-open', 'ph:armchair-bold', 'mdi:bed-outline', 'ph:bed-bold', 'tabler:building-community',
+        'lucide:fence', 'mdi:home-account', 'ph:home-bold', 'carbon:location', 'tabler:map-pin', 'lucide:landmark', 'ph:bank-bold', 'mdi:bank-outline', 'ph:blueprint-bold', 'tabler:tool',
+        'lucide:drill', 'mdi:home-automation', 'ph:lightbulb-bold', 'carbon:heat-map', 'tabler:building-factory', 'lucide:factory', 'ph:factory-bold', 'mdi:home-heart', 'ph:magnifying-glass-plus-bold', 'tabler:search',
+        'lucide:search', 'mdi:home-search-outline', 'ph:map-trifold-bold', 'carbon:map', 'tabler:map', 'lucide:map', 'ph:navigation-arrow-bold', 'mdi:door-closed', 'ph:identification-card-bold', 'tabler:id',
+        'lucide:key-round', 'mdi:key-variant', 'ph:shield-check-bold', 'carbon:security', 'tabler:shield-check', 'lucide:shield', 'ph:signpost-bold', 'mdi:sign-direction', 'ph:strategy-bold', 'tabler:layers-intersect',
+        'lucide:layers', 'mdi:floor-plan', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler-2', 'lucide:ruler', 'ph:tree-bold', 'mdi:tree-outline', 'ph:park-bold', 'tabler:trees',
+        'lucide:trees', 'mdi:nature', 'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:sun', 'lucide:sun', 'ph:thermometer-hot-bold', 'mdi:home-thermometer', 'ph:fan-bold', 'tabler:fan'
+    ],
+    food: [
+        'ph:cooking-pot-bold', 'lucide:utensils', 'mdi:pizza', 'ph:coffee-bold', 'tabler:tools-kitchen-2', 'mdi:silverware-fork-knife', 'lucide:cake', 'carbon:restaurant', 'ph:hamburger-bold', 'tabler:tools-kitchen',
+        'lucide:cup-soap', 'mdi:food-apple-outline', 'ph:apple-bold', 'carbon:strawberry', 'tabler:meat', 'lucide:drumstick', 'ph:bowl-food-bold', 'mdi:noodles', 'ph:egg-bold', 'tabler:egg',
+        'lucide:egg-fried', 'mdi:egg-fried', 'ph:fish-simple-bold', 'carbon:fish', 'tabler:fish', 'lucide:fish', 'ph:ice-cream-bold', 'mdi:ice-cream-outline', 'ph:cake-bold', 'tabler:cake',
+        'lucide:cookie', 'mdi:cookie-outline', 'ph:cookie-bold', 'carbon:favorite', 'tabler:candy', 'lucide:candy', 'ph:candy-bold', 'mdi:cupcake', 'ph:orange-bold', 'tabler:lemon',
+        'lucide:citrus', 'mdi:lemon-outline', 'ph:cheese-bold', 'carbon:circle-dash', 'tabler:cheese', 'lucide:pizza', 'ph:pizza-bold', 'mdi:bread-slice-outline', 'ph:bread-bold', 'tabler:bread',
+        'lucide:sandwich', 'mdi:hamburger-check', 'ph:bowl-steam-bold', 'carbon:haze-night', 'tabler:soup', 'lucide:soup', 'ph:coffee-bean-bold', 'mdi:coffee-maker', 'ph:brandy-bold', 'tabler:glass-full',
+        'lucide:glass-water', 'mdi:glass-wine', 'ph:wine-bold', 'carbon:drink-01', 'tabler:beer', 'lucide:beer', 'ph:beer-bottle-bold', 'mdi:bottle-wine-outline', 'ph:martini-bold', 'tabler:cup',
+        'lucide:mug', 'mdi:tea', 'ph:tea-bag-bold', 'carbon:shopping-cart', 'tabler:basket', 'lucide:shopping-basket', 'ph:shopping-cart-bold', 'mdi:cart-outline', 'ph:fork-knife-bold', 'tabler:chef-hat',
+        'lucide:chef-hat', 'mdi:chef-hat', 'ph:hat-chef-bold', 'carbon:events', 'tabler:calendar-event', 'lucide:calendar-days', 'ph:calendar-bold', 'mdi:table-furniture', 'ph:table-bold', 'tabler:table',
+        'lucide:refrigerator', 'mdi:fridge-outline', 'ph:fridge-bold', 'carbon:temperature-hot', 'tabler:flame', 'lucide:flame', 'ph:fire-bold', 'mdi:fire-circle', 'ph:salt-bold', 'tabler:pepper'
+    ],
+    fashion: [
+        'ph:shirt-folded-bold', 'lucide:shopping-bag', 'tabler:hanger', 'mdi:diamond-stone', 'ph:crown-bold', 'lucide:gem', 'mdi:glasses', 'carbon:store', 'ph:handbag-bold', 'tabler:brand-sketch',
+        'lucide:watch', 'mdi:watch-variant', 'ph:watch-bold', 'carbon:time', 'tabler:clock', 'lucide:clock', 'ph:high-heel-bold', 'mdi:shoe-heel', 'ph:sneaker-bold', 'tabler:shoe',
+        'lucide:footprints', 'mdi:shoe-print', 'ph:t-shirt-bold', 'carbon:category-add', 'tabler:shirt', 'lucide:shirt', 'ph:pants-bold', 'mdi:dolly', 'ph:bag-bold', 'tabler:briefcase',
+        'lucide:briefcase', 'mdi:briefcase-outline', 'ph:suit-case-bold', 'carbon:inventory-management', 'tabler:shopping-cart', 'lucide:shopping-cart', 'ph:shopping-cart-simple-bold', 'mdi:cart-check', 'ph:tag-bold', 'tabler:tag',
+        'lucide:tag', 'mdi:tag-outline', 'ph:label-bold', 'carbon:tag-group', 'tabler:tags', 'lucide:tags', 'ph:needle-bold', 'mdi:needle', 'ph:spool-bold', 'tabler:sewing-machine',
+        'lucide:scissors', 'mdi:scissors-cutting', 'ph:scissors-bold', 'carbon:edge-node', 'tabler:cut', 'lucide:ribbon', 'ph:ribbon-bold', 'mdi:medal-outline', 'ph:dress-bold', 'tabler:woman',
+        'lucide:person-standing', 'mdi:human-female', 'ph:user-bold', 'carbon:user-avatar', 'tabler:user', 'lucide:user', 'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'tabler:star',
+        'lucide:star', 'mdi:star-face', 'ph:sparkle-bold', 'carbon:flash', 'tabler:brightness', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:palette-bold', 'tabler:palette',
+        'lucide:palette', 'mdi:palette-outline', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:brush', 'ph:eye-bold', 'mdi:eye-outline', 'ph:lipstick-bold', 'tabler:brand-instagram',
+        'lucide:instagram', 'mdi:instagram', 'ph:diamond-bold', 'carbon:jewelry', 'tabler:diamond', 'lucide:annoyed', 'ph:mask-happy-bold', 'mdi:theater', 'ph:magic-wand-bold', 'tabler:wand'
+    ],
+    health: [
+        'ph:heartbeat-bold', 'lucide:activity', 'mdi:stethoscope', 'tabler:pill', 'ph:first-aid-kit-bold', 'lucide:brain', 'mdi:dna', 'carbon:medical', 'ph:hospital-bold', 'tabler:building-hospital',
+        'lucide:hospital', 'mdi:hospital-marker', 'ph:thermometer-bold', 'carbon:temperature', 'tabler:thermometer', 'lucide:thermometer', 'ph:pill-bold', 'mdi:pill', 'ph:syringe-bold', 'tabler:vaccine',
+        'lucide:syringe', 'mdi:needle', 'ph:bandaids-bold', 'carbon:pills', 'tabler:first-aid-kit', 'lucide:first-aid', 'ph:baby-bold', 'mdi:baby-carriage', 'ph:bone-bold', 'tabler:bone',
+        'lucide:bone', 'mdi:bone', 'ph:brain-bold', 'carbon:query', 'tabler:mood-smile', 'lucide:smile', 'ph:smiley-bold', 'mdi:emoticon-happy-outline', 'ph:hand-heart-bold', 'tabler:heart-handshake',
+        'lucide:heart-pulse', 'mdi:heart-pulse', 'ph:pulse-bold', 'carbon:friendship', 'tabler:users', 'lucide:users', 'ph:users-bold', 'mdi:account-group', 'ph:eye-bold', 'tabler:eye',
+        'lucide:eye', 'mdi:eye-check-outline', 'ph:ear-bold', 'carbon:audio-console', 'tabler:ear', 'lucide:ear', 'ph:tooth-bold', 'mdi:tooth-outline', 'ph:lungs-bold', 'tabler:lungs',
+        'lucide:wind', 'mdi:air-filter', 'ph:virus-bold', 'carbon:coronavirus', 'tabler:virus', 'lucide:microscope', 'ph:microscope-bold', 'mdi:microscope', 'ph:test-tube-bold', 'tabler:test-pipe',
+        'lucide:beaker', 'mdi:beaker-outline', 'ph:flask-bold', 'carbon:chemical-hazard', 'tabler:flask', 'lucide:flask-conical', 'ph:clipboard-text-bold', 'mdi:clipboard-pulse-outline', 'ph:notebook-bold', 'tabler:report-medical',
+        'lucide:clipboard-list', 'mdi:file-document-edit-outline', 'ph:file-text-bold', 'carbon:document', 'tabler:file-medical', 'lucide:file-heart', 'ph:heart-straight-bold', 'mdi:heart-plus-outline', 'ph:plus-circle-bold', 'tabler:plus',
+        'lucide:plus-square', 'mdi:hospital-building', 'ph:ambulance-bold', 'carbon:ambulance', 'tabler:ambulance', 'lucide:ambulance', 'ph:wheelchair-bold', 'mdi:wheelchair-accessibility', 'ph:person-bold', 'tabler:user'
+    ],
+
+
+
+
+
+
+
+
+
+
+// Append these to your icons object
+finance : [
+    'ph:bank-bold', 'lucide:wallet', 'mdi:chart-line', 'tabler:coin', 'ph:credit-card-bold', 'mdi:piggy-bank-outline', 'lucide:landmark', 'carbon:finance', 'ph:currency-dollar-bold', 'tabler:currency-dollar',
+    'lucide:dollar-sign', 'mdi:currency-usd', 'ph:currency-eur-bold', 'tabler:currency-euro', 'lucide:euro', 'mdi:currency-eur', 'ph:chart-bar-bold', 'carbon:chart-bar', 'tabler:chart-bar', 'lucide:bar-chart-3',
+    'ph:chart-pie-bold', 'mdi:chart-pie', 'ph:chart-line-up-bold', 'carbon:growth', 'tabler:trending-up', 'lucide:trending-up', 'ph:arrows-clockwise-bold', 'mdi:autorenew', 'ph:calculator-bold', 'tabler:calculator',
+    'lucide:calculator', 'mdi:calculator', 'ph:safe-bold', 'carbon:security-as-a-service', 'tabler:vault', 'lucide:lock', 'ph:key-bold', 'mdi:key-outline', 'ph:receipt-bold', 'tabler:receipt',
+    'lucide:receipt', 'mdi:file-document-outline', 'ph:hand-coins-bold', 'carbon:send-alt', 'tabler:send', 'lucide:send', 'ph:trend-up-bold', 'mdi:finance', 'ph:stack-bold', 'tabler:layers-difference',
+    'lucide:layers', 'mdi:stack-overflow', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:magnifying-glass-bold', 'tabler:search',
+    'lucide:search', 'mdi:magnify', 'ph:shield-check-bold', 'carbon:safe', 'tabler:shield-check', 'lucide:shield-check', 'ph:shield-star-bold', 'mdi:verified', 'ph:seal-check-bold', 'tabler:discount-2',
+    'lucide:percent', 'mdi:percent', 'ph:percent-bold', 'carbon:percentage', 'tabler:percentage', 'lucide:calculator', 'ph:coins-bold', 'mdi:cash-multiple', 'ph:money-bold', 'tabler:cash',
+    'lucide:banknote', 'mdi:cash', 'ph:ticket-bold', 'carbon:ticket', 'tabler:ticket', 'lucide:ticket', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:scales-bold', 'tabler:scales',
+    'lucide:scales', 'mdi:scale-balance', 'ph:globe-bold', 'carbon:globe', 'tabler:world', 'lucide:globe', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:shield-plus-bold', 'tabler:lock-plus'
+],
+
+edu : [
+    'ph:graduation-cap-bold', 'lucide:book-open', 'mdi:school-outline', 'tabler:certificate', 'ph:pencil-circle-bold', 'lucide:library', 'mdi:microscope', 'carbon:education', 'ph:book-bold', 'tabler:book',
+    'lucide:book', 'mdi:book-variant', 'ph:chalkboard-teacher-bold', 'carbon:teacher', 'tabler:presentation', 'lucide:presentation', 'ph:backpack-bold', 'mdi:backpack', 'ph:pencil-bold', 'tabler:pencil',
+    'lucide:pencil', 'mdi:lead-pencil', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler', 'lucide:ruler', 'ph:compass-bold', 'mdi:compass-outline', 'ph:exam-bold', 'tabler:notes',
+    'lucide:sticky-note', 'mdi:note-text-outline', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:atom-bold', 'mdi:atom', 'ph:globe-bold', 'tabler:world',
+    'lucide:globe-2', 'mdi:earth', 'ph:brain-bold', 'carbon:idea', 'tabler:bulb', 'lucide:lightbulb', 'ph:medal-bold', 'mdi:medal', 'ph:trophy-bold', 'tabler:trophy',
+    'lucide:trophy', 'mdi:trophy-outline', 'ph:video-camera-bold', 'carbon:video', 'tabler:video', 'lucide:video', 'ph:microphone-stage-bold', 'mdi:microphone-variant', 'ph:student-bold', 'tabler:user-check',
+    'lucide:user-2', 'mdi:account-school', 'ph:users-four-bold', 'carbon:group', 'tabler:users', 'lucide:users', 'ph:puzzle-piece-bold', 'mdi:puzzle-outline', 'ph:strategy-bold', 'tabler:chess',
+    'lucide:gamepad', 'mdi:controller-classic-outline', 'ph:lamp-bold', 'carbon:light', 'tabler:lamp', 'lucide:lamp', 'ph:bell-bold', 'mdi:bell-outline', 'ph:clock-bold', 'tabler:clock',
+    'lucide:clock-4', 'mdi:timer-outline', 'ph:paper-plane-bold', 'carbon:send', 'tabler:send', 'lucide:send', 'ph:flask-bold', 'mdi:flask-outline', 'ph:test-tube-bold', 'tabler:test-pipe',
+    'lucide:beaker', 'mdi:flask', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:palette', 'ph:music-note-bold', 'mdi:music-note', 'ph:piano-key-bold', 'tabler:music'
+],
+
+travel :  [
+    'ph:airplane-tilt-bold', 'lucide:globe', 'mdi:map-marker-outline', 'tabler:compass', 'ph:mountains-bold', 'lucide:palmtree', 'mdi:beach', 'carbon:plane', 'ph:map-trifold-bold', 'tabler:map',
+    'lucide:map-pin', 'mdi:map-legend', 'ph:camera-bold', 'mdi:camera-outline', 'ph:suitcase-rolling-bold', 'carbon:suitcase', 'tabler:luggage', 'lucide:luggage', 'ph:ticket-bold', 'mdi:ticket-outline',
+    'ph:compass-rose-bold', 'tabler:navigation', 'lucide:navigation-2', 'mdi:compass-rose', 'ph:hotel-bold', 'carbon:hotel', 'tabler:building-skyscraper', 'lucide:building', 'ph:bed-bold', 'mdi:bed-empty',
+    'ph:train-bold', 'carbon:train', 'tabler:train', 'lucide:train', 'ph:bus-bold', 'mdi:bus', 'ph:car-bold', 'tabler:car', 'lucide:car', 'mdi:car-hatchback',
+    'ph:bicycle-bold', 'carbon:bicycle', 'tabler:bike', 'lucide:bike', 'ph:boat-bold', 'mdi:sailboat', 'ph:anchor-bold', 'tabler:anchor', 'lucide:anchor', 'mdi:anchor',
+    'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:cloud-sun', 'lucide:cloud-sun', 'ph:umbrella-bold', 'mdi:beach-umbrella', 'ph:sun-horizon-bold', 'carbon:sunset', 'tabler:sunset', 'lucide:sunset',
+    'ph:thermometer-hot-bold', 'carbon:temperature-hot', 'tabler:temperature', 'lucide:thermometer-sun', 'ph:flag-bold', 'mdi:flag-variant-outline', 'ph:signpost-bold', 'tabler:signpost', 'lucide:signpost', 'mdi:sign-direction',
+    'ph:globe-stand-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'tabler:world-latitude', 'lucide:languages', 'ph:translate-bold', 'mdi:translate', 'ph:passport-bold', 'mdi:passport',
+    'ph:wallet-bold', 'carbon:wallet', 'tabler:wallet', 'lucide:wallet', 'ph:magnifying-glass-location-bold', 'mdi:map-search-outline', 'ph:binoculars-bold', 'mdi:binoculars', 'ph:backpack-bold', 'tabler:backpack',
+    'lucide:backpack', 'mdi:hiking', 'ph:tent-bold', 'carbon:campsite', 'tabler:tent', 'lucide:tent', 'ph:campfire-bold', 'mdi:campfire', 'ph:island-bold', 'tabler:island'
+],
+
+sport : [
+    'ph:trophy-bold', 'lucide:dumbbell', 'mdi:run', 'tabler:ball-football', 'ph:fire-bold', 'lucide:timer', 'mdi:medal-outline', 'carbon:flash', 'ph:soccer-ball-bold', 'mdi:soccer',
+    'ph:basketball-bold', 'mdi:basketball', 'ph:tennis-ball-bold', 'mdi:tennis-ball', 'ph:volleyball-bold', 'mdi:volleyball', 'ph:baseball-bold', 'mdi:baseball', 'ph:eight-ball-bold', 'mdi:billiards',
+    'ph:ping-pong-bold', 'tabler:ping-pong', 'ph:bowling-ball-bold', 'mdi:bowling', 'ph:boxing-glove-bold', 'mdi:boxing-glove', 'ph:bicycle-bold', 'mdi:bike', 'ph:skateboard-bold', 'mdi:skateboard',
+    'ph:swimming-pool-bold', 'mdi:swim', 'ph:mountain-bold', 'mdi:hiking', 'ph:climbing-bold', 'mdi:climbing', 'ph:fishing-bold', 'mdi:fish', 'ph:sneaker-bold', 'mdi:shoe-sneaker',
+    'ph:t-shirt-bold', 'mdi:tshirt-crew', 'ph:whistle-bold', 'mdi:whistle', 'ph:stopwatch-bold', 'mdi:stopwatch-outline', 'ph:timer-bold', 'tabler:timer', 'lucide:watch', 'mdi:clock-fast',
+    'ph:target-bold', 'mdi:target', 'ph:flag-banner-bold', 'tabler:flag', 'lucide:flag', 'mdi:flag-checkered', 'ph:barbell-bold', 'mdi:weight-lifter', 'ph:activity-bold', 'mdi:pulse',
+    'ph:heartbeat-bold', 'mdi:heart-flash', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:power-bold', 'mdi:power-plug', 'ph:trend-up-bold', 'mdi:trending-up', 'ph:crown-bold', 'mdi:crown',
+    'ph:medal-bold', 'mdi:medal', 'ph:first-aid-kit-bold', 'mdi:briefcase-medical', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:scales-bold', 'mdi:scale-bathroom', 'ph:ruler-bold', 'mdi:tape-measure',
+    'ph:user-bold', 'mdi:account', 'ph:users-bold', 'mdi:account-group', 'ph:handshake-bold', 'mdi:handshake', 'ph:thumbs-up-bold', 'mdi:thumb-up-outline', 'ph:star-bold', 'mdi:star-outline',
+    'ph:rocket-launch-bold', 'mdi:rocket-launch', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:bell-bold', 'mdi:bell'
+],
+
+art :  [
+    'ph:palette-bold', 'lucide:brush', 'mdi:draw', 'tabler:photo', 'ph:camera-bold', 'lucide:pen-tool', 'mdi:vector-square', 'carbon:paint-brush', 'ph:paint-brush-bold', 'tabler:brush',
+    'ph:paint-roller-bold', 'mdi:format-paint', 'ph:pencil-bold', 'tabler:pencil', 'lucide:pencil', 'mdi:pencil-outline', 'ph:fountain-pen-bold', 'tabler:writing', 'lucide:pen-tool', 'mdi:vector-bezier',
+    'ph:selection-all-bold', 'mdi:select-all', 'ph:layers-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:layers-outline', 'ph:stack-bold', 'mdi:stack-overflow', 'ph:crop-bold', 'tabler:crop',
+    'lucide:crop', 'mdi:crop', 'ph:frame-bold', 'tabler:frame', 'lucide:frame', 'mdi:picture-in-picture-bottom-right-outline', 'ph:image-bold', 'mdi:image-filter-hdr', 'ph:video-camera-bold', 'mdi:video-outline',
+    'ph:aperture-bold', 'tabler:aperture', 'lucide:aperture', 'mdi:camera-iris', 'ph:film-script-bold', 'mdi:filmstrip', 'ph:projector-screen-bold', 'mdi:projector', 'ph:speaker-hifi-bold', 'mdi:speaker',
+    'ph:music-note-bold', 'mdi:music-note', 'ph:guitar-bold', 'mdi:guitar-acoustic', 'ph:piano-key-bold', 'mdi:piano', 'ph:microphone-bold', 'mdi:microphone', 'ph:headphones-bold', 'mdi:headphones',
+    'ph:monitor-bold', 'mdi:monitor', 'ph:desktop-bold', 'mdi:desktop-mac', 'ph:smartphone-bold', 'mdi:cellphone', 'ph:tablet-bold', 'mdi:tablet-ipad', 'ph:laptop-bold', 'mdi:laptop',
+    'ph:mouse-bold', 'mdi:mouse', 'ph:keyboard-bold', 'mdi:keyboard', 'ph:printer-bold', 'mdi:printer', 'ph:scanner-bold', 'mdi:scanner', 'ph:briefcase-bold', 'mdi:briefcase',
+    'ph:cube-bold', 'mdi:cube-outline', 'ph:sphere-bold', 'mdi:sphere', 'ph:cylinder-bold', 'mdi:cylinder', 'ph:triangle-bold', 'mdi:triangle-outline', 'ph:square-bold', 'mdi:square-outline',
+    'ph:circle-bold', 'mdi:circle-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:heart-bold', 'mdi:heart-outline', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-bold', 'mdi:white-balance-sunny'
+],
+
+
+
+
+
+
+
+
+
+// Append these to your icons object
+beauty : [
+    'ph:sparkle-bold', 'lucide:flower-2', 'mdi:face-woman-outline', 'tabler:pills', 'ph:moon-stars-bold', 'lucide:sun', 'mdi:shimmer', 'carbon:content-view', 'ph:butterfly-bold', 'mdi:butterfly-outline',
+    'ph:scissors-bold', 'tabler:scissors', 'lucide:scissors', 'mdi:content-cut', 'ph:lipstick-bold', 'mdi:lipstick', 'ph:eye-bold', 'mdi:eye-outline', 'ph:eyeliner-bold', 'mdi:eye-plus-outline',
+    'ph:hand-fist-bold', 'mdi:hand-back-right-outline', 'ph:nail-polish-bold', 'mdi:nail-polish', 'ph:hair-dryer-bold', 'mdi:hair-dryer', 'ph:mirror-bold', 'mdi:mirror-variant', 'ph:spray-bottle-bold', 'mdi:spray-bottle',
+    'ph:jar-bold', 'mdi:bottle-tonic-outline', 'ph:flower-lotus-bold', 'mdi:flower-tulip-outline', 'ph:leaf-bold', 'mdi:leaf-maple', 'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint',
+    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:diamond-bold', 'mdi:diamond-outline', 'ph:crown-bold', 'mdi:crown-outline', 'ph:magic-wand-bold', 'mdi:magic-staff',
+    'ph:rainbow-bold', 'mdi:rainbow', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-dim-bold', 'mdi:sun-angle-outline', 'ph:wind-bold', 'mdi:wind-power-outline', 'ph:bird-bold', 'mdi:bird',
+    'ph:feather-bold', 'mdi:feather', 'ph:mask-happy-bold', 'mdi:emoticon-happy-outline', 'ph:woman-bold', 'mdi:human-female', 'ph:user-bold', 'mdi:account-outline', 'ph:users-bold', 'mdi:account-group-outline',
+    'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:palette-bold', 'mdi:palette-outline', 'ph:paint-brush-bold', 'mdi:brush-outline', 'ph:gift-bold', 'mdi:gift-outline',
+    'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline',
+    'ph:bell-bold', 'mdi:bell-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth'
+],
+
+legal :  [
+    'ph:scales-bold', 'lucide:gavel', 'mdi:shield-account-outline', 'tabler:law', 'ph:briefcase-bold', 'lucide:fingerprint', 'mdi:balance-scale', 'carbon:security', 'ph:shield-bold', 'mdi:shield-outline',
+    'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:shield-star-bold', 'mdi:shield-star-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:lock-open-bold', 'mdi:lock-open-outline', 'ph:key-bold', 'mdi:key-outline',
+    'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:file-text-bold', 'mdi:file-document-outline', 'ph:file-check-bold', 'mdi:file-check-outline', 'ph:file-lock-bold', 'mdi:file-lock-outline',
+    'ph:notebook-bold', 'mdi:notebook-outline', 'ph:signature-bold', 'mdi:draw-pen', 'ph:stamp-bold', 'mdi:stamp', 'ph:books-bold', 'mdi:bookshelf', 'ph:bank-bold', 'mdi:bank-outline',
+    'ph:landmark-bold', 'mdi:office-building-outline', 'ph:courthouse-bold', 'mdi:town-hall', 'ph:police-car-bold', 'mdi:police-badge-outline', 'ph:handcuffs-bold', 'mdi:handcuffs', 'ph:eye-bold', 'mdi:eye-outline',
+    'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:user-focus-bold', 'mdi:account-search-outline', 'ph:globe-bold', 'mdi:earth',
+    'ph:balance-bold', 'mdi:scale', 'ph:gavel-bold', 'mdi:gavel', 'ph:hammer-bold', 'mdi:hammer', 'ph:folder-bold', 'mdi:folder-outline', 'ph:folder-simple-lock-bold', 'mdi:folder-lock-outline',
+    'ph:folder-open-bold', 'mdi:folder-open-outline', 'ph:archive-bold', 'mdi:archive-outline', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:newspaper-bold', 'mdi:newspaper-variant-outline', 'ph:chat-centered-text-bold', 'mdi:chat-outline',
+    'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:clock-bold', 'mdi:clock-outline',
+    'ph:info-bold', 'mdi:information-outline', 'ph:question-bold', 'mdi:help-circle-outline', 'ph:check-circle-bold', 'mdi:check-circle-outline', 'ph:x-circle-bold', 'mdi:close-circle-outline', 'ph:warning-bold', 'mdi:alert-outline'
+],
+
+pet : [
+    'ph:dog-bold', 'lucide:paw-print', 'mdi:cat', 'tabler:bone', 'ph:bird-bold', 'mdi:fish', 'lucide:bug', 'carbon:pet-care', 'ph:paw-print-bold', 'mdi:paw',
+    'ph:horse-bold', 'mdi:horse', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:cow-bold', 'mdi:cow', 'ph:sheep-bold', 'mdi:sheep', 'ph:pig-bold', 'mdi:pig',
+    'ph:snake-bold', 'mdi:snake', 'ph:bug-bold', 'mdi:bug-outline', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:bee-bold', 'mdi:bee', 'ph:heart-bold', 'mdi:heart-outline',
+    'ph:house-bold', 'mdi:home-outline', 'ph:bone-bold', 'mdi:bone', 'ph:fish-bold', 'mdi:fish-bowl-outline', 'ph:bowl-food-bold', 'mdi:bowl-mix-outline', 'ph:first-aid-bold', 'mdi:medication-outline',
+    'ph:stethoscope-bold', 'mdi:stethoscope', 'ph:syringe-bold', 'mdi:needle', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:magnifying-glass-bold', 'mdi:magnify',
+    'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline',
+    'ph:tag-bold', 'mdi:tag-outline', 'ph:gift-bold', 'mdi:gift-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline',
+    'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth', 'ph:star-bold', 'mdi:star-outline',
+    'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:leaf-bold', 'mdi:leaf', 'ph:tree-bold', 'mdi:tree-outline',
+    'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:key-bold', 'mdi:key-outline'
+],
+
+music : [
+    'ph:music-notes-bold', 'lucide:mic-2', 'mdi:headphones', 'tabler:disc', 'ph:speaker-hifi-bold', 'lucide:guitar', 'mdi:piano', 'carbon:music', 'ph:microphone-bold', 'mdi:microphone-variant',
+    'ph:microphone-stage-bold', 'mdi:microphone-settings', 'ph:speaker-high-bold', 'mdi:speaker-multiple', 'ph:speaker-none-bold', 'mdi:speaker-off', 'ph:headphones-bold', 'mdi:headset', 'ph:earphones-bold', 'mdi:earbuds',
+    'ph:vinyl-record-bold', 'mdi:record-player', 'ph:disc-bold', 'mdi:disc-player', 'ph:cassette-tape-bold', 'mdi:cassette', 'ph:radio-bold', 'mdi:radio', 'ph:boom-box-bold', 'mdi:boombox',
+    'ph:piano-key-bold', 'mdi:keyboard-variant', 'ph:guitar-bold', 'mdi:guitar-electric', 'ph:trumpet-bold', 'mdi:trumpet', 'ph:metronome-bold', 'mdi:metronome', 'ph:playlist-bold', 'mdi:playlist-music',
+    'ph:equalizer-bold', 'mdi:equalizer', 'ph:waveform-bold', 'mdi:waveform', 'ph:sound-module-bold', 'mdi:tune-vertical', 'ph:broadcast-bold', 'mdi:broadcast', 'ph:antenna-bold', 'mdi:antenna',
+    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:sparkle-bold', 'mdi:shimmer',
+    'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:globe-bold', 'mdi:earth', 'ph:users-bold', 'mdi:account-group-outline',
+    'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:video-camera-bold', 'mdi:video-outline', 'ph:film-strip-bold', 'mdi:filmstrip',
+    'ph:briefcase-bold', 'mdi:briefcase-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline',
+    'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline'
+],
+
+nature : [
+    'ph:leaf-bold', 'lucide:sprout', 'mdi:tree-outline', 'tabler:plant', 'ph:cloud-sun-bold', 'lucide:wind', 'mdi:flower-outline', 'carbon:agriculture', 'ph:tree-bold', 'mdi:tree',
+    'ph:tree-evergreen-bold', 'mdi:pine-tree', 'ph:tree-palm-bold', 'mdi:palm-tree', 'ph:flower-bold', 'mdi:flower', 'ph:flower-tulip-bold', 'mdi:flower-tulip', 'ph:flower-lotus-bold', 'mdi:flower-poppy',
+    'ph:plant-bold', 'mdi:sprout-outline', 'ph:cactus-bold', 'mdi:cactus', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:sun-dim-bold', 'mdi:sun-angle', 'ph:moon-bold', 'mdi:moon-waning-crescent',
+    'ph:cloud-bold', 'mdi:cloud-outline', 'ph:cloud-rain-bold', 'mdi:cloud-rain', 'ph:cloud-snow-bold', 'mdi:cloud-snow', 'ph:cloud-lightning-bold', 'mdi:cloud-flash', 'ph:rainbow-bold', 'mdi:rainbow',
+    'ph:drop-bold', 'mdi:tint', 'ph:water-bold', 'mdi:water', 'ph:waves-bold', 'mdi:waves', 'ph:mountains-bold', 'mdi:mountain', 'ph:volcano-bold', 'mdi:volcano',
+    'ph:globe-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'ph:compass-bold', 'mdi:compass-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:binoculars-bold', 'mdi:binoculars',
+    'ph:bird-bold', 'mdi:bird', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:fish-bold', 'mdi:fish', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:bug-bold', 'mdi:bug',
+    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:recycle-bold', 'mdi:recycle', 'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:thermometer-bold', 'mdi:thermometer',
+    'ph:wind-bold', 'mdi:wind-power-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:sparkle-bold', 'mdi:shimmer', 'ph:footprints-bold', 'mdi:shoe-print',
+    'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:clock-bold', 'mdi:clock-outline'
+]
+};
+
+
+    let lastLayout = -1;
+    let lastColor = -1;
+
+    function generateLogos() {
+        if(!document.getElementById('bizName').value) return alert("Enter Business Name");
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('loadMore').classList.remove('hidden');
+        document.getElementById('logoGrid').innerHTML = '';
+        renderBatch();
+    }
+
+    function renderBatch() {
+        const name = document.getElementById('bizName').value.toUpperCase();
+        const tag = document.getElementById('tagline').value.toUpperCase();
+        const industry = document.getElementById('industry').value;
+        const grid = document.getElementById('logoGrid');
+
+        for (let i = 0; i < 24; i++) {
+            let colorIdx, layoutIdx;
+            do { colorIdx = Math.floor(Math.random() * colors.length); } while (colorIdx === lastColor);
+            do { layoutIdx = Math.floor(Math.random() * 26); } while (layoutIdx === lastLayout);
+            
+            lastColor = colorIdx;
+            lastLayout = layoutIdx;
+
+            const config = {
+                color: colors[colorIdx],
+                font: fonts[Math.floor(Math.random() * fonts.length)],
+                icon: icons[industry][Math.floor(Math.random() * icons[industry].length)],
+                layout: layoutIdx
+            };
+
+            grid.appendChild(createLogoCard(name, tag, config));
+        }
+    }
+
+    function createLogoCard(name, tag, config) {
+        const div = document.createElement('div');
+        div.className = "logo-card relative bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center transition-all hover:shadow-2xl overflow-hidden";
+        div.style.backgroundColor = config.color.bg;
+        div.style.minHeight = "360px";
+
+        let layoutHTML = '';
+        // BIG LOGO size: w-20 h-20 (80px)
+        const bigIcon = `<div class="w-20 h-20 flex items-center justify-center mb-6"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 80px;"></iconify-icon></div>`;
+        const whiteIcon = `<div class="w-16 h-16 flex items-center justify-center"><iconify-icon icon="${config.icon}" style="color: #ffffff; font-size: 60px;"></iconify-icon></div>`;
+
+        switch(config.layout) {
+            case 0: // Classic Centered
+                layoutHTML = `
+                    <div class="flex flex-col items-center w-full">
+                        ${bigIcon}
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black text-center leading-tight mb-2">${name}</h2>
+                        <p class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-40 text-center">${tag}</p>
+                    </div>`;
+                break;
+            case 1: // Professional Side-by-Side
+                layoutHTML = `
+                    <div class="flex items-center justify-center gap-8 w-full px-4">
+                        <div class="w-20 h-20 flex-shrink-0"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 80px;"></iconify-icon></div>
+                        <div class="text-left border-l-4 pl-8 border-gray-100" style="border-color: ${config.color.main}">
+                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black leading-none mb-2">${name}</h2>
+                            <p class="text-[11px] font-medium opacity-60 italic tracking-widest">${tag}</p>
+                        </div>
+                    </div>`;
+                break;
+            case 2: // Luxury Gold/Badge Style
+                layoutHTML = `
+                    <div class="flex flex-col items-center w-full">
+                        <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl" style="background: ${config.color.grad}">${whiteIcon}</div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-light tracking-[0.2em] mb-2 uppercase">${name}</h2>
+                        <div class="h-0.5 w-16 mb-2" style="background: ${config.color.main}"></div>
+                        <p class="text-[8px] font-black uppercase tracking-[0.5em]" style="color: ${config.color.main}">${tag}</p>
+                    </div>`;
+                break;
+            case 3: // Modern Underline
+                layoutHTML = `
+                    <div class="flex flex-col items-center w-full">
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black italic tracking-tighter mb-4">${name}</h2>
+                        <div class="w-full max-w-[200px] h-1.5 rounded-full mb-6" style="background: ${config.color.grad}"></div>
+                        <div class="flex items-center gap-4">
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
+                            <p class="text-xs font-bold text-gray-400 tracking-widest">${tag}</p>
+                        </div>
+                    </div>`;
+                break;
+            case 4: // Vertical Pill
+                layoutHTML = `
+                    <div class="flex flex-col items-center w-full">
+                        <div class="mb-6"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 90px;"></iconify-icon></div>
+                        <div class="bg-gray-900 text-white px-6 py-2 rounded-lg mb-2">
+                             <h2 style="font-family: ${config.font.name}" class="text-xl font-bold">${name}</h2>
+                        </div>
+                        <p class="text-[9px] font-bold tracking-[0.3em] uppercase text-gray-400">${tag}</p>
+                    </div>`;
+                break;
+
+
+
+
+case 5: // The "Bordered Capsule"
+                layoutHTML = `
+                    <div class="flex flex-col items-center border-2 p-8 rounded-[4rem] w-full max-w-[280px]" style="border-color: ${config.color.main}">
+                        <div class="mb-4"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 60px;"></iconify-icon></div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black uppercase tracking-widest">${name}</h2>
+                        <p class="text-[9px] font-bold opacity-40 mt-1">${tag}</p>
+                    </div>`;
+                break;
+            case 6: // The "Luxury Diamond"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rotate-45 border-4 flex items-center justify-center mb-10" style="border-color: ${config.color.main}">
+                            <div class="-rotate-45"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 45px;"></iconify-icon></div>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold tracking-tighter">${name}</h2>
+                        <p class="text-[10px] tracking-[0.6em] uppercase opacity-50 mt-2">${tag}</p>
+                    </div>`;
+                break;
+            case 7: // The "Modern Sidebar"
+                layoutHTML = `
+                    <div class="flex items-start gap-6 text-left w-full px-6">
+                        <div class="w-2 h-24 rounded-full" style="background: ${config.color.grad}"></div>
+                        <div>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
+                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black leading-none mt-2">${name}</h2>
+                            <p class="text-sm font-medium opacity-40 mt-2 lowercase">${tag}</p>
+                        </div>
+                    </div>`;
+                break;
+            case 8: // The "Dotted Orbit"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="p-6 rounded-full border-4 border-dotted mb-6 animate-[spin_20s_linear_infinite]" style="border-color: ${config.color.main}">
+                            <div class="animate-[spin_20s_linear_infinite_reverse]"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 50px;"></iconify-icon></div>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest">${name}</h2>
+                        <div class="h-1 w-12 rounded-full my-2" style="background: ${config.color.main}"></div>
+                        <p class="text-[9px] font-bold opacity-60 uppercase">${tag}</p>
+                    </div>`;
+                break;
+            case 9: // The "Dual-Tone Block"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center bg-gray-900 rounded-xl overflow-hidden mb-4 shadow-xl">
+                            <div class="p-4 bg-white"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon></div>
+                            <div class="px-6 py-2">
+                                <h2 style="font-family: ${config.font.name}" class="text-white text-xl font-bold">${name}</h2>
+                            </div>
+                        </div>
+                        <p class="text-xs font-light tracking-[0.3em] uppercase" style="color: ${config.color.main}">${tag}</p>
+                    </div>`;
+                break;
+            case 10: // The "Minimalist Square"
+                layoutHTML = `
+                    <div class="border-l-8 border-b-8 p-10 flex flex-col items-start" style="border-color: ${config.color.main}">
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;"></iconify-icon>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black mt-4">${name}</h2>
+                        <p class="text-sm font-bold opacity-30 tracking-widest">${tag}</p>
+                    </div>`;
+                break;
+            case 11: // The "Geometric Split"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-0.5" style="background: ${config.color.main}"></div>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
+                            <div class="w-12 h-0.5" style="background: ${config.color.main}"></div>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-5xl font-black tracking-tighter">${name}</h2>
+                        <p class="text-[10px] font-bold mt-2 bg-gray-100 px-4 py-1 rounded-full uppercase">${tag}</p>
+                    </div>`;
+                break;
+            case 12: // The "Badge & Banner"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 70px;" class="mb-4"></iconify-icon>
+                        <div class="relative">
+                            <div class="absolute inset-0 skew-x-[-15deg] transform" style="background: ${config.color.grad}"></div>
+                            <h2 style="font-family: ${config.font.name}" class="relative px-8 py-2 text-white text-2xl font-bold">${name}</h2>
+                        </div>
+                        <p class="mt-4 text-[9px] font-black uppercase tracking-[0.4em] opacity-40">${tag}</p>
+                    </div>`;
+                break;
+            case 13: // The "Floating Monogram"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-6">
+                            <div class="text-[120px] font-black leading-none opacity-10" style="color: ${config.color.main}">${name[0]}</div>
+                            <div class="absolute inset-0 flex items-center justify-center pt-8">
+                                <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;"></iconify-icon>
+                            </div>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold uppercase tracking-tight">${name}</h2>
+                        <p class="text-xs font-medium opacity-50 italic">${tag}</p>
+                    </div>`;
+                break;
+            case 14: // The "High Fashion Vertical"
+                layoutHTML = `
+                    <div class="flex flex-col items-center py-10 border-x-2 px-12" style="border-color: ${config.color.main}">
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-light tracking-[0.5em] uppercase border-b-2 pb-4 mb-4 border-gray-100">${name}</h2>
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
+                        <p class="text-[8px] font-black tracking-[0.8em] mt-6 opacity-30">${tag}</p>
+                    </div>`;
+                break;
+            case 15: // The "Techno Shield"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 bg-gray-900 rounded-tr-[30px] rounded-bl-[30px] flex items-center justify-center mb-6 shadow-2xl shadow-indigo-200">
+                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 40px;"></iconify-icon>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest">${name}</h2>
+                        <div class="flex gap-1 mt-2">
+                             <div class="w-2 h-2 rounded-full" style="background: ${config.color.main}"></div>
+                             <div class="w-8 h-2 rounded-full" style="background: ${config.color.main}"></div>
+                             <div class="w-2 h-2 rounded-full" style="background: ${config.color.main}"></div>
+                        </div>
+                        <p class="text-[10px] mt-2 font-bold opacity-40 uppercase">${tag}</p>
+                    </div>`;
+                break;
+            case 16: // The "Circular Frame"
+                layoutHTML = `
+                    <div class="flex flex-col items-center p-12 border-[12px] rounded-full border-double" style="border-color: ${config.color.main}">
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;" class="mb-2"></iconify-icon>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-tighter text-center">${name}</h2>
+                        <p class="text-[9px] font-bold text-center opacity-40">${tag}</p>
+                    </div>`;
+                break;
+            case 17: // The "Bracket Focus"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-6xl font-thin opacity-20" style="color: ${config.color.main}">[</span>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 60px;"></iconify-icon>
+                            <span class="text-6xl font-thin opacity-20" style="color: ${config.color.main}">]</span>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold mt-4 uppercase">${name}</h2>
+                        <p class="text-xs italic opacity-40 tracking-[0.2em]">${tag}</p>
+                    </div>`;
+                break;
+            case 18: // The "Gradient Underlay"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-4 rounded-full mb-2 opacity-30" style="background: ${config.color.grad}"></div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-5xl font-black relative z-10 leading-none">${name}</h2>
+                        <div class="flex items-center gap-4 mt-4">
+                            <div class="h-px w-10 bg-gray-200"></div>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 35px;"></iconify-icon>
+                            <div class="h-px w-10 bg-gray-200"></div>
+                        </div>
+                        <p class="text-[10px] font-bold uppercase mt-2 text-gray-400">${tag}</p>
+                    </div>`;
+                break;
+            case 19: // The "Architecture Split"
+                layoutHTML = `
+                    <div class="flex flex-col w-full px-10">
+                        <div class="flex items-end justify-between border-b-4 pb-4" style="border-color: ${config.color.secondary}">
+                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black tracking-tighter">${name}</h2>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 50px;"></iconify-icon>
+                        </div>
+                        <p class="text-right text-sm font-bold tracking-[0.4em] mt-2 uppercase opacity-40">${tag}</p>
+                    </div>`;
+                break;
+            case 20: // The "Slanted Slice"
+                layoutHTML = `
+                    <div class="flex flex-col items-center -skew-x-12">
+                        <div class="p-6 bg-gray-900 rounded-lg mb-4 shadow-2xl">
+                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;" class="skew-x-12"></iconify-icon>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black uppercase italic tracking-widest skew-x-12">${name}</h2>
+                        <div class="bg-indigo-500 text-white px-4 py-1 mt-2 font-bold text-[10px] skew-x-12">${tag}</div>
+                    </div>`;
+                break;
+            case 21: // The "Retro Seal"
+                layoutHTML = `
+                    <div class="flex flex-col items-center border-[6px] border-double p-8 rounded-2xl" style="border-color: ${config.color.main}">
+                        <div class="flex items-center gap-3 mb-4">
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
+                            <div class="h-8 w-px bg-gray-200"></div>
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;" class="opacity-30"></iconify-icon>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest text-center">${name}</h2>
+                        <p class="text-xs font-bold mt-2 opacity-50 uppercase">${tag}</p>
+                    </div>`;
+                break;
+            case 22: // The "Curved Tech"
+                layoutHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-tr-[40px] rounded-bl-[40px] flex items-center justify-center mb-6 shadow-xl" style="background: ${config.color.grad}">
+                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 40px;"></iconify-icon>
+                        </div>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-bold uppercase tracking-tighter">${name}</h2>
+                        <p class="text-[11px] font-medium tracking-[0.2em] text-indigo-500 mt-1">${tag}</p>
+                    </div>`;
+                break;
+            case 23: // The "Hollow Frame"
+                layoutHTML = `
+                    <div class="relative p-12">
+                        <div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4" style="border-color: ${config.color.main}"></div>
+                        <div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4" style="border-color: ${config.color.main}"></div>
+                        <div class="flex flex-col items-center relative z-10">
+                            <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;" class="mb-4"></iconify-icon>
+                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black">${name}</h2>
+                            <p class="text-[9px] font-bold tracking-widest mt-2 opacity-40 uppercase">${tag}</p>
+                        </div>
+                    </div>`;
+                break;
+            case 24: // The "Soft & Modern"
+                layoutHTML = `
+                    <div class="flex items-center flex-col bg-gray-50 rounded-[3rem] p-12 w-full max-w-[300px] border border-white shadow-inner">
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 70px;" class="mb-6 drop-shadow-lg"></iconify-icon>
+                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black text-center">${name}</h2>
+                        <p class="text-xs font-bold opacity-30 mt-2">${tag}</p>
+                    </div>`;
+                break;
+            default: // Minimalist Monogram
+                layoutHTML = `
+                    <div class="flex flex-col items-center w-full relative">
+                        <span class="absolute inset-0 flex items-center justify-center text-[140px] font-black opacity-[0.03]" style="color: ${config.color.main}">${name[0]}</span>
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="mb-4"><iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 70px;"></iconify-icon></div>
+                            <h2 style="font-family: ${config.font.name}; color: ${config.color.main}" class="text-3xl font-black">${name}</h2>
+                            <p class="text-xs font-medium tracking-widest mt-1 opacity-60">${tag}</p>
+                        </div>
+                    </div>`;
+        }
+
+        div.innerHTML = `
+            ${layoutHTML}
+            <div class="download-overlay opacity-0 absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-4 transition-all duration-300 p-10">
+                <button onclick="downloadLogo(event, 'jpg')" class="w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-xs transition-all">JPG</button>
+                <button onclick="downloadLogo(event, 'png')" class="w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-xs transition-all">PNG</button>
+                <button onclick="downloadLogo(event, 'pdf')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-xs shadow-xl">PDF DOCUMENT</button>
+            </div>
+        `;
+        return div;
+    }
+
+    async function downloadLogo(event, type) {
+        event.stopPropagation();
+        const card = event.currentTarget.closest('.logo-card');
+        const bizName = document.getElementById('bizName').value || 'logo';
+        const overlay = card.querySelector('.download-overlay');
+        
+        overlay.style.visibility = 'hidden';
+        const canvas = await html2canvas(card, { 
+            scale: 4, 
+            backgroundColor: card.style.backgroundColor,
+            logging: false,
+            useCORS: true
+        });
+        overlay.style.visibility = 'visible';
+
+        if(type === 'pdf') {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'px', [canvas.width, canvas.height]);
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`${bizName}.pdf`);
+        } else {
+            const link = document.createElement('a');
+            link.download = `${bizName}.${type}`;
+            link.href = canvas.toDataURL(`image/${type === 'jpg' ? 'jpeg' : 'png'}`, 1.0);
+            link.click();
+        }
+    }
+</script>
+</body>
+</html>
