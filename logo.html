@@ -127,6 +127,34 @@
 
 <script>
 
+
+const getAdvancedText = (name, style, color, font, weight) => {
+    const width = 400;
+    const height = 150;
+    let path = "";
+    let transform = "";
+    
+    // Logic for different text shapes
+    if (style === 'arc') path = "M 50,120 Q 200,20 350,120";
+    else if (style === 'curve') path = "M 50,80 A 150,150 0 1,1 350,80";
+    else if (style === 'wave') path = "M 50,100 Q 125,50 200,100 T 350,100";
+    else return `<h2 style="font-family:${font}; color:${color}; font-weight:${weight};" class="text-3xl">${name}</h2>`;
+
+    return `
+    <svg viewBox="0 0 400 150" class="w-full h-24">
+        <path id="textPath" d="${path}" fill="transparent" />
+        <text fill="${color}" style="font-family:${font}; font-weight:${weight}; font-size:45px; letter-spacing:2px;">
+            <textPath href="#textPath" startOffset="50%" text-anchor="middle">${name}</textPath>
+        </text>
+    </svg>`;
+};
+
+
+
+
+
+
+
 let pageCache = {}; // Stores logos per page so they stay the same when going back
 let currentPage = 1;
 let lastLayout = -1; // To ensure layout variety
@@ -515,6 +543,17 @@ const personalityRules = {
 };
 
 
+const advancedLettering = (color) => [
+    { type: '3d', style: `text-shadow: 1px 1px ${color}, 2px 2px ${color}88, 3px 3px ${color}44, 4px 4px rgba(0,0,0,0.1);` },
+    { type: 'block', style: `-webkit-text-stroke: 1.5px ${color}; color: transparent;` },
+    { type: 'glow', style: `filter: drop-shadow(0 0 10px ${color}66);` },
+    { type: 'italic', style: `font-style: italic;` },
+    { type: 'bold', style: `font-weight: 900; transform: scale(1.1);` }
+];
+
+
+
+
     let lastColor = -1;
 
 function generateLogos() {
@@ -581,7 +620,7 @@ function generateLogoDataBatch() {
                     spacing: designStyle.textSpacing
                 },
                 icon: icons[industryKey][Math.floor(Math.random() * icons[industryKey].length)],
-                layout: Math.floor(Math.random() * 26),
+                layout: Math.floor(Math.random() * 35),
                 hierarchy: { icon: `${iconSize}px`, title: titleSize, shadow: designStyle.shadow }
             }
         });
@@ -661,7 +700,7 @@ div.style.gap = "8px"; // Tight professional spacing
     // Factor 2: Typography Control Engine
     const titleStyle = `
         font-family: '${config.font.name}'; 
-        color: ${config.color.secondary}; 
+     color: ${config.color.bg === '#111827' ? '#ffffff' : config.color.secondary};
         font-weight: ${config.font.weight}; 
         letter-spacing: ${config.font.spacing}; 
         text-transform: ${config.font.transform};
@@ -673,7 +712,7 @@ div.style.gap = "8px"; // Tight professional spacing
     
     const tagStyle = `
         font-family: '${config.font.tagFont}'; 
-        color: ${config.isDark ? '#9ca3af' : config.color.main}; 
+      color: ${config.color.bg === '#111827' ? '#ffffff' : config.color.main};
         font-weight: 700; 
         letter-spacing: 0.4em; 
         text-transform: uppercase; 
@@ -962,6 +1001,90 @@ div.style.gap = "8px"; // Tight professional spacing
                     </div>
                     ${getIcon('35px', '10px')}
                     <h2 style="${titleStyle}" class="text-xl italic">${name}</h2>
+                    <p style="${tagStyle}">${tag}</p>
+                </div>`;
+            break;
+case 26: // Clean Dual-Line (Replacement for Overlap)
+            layoutHTML = `
+                <div class="flex flex-col items-center justify-center">
+                    <div class="h-px w-20 bg-gray-200 mb-6"></div>
+                    ${getIcon('70px')}
+                    <h2 style="${titleStyle}" class="text-3xl mt-4">${name}</h2>
+                    <p style="${tagStyle}">${tag}</p>
+                    <div class="h-px w-20 bg-gray-200 mt-6"></div>
+                </div>`;
+            break;
+        case 27: // Arc Text (Factor 7)
+            layoutHTML = `
+                <div class="flex flex-col items-center justify-center -mb-8">
+                    ${getAdvancedText(name, 'arc', config.color.secondary, config.font.name, config.font.weight)}
+                    <div class="-mt-10 mb-4">${getIcon('60px', '0')}</div>
+                    <p style="${tagStyle}">${tag}</p>
+                </div>`;
+            break;
+        case 28: // 3D Lettering (Factor 1)
+            const effect3d = advancedLettering(config.color.main)[0].style;
+            layoutHTML = `
+                <div class="flex flex-col items-center">
+                    ${getIcon('50px')}
+                    <h2 style="${titleStyle} ${effect3d}" class="text-5xl mb-2">${name}</h2>
+                    <p style="${tagStyle}">${tag}</p>
+                </div>`;
+            break;
+        case 29: // Block Lettering (Factor 2)
+            const blockStyle = advancedLettering(config.color.secondary)[1].style;
+            layoutHTML = `
+                <div class="flex flex-col items-center">
+                    <h2 style="${titleStyle} ${blockStyle}" class="text-6xl tracking-tighter">${name}</h2>
+                    <div class="mt-[-20px] bg-white px-4">${getIcon('40px', '0')}</div>
+                    <p style="${tagStyle}" class="mt-2">${tag}</p>
+                </div>`;
+            break;
+        case 30: // Wave Text (Factor 6)
+            layoutHTML = `
+                <div class="flex flex-col items-center">
+                    ${getIcon('50px')}
+                    ${getAdvancedText(name, 'wave', config.color.secondary, config.font.name, config.font.weight)}
+                    <p style="${tagStyle}" class="-mt-6">${tag}</p>
+                </div>`;
+            break;
+         case 31: // Modern Geometric Side (Replacement for Overlap)
+            layoutHTML = `
+                <div class="flex items-center justify-center gap-6">
+                    <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 shadow-inner">
+                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 50px;"></iconify-icon>
+                    </div>
+                    <div class="text-left">
+                        <h2 style="${titleStyle}" class="text-2xl text-left">${name}</h2>
+                        <p style="${tagStyle}" class="text-left">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+        case 32: // Curved Text Circle (Factor 5)
+            layoutHTML = `
+                <div class="w-64 h-64 border-4 rounded-full flex items-center justify-center relative p-8" style="border-color: ${config.color.main}22">
+                    <div class="absolute inset-0 flex items-center justify-center rotate-[-10deg]">
+                         ${getAdvancedText(name, 'curve', config.color.secondary, config.font.name, config.font.weight)}
+                    </div>
+                    <div class="relative z-10">${getIcon('60px', '0')}</div>
+                </div>`;
+            break;
+        case 33: // Double Layered Monogram
+            layoutHTML = `
+                <div class="relative flex items-center justify-center">
+                    <h2 style="font-family: ${config.font.name}; color: ${config.color.main}11" class="text-[180px] font-black">${name[0]}</h2>
+                    <div class="absolute flex flex-col items-center pt-10">
+                        ${getIcon('50px')}
+                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
+                        <p style="${tagStyle}">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+        case 34: // Floating Badge with Shadow
+            layoutHTML = `
+                <div class="bg-white p-10 rounded-2xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border border-gray-50">
+                    ${getIcon('60px')}
+                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
                     <p style="${tagStyle}">${tag}</p>
                 </div>`;
             break;
