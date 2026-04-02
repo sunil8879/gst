@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIZGEN AI | Neural Naming Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root { --aqua: #7FFFD4; --dark: #0f172a; --soft-aqua: #f0fffb; }
+        body { font-family: 'Outfit', sans-serif; background-color: white; }
+        .sidebar { background: #ffffff; border-right: 2px solid var(--aqua); }
+        .name-card { 
+            background: white; 
+            border: 1px solid #f1f5f9; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .name-card:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            border-color: var(--aqua); 
+            box-shadow: 0 25px 50px -12px rgba(127, 255, 212, 0.4); 
+        }
+        .btn-aqua { background-color: var(--aqua); color: #1a202c; font-weight: 800; transition: all 0.3s; }
+        .btn-aqua:hover { background-color: #45b796; color: white; box-shadow: 0 10px 20px rgba(127, 255, 212, 0.5); }
+        .score-badge { background: var(--soft-aqua); color: #065f46; font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 900; }
+        .pagination-btn { width: 40px; height: 40px; border-radius: 10px; font-weight: bold; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .active-page { background: var(--aqua); border-color: var(--aqua); }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b-2 border-[var(--aqua)] py-4 px-8 sticky top-0 z-50 flex justify-between items-center">
+        <h1 class="text-2xl font-black italic tracking-tighter text-slate-800 uppercase">BizGen <span class="text-emerald-400">AI</span></h1>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Pseudo-Neural Engine Active
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-96 p-8 sidebar shadow-xl sticky top-20 h-fit lg:h-[calc(100vh-80px)] overflow-y-auto">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase">Brand Keyword</label>
+                    <input type="text" id="keyword" placeholder="e.g. fire, pay, cloud" class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-[var(--aqua)] rounded-2xl outline-none transition-all font-bold text-lg shadow-inner">
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase">Industry Context</label>
+                        <select id="industry" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold appearance-none cursor-pointer">
+                            <option value="tech">Tech & AI</option><option value="finance">Fintech</option>
+                            <option value="beauty">Beauty</option><option value="health">Medical</option>
+                            <option value="food">Restaurant</option><option value="realestate">Real Estate</option>
+                            <option value="edu">Education</option><option value="legal">Law</option>
+                            <option value="travel">Travel</option><option value="fashion">Fashion</option>
+                            <option value="sport">Fitness</option><option value="art">Design</option>
+                            <option value="pet">Pets</option><option value="nature">Eco</option>
+                            <option value="music">Music</option><option value="marketing">Ad Agency</option>
+                            <option value="crypto">Web3</option><option value="ecommerce">Shop</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase">Style</label>
+                        <select id="style" class="w-full p-3 bg-slate-50 rounded-xl font-bold">
+                            <option value="modern">Modern</option><option value="luxury">Luxury</option>
+                            <option value="fun">Playful</option><option value="professional">Solid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase">Max Length</label>
+                        <select id="length" class="w-full p-3 bg-slate-50 rounded-xl font-bold">
+                            <option value="short">Short (4-6)</option><option value="medium" selected>Med (7-10)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="generateNeuralNames()" class="w-full btn-aqua py-5 rounded-2xl shadow-xl transform active:scale-95 uppercase tracking-widest text-xs">
+                    Generate Neural Names
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 p-8 bg-slate-50/50">
+            <div id="welcomeScreen" class="text-center py-40">
+                <h2 class="text-6xl font-black text-slate-200">AI BRAIN IS READY</h2>
+                <p class="text-emerald-300 mt-2 font-bold uppercase tracking-[0.5em]">No Hardcoding. Pure Linguistics.</p>
+            </div>
+
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="hidden mt-16 flex flex-col items-center gap-4 pb-20">
+                <div id="pageButtons" class="flex gap-2"></div>
+                <p id="pageStats" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- STEP 2: WORD BANKS (THE BASE LAYER) ---
+ const prefixes = [
+    // --- TECH & MODERN (A-C) ---
+    'Active', 'Aero', 'Alpha', 'Allied', 'Ample', 'Apex', 'Aqua', 'Arch', 'Aspect', 'Astra', 'Atlas', 'Aura', 'Auto', 'Avid', 'Axis', 'Azure', 'Base', 'Beam', 'Beat', 'Better', 'Beyond', 'Bio', 'Bit', 'Blue', 'Bold', 'Bolt', 'Boost', 'Bright', 'Byte', 'Calm', 'Cap', 'Case', 'Cell', 'Centra', 'Chain', 'Chef', 'Chic', 'Choice', 'Chrono', 'Cipher', 'Circuit', 'Citi', 'Clear', 'Cloud', 'Code', 'Coin', 'Core', 'Cosmo', 'Craft', 'Crest', 'Cross', 'Crown', 'Crypt', 'Cube', 'Cyber',
+    // --- GROWTH & SPEED (D-F) ---
+    'Dash', 'Data', 'Deal', 'Deep', 'Delta', 'Design', 'Dev', 'Dex', 'Digi', 'Direct', 'Disk', 'Diva', 'Doc', 'Dot', 'Dream', 'Drift', 'Drive', 'Drop', 'Dual', 'Dyna', 'Ease', 'East', 'Echo', 'Eco', 'Edge', 'Edit', 'Elite', 'Ember', 'Epic', 'Era', 'Essence', 'Estate', 'Ever', 'Evo', 'Ex', 'Exact', 'Excel', 'Expert', 'Fab', 'Fact', 'Fair', 'Farm', 'Fast', 'Feed', 'Field', 'File', 'Film', 'Fine', 'Fire', 'Firm', 'First', 'Fit', 'Fix', 'Flash', 'Fleet', 'Flex', 'Flip', 'Flow', 'Flux', 'Fly', 'Focus', 'Force', 'Forge', 'Form', 'Fort', 'Found', 'Frame', 'Fresh', 'Front', 'Fuel', 'Full', 'Fund', 'Fuse', 'Future',
+    // --- INTELLIGENCE & VISION (G-I) ---
+    'Gain', 'Game', 'Gamma', 'Gear', 'Gem', 'Gen', 'Geo', 'Giga', 'Glad', 'Glass', 'Glide', 'Global', 'Glow', 'Goal', 'Gold', 'Good', 'Grad', 'Grand', 'Graph', 'Great', 'Green', 'Grid', 'Grip', 'Group', 'Grow', 'Guard', 'Guide', 'Guru', 'Habit', 'Hall', 'Halo', 'Hand', 'Hard', 'Hash', 'Head', 'Heal', 'Heart', 'Heat', 'Heavy', 'Hedge', 'Helix', 'Help', 'Hero', 'High', 'Hike', 'Hill', 'Hint', 'Home', 'Host', 'Hot', 'Hub', 'Hue', 'Human', 'Hyper', 'Icon', 'Idea', 'Ideal', 'Identi', 'Image', 'Impact', 'In', 'Index', 'Indigo', 'Info', 'Infra', 'Ink', 'Inner', 'Innov', 'Insight', 'Insta', 'Intel', 'Inter', 'Intra', 'Ionic', 'Iron', 'Item',
+    // --- PRECISION & STYLE (J-L) ---
+    'Jade', 'Jet', 'Job', 'Join', 'Jolt', 'Joy', 'Jump', 'Just', 'Keen', 'Key', 'Kind', 'Kinetic', 'Kit', 'Knowledge', 'Lab', 'Land', 'Lane', 'Laser', 'Last', 'Latitude', 'Lead', 'Leaf', 'Leap', 'Ledger', 'Legacy', 'Lens', 'Level', 'Lex', 'Life', 'Light', 'Line', 'Link', 'List', 'Live', 'Load', 'Local', 'Loft', 'Logic', 'Logo', 'Loom', 'Loop', 'Loud', 'Love', 'Loyal', 'Luck', 'Lumen', 'Luxe', 'Lyra',
+    // --- SCALE & STRUCTURE (M-O) ---
+    'Magic', 'Main', 'Major', 'Maker', 'Map', 'Mark', 'Market', 'Mass', 'Master', 'Matrix', 'Max', 'Media', 'Mega', 'Melt', 'Memo', 'Meta', 'Meter', 'Method', 'Micro', 'Mid', 'Might', 'Mill', 'Mind', 'Mint', 'Mission', 'Mix', 'Mode', 'Modern', 'Moment', 'Mono', 'Moon', 'More', 'Motion', 'Mount', 'Move', 'Multi', 'Muse', 'Myth', 'Nano', 'Native', 'Nature', 'Naval', 'Near', 'Neat', 'Nebula', 'Neo', 'Neon', 'Nest', 'Net', 'Neural', 'Neuro', 'New', 'Next', 'Nexus', 'Night', 'Nimble', 'Noble', 'Node', 'Nomad', 'North', 'Nova', 'Novel', 'Nucleo', 'Oak', 'Oasis', 'Object', 'Ocean', 'Octa', 'Odd', 'Office', 'Oil', 'Omega', 'Omni', 'On', 'One', 'Onyx', 'Open', 'Opti', 'Orbit', 'Order', 'Organ', 'Origin', 'Out', 'Outfit', 'Over', 'Ozone',
+    // --- POWER & RELIABILITY (P-R) ---
+    'Pace', 'Pack', 'Page', 'Paint', 'Palm', 'Pan', 'Panel', 'Para', 'Park', 'Part', 'Pass', 'Patch', 'Path', 'Pattern', 'Peak', 'Pearl', 'Peer', 'Pen', 'Pencil', 'Penta', 'People', 'Percept', 'Perfect', 'Phase', 'Phenom', 'Phi', 'Phoenix', 'Phone', 'Photo', 'Pic', 'Pilot', 'Pin', 'Pine', 'Pinnacle', 'Pioneer', 'Pivot', 'Pixel', 'Plan', 'Planet', 'Plant', 'Plasma', 'Plate', 'Play', 'Plot', 'Plus', 'Point', 'Polar', 'Poly', 'Pool', 'Port', 'Posh', 'Post', 'Power', 'Precise', 'Premium', 'Press', 'Prestige', 'Prime', 'Prism', 'Pro', 'Process', 'Product', 'Profit', 'Project', 'Promo', 'Proof', 'Proper', 'Proto', 'Proud', 'Pulse', 'Pure', 'Purple', 'Puzzle', 'Quad', 'Quali', 'Quantum', 'Quest', 'Quick', 'Quiet', 'Quint', 'Radio', 'Rail', 'Rain', 'Rally', 'Range', 'Rapid', 'Rare', 'Rate', 'Raw', 'Ray', 'Reach', 'Ready', 'Real', 'Realm', 'Rebel', 'Recipe', 'Record', 'Red', 'Refine', 'Reflex', 'Region', 'Relay', 'Reliable', 'Remap', 'Remote', 'Renew', 'Reno', 'Rep', 'Research', 'Resolve', 'Resource', 'Retro', 'Reveal', 'Rich', 'Ridge', 'Right', 'Rise', 'Risk', 'River', 'Road', 'Rob', 'Rock', 'Rocket', 'Rod', 'Rogue', 'Role', 'Root', 'Rose', 'Route', 'Royal', 'Rule', 'Rune', 'Rush', 'Rustic',
+    // --- SYNERGY & SYSTEM (S-U) ---
+    'Safe', 'Sage', 'Sail', 'Saint', 'Salt', 'Sample', 'Sand', 'Sapient', 'Satin', 'Scale', 'Scan', 'Scene', 'Scent', 'Scholar', 'School', 'Scope', 'Score', 'Scout', 'Script', 'Sea', 'Seal', 'Search', 'Season', 'Second', 'Secret', 'Sector', 'Secure', 'Seed', 'Seek', 'Select', 'Self', 'Semantic', 'Send', 'Sense', 'Sensor', 'Serve', 'Session', 'Set', 'Shade', 'Shadow', 'Shape', 'Share', 'Sharp', 'Shell', 'Shift', 'Shine', 'Ship', 'Shock', 'Shore', 'Shot', 'Show', 'Shrill', 'Sigma', 'Sign', 'Signal', 'Silk', 'Silver', 'Simple', 'Sine', 'Site', 'Sketch', 'Skill', 'Skin', 'Sky', 'Slate', 'Sleek', 'Slice', 'Slide', 'Smart', 'Smile', 'Smoke', 'Smooth', 'Snap', 'Snow', 'Soft', 'Solar', 'Solid', 'Solo', 'Solve', 'Sonic', 'Soul', 'Sound', 'Source', 'South', 'Space', 'Spark', 'Spear', 'Special', 'Spectra', 'Speed', 'Sphere', 'Spice', 'Spin', 'Spirit', 'Split', 'Spoke', 'Sport', 'Spot', 'Spring', 'Sprout', 'Squad', 'Square', 'Stack', 'Stage', 'Stamp', 'Stand', 'Star', 'Start', 'State', 'Static', 'Station', 'Status', 'Steady', 'Steel', 'Stem', 'Step', 'Stereo', 'Sterling', 'Stick', 'Stitch', 'Stock', 'Stone', 'Story', 'Strategic', 'Stream', 'Street', 'Strength', 'Stress', 'Stretch', 'Strong', 'Studio', 'Study', 'Style', 'Sub', 'Sublime', 'Success', 'Summit', 'Sun', 'Super', 'Supply', 'Support', 'Sure', 'Surface', 'Surge', 'Swift', 'Switch', 'Symbol', 'Symetry', 'Sync', 'Syne', 'Synergy', 'Syntax', 'System', 'Tab', 'Table', 'Tag', 'Tailor', 'Tale', 'Talent', 'Talk', 'Tall', 'Target', 'Task', 'Team', 'Tech', 'Tele', 'Tempo', 'Tend', 'Tenet', 'Term', 'Terra', 'Test', 'Text', 'Theory', 'Thermal', 'Think', 'Third', 'Thread', 'Thrive', 'Tide', 'Tier', 'Tiger', 'Tilt', 'Time', 'Tint', 'Titan', 'Title', 'Tone', 'Tool', 'Top', 'Topic', 'Torque', 'Total', 'Touch', 'Tough', 'Tour', 'Trace', 'Track', 'Trade', 'Trail', 'Train', 'Transit', 'Travel', 'Trend', 'Tri', 'Trial', 'Tribe', 'Trident', 'Triple', 'True', 'Trust', 'Truth', 'Tube', 'Turbo', 'Tutor', 'Twin', 'Twist', 'Type', 'Ultra', 'Uni', 'Union', 'Unique', 'Unit', 'Unite', 'Unity', 'Universal', 'Uno', 'Up', 'Upper', 'Urban', 'Use', 'User', 'Utopia',
+    // --- VIBE & ZENITH (V-Z) ---
+    'Valor', 'Value', 'Valve', 'Van', 'Vapor', 'Vast', 'Vault', 'Vector', 'Vega', 'Veil', 'Velo', 'Velvet', 'Venture', 'Venue', 'Vera', 'Verge', 'Verse', 'Vertex', 'Vertical', 'Vertu', 'Vibe', 'Video', 'View', 'Vigil', 'Villa', 'Vine', 'Viral', 'Virtual', 'Virtu', 'Vision', 'Vista', 'Visual', 'Vital', 'Viva', 'Vivid', 'Vocal', 'Voice', 'Volt', 'Volume', 'Vortex', 'Vote', 'Vox', 'Voyage', 'Wake', 'Wall', 'Wand', 'Want', 'Warp', 'Watch', 'Water', 'Wave', 'Way', 'Wealth', 'Web', 'Week', 'Well', 'West', 'Wheel', 'White', 'Whole', 'Wide', 'Wild', 'Will', 'Win', 'Wind', 'Wing', 'Wink', 'Wire', 'Wise', 'Wish', 'Wit', 'Wolf', 'Wonder', 'Wood', 'Word', 'Work', 'World', 'Wow', 'Wrap', 'Write', 'X', 'Xen', 'Xer', 'Xylo', 'Yard', 'Yarn', 'Year', 'Yellow', 'Yes', 'Yield', 'Yoga', 'Youth', 'Zeal', 'Zenith', 'Zephyr', 'Zero', 'Zest', 'Zinc', 'Zone', 'Zoom'
+];
+       const suffixes = [
+    // --- TECH & MODERN (A-C) ---
+    'able', 'active', 'ade', 'age', 'air', 'al', 'all', 'ally', 'am', 'an', 'ance', 'and', 'ant', 'ar', 'arc', 'ard', 'as', 'ash', 'at', 'ate', 'ax', 'ay', 'aza', 'base', 'beam', 'bee', 'bel', 'best', 'bio', 'bit', 'ble', 'blink', 'bliss', 'bloom', 'blue', 'board', 'bolt', 'bond', 'book', 'boost', 'bot', 'bound', 'box', 'bridge', 'bright', 'byte', 'cal', 'can', 'cap', 'car', 'cast', 'cat', 'ced', 'cel', 'cell', 'cent', 'chain', 'channel', 'chart', 'check', 'chip', 'city', 'clan', 'class', 'clear', 'click', 'cloud', 'club', 'co', 'code', 'coin', 'com', 'cone', 'conn', 'corp', 'core', 'craft', 'crest', 'cube',
+    // --- GROWTH & SPEED (D-F) ---
+    'da', 'daily', 'dam', 'dash', 'data', 'dawn', 'day', 'deal', 'deck', 'deep', 'delta', 'den', 'depot', 'desk', 'dev', 'dew', 'dex', 'dia', 'dial', 'digm', 'digit', 'dir', 'disc', 'dish', 'disk', 'diva', 'do', 'doc', 'dock', 'doll', 'dom', 'door', 'dot', 'draw', 'dream', 'drive', 'drop', 'drum', 'dry', 'du', 'duo', 'duty', 'dy', 'dyn', 'earth', 'east', 'easy', 'echo', 'eco', 'edge', 'edit', 'ego', 'el', 'elect', 'elite', 'em', 'en', 'end', 'ent', 'eo', 'epic', 'era', 'est', 'eta', 'eth', 'eva', 'ever', 'evo', 'ex', 'exe', 'expert', 'eye', 'fab', 'face', 'fact', 'fan', 'farm', 'fast', 'feed', 'field', 'file', 'film', 'fin', 'fine', 'fire', 'firm', 'fit', 'fix', 'flag', 'flame', 'flash', 'flex', 'flight', 'flip', 'flow', 'flux', 'fly', 'focus', 'force', 'forge', 'form', 'fort', 'found', 'fox', 'frame', 'free', 'fresh', 'front', 'fuel', 'full', 'fund', 'fuse',
+    // --- INTELLIGENCE & VISION (G-I) ---
+    'gain', 'gal', 'game', 'gap', 'gate', 'gear', 'gem', 'gen', 'geo', 'get', 'gift', 'glam', 'glass', 'glide', 'global', 'glow', 'go', 'goal', 'gold', 'good', 'got', 'grad', 'graph', 'great', 'grid', 'grip', 'ground', 'group', 'grow', 'guard', 'guide', 'guy', 'hall', 'halo', 'hand', 'hang', 'hard', 'hash', 'head', 'heal', 'heart', 'heat', 'heavy', 'hedge', 'height', 'helix', 'hello', 'help', 'hem', 'hero', 'high', 'hill', 'hint', 'hit', 'hold', 'home', 'hook', 'hop', 'horn', 'host', 'hot', 'house', 'hq', 'hub', 'hue', 'hunt', 'hybrid', 'hyper', 'ia', 'ian', 'ic', 'ice', 'icon', 'id', 'idea', 'ideal', 'ify', 'ign', 'image', 'impact', 'in', 'inc', 'index', 'info', 'ink', 'inn', 'input', 'ins', 'inst', 'intel', 'inter', 'io', 'ion', 'ionix', 'ios', 'iq', 'ish', 'ism', 'ist', 'it', 'ite', 'ity', 'ium', 'iva', 'ive', 'ix', 'ize',
+    // --- PRECISION & STYLE (J-L) ---
+    'jack', 'jam', 'jar', 'jet', 'job', 'join', 'jolt', 'joy', 'jump', 'just', 'keen', 'keep', 'key', 'kick', 'kid', 'kil', 'kin', 'kind', 'king', 'kit', 'knot', 'lab', 'lace', 'lady', 'lamp', 'land', 'lane', 'lap', 'last', 'layer', 'lead', 'leaf', 'leap', 'ledge', 'left', 'lens', 'let', 'level', 'lex', 'life', 'lift', 'light', 'line', 'link', 'list', 'lite', 'live', 'load', 'local', 'lock', 'loft', 'log', 'logic', 'look', 'loom', 'loop', 'lord', 'loud', 'love', 'low', 'loy', 'luck', 'luxe', 'ly', 'lyt', 'lyx',
+    // --- SCALE & STRUCTURE (M-O) ---
+    'macro', 'made', 'magic', 'mail', 'main', 'make', 'man', 'map', 'mark', 'mart', 'mash', 'mass', 'master', 'match', 'mate', 'math', 'matrix', 'max', 'may', 'me', 'media', 'meet', 'mega', 'melt', 'memo', 'mesh', 'meta', 'meter', 'method', 'metric', 'micro', 'mid', 'might', 'mill', 'mind', 'mini', 'mint', 'miss', 'mist', 'mix', 'mode', 'mo', 'mod', 'model', 'modern', 'mon', 'mono', 'moon', 'more', 'most', 'mount', 'move', 'ms', 'multi', 'muse', 'my', 'myth', 'name', 'nano', 'near', 'neat', 'nebula', 'neo', 'neon', 'nest', 'net', 'new', 'next', 'nexus', 'nic', 'nice', 'night', 'nil', 'nim', 'node', 'nomad', 'non', 'north', 'note', 'nova', 'now', 'nu', 'nut', 'oak', 'oar', 'object', 'ocean', 'odd', 'off', 'offer', 'oil', 'om', 'omega', 'on', 'one', 'onto', 'open', 'opt', 'optic', 'or', 'ora', 'orb', 'orbit', 'order', 'organ', 'orient', 'os', 'ot', 'out', 'oval', 'over', 'owl', 'ox', 'oxy', 'oz',
+    // --- POWER & RELIABILITY (P-R) ---
+    'pack', 'pad', 'page', 'pair', 'pal', 'pan', 'par', 'part', 'pass', 'patch', 'path', 'pay', 'peak', 'pen', 'penta', 'per', 'pet', 'phase', 'pheno', 'phi', 'phone', 'photo', 'pic', 'pick', 'pilot', 'pin', 'pine', 'ping', 'pink', 'pioneer', 'pit', 'pixel', 'place', 'plan', 'plant', 'play', 'plot', 'plus', 'ply', 'pod', 'point', 'polar', 'pool', 'pop', 'port', 'post', 'power', 'press', 'prime', 'prism', 'pro', 'proof', 'proper', 'proto', 'proud', 'pub', 'puff', 'pulse', 'pure', 'push', 'py', 'quad', 'qual', 'quant', 'quest', 'quick', 'quiet', 'quilt', 'quiz', 'quo', 'race', 'rad', 'radio', 'rail', 'rain', 'rally', 'ran', 'range', 'rapid', 'rare', 'rate', 'raw', 'ray', 'reach', 'read', 'ready', 'real', 'realm', 'reap', 'red', 'reel', 'ref', 'rel', 'rem', 'ren', 'rep', 'res', 'rev', 'rich', 'ride', 'ridge', 'right', 'rim', 'ring', 'rise', 'risk', 'river', 'road', 'rob', 'rock', 'rocket', 'roll', 'room', 'root', 'rose', 'route', 'row', 'rub', 'ruby', 'run', 'rush',
+    // --- SYNERGY & SYSTEM (S-U) ---
+    'safe', 'sage', 'sail', 'sale', 'salt', 'same', 'sand', 'sat', 'save', 'scale', 'scan', 'scene', 'scope', 'score', 'scout', 'script', 'sea', 'seal', 'search', 'sect', 'secure', 'seed', 'seek', 'seen', 'self', 'sell', 'send', 'sens', 'sent', 'serve', 'set', 'shade', 'shape', 'share', 'sharp', 'shed', 'shell', 'shift', 'shine', 'ship', 'shock', 'shoe', 'shop', 'shore', 'shot', 'show', 'shun', 'side', 'sight', 'sign', 'silk', 'silver', 'sim', 'site', 'size', 'skill', 'skin', 'sky', 'slate', 'sleek', 'slice', 'slide', 'slip', 'smart', 'smile', 'snap', 'snow', 'so', 'soft', 'soil', 'solar', 'solid', 'solo', 'solve', 'son', 'sonic', 'soul', 'sound', 'source', 'south', 'space', 'spark', 'spear', 'speed', 'sphere', 'spice', 'spin', 'spirit', 'split', 'spoke', 'sport', 'spot', 'spring', 'sprout', 'squad', 'square', 'stack', 'staff', 'stage', 'star', 'start', 'state', 'stat', 'stay', 'steady', 'steam', 'steel', 'step', 'stick', 'still', 'stich', 'stock', 'stone', 'stop', 'store', 'storm', 'story', 'stream', 'street', 'strip', 'strong', 'studio', 'study', 'style', 'sub', 'sum', 'sun', 'super', 'surf', 'swift', 'swing', 'sync', 'syne', 'sys', 'tag', 'tail', 'take', 'tale', 'talk', 'tap', 'target', 'task', 'team', 'tech', 'tell', 'tend', 'ten', 'term', 'terra', 'test', 'text', 'the', 'them', 'thin', 'think', 'this', 'thread', 'tick', 'tide', 'tier', 'tight', 'tile', 'tilt', 'time', 'tint', 'tip', 'titan', 'title', 'to', 'toe', 'tone', 'tool', 'top', 'topic', 'touch', 'tough', 'tour', 'town', 'trace', 'track', 'trade', 'trail', 'train', 'tree', 'trend', 'tri', 'trial', 'tribe', 'trick', 'trim', 'trip', 'true', 'trust', 'tube', 'tune', 'turn', 'twin', 'type', 'ultra', 'um', 'un', 'unit', 'unite', 'unity', 'up', 'urb', 'us', 'use', 'user', 'util',
+    // --- VIBE & ZENITH (V-Z) ---
+    'vac', 'val', 'vantage', 'vapor', 'vast', 'vault', 'vector', 'vee', 'veil', 'velo', 'velvet', 'vent', 'ver', 'verse', 'vertex', 'vert', 'very', 'vibe', 'vid', 'view', 'vigil', 'villa', 'vim', 'vine', 'viral', 'virtu', 'vis', 'vision', 'vista', 'vital', 'viva', 'vivid', 'vocal', 'voice', 'volt', 'volume', 'vortex', 'vox', 'voyage', 'vroom', 'wait', 'walk', 'wall', 'want', 'ward', 'warm', 'warp', 'wash', 'watch', 'water', 'wave', 'way', 'we', 'wealth', 'web', 'well', 'west', 'wet', 'wheel', 'white', 'wide', 'wild', 'will', 'win', 'wind', 'wing', 'wink', 'wire', 'wise', 'wish', 'wit', 'wolf', 'wood', 'word', 'work', 'world', 'wow', 'wrap', 'write', 'x', 'xe', 'xen', 'xion', 'xy', 'yard', 'yarn', 'year', 'yellow', 'yes', 'yield', 'yoga', 'young', 'your', 'youth', 'z', 'za', 'zap', 'zeal', 'zen', 'zest', 'zig', 'zip', 'zone', 'zoo', 'zoom'
+];
+       const consonants = [
+    // --- SINGLE CONSONANTS ---
+    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z",
+    
+    // --- MODERN BLENDS (The "Namelix" Secret) ---
+    "br", "cr", "dr", "fr", "gr", "pr", "tr", "st", "sl", "sh", "ch", "th", "ph", "pl", "fl", "cl", "gl", "qu", "nk", "rt"
+];
+        const vowels = ["a", "e", "i", "o", "u"];
+        
+      const roots = {
+    tech: [
+        'byte', 'code', 'data', 'bit', 'node', 'sync', 'bot', 'cyber', 'net', 'web', 'app', 'soft', 'cloud', 'dev', 'link', 'port', 'flux', 'apex', 'bolt', 'nano', 'giga', 'tera', 'micro', 'macro', 'pixel', 'frame', 'matrix', 'vector', 'prism', 'pulse', 'signal', 'hub', 'lab', 'base', 'core', 'shell', 'wire', 'tech', 'gear', 'cpu', 'ram', 'chip', 'neuro', 'quantum', 'ai', 'ml', 'droid', 'engine', 'drive', 'script', 'stack', 'queue', 'cache', 'host', 'server', 'route', 'mesh', 'peer', 'key', 'secure', 'fast', 'light', 'swift', 'fire', 'storm', 'ice', 'meta', 'omni', 'nex', 'alt', 'ultra', 'prime', 'smart', 'quick', 'rapid', 'nova', 'x', 'z', 'bio', 'info', 'stream', 'flow', 'dyno', 'logic', 'sys', 'intel', 'optic', 'laser', 'sonic', 'video', 'audio', 'touch', 'haptic', 'force', 'motion', 'auto', 'rob', 'virtu', 'cloud'
+    ],
+    finance: [
+        'pay', 'mint', 'coin', 'fund', 'cash', 'bank', 'flow', 'yield', 'wealth', 'debt', 'loan', 'gain', 'risk', 'trade', 'bond', 'stock', 'ledger', 'asset', 'equity', 'audit', 'tax', 'rate', 'save', 'spend', 'earn', 'bill', 'vault', 'safe', 'trust', 'gold', 'silver', 'prime', 'check', 'swap', 'spot', 'margin', 'hedge', 'bull', 'bear', 'market', 'index', 'cap', 'fiscal', 'mint', 'cents', 'dime', 'buck', 'ledger', 'wallet', 'purse', 'bank', 'wise', 'clear', 'direct', 'fixed', 'open', 'pure', 'solid', 'true', 'rich', 'wealth', 'peer', 'node', 'chain', 'block', 'smart', 'fast', 'easy', 'quick', 'rapid', 'global', 'local', 'main', 'base', 'core', 'apex', 'peak', 'top', 'summit', 'elite', 'aura', 'luxe', 'grand', 'royal', 'noble', 'euro', 'buck', 'zen', 'alpha', 'delta', 'omega', 'phi'
+    ],
+    beauty: [
+        'glow', 'silk', 'aura', 'bloom', 'luxe', 'chic', 'vogue', 'pure', 'glam', 'skin', 'face', 'hair', 'soft', 'smooth', 'fresh', 'bright', 'vivid', 'posh', 'rose', 'lily', 'grace', 'sheen', 'mist', 'dew', 'pearl', 'gem', 'jade', 'opal', 'ruby', 'satin', 'lace', 'lush', 'sleek', 'radiant', 'scent', 'balm', 'elixir', 'spa', 'fancy', 'cosmo', 'velvet', 'bloom', 'petal', 'flora', 'fauna', 'pure', 'grace', 'beauty', 'look', 'style', 'mode', 'trend', 'gloss', 'shine', 'crystal', 'amber', 'satin', 'mist', 'dew', 'luxe', 'posh', 'elite', 'aura', 'zen', 'bliss', 'calm', 'soft', 'smooth', 'fine', 'rare', 'bold', 'dark', 'light', 'fair', 'cool', 'warm', 'glow', 'beam', 'ray', 'sky', 'sun', 'moon', 'star', 'venus', 'bella', 'luna', 'nova', 'elle', 'mia', 'ana', 'diva'
+    ],
+    health: [
+        'med', 'care', 'life', 'vital', 'wellness', 'heal', 'pulse', 'fit', 'bio', 'cure', 'clinic', 'doc', 'nurse', 'aide', 'help', 'aid', 'plus', 'cross', 'heart', 'lung', 'bone', 'nerve', 'gene', 'cell', 'lab', 'scan', 'test', 'check', 'peak', 'path', 'way', 'route', 'line', 'strong', 'tough', 'power', 'force', 'energy', 'beam', 'light', 'sun', 'sky', 'air', 'clean', 'safe', 'sound', 'whole', 'active', 'mind', 'yoga', 'zen', 'calm', 'rest', 'sleep', 'wake', 'pure', 'natural', 'raw', 'fresh', 'leaf', 'root', 'herb', 'well', 'good', 'best', 'pro', 'expert', 'master', 'skill', 'lead', 'head', 'alpha', 'vibe', 'aura', 'pulse', 'beat', 'flow', 'stay', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift', 'smart', 'wise', 'keen'
+    ],
+    food: [
+        'tasty', 'bite', 'chef', 'eats', 'plate', 'dish', 'crumb', 'yum', 'zest', 'dine', 'cook', 'grill', 'bake', 'roast', 'stew', 'soup', 'sauce', 'spice', 'salt', 'sweet', 'sour', 'bitter', 'hot', 'cold', 'ice', 'fire', 'smoke', 'flame', 'pot', 'pan', 'fork', 'knife', 'spoon', 'bowl', 'cup', 'mug', 'brew', 'bean', 'leaf', 'fruit', 'nut', 'seed', 'grain', 'bread', 'meat', 'fish', 'veg', 'salad', 'farm', 'crush', 'mash', 'mix', 'blend', 'fresh', 'raw', 'pure', 'whole', 'good', 'best', 'top', 'pro', 'urban', 'local', 'main', 'street', 'table', 'bench', 'kitchen', 'pantry', 'oven', 'stove', 'meal', 'snack', 'treat', 'sugar', 'honey', 'maple', 'dough', 'crust', 'slice', 'piece', 'menu', 'order', 'fast', 'quick', 'rapid'
+    ],
+    realestate: [
+        'land', 'home', 'estate', 'brick', 'roof', 'gate', 'key', 'plot', 'view', 'manor', 'space', 'urban', 'city', 'town', 'street', 'road', 'lane', 'avenue', 'path', 'park', 'square', 'block', 'unit', 'loft', 'suite', 'room', 'hall', 'house', 'barn', 'villa', 'lodge', 'hill', 'mount', 'dale', 'river', 'lake', 'shore', 'coast', 'port', 'harbor', 'dock', 'yard', 'garden', 'field', 'meadow', 'wood', 'pine', 'oak', 'ash', 'brick', 'stone', 'glass', 'steel', 'iron', 'beam', 'base', 'core', 'level', 'high', 'top', 'peak', 'sky', 'loft', 'floor', 'wall', 'door', 'step', 'stair', 'key', 'lock', 'safe', 'guard', 'trust', 'solid', 'firm', 'build', 'form', 'site', 'view', 'vista', 'look', 'point', 'edge', 'side', 'front', 'back', 'main', 'prime', 'elite', 'luxury', 'grand', 'royal'
+    ],
+    edu: [
+        'learn', 'scholar', 'mind', 'study', 'grad', 'dean', 'class', 'book', 'knowledge', 'brain', 'academy', 'tutor', 'coach', 'guide', 'mentor', 'school', 'college', 'uni', 'campus', 'test', 'quiz', 'grade', 'mark', 'score', 'skill', 'tool', 'craft', 'art', 'science', 'math', 'history', 'think', 'sage', 'smart', 'bright', 'quick', 'fast', 'sharp', 'keen', 'pro', 'expert', 'master', 'chief', 'lead', 'head', 'first', 'alpha', 'verse', 'thinker', 'writer', 'reader', 'speak', 'talk', 'word', 'line', 'page', 'ink', 'pen', 'pencil', 'note', 'list', 'file', 'data', 'info', 'fact', 'truth', 'logic', 'view', 'vision', 'insight', 'focus', 'aim', 'goal', 'plan', 'step', 'way', 'path', 'route', 'map', 'atlas', 'globe', 'world', 'earth', 'space', 'sky', 'sun', 'star', 'nova', 'zenith', 'peak', 'top', 'best'
+    ],
+    legal: [
+        'law', 'jury', 'lex', 'case', 'brief', 'justice', 'court', 'firm', 'pact', 'seal', 'legal', 'verdict', 'rule', 'code', 'order', 'act', 'bill', 'deed', 'will', 'bond', 'claim', 'sue', 'defense', 'proof', 'fact', 'truth', 'right', 'fair', 'just', 'equal', 'safe', 'guard', 'shield', 'lock', 'wall', 'bar', 'bench', 'gavel', 'robe', 'wig', 'clerk', 'agent', 'rep', 'trust', 'civic', 'vigil', 'oath', 'true', 'honest', 'solid', 'firm', 'base', 'core', 'main', 'chief', 'head', 'lead', 'pro', 'expert', 'master', 'chief', 'alpha', 'omega', 'phi', 'delta', 'sigma', 'tau', 'rho', 'zeta', 'beta', 'gamma', 'alpha', 'nexus', 'vertex', 'zenith', 'peak', 'top', 'summit', 'elite', 'prime', 'grand', 'royal', 'noble', 'justice', 'truth', 'law', 'firm', 'legal', 'counsel', 'advice', 'guide'
+    ],
+
+
+
+
+
+
+
+
+// Add these to your roots object
+    travel: [
+        'trip', 'voy', 'trek', 'path', 'way', 'roam', 'nomad', 'tour', 'gate', 'fly', 'atlas', 'globe', 'plane', 'boat', 'ship', 'car', 'bus', 'rail', 'road', 'lane', 'route', 'map', 'compass', 'north', 'south', 'east', 'west', 'sky', 'sun', 'moon', 'star', 'cloud', 'rain', 'wind', 'sea', 'wave', 'tide', 'beach', 'sand', 'island', 'reef', 'bay', 'cove', 'ridge', 'trail', 'hike', 'camp', 'tent', 'vista', 'peak', 'horizon', 'sky', 'blue', 'wild', 'free', 'open', 'away', 'far', 'near', 'local', 'global', 'world', 'land', 'air', 'water', 'flow', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift', 'smart', 'wise', 'keen', 'pro', 'expert', 'master', 'chief', 'lead', 'head', 'first', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'mu', 'nu'
+    ],
+    fashion: [
+        'style', 'chic', 'mode', 'trend', 'vogue', 'wear', 'fit', 'thread', 'loom', 'fab', 'apparel', 'garment', 'dress', 'skirt', 'shirt', 'pant', 'coat', 'hat', 'shoe', 'bag', 'belt', 'tie', 'silk', 'wool', 'jean', 'denim', 'lace', 'mesh', 'knit', 'sew', 'cut', 'hem', 'trim', 'patch', 'pin', 'needle', 'spool', 'yarn', 'dye', 'tint', 'hue', 'tone', 'look', 'face', 'eye', 'lip', 'nail', 'hair', 'skin', 'couture', 'luxury', 'glam', 'posh', 'elite', 'aura', 'pure', 'luxe', 'grand', 'royal', 'noble', 'bold', 'soft', 'smooth', 'fine', 'rare', 'new', 'old', 'retro', 'modern', 'urban', 'street', 'city', 'town', 'local', 'global', 'world', 'elle', 'mia', 'ana', 'diva', 'bella', 'luna', 'star', 'sky', 'sun', 'moon', 'nova', 'chic'
+    ],
+    sport: [
+        'play', 'game', 'champ', 'goal', 'fit', 'team', 'peak', 'dash', 'move', 'pace', 'active', 'pro', 'win', 'score', 'point', 'ace', 'kick', 'hit', 'bat', 'ball', 'puck', 'club', 'court', 'field', 'track', 'gym', 'hall', 'ring', 'mat', 'lap', 'race', 'run', 'jump', 'swim', 'dive', 'row', 'ride', 'bike', 'ski', 'surf', 'skate', 'lift', 'push', 'pull', 'flex', 'core', 'power', 'might', 'force', 'grit', 'tough', 'strong', 'fast', 'quick', 'rapid', 'swift', 'smart', 'wise', 'keen', 'alpha', 'omega', 'phi', 'delta', 'sigma', 'tau', 'rho', 'zeta', 'beta', 'gamma', 'bold', 'vibe', 'aura', 'pulse', 'beat', 'flow', 'stay', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift', 'smart', 'wise', 'keen', 'pro', 'expert', 'master', 'chief', 'lead'
+    ],
+    art: [
+        'craft', 'sketch', 'hue', 'draw', 'canvas', 'studio', 'form', 'lens', 'ink', 'muse', 'design', 'gallery', 'paint', 'brush', 'oil', 'clay', 'wood', 'glass', 'metal', 'stone', 'paper', 'pen', 'tool', 'skill', 'gift', 'talent', 'soul', 'heart', 'mind', 'eye', 'hand', 'shape', 'space', 'line', 'mark', 'sign', 'logo', 'brand', 'icon', 'image', 'photo', 'film', 'frame', 'shot', 'view', 'scene', 'play', 'act', 'stage', 'show', 'color', 'vivid', 'bright', 'dark', 'light', 'pure', 'fine', 'rare', 'bold', 'soft', 'smooth', 'glow', 'shine', 'luster', 'sheen', 'mist', 'dew', 'aura', 'zen', 'bliss', 'calm', 'focus', 'aim', 'goal', 'idea', 'vision', 'insight', 'dream', 'create', 'make', 'build', 'form', 'shape'
+    ],
+    pet: [
+        'paws', 'bark', 'tail', 'fur', 'pet', 'snout', 'purr', 'woof', 'clan', 'petal', 'vet', 'furry', 'dog', 'cat', 'bird', 'fish', 'ham', 'pig', 'cow', 'horse', 'pony', 'lamb', 'goat', 'duck', 'goose', 'swan', 'owl', 'hawk', 'bear', 'wolf', 'fox', 'deer', 'elk', 'buck', 'roe', 'hare', 'mole', 'bat', 'bee', 'ant', 'fly', 'bug', 'worm', 'shell', 'fin', 'wing', 'beak', 'claw', 'mane', 'coat', 'heart', 'love', 'kind', 'soft', 'pure', 'safe', 'good', 'best', 'pro', 'expert', 'master', 'chief', 'lead', 'head', 'friend', 'mate', 'buddy', 'pal', 'clan', 'pack', 'herd', 'flock', 'swarm', 'nest', 'den', 'home', 'yard', 'field', 'meadow', 'wood', 'forest', 'wild', 'eco', 'nature', 'life'
+    ],
+    nature: [
+        'leaf', 'root', 'green', 'eco', 'earth', 'bloom', 'seed', 'wild', 'fern', 'wood', 'forest', 'bio', 'tree', 'plant', 'bush', 'moss', 'weed', 'flower', 'rose', 'lily', 'daisy', 'pine', 'oak', 'ash', 'elm', 'birch', 'palm', 'sea', 'lake', 'pond', 'stream', 'brook', 'fall', 'rain', 'snow', 'mist', 'fog', 'sky', 'wind', 'fire', 'heat', 'cold', 'ice', 'rock', 'sand', 'clay', 'oasis', 'river', 'valley', 'grove', 'hill', 'mount', 'peak', 'ridge', 'trail', 'path', 'way', 'route', 'map', 'atlas', 'globe', 'sun', 'moon', 'star', 'cloud', 'storm', 'bolt', 'flash', 'ray', 'beam', 'glow', 'shine', 'pure', 'raw', 'natural', 'fresh', 'clean', 'safe', 'sound', 'whole', 'life', 'vital', 'grow', 'rise', 'stay'
+    ],
+    music: [
+        'beat', 'tone', 'note', 'chord', 'sound', 'rhythm', 'lyre', 'mic', 'solo', 'vibe', 'audio', 'track', 'song', 'tune', 'hymn', 'aria', 'opera', 'jazz', 'rock', 'pop', 'folk', 'soul', 'funk', 'blues', 'rap', 'mix', 'dj', 'club', 'stage', 'amp', 'cord', 'reed', 'bow', 'key', 'drum', 'flute', 'harp', 'lute', 'pipe', 'bell', 'gong', 'snap', 'clap', 'tap', 'step', 'dance', 'sing', 'voice', 'echo', 'lyra', 'muse', 'band', 'gig', 'live', 'show', 'act', 'play', 'loud', 'soft', 'high', 'low', 'deep', 'pure', 'fine', 'rare', 'bold', 'vivid', 'bright', 'glow', 'shine', 'aura', 'zen', 'bliss', 'calm', 'vibe', 'flow', 'stay', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift', 'smart', 'wise', 'keen'
+    ],
+    marketing: [
+        'buzz', 'brand', 'reach', 'growth', 'lead', 'ad', 'flow', 'impact', 'viral', 'click', 'media', 'promo', 'sale', 'deal', 'buy', 'get', 'give', 'take', 'share', 'like', 'love', 'fan', 'follow', 'post', 'feed', 'link', 'page', 'blog', 'news', 'story', 'tale', 'word', 'talk', 'voice', 'loud', 'bold', 'clear', 'true', 'real', 'fast', 'now', 'new', 'top', 'best', 'pro', 'smart', 'idea', 'insight', 'goal', 'aim', 'focus', 'aim', 'view', 'vision', 'mind', 'heart', 'soul', 'hand', 'head', 'lead', 'chief', 'alpha', 'omega', 'phi', 'delta', 'sigma', 'tau', 'rho', 'zeta', 'beta', 'gamma', 'aura', 'vibe', 'pulse', 'beat', 'flow', 'stay', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift'
+    ],
+    logistics: [
+        'ship', 'flow', 'pack', 'route', 'fleet', 'port', 'hub', 'post', 'swift', 'box', 'cargo', 'move', 'truck', 'van', 'plane', 'boat', 'rail', 'road', 'lane', 'way', 'path', 'load', 'lift', 'drop', 'pick', 'sort', 'store', 'rack', 'shelf', 'bin', 'case', 'unit', 'item', 'stock', 'count', 'log', 'info', 'trace', 'track', 'scan', 'tag', 'code', 'key', 'gate', 'lock', 'fast', 'quick', 'rapid', 'go', 'dash', 'rush', 'zoom', 'fly', 'bolt', 'bolt', 'flash', 'ray', 'beam', 'glow', 'shine', 'link', 'net', 'web', 'mesh', 'node', 'peer', 'base', 'core', 'main', 'chief', 'head', 'lead', 'alpha', 'omega', 'phi', 'delta', 'sigma', 'tau', 'rho', 'zeta', 'beta', 'gamma', 'delta', 'secure', 'safe', 'guard', 'shield', 'vault'
+    ],
+
+
+
+
+
+
+
+
+
+
+// Final additions to complete all 25 categories
+    security: [
+        'guard', 'shield', 'lock', 'safe', 'secure', 'fort', 'watch', 'bolt', 'key', 'armor', 'defend', 'vault', 'fence', 'wall', 'gate', 'door', 'bar', 'beam', 'steel', 'iron', 'hard', 'tough', 'strong', 'firm', 'solid', 'base', 'root', 'eye', 'lens', 'cam', 'film', 'alert', 'warn', 'alarm', 'sire', 'light', 'ray', 'glow', 'dark', 'night', 'day', 'shadow', 'ghost', 'mask', 'cloak', 'check', 'proof', 'fact', 'trust', 'will', 'true', 'real', 'fact', 'proof', 'data', 'info', 'code', 'net', 'web', 'mesh', 'node', 'peer', 'link', 'core', 'main', 'chief', 'head', 'lead', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'omega', 'zeta', 'lock', 'key', 'bolt', 'bolt', 'safe', 'pure', 'clear'
+    ],
+    auto: [
+        'gear', 'drive', 'wheel', 'motor', 'auto', 'speed', 'shift', 'turbo', 'road', 'fuel', 'engine', 'ride', 'car', 'bike', 'bus', 'cab', 'taxi', 'gas', 'oil', 'tyre', 'rim', 'dash', 'horn', 'seat', 'belt', 'boot', 'hood', 'paint', 'grill', 'vent', 'pipe', 'drift', 'spin', 'fast', 'slow', 'quick', 'rapid', 'rush', 'volt', 'amp', 'watt', 'charge', 'plug', 'wire', 'core', 'unit', 'part', 'set', 'fit', 'top', 'peak', 'top', 'best', 'pro', 'expert', 'master', 'chief', 'lead', 'head', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'iron', 'steel', 'metal', 'hard', 'tough', 'strong', 'solid', 'firm', 'base', 'main', 'road', 'path', 'way', 'route', 'line', 'race', 'track', 'lap', 'win'
+    ],
+    construction: [
+        'build', 'brick', 'beam', 'stone', 'hard', 'iron', 'site', 'structure', 'wall', 'base', 'forge', 'steel', 'mud', 'clay', 'sand', 'rock', 'dust', 'dirt', 'earth', 'ground', 'floor', 'tile', 'slate', 'window', 'step', 'stair', 'lift', 'crane', 'saw', 'nail', 'screw', 'nut', 'pin', 'rod', 'bar', 'bolt', 'axe', 'blade', 'level', 'ruler', 'tape', 'line', 'mark', 'work', 'job', 'hand', 'tool', 'skill', 'firm', 'strong', 'solid', 'hard', 'tough', 'iron', 'steel', 'wood', 'pine', 'oak', 'ash', 'elm', 'birch', 'palm', 'base', 'core', 'main', 'chief', 'head', 'lead', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'urban', 'city', 'town', 'house', 'hall', 'barn', 'loft', 'villa'
+    ],
+    photography: [
+        'lens', 'snap', 'focus', 'shutter', 'flash', 'frame', 'view', 'shot', 'pixel', 'light', 'photo', 'cam', 'film', 'dark', 'room', 'print', 'album', 'strap', 'stand', 'tripod', 'mount', 'sight', 'vision', 'scene', 'set', 'stage', 'act', 'star', 'glow', 'shine', 'gloss', 'matte', 'tint', 'hue', 'tone', 'color', 'red', 'blue', 'green', 'cyan', 'gold', 'grey', 'black', 'white', 'clear', 'sharp', 'keen', 'quick', 'fast', 'slow', 'vivid', 'bright', 'pure', 'fine', 'rare', 'bold', 'style', 'chic', 'mode', 'trend', 'vogue', 'look', 'eye', 'face', 'hand', 'art', 'craft', 'sketch', 'muse', 'design', 'image', 'icon', 'logo', 'brand', 'aim', 'goal', 'focus', 'view', 'vista', 'point', 'edge', 'side', 'front', 'back'
+    ],
+    gaming: [
+        'play', 'quest', 'level', 'boss', 'joy', 'arcade', 'game', 'loot', 'xp', 'gear', 'pixel', 'spawn', 'hero', 'mage', 'knight', 'king', 'queen', 'ace', 'card', 'dice', 'board', 'piece', 'pawn', 'move', 'win', 'lose', 'team', 'clan', 'guild', 'chat', 'mic', 'pad', 'stick', 'screen', 'neon', 'fire', 'ice', 'cold', 'hard', 'fast', 'slow', 'quick', 'rapid', 'rush', 'dash', 'jump', 'kill', 'live', 'soul', 'ghost', 'spirit', 'vibe', 'aura', 'pulse', 'beat', 'flow', 'meta', 'omni', 'nex', 'alt', 'ultra', 'prime', 'smart', 'quick', 'rapid', 'nova', 'x', 'z', 'bio', 'info', 'stream', 'flow', 'dyno', 'logic', 'sys', 'intel', 'optic', 'laser', 'sonic', 'video', 'audio', 'touch'
+    ],
+    crypto: [
+        'block', 'chain', 'node', 'hash', 'token', 'mint', 'bit', 'wallet', 'ether', 'vault', 'crypto', 'meta', 'swap', 'trade', 'buy', 'sell', 'gain', 'loss', 'bull', 'bear', 'moon', 'storm', 'bolt', 'flash', 'ray', 'beam', 'true', 'real', 'fact', 'proof', 'safe', 'secure', 'trust', 'will', 'gold', 'silver', 'nickel', 'cash', 'pay', 'coin', 'ledger', 'mint', 'net', 'web', 'link', 'data', 'code', 'key', 'lock', 'gate', 'node', 'peer', 'mesh', 'grid', 'base', 'core', 'main', 'chief', 'head', 'lead', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'smart', 'fast', 'quick', 'rapid', 'swift', 'prime', 'ultra', 'alt', 'nex', 'omni'
+    ],
+    ecommerce: [
+        'cart', 'shop', 'buy', 'sell', 'deal', 'store', 'bag', 'trade', 'market', 'order', 'sale', 'stock', 'item', 'gift', 'box', 'pack', 'mail', 'fast', 'now', 'new', 'top', 'best', 'low', 'high', 'hot', 'cold', 'big', 'small', 'wide', 'long', 'tall', 'short', 'thin', 'fat', 'rich', 'poor', 'free', 'paid', 'full', 'empty', 'open', 'shut', 'dash', 'rush', 'flow', 'path', 'way', 'road', 'lane', 'swift', 'smart', 'easy', 'quick', 'rapid', 'global', 'local', 'main', 'base', 'core', 'apex', 'peak', 'top', 'summit', 'elite', 'aura', 'luxe', 'grand', 'royal', 'noble', 'pure', 'clear', 'true', 'real', 'best', 'pro', 'expert', 'master', 'chief', 'lead'
+    ],
+    consulting: [
+        'strategy', 'wise', 'guide', 'solve', 'think', 'plan', 'insight', 'vision', 'bridge', 'advice', 'peak', 'logic', 'brain', 'mind', 'soul', 'heart', 'hand', 'head', 'lead', 'chief', 'boss', 'team', 'group', 'firm', 'co', 'inc', 'corp', 'hub', 'core', 'base', 'root', 'stem', 'leaf', 'bloom', 'seed', 'growth', 'flow', 'way', 'goal', 'aim', 'end', 'life', 'true', 'real', 'fact', 'proof', 'data', 'info', 'know', 'skill', 'pro', 'expert', 'master', 'chief', 'alpha', 'delta', 'omega', 'phi', 'rho', 'zeta', 'beta', 'gamma', 'sigma', 'tau', 'smart', 'quick', 'rapid', 'swift', 'prime', 'ultra', 'alt', 'nex', 'omni', 'nexus', 'vertex', 'zenith', 'summit'
+    ]
+};
+       const styleRules = {
+    modern: [
+        'x', 'z', 'v', 'io', 'ly', 'ify', 'ix', 'ex', 'nex', 'neo', 'flux', 'sync', 'node', 'bit', 'byte', 'core', 'soft', 'app', 'net', 'web', 'link', 'port', 'app', 'grid', 'base', 'hub', 'lab', 'tech', 'gear', 'sys', 'intel', 'optic', 'laser', 'sonic', 'digit', 'bot', 'ai', 'ml', 'droid', 'engine', 'drive', 'script', 'stack', 'queue', 'cache', 'host', 'server', 'route', 'mesh', 'peer', 'key', 'fast', 'light', 'swift', 'fire', 'storm', 'ice', 'meta', 'omni', 'alt', 'ultra', 'prime', 'smart', 'quick', 'rapid', 'nova', 'bio', 'info', 'stream', 'flow', 'dyno', 'logic', 'sys', 'touch', 'haptic', 'force', 'motion', 'auto', 'rob', 'virtu', 'cloud', 'alpha', 'beta', 'vortex', 'prism', 'pulse', 'signal', 'zenith', 'spark', 'radar', 'orbit', 'vertex', 'nexus', 'gamma', 'delta'
+    ],
+    luxury: [
+        'prime', 'elite', 'gold', 'royal', 'ora', 'ia', 'luxe', 'grand', 'noble', 'aura', 'vera', 'grace', 'silk', 'velvet', 'bloom', 'pure', 'pearl', 'gem', 'jade', 'opal', 'ruby', 'satin', 'lace', 'sheen', 'crystal', 'amber', 'vogue', 'chic', 'posh', 'glam', 'diva', 'belle', 'luna', 'star', 'venus', 'crown', 'sovereign', 'monarch', 'empire', 'castle', 'manor', 'estate', 'villa', 'mansion', 'prestige', 'exquisite', 'refined', 'classic', 'timeless', 'heritage', 'legacy', 'summit', 'peak', 'crest', 'pinnacle', 'zenith', 'apex', 'omega', 'alpha', 'diamond', 'emerald', 'sapphire', 'platinum', 'silver', 'ivory', 'ebony', 'marble', 'granite', 'onyx', 'gilded', 'stately', 'majestic', 'eternal', 'infinite', 'sanctuary', 'haven', 'oasis', 'paradise', 'elysian', 'ethereal', 'sublime', 'starlight', 'radiance', 'lumina', 'glimmer', 'glisten', 'sparkle', 'shimmer', 'splendor', 'opulence', 'grandeur'
+    ],
+    fun: [
+        'buzz', 'pop', 'zing', 'zo', 'bee', 'joy', 'play', 'zest', 'snap', 'jump', 'skip', 'hop', 'flip', 'spin', 'dash', 'rush', 'zoom', 'vibe', 'jive', 'kick', 'beat', 'flow', 'wave', 'glow', 'beam', 'ray', 'sky', 'sun', 'star', 'nova', 'cloud', 'mist', 'dew', 'rain', 'snow', 'ice', 'fire', 'hot', 'cool', 'chill', 'easy', 'free', 'wild', 'bold', 'bright', 'vivid', 'happy', 'smile', 'laugh', 'grin', 'wink', 'cheer', 'lucky', 'magic', 'spark', 'fire', 'flash', 'bolt', 'zapp', 'boom', 'bam', 'pow', 'wow', 'yay', 'fun', 'win', 'ace', 'top', 'best', 'pro', 'star', 'hero', 'mate', 'buddy', 'pal', 'clan', 'pack', 'crew', 'team', 'club', 'hub', 'spot', 'zone', 'land', 'world', 'base', 'nest', 'box', 'kit', 'set', 'pack', 'bag', 'bite', 'snack', 'treat', 'yum', 'tasty'
+    ],
+    creative: [
+        'muse', 'craft', 'sketch', 'hue', 'draw', 'ink', 'form', 'shape', 'space', 'line', 'mark', 'sign', 'icon', 'logo', 'brand', 'art', 'studio', 'canvas', 'paint', 'brush', 'oil', 'clay', 'wood', 'glass', 'metal', 'stone', 'paper', 'pen', 'tool', 'lens', 'view', 'sight', 'vision', 'insight', 'dream', 'create', 'make', 'build', 'design', 'style', 'mode', 'trend', 'vogue', 'look', 'face', 'eye', 'hand', 'soul', 'heart', 'mind', 'idea', 'thought', 'plan', 'step', 'way', 'path', 'route', 'map', 'atlas', 'globe', 'world', 'earth', 'nature', 'leaf', 'root', 'bloom', 'seed', 'wild', 'fern', 'forest', 'grove', 'wood', 'pine', 'oak', 'ash', 'elm', 'birch', 'palm', 'sea', 'lake', 'pond', 'river', 'brook', 'fall', 'rain', 'snow', 'mist', 'fog', 'sky', 'wind', 'sun', 'moon', 'star', 'cloud', 'storm', 'bolt', 'flash'
+    ],
+    professional: [
+        'corp', 'group', 'base', 'safe', 'trust', 'firm', 'solid', 'core', 'main', 'chief', 'head', 'lead', 'pro', 'expert', 'master', 'skill', 'wise', 'clear', 'direct', 'fixed', 'open', 'pure', 'true', 'rich', 'wealth', 'bank', 'fund', 'capital', 'ledger', 'audit', 'tax', 'rate', 'save', 'earn', 'bill', 'vault', 'safe', 'guard', 'shield', 'bond', 'stock', 'equity', 'asset', 'debt', 'loan', 'gain', 'risk', 'trade', 'index', 'cap', 'fiscal', 'legal', 'law', 'jury', 'lex', 'case', 'brief', 'court', 'pact', 'seal', 'verdict', 'rule', 'code', 'order', 'act', 'bill', 'deed', 'will', 'claim', 'proof', 'fact', 'truth', 'right', 'fair', 'just', 'equal', 'trust', 'civic', 'vigil', 'oath', 'honest', 'secure', 'stable', 'reliable', 'depend', 'anchor', 'pillar', 'foundation', 'structure', 'system', 'method', 'logic', 'strategy', 'insight'
+    ],
+    minimal: [
+        'en', 'on', 'um', 'is', 'it', 'ax', 'ox', 'ex', 'in', 'al', 'as', 'at', 'be', 'by', 'do', 'go', 'if', 'me', 'my', 'no', 'of', 'oh', 'or', 'so', 'to', 'up', 'we', 'ace', 'act', 'add', 'age', 'aid', 'aim', 'air', 'all', 'amp', 'and', 'any', 'arc', 'art', 'ash', 'ask', 'asp', 'ate', 'awe', 'axe', 'bad', 'bag', 'ban', 'bar', 'bat', 'bay', 'bed', 'bee', 'beg', 'bel', 'bet', 'bib', 'bid', 'big', 'bin', 'bit', 'boa', 'bob', 'bod', 'bog', 'boo', 'bot', 'bow', 'box', 'boy', 'bra', 'bud', 'bug', 'bum', 'bun', 'bur', 'bus', 'but', 'buy', 'bye', 'cab', 'cad', 'cam', 'can', 'cap', 'car', 'cat', 'caw', 'cay', 'cee', 'cel', 'chi', 'cob', 'cod', 'cog', 'col', 'con', 'coo', 'cop', 'cot', 'cow', 'cox'
+    ],
+    industrial: [
+        'iron', 'steel', 'forge', 'build', 'work', 'hard', 'tough', 'strong', 'solid', 'base', 'core', 'main', 'chief', 'head', 'lead', 'bolt', 'gear', 'wheel', 'drive', 'motor', 'auto', 'engine', 'turbo', 'road', 'fuel', 'shift', 'gear', 'rim', 'dash', 'volt', 'amp', 'watt', 'charge', 'plug', 'wire', 'part', 'unit', 'set', 'fit', 'brick', 'beam', 'stone', 'site', 'wall', 'iron', 'steel', 'metal', 'hard', 'tough', 'strong', 'solid', 'firm', 'crane', 'lift', 'saw', 'nail', 'screw', 'nut', 'pin', 'rod', 'bar', 'bolt', 'axe', 'blade', 'level', 'ruler', 'tape', 'line', 'mark', 'work', 'job', 'hand', 'tool', 'skill', 'firm', 'strong', 'solid', 'hard', 'tough', 'iron', 'steel', 'wood', 'pine', 'oak', 'ash', 'elm', 'birch', 'palm', 'base', 'core', 'main', 'chief', 'head', 'lead', 'alpha', 'delta'
+    ],
+    nature: [
+        'leaf', 'root', 'green', 'eco', 'earth', 'bloom', 'seed', 'wild', 'fern', 'wood', 'forest', 'bio', 'tree', 'plant', 'bush', 'moss', 'weed', 'flower', 'rose', 'lily', 'daisy', 'pine', 'oak', 'ash', 'elm', 'birch', 'palm', 'sea', 'lake', 'pond', 'stream', 'brook', 'fall', 'rain', 'snow', 'mist', 'fog', 'sky', 'wind', 'fire', 'heat', 'cold', 'ice', 'rock', 'sand', 'clay', 'oasis', 'river', 'valley', 'grove', 'hill', 'mount', 'peak', 'ridge', 'trail', 'path', 'way', 'route', 'map', 'atlas', 'globe', 'sun', 'moon', 'star', 'cloud', 'storm', 'bolt', 'flash', 'ray', 'beam', 'glow', 'shine', 'pure', 'raw', 'natural', 'fresh', 'clean', 'safe', 'sound', 'whole', 'life', 'vital', 'grow', 'rise', 'stay', 'go', 'dash', 'rapid', 'quick', 'fast', 'swift', 'smart', 'wise', 'keen', 'pro', 'expert', 'master', 'chief', 'lead'
+    ],
+    futuristic: [
+        'nex', 'neo', 'meta', 'omni', 'ultra', 'prime', 'smart', 'quick', 'rapid', 'nova', 'x', 'z', 'bio', 'info', 'stream', 'flow', 'dyno', 'logic', 'sys', 'intel', 'optic', 'laser', 'sonic', 'video', 'audio', 'touch', 'haptic', 'force', 'motion', 'auto', 'rob', 'virtu', 'cloud', 'byte', 'code', 'data', 'bit', 'node', 'sync', 'bot', 'cyber', 'net', 'web', 'app', 'soft', 'cloud', 'dev', 'link', 'port', 'flux', 'apex', 'bolt', 'nano', 'giga', 'tera', 'micro', 'macro', 'pixel', 'frame', 'matrix', 'vector', 'prism', 'pulse', 'signal', 'hub', 'lab', 'base', 'core', 'shell', 'wire', 'tech', 'gear', 'cpu', 'ram', 'chip', 'neuro', 'quantum', 'ai', 'ml', 'droid', 'engine', 'drive', 'script', 'stack', 'queue', 'cache', 'host', 'server', 'route', 'mesh', 'peer', 'key', 'secure', 'fast', 'light', 'swift', 'fire', 'storm', 'ice', 'vortex', 'nebula', 'cosmos', 'galaxy'
+    ],
+    vintage: [
+        'smith', 'works', 'old', 'classic', 'heritage', 'legacy', 'retro', 'tradition', 'ancient', 'historic', 'antique', 'smith', 'brown', 'mill', 'yard', 'barn', 'farm', 'croft', 'well', 'spring', 'stone', 'wood', 'iron', 'steel', 'glass', 'clay', 'brick', 'beam', 'board', 'plank', 'hand', 'made', 'built', 'formed', 'crafted', 'guild', 'union', 'trade', 'standard', 'reliable', 'trust', 'honest', 'solid', 'firm', 'base', 'core', 'main', 'chief', 'head', 'lead', 'first', 'alpha', 'omega', 'phi', 'delta', 'sigma', 'tau', 'rho', 'zeta', 'beta', 'gamma', 'alpha', 'nexus', 'vertex', 'zenith', 'peak', 'top', 'summit', 'elite', 'prime', 'grand', 'royal', 'noble', 'justice', 'truth', 'law', 'firm', 'legal', 'counsel', 'advice', 'guide', 'clerk', 'agent', 'rep', 'trust', 'civic', 'vigil', 'oath', 'true', 'honest', 'solid', 'firm'
+    ]
+};
+
+        let currentNamesPool = [];
+        let currentPage = 1;
+        const perPage = 24;
+
+        // --- STEP 3: SYLLABLE GENERATOR ---
+        function generateSyllable() {
+            return consonants[Math.floor(Math.random() * consonants.length)] + vowels[Math.floor(Math.random() * vowels.length)];
+        }
+
+        // --- STEP 4: PATTERN ENGINE ---
+ function generateNeuralName(keyword, industry, style) {
+    const dice = Math.random();
+    let name = "";
+
+    // 1. Get specialized pools based on User selection
+    const stylePool = styleRules[style] || styleRules.modern;
+    const industryPool = roots[industry] || roots.tech;
+    const key = keyword.toLowerCase();
+
+    // 2. Select one of 6 Linguistic Patterns
+    if (dice < 0.15) { 
+        // PATTERN: Pure Abstract (The "Nexa/Zylo" Style)
+        // Uses syllables and style-specific markers
+        name = generateSyllable() + stylePool[Math.floor(Math.random() * 15)];
+    } 
+    else if (dice < 0.35) { 
+        // PATTERN: Style-Driven Mutation (The "Spotify/Shopify" Style)
+        // Blends keyword with modern style endings (zo, ly, ify, ix)
+        const ending = stylePool[Math.floor(Math.random() * stylePool.length)];
+        name = key + ending;
+    } 
+    else if (dice < 0.55) { 
+        // PATTERN: The Compound Industry (The "Fintech/Wealthfront" Style)
+        // Merges keyword with a high-quality industry root
+        const root = industryPool[Math.floor(Math.random() * industryPool.length)];
+        name = key + root;
+    } 
+    else if (dice < 0.75) { 
+        // PATTERN: Premium Prefix (The "Neopay/Omnisys" Style)
+        // Uses high-end prefixes + keyword
+        const pre = prefixes[Math.floor(Math.random() * prefixes.length)];
+        name = pre + key;
+    } 
+    else if (dice < 0.90) { 
+        // PATTERN: Phonetic Blend (The "Palyte/Vexta" Style)
+        // Takes the "Start" of your keyword and blends it with syllables
+        const fragment = key.substring(0, 3);
+        name = fragment + generateSyllable() + (style === 'luxury' ? 'a' : 'o');
+    } 
+    else { 
+        // PATTERN: The Modern Suffix (The "Payhub/Techlab" Style)
+        // Standard high-quality suffixes
+        const suf = suffixes[Math.floor(Math.random() * suffixes.length)];
+        name = key + suf;
+    }
+
+    // 3. Post-Processing: Clean up double letters (e.g., Pay + ly = Payly)
+    // This makes names look more professional
+    return cleanupName(name);
+}
+
+// HELPER: Professional cleanup to avoid ugly overlaps
+function cleanupName(name) {
+    // Remove triple repeating letters
+    name = name.replace(/([a-z])\1\1/gi, '$1$1');
+    
+    // If the keyword ends in the same letter the suffix starts with, merge them
+    // Example: "Press" + "Scale" -> "Prescale"
+    return name.toLowerCase();
+}
+
+        // --- STEP 6, 7 & 8: FILTER & SCORING ---
+        function getScore(name, style) {
+            let score = 0;
+            if (name.length <= 6) score += 3;
+            if (name.length > 6 && name.length <= 9) score += 2;
+            
+            // Style matching
+            const bonusLetters = styleRules[style] || [];
+            bonusLetters.forEach(l => { if (name.includes(l)) score += 1; });
+            
+            // Pronounceability (vowel check)
+            if (/[aeiouy]{1,2}/.test(name)) score += 2;
+            
+            return score;
+        }
+
+        function isValid(name) {
+            // Remove bad patterns (triple consonants or triple vowels)
+            if (/(.)\1\1/.test(name)) return false; 
+            if (name.length < 3 || name.length > 12) return false;
+            return /[aeiouy]/.test(name);
+        }
+
+        function generateNeuralNames() {
+            const keyword = document.getElementById('keyword').value.trim() || 'nova';
+            const industry = document.getElementById('industry').value;
+            const style = document.getElementById('style').value;
+            const lengthLimit = document.getElementById('length').value;
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('pagination').classList.remove('hidden');
+
+            const nameSet = new Set();
+            let attempts = 0;
+
+            while (nameSet.size < 1200 && attempts < 10000) {
+                attempts++;
+                let rawName = generateNeuralName(keyword, industry, style);
+                
+                if (isValid(rawName)) {
+                    if (lengthLimit === 'short' && rawName.length > 6) continue;
+                    
+                    const score = getScore(rawName, style);
+                    nameSet.add({
+                        val: rawName.charAt(0).toUpperCase() + rawName.slice(1),
+                        score: score
+                    });
+                }
+            }
+
+            // Sort by score (Step 8)
+            currentNamesPool = Array.from(nameSet).sort((a, b) => b.score - a.score);
+            currentPage = 1;
+            renderDisplay();
+        }
+
+        function renderDisplay() {
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = '';
+
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const batch = currentNamesPool.slice(start, end);
+
+            batch.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "name-card p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center relative overflow-hidden";
+                
+                const style = document.getElementById('style').value;
+                let fontCss = "font-black tracking-tighter text-2xl";
+                if(style === 'luxury') fontCss = "font-serif italic text-3xl opacity-80";
+                if(style === 'modern') fontCss = "font-sans uppercase tracking-[0.2em] text-xl font-light";
+
+                card.innerHTML = `
+                    <div class="flex justify-between w-full absolute top-6 px-8">
+                        <span class="score-badge">AI SCORE: ${item.score}/10</span>
+                        <div class="w-2 h-2 rounded-full bg-[var(--aqua)]"></div>
+                    </div>
+                    <h3 class="${fontCss} text-slate-800 mb-2">${item.val}</h3>
+                    <p class="text-[8px] font-bold uppercase tracking-[0.4em] text-slate-400">Premium Domain</p>
+                    <div class="mt-8 flex gap-2">
+                        <button onclick="copyName('${item.val}')" class="text-[9px] font-black hover:text-emerald-500 transition-colors uppercase tracking-widest">Copy Name</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const wrapper = document.getElementById('pageButtons');
+            wrapper.innerHTML = '';
+            const total = Math.ceil(currentNamesPool.length / perPage);
+
+            const start = Math.max(1, currentPage - 2);
+            const end = Math.min(total, start + 4);
+
+            for (let i = start; i <= end; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                btn.className = `pagination-btn ${i === currentPage ? 'active-page' : 'bg-white text-slate-400'}`;
+                btn.onclick = () => { currentPage = i; renderDisplay(); window.scrollTo({top:0, behavior:'smooth'}); };
+                wrapper.appendChild(btn);
+            }
+            document.getElementById('pageStats').innerText = `Neural Discovery: ${currentNamesPool.length} variations | Page ${currentPage} of ${total}`;
+        }
+
+        function copyName(txt) {
+            navigator.clipboard.writeText(txt);
+            alert("Saved to clipboard: " + txt);
+        }
+    </script>
+</body>
+</html>
