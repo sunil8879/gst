@@ -23,6 +23,16 @@
         }
         iconify-icon { display: inline-block; width: 100%; height: 100%; }
         .bg-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
+
+
+
+
+/* Emotional Appeal Layer */
+.glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+.soft-shadow { shadow: 0 20px 40px -15px rgba(0,0,0,0.1); }
+.inner-glow { box-shadow: inset 0 2px 10px rgba(255,255,255,0.5); }
+.logo-card { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.text-gradient { -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body class="bg-pattern font-sans text-gray-900">
@@ -68,6 +78,21 @@
                     </select>
                 </div>
 
+
+<div>
+    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Brand Personality</label>
+    <select id="personality" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all cursor-pointer font-medium" onchange="generateLogos()">
+        <option value="modern">Modern & Clean</option>
+        <option value="classic">Classic & Elegant</option>
+        <option value="luxury">Luxury & High-End</option>
+        <option value="playful">Fun & Playful</option>
+        <option value="minimal">Minimalist</option>
+        <option value="bold">Bold & Industrial</option>
+    </select>
+</div>
+
+
+
                 <button onclick="generateLogos()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-indigo-200 transform hover:-translate-y-1 uppercase tracking-widest">
                     Create My Brand
                 </button>
@@ -80,15 +105,29 @@
                 <h2 class="text-5xl font-black text-gray-200 uppercase italic">Enter Business Info</h2>
             </div>
             <div id="logoGrid" class="grid-container"></div>
-            <div id="loadMore" class="hidden text-center mt-12 pb-20">
-                <button onclick="renderBatch()" class="bg-black text-white font-bold px-12 py-4 rounded-full hover:scale-105 transition-all">
-                    Show More Ideas
-                </button>
-            </div>
+
+
+            <!-- Professional Pagination UI -->
+<div id="paginationWrapper" class="hidden flex flex-col items-center mt-12 pb-20">
+    <div id="paginationButtons" class="flex items-center gap-2">
+        <!-- Buttons will be injected here -->
+    </div>
+    <p id="pageInfo" class="text-xs font-bold text-gray-400 mt-4 uppercase tracking-widest"></p>
+</div>
+
+
         </main>
     </div>
 
 <script>
+
+let pageCache = {}; // Stores logos per page so they stay the same when going back
+let currentPage = 1;
+let lastLayout = -1; // To ensure layout variety
+const logosPerPage = 24;
+const maxPages = 1000; // Navigation limit (24,000 logos per session)
+
+
  // This engine generates 500 unique, professional palettes using Golden Angle distribution
 const generate500Palettes = () => {
     const palettes = [
@@ -187,64 +226,162 @@ const colors = generate500Palettes();
 
 const icons = {
     tech: [
-        'ph:cpu-bold', 'lucide:cpu', 'mdi:robot-outline', 'ph:codepen-logo-bold', 'carbon:iot-platform', 'tabler:atom-2', 'ph:cube-bold', 'lucide:layers', 'mdi:database-sync', 'ph:terminal-window-bold',
-        'carbon:chip', 'tabler:binary', 'lucide:code-2', 'ph:circuit-board-bold', 'mdi:laptop', 'carbon:cloud-service-management', 'tabler:database', 'ph:device-mobile-bold', 'lucide:fingerprint', 'mdi:hard-disk',
-        'ph:hard-drives-bold', 'tabler:headset', 'lucide:mouse-pointer-2', 'ph:monitor-bold', 'mdi:nanotechnology', 'carbon:network-4', 'tabler:nfc', 'ph:nut-bold', 'lucide:puzzle', 'mdi:qrcode-scan',
-        'ph:radioactive-bold', 'tabler:router', 'lucide:rss', 'ph:scan-bold', 'mdi:server-network', 'carbon:software-resource', 'tabler:usb', 'ph:wifi-high-bold', 'lucide:zap', 'mdi:augmented-reality',
-        'ph:virtual-reality-bold', 'tabler:world-upload', 'lucide:webhook', 'ph:unite-bold', 'mdi:api', 'carbon:blockchain', 'tabler:braces', 'ph:broadcast-bold', 'lucide:cable', 'mdi:cast-connected',
-        'ph:cloud-check-bold', 'tabler:cloud-computing', 'lucide:command', 'ph:connect-without-contact-bold', 'mdi:console', 'carbon:data-analytics', 'tabler:desktop-analytics', 'ph:devices-bold', 'lucide:dribbble', 'mdi:ethernet',
-        'ph:eye-bold', 'tabler:file-code', 'lucide:filter', 'ph:flash-drive-bold', 'mdi:gamepad-variant', 'carbon:ibm-cloud', 'tabler:incoming-mail', 'ph:infinity-bold', 'lucide:key', 'mdi:keyboard-outline',
-        'ph:link-bold', 'tabler:lock-access', 'lucide:megaphone', 'ph:microphone-bold', 'mdi:modem', 'carbon:operations-record', 'tabler:package', 'ph:paper-plane-tilt-bold', 'lucide:phone-call', 'mdi:poker-chip',
-        'ph:power-bold', 'tabler:printer', 'lucide:radio', 'ph:selection-all-bold', 'mdi:settings-helper', 'carbon:term', 'tabler:tool', 'ph:user-focus-bold', 'lucide:video', 'mdi:vibrate',
-        'ph:watch-bold', 'tabler:wave-triangle', 'lucide:wind', 'ph:wrench-bold', 'mdi:xml', 'carbon:zoom-in', 'tabler:access-point', 'ph:activity-bold', 'lucide:airplay', 'mdi:antenna'
+        'ph:cpu-bold', 'lucide:cpu', 'mdi:robot-outline', 'tabler:atom-2', 'ph:cube-bold', 'lucide:layers', 'mdi:database-sync', 'tabler:binary', 
+        'ph:terminal-window-bold', 'lucide:code-2', 'ph:circuit-board-bold', 'mdi:laptop', 'tabler:microscope', 'ph:device-mobile-bold', 
+        'lucide:fingerprint', 'mdi:hard-disk', 'ph:hard-drives-bold', 'tabler:headset', 'lucide:mouse-pointer-2', 'ph:monitor-bold',
+        'carbon:chip', 'tabler:circuit-board', 'lucide:webhook', 'ph:unite-bold', 'mdi:api', 'carbon:blockchain', 'tabler:braces', 'ph:broadcast-bold', 
+        'lucide:cable', 'mdi:cast-connected', 'ph:cloud-check-bold', 'tabler:cloud-computing', 'lucide:command', 'ph:connect-without-contact-bold', 
+        'mdi:console', 'carbon:data-analytics', 'tabler:desktop-analytics', 'ph:devices-bold', 'lucide:dribbble', 'mdi:ethernet', 'ph:eye-bold', 
+        'tabler:file-code', 'lucide:filter', 'ph:flash-drive-bold', 'mdi:gamepad-variant', 'carbon:ibm-cloud', 'tabler:incoming-mail', 'ph:infinity-bold', 
+        'lucide:key', 'mdi:keyboard-outline', 'ph:link-bold', 'tabler:lock-access', 'lucide:megaphone', 'ph:microphone-bold', 'mdi:modem', 
+        'carbon:operations-record', 'tabler:package', 'ph:paper-plane-tilt-bold', 'lucide:phone-call', 'mdi:poker-chip', 'ph:power-bold', 
+        'tabler:printer', 'lucide:radio', 'ph:selection-all-bold', 'mdi:settings-helper', 'carbon:term', 'tabler:tool', 'ph:user-focus-bold', 
+        'lucide:video', 'mdi:vibrate', 'ph:watch-bold', 'tabler:wave-triangle', 'lucide:wind', 'ph:wrench-bold', 'mdi:xml', 'carbon:zoom-in', 
+        'tabler:access-point', 'ph:activity-bold', 'lucide:airplay', 'mdi:antenna', 'ph:aperture-bold', 'tabler:archive', 'lucide:asterisk', 
+        'ph:at-bold', 'mdi:auto-fix', 'carbon:barcode', 'tabler:battery-4', 'lucide:beaker', 'ph:bluetooth-bold', 'mdi:bluetooth-connect', 
+        'ph:bookmarks-bold', 'tabler:box-multiple', 'lucide:briefcase', 'ph:browser-bold', 'mdi:bug-outline', 'carbon:calculation', 'tabler:camera-selfie', 
+        'lucide:cast', 'ph:chart-bar-bold', 'mdi:chart-bubble', 'carbon:cloud-app', 'tabler:cloud-data-connection'
     ],
     realestate: [
-        'ph:house-line-bold', 'lucide:building-2', 'mdi:office-building-outline', 'tabler:key', 'ph:buildings-bold', 'carbon:home', 'mdi:castle', 'lucide:warehouse', 'ph:door-bold', 'tabler:wall',
-        'lucide:tent', 'mdi:home-city-outline', 'ph:garage-bold', 'carbon:building', 'tabler:fence', 'lucide:construction', 'ph:hammer-bold', 'mdi:home-group', 'ph:stairs-bold', 'tabler:home-2',
-        'lucide:lamp', 'mdi:home-map-marker', 'ph:paint-roller-bold', 'carbon:data-base', 'tabler:building-skyscraper', 'lucide:shrub', 'ph:tree-structure-bold', 'mdi:home-floor-1', 'ph:elevator-bold', 'tabler:armchair',
-        'lucide:sofa', 'mdi:balcony', 'ph:bathtub-bold', 'carbon:store', 'tabler:window', 'lucide:door-open', 'ph:armchair-bold', 'mdi:bed-outline', 'ph:bed-bold', 'tabler:building-community',
-        'lucide:fence', 'mdi:home-account', 'ph:home-bold', 'carbon:location', 'tabler:map-pin', 'lucide:landmark', 'ph:bank-bold', 'mdi:bank-outline', 'ph:blueprint-bold', 'tabler:tool',
-        'lucide:drill', 'mdi:home-automation', 'ph:lightbulb-bold', 'carbon:heat-map', 'tabler:building-factory', 'lucide:factory', 'ph:factory-bold', 'mdi:home-heart', 'ph:magnifying-glass-plus-bold', 'tabler:search',
-        'lucide:search', 'mdi:home-search-outline', 'ph:map-trifold-bold', 'carbon:map', 'tabler:map', 'lucide:map', 'ph:navigation-arrow-bold', 'mdi:door-closed', 'ph:identification-card-bold', 'tabler:id',
-        'lucide:key-round', 'mdi:key-variant', 'ph:shield-check-bold', 'carbon:security', 'tabler:shield-check', 'lucide:shield', 'ph:signpost-bold', 'mdi:sign-direction', 'ph:strategy-bold', 'tabler:layers-intersect',
-        'lucide:layers', 'mdi:floor-plan', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler-2', 'lucide:ruler', 'ph:tree-bold', 'mdi:tree-outline', 'ph:park-bold', 'tabler:trees',
-        'lucide:trees', 'mdi:nature', 'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:sun', 'lucide:sun', 'ph:thermometer-hot-bold', 'mdi:home-thermometer', 'ph:fan-bold', 'tabler:fan'
+        'ph:house-line-bold', 'lucide:building-2', 'mdi:office-building-outline', 'tabler:key', 'ph:buildings-bold', 'lucide:warehouse', 
+        'mdi:castle', 'tabler:wall', 'ph:door-bold', 'lucide:tent', 'mdi:home-city-outline', 'ph:garage-bold', 'tabler:home-2', 'lucide:lamp',
+        'carbon:home', 'tabler:building-skyscraper', 'lucide:shrub', 'ph:tree-structure-bold', 'mdi:home-floor-1', 'ph:elevator-bold', 
+        'tabler:armchair', 'lucide:sofa', 'mdi:balcony', 'ph:bathtub-bold', 'carbon:store', 'tabler:window', 'lucide:door-open', 
+        'ph:armchair-bold', 'mdi:bed-outline', 'ph:bed-bold', 'tabler:building-community', 'lucide:fence', 'mdi:home-account', 'ph:home-bold', 
+        'carbon:location', 'tabler:map-pin', 'lucide:landmark', 'ph:bank-bold', 'mdi:bank-outline', 'ph:blueprint-bold', 'tabler:tool', 
+        'lucide:drill', 'mdi:home-automation', 'ph:lightbulb-bold', 'carbon:heat-map', 'tabler:building-factory', 'lucide:factory', 
+        'ph:factory-bold', 'mdi:home-heart', 'ph:magnifying-glass-plus-bold', 'tabler:search', 'lucide:search', 'mdi:home-search-outline', 
+        'ph:map-trifold-bold', 'carbon:map', 'tabler:map', 'lucide:map', 'ph:navigation-arrow-bold', 'mdi:door-closed', 'ph:identification-card-bold', 
+        'tabler:id', 'lucide:key-round', 'mdi:key-variant', 'ph:shield-check-bold', 'carbon:security', 'tabler:shield-check', 'lucide:shield', 
+        'ph:signpost-bold', 'mdi:sign-direction', 'ph:strategy-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:floor-plan', 'ph:ruler-bold', 
+        'carbon:rule', 'tabler:ruler-2', 'lucide:ruler', 'ph:tree-bold', 'mdi:tree-outline', 'ph:park-bold', 'tabler:trees', 'lucide:trees', 
+        'mdi:nature', 'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:sun', 'lucide:sun', 'ph:thermometer-hot-bold', 'mdi:home-thermometer', 
+        'ph:fan-bold', 'tabler:fan', 'mdi:gate', 'ph:ladder-bold', 'tabler:building-arch', 'mdi:fence-electric', 'ph:hammer-bold', 'lucide:utility-pole', 
+        'mdi:tools', 'tabler:home-bolt', 'ph:intersect-bold', 'mdi:vector-rectangle', 'carbon:area'
     ],
     food: [
-        'ph:cooking-pot-bold', 'lucide:utensils', 'mdi:pizza', 'ph:coffee-bold', 'tabler:tools-kitchen-2', 'mdi:silverware-fork-knife', 'lucide:cake', 'carbon:restaurant', 'ph:hamburger-bold', 'tabler:tools-kitchen',
-        'lucide:cup-soap', 'mdi:food-apple-outline', 'ph:apple-bold', 'carbon:strawberry', 'tabler:meat', 'lucide:drumstick', 'ph:bowl-food-bold', 'mdi:noodles', 'ph:egg-bold', 'tabler:egg',
-        'lucide:egg-fried', 'mdi:egg-fried', 'ph:fish-simple-bold', 'carbon:fish', 'tabler:fish', 'lucide:fish', 'ph:ice-cream-bold', 'mdi:ice-cream-outline', 'ph:cake-bold', 'tabler:cake',
-        'lucide:cookie', 'mdi:cookie-outline', 'ph:cookie-bold', 'carbon:favorite', 'tabler:candy', 'lucide:candy', 'ph:candy-bold', 'mdi:cupcake', 'ph:orange-bold', 'tabler:lemon',
-        'lucide:citrus', 'mdi:lemon-outline', 'ph:cheese-bold', 'carbon:circle-dash', 'tabler:cheese', 'lucide:pizza', 'ph:pizza-bold', 'mdi:bread-slice-outline', 'ph:bread-bold', 'tabler:bread',
-        'lucide:sandwich', 'mdi:hamburger-check', 'ph:bowl-steam-bold', 'carbon:haze-night', 'tabler:soup', 'lucide:soup', 'ph:coffee-bean-bold', 'mdi:coffee-maker', 'ph:brandy-bold', 'tabler:glass-full',
-        'lucide:glass-water', 'mdi:glass-wine', 'ph:wine-bold', 'carbon:drink-01', 'tabler:beer', 'lucide:beer', 'ph:beer-bottle-bold', 'mdi:bottle-wine-outline', 'ph:martini-bold', 'tabler:cup',
-        'lucide:mug', 'mdi:tea', 'ph:tea-bag-bold', 'carbon:shopping-cart', 'tabler:basket', 'lucide:shopping-basket', 'ph:shopping-cart-bold', 'mdi:cart-outline', 'ph:fork-knife-bold', 'tabler:chef-hat',
-        'lucide:chef-hat', 'mdi:chef-hat', 'ph:hat-chef-bold', 'carbon:events', 'tabler:calendar-event', 'lucide:calendar-days', 'ph:calendar-bold', 'mdi:table-furniture', 'ph:table-bold', 'tabler:table',
-        'lucide:refrigerator', 'mdi:fridge-outline', 'ph:fridge-bold', 'carbon:temperature-hot', 'tabler:flame', 'lucide:flame', 'ph:fire-bold', 'mdi:fire-circle', 'ph:salt-bold', 'tabler:pepper'
+        'ph:cooking-pot-bold', 'lucide:utensils', 'mdi:pizza', 'tabler:tools-kitchen-2', 'ph:coffee-bold', 'lucide:cake', 'mdi:silverware-fork-knife',
+        'tabler:meat', 'ph:hamburger-bold', 'lucide:soup', 'mdi:food-apple-outline', 'tabler:egg', 'ph:bowl-food-bold', 'lucide:fish',
+        'carbon:restaurant', 'mdi:egg-fried', 'ph:apple-bold', 'carbon:strawberry', 'lucide:egg-fried', 'ph:orange-bold', 'tabler:lemon',
+        'lucide:citrus', 'mdi:lemon-outline', 'ph:cheese-bold', 'tabler:cheese', 'lucide:pizza', 'ph:pizza-bold', 'mdi:bread-slice-outline', 
+        'ph:bread-bold', 'tabler:bread', 'lucide:sandwich', 'mdi:hamburger-check', 'ph:bowl-steam-bold', 'carbon:haze-night', 'tabler:soup', 
+        'lucide:soup', 'ph:coffee-bean-bold', 'mdi:coffee-maker', 'ph:brandy-bold', 'tabler:glass-full', 'lucide:glass-water', 'mdi:glass-wine', 
+        'ph:wine-bold', 'carbon:drink-01', 'tabler:beer', 'lucide:beer', 'ph:beer-bottle-bold', 'mdi:bottle-wine-outline', 'ph:martini-bold', 
+        'tabler:cup', 'lucide:mug', 'mdi:tea', 'ph:tea-bag-bold', 'carbon:shopping-cart', 'tabler:basket', 'lucide:shopping-basket', 
+        'ph:shopping-cart-bold', 'mdi:cart-outline', 'ph:fork-knife-bold', 'tabler:chef-hat', 'lucide:chef-hat', 'mdi:chef-hat', 
+        'ph:hat-chef-bold', 'carbon:events', 'tabler:calendar-event', 'lucide:calendar-days', 'ph:calendar-bold', 'mdi:table-furniture', 
+        'ph:table-bold', 'tabler:table', 'lucide:refrigerator', 'mdi:fridge-outline', 'ph:fridge-bold', 'carbon:temperature-hot', 'tabler:flame', 
+        'lucide:flame', 'ph:fire-bold', 'mdi:fire-circle', 'ph:salt-bold', 'tabler:pepper', 'mdi:bottle-soda-outline', 'ph:ice-cream-bold', 
+        'mdi:ice-cream-outline', 'tabler:ice-cream', 'lucide:cookie', 'mdi:cookie-outline', 'ph:cookie-bold', 'tabler:candy', 'lucide:candy', 
+        'ph:candy-bold', 'mdi:cupcake', 'carbon:circle-dash', 'tabler:mushroom', 'ph:nut-bold', 'mdi:peanut-outline', 'ph:carrot-bold', 
+        'tabler:carrot', 'lucide:grape', 'mdi:fruit-grapes-outline'
     ],
     fashion: [
-        'ph:shirt-folded-bold', 'lucide:shopping-bag', 'tabler:hanger', 'mdi:diamond-stone', 'ph:crown-bold', 'lucide:gem', 'mdi:glasses', 'carbon:store', 'ph:handbag-bold', 'tabler:brand-sketch',
-        'lucide:watch', 'mdi:watch-variant', 'ph:watch-bold', 'carbon:time', 'tabler:clock', 'lucide:clock', 'ph:high-heel-bold', 'mdi:shoe-heel', 'ph:sneaker-bold', 'tabler:shoe',
-        'lucide:footprints', 'mdi:shoe-print', 'ph:t-shirt-bold', 'carbon:category-add', 'tabler:shirt', 'lucide:shirt', 'ph:pants-bold', 'mdi:dolly', 'ph:bag-bold', 'tabler:briefcase',
-        'lucide:briefcase', 'mdi:briefcase-outline', 'ph:suit-case-bold', 'carbon:inventory-management', 'tabler:shopping-cart', 'lucide:shopping-cart', 'ph:shopping-cart-simple-bold', 'mdi:cart-check', 'ph:tag-bold', 'tabler:tag',
-        'lucide:tag', 'mdi:tag-outline', 'ph:label-bold', 'carbon:tag-group', 'tabler:tags', 'lucide:tags', 'ph:needle-bold', 'mdi:needle', 'ph:spool-bold', 'tabler:sewing-machine',
-        'lucide:scissors', 'mdi:scissors-cutting', 'ph:scissors-bold', 'carbon:edge-node', 'tabler:cut', 'lucide:ribbon', 'ph:ribbon-bold', 'mdi:medal-outline', 'ph:dress-bold', 'tabler:woman',
-        'lucide:person-standing', 'mdi:human-female', 'ph:user-bold', 'carbon:user-avatar', 'tabler:user', 'lucide:user', 'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'tabler:star',
-        'lucide:star', 'mdi:star-face', 'ph:sparkle-bold', 'carbon:flash', 'tabler:brightness', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:palette-bold', 'tabler:palette',
-        'lucide:palette', 'mdi:palette-outline', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:brush', 'ph:eye-bold', 'mdi:eye-outline', 'ph:lipstick-bold', 'tabler:brand-instagram',
-        'lucide:instagram', 'mdi:instagram', 'ph:diamond-bold', 'carbon:jewelry', 'tabler:diamond', 'lucide:annoyed', 'ph:mask-happy-bold', 'mdi:theater', 'ph:magic-wand-bold', 'tabler:wand'
+        'ph:shirt-folded-bold', 'lucide:shopping-bag', 'tabler:hanger', 'mdi:diamond-stone', 'ph:crown-bold', 'lucide:gem', 'mdi:glasses',
+        'tabler:brand-sketch', 'ph:handbag-bold', 'lucide:watch', 'mdi:watch-variant', 'tabler:shoe', 'ph:high-heel-bold', 'lucide:shirt',
+        'carbon:store', 'mdi:shoe-heel', 'ph:sneaker-bold', 'lucide:footprints', 'mdi:shoe-print', 'ph:t-shirt-bold', 'carbon:category-add', 
+        'tabler:shirt', 'ph:pants-bold', 'mdi:dolly', 'ph:bag-bold', 'tabler:briefcase', 'lucide:briefcase', 'mdi:briefcase-outline', 
+        'ph:suit-case-bold', 'carbon:inventory-management', 'tabler:shopping-cart', 'lucide:shopping-cart', 'ph:shopping-cart-simple-bold', 
+        'mdi:cart-check', 'ph:tag-bold', 'tabler:tag', 'lucide:tag', 'mdi:tag-outline', 'ph:label-bold', 'carbon:tag-group', 'tabler:tags', 
+        'lucide:tags', 'ph:needle-bold', 'mdi:needle', 'ph:spool-bold', 'tabler:sewing-machine', 'lucide:scissors', 'mdi:scissors-cutting', 
+        'ph:scissors-bold', 'carbon:edge-node', 'tabler:cut', 'lucide:ribbon', 'ph:ribbon-bold', 'mdi:medal-outline', 'ph:dress-bold', 
+        'tabler:woman', 'lucide:person-standing', 'mdi:human-female', 'ph:user-bold', 'carbon:user-avatar', 'tabler:user', 'lucide:user', 
+        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'tabler:star', 'lucide:star', 'mdi:star-face', 'ph:sparkle-bold', 
+        'carbon:flash', 'tabler:brightness', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:palette-bold', 'tabler:palette', 
+        'lucide:palette', 'mdi:palette-outline', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:brush', 'ph:eye-bold', 
+        'mdi:eye-outline', 'ph:lipstick-bold', 'tabler:brand-instagram', 'lucide:instagram', 'mdi:instagram', 'ph:diamond-bold', 
+        'carbon:jewelry', 'tabler:diamond', 'lucide:annoyed', 'ph:mask-happy-bold', 'mdi:theater', 'ph:magic-wand-bold', 'tabler:wand',
+        'ph:wallet-bold', 'mdi:wallet-outline', 'tabler:wallet', 'lucide:pocket', 'ph:coat-hanger-bold', 'mdi:hanger', 'tabler:bowtie'
     ],
     health: [
-        'ph:heartbeat-bold', 'lucide:activity', 'mdi:stethoscope', 'tabler:pill', 'ph:first-aid-kit-bold', 'lucide:brain', 'mdi:dna', 'carbon:medical', 'ph:hospital-bold', 'tabler:building-hospital',
-        'lucide:hospital', 'mdi:hospital-marker', 'ph:thermometer-bold', 'carbon:temperature', 'tabler:thermometer', 'lucide:thermometer', 'ph:pill-bold', 'mdi:pill', 'ph:syringe-bold', 'tabler:vaccine',
-        'lucide:syringe', 'mdi:needle', 'ph:bandaids-bold', 'carbon:pills', 'tabler:first-aid-kit', 'lucide:first-aid', 'ph:baby-bold', 'mdi:baby-carriage', 'ph:bone-bold', 'tabler:bone',
-        'lucide:bone', 'mdi:bone', 'ph:brain-bold', 'carbon:query', 'tabler:mood-smile', 'lucide:smile', 'ph:smiley-bold', 'mdi:emoticon-happy-outline', 'ph:hand-heart-bold', 'tabler:heart-handshake',
-        'lucide:heart-pulse', 'mdi:heart-pulse', 'ph:pulse-bold', 'carbon:friendship', 'tabler:users', 'lucide:users', 'ph:users-bold', 'mdi:account-group', 'ph:eye-bold', 'tabler:eye',
-        'lucide:eye', 'mdi:eye-check-outline', 'ph:ear-bold', 'carbon:audio-console', 'tabler:ear', 'lucide:ear', 'ph:tooth-bold', 'mdi:tooth-outline', 'ph:lungs-bold', 'tabler:lungs',
-        'lucide:wind', 'mdi:air-filter', 'ph:virus-bold', 'carbon:coronavirus', 'tabler:virus', 'lucide:microscope', 'ph:microscope-bold', 'mdi:microscope', 'ph:test-tube-bold', 'tabler:test-pipe',
-        'lucide:beaker', 'mdi:beaker-outline', 'ph:flask-bold', 'carbon:chemical-hazard', 'tabler:flask', 'lucide:flask-conical', 'ph:clipboard-text-bold', 'mdi:clipboard-pulse-outline', 'ph:notebook-bold', 'tabler:report-medical',
-        'lucide:clipboard-list', 'mdi:file-document-edit-outline', 'ph:file-text-bold', 'carbon:document', 'tabler:file-medical', 'lucide:file-heart', 'ph:heart-straight-bold', 'mdi:heart-plus-outline', 'ph:plus-circle-bold', 'tabler:plus',
-        'lucide:plus-square', 'mdi:hospital-building', 'ph:ambulance-bold', 'carbon:ambulance', 'tabler:ambulance', 'lucide:ambulance', 'ph:wheelchair-bold', 'mdi:wheelchair-accessibility', 'ph:person-bold', 'tabler:user'
+        'ph:heartbeat-bold', 'lucide:activity', 'mdi:stethoscope', 'tabler:pill', 'ph:first-aid-kit-bold', 'lucide:brain', 'mdi:dna',
+        'tabler:thermometer', 'ph:hospital-bold', 'lucide:hospital', 'mdi:hospital-marker', 'tabler:vaccine', 'ph:pill-bold', 'lucide:smile',
+        'carbon:medical', 'ph:first-aid-bold', 'tabler:first-aid-kit', 'lucide:first-aid', 'ph:baby-bold', 'mdi:baby-carriage', 'ph:bone-bold', 
+        'tabler:bone', 'lucide:bone', 'mdi:bone', 'ph:brain-bold', 'carbon:query', 'tabler:mood-smile', 'lucide:smile', 'ph:smiley-bold', 
+        'mdi:emoticon-happy-outline', 'ph:hand-heart-bold', 'tabler:heart-handshake', 'lucide:heart-pulse', 'mdi:heart-pulse', 'ph:pulse-bold', 
+        'carbon:friendship', 'tabler:users', 'lucide:users', 'ph:users-bold', 'mdi:account-group', 'ph:eye-bold', 'tabler:eye', 'lucide:eye', 
+        'mdi:eye-check-outline', 'ph:ear-bold', 'carbon:audio-console', 'tabler:ear', 'lucide:ear', 'ph:tooth-bold', 'mdi:tooth-outline', 
+        'ph:lungs-bold', 'tabler:lungs', 'lucide:wind', 'mdi:air-filter', 'ph:virus-bold', 'carbon:coronavirus', 'tabler:virus', 
+        'lucide:microscope', 'ph:microscope-bold', 'mdi:microscope', 'ph:test-tube-bold', 'tabler:test-pipe', 'lucide:beaker', 
+        'mdi:beaker-outline', 'ph:flask-bold', 'carbon:chemical-hazard', 'tabler:flask', 'lucide:flask-conical', 'ph:clipboard-text-bold', 
+        'mdi:clipboard-pulse-outline', 'ph:notebook-bold', 'tabler:report-medical', 'lucide:clipboard-list', 'mdi:file-document-edit-outline', 
+        'ph:file-text-bold', 'carbon:document', 'tabler:file-medical', 'lucide:file-heart', 'ph:heart-straight-bold', 'mdi:heart-plus-outline', 
+        'ph:plus-circle-bold', 'tabler:plus', 'lucide:plus-square', 'mdi:hospital-building', 'ph:ambulance-bold', 'carbon:ambulance', 
+        'tabler:ambulance', 'lucide:ambulance', 'ph:wheelchair-bold', 'mdi:wheelchair-accessibility', 'ph:person-bold', 'tabler:user',
+        'mdi:yoga', 'ph:peace-bold', 'tabler:bottle', 'lucide:flask-round', 'mdi:meditation', 'ph:flower-lotus-bold', 'tabler:stretcher'
+    ],
+
+
+
+
+
+// Add these inside your const icons = { ... } object:
+    finance: [
+        'ph:bank-bold', 'lucide:wallet', 'mdi:chart-line', 'tabler:coin', 'ph:credit-card-bold', 'mdi:piggy-bank-outline', 'lucide:landmark', 'carbon:finance', 'ph:currency-dollar-bold', 'tabler:currency-dollar',
+        'lucide:dollar-sign', 'mdi:currency-usd', 'ph:currency-eur-bold', 'tabler:currency-euro', 'lucide:euro', 'mdi:currency-eur', 'ph:chart-bar-bold', 'carbon:chart-bar', 'tabler:chart-bar', 'lucide:bar-chart-3',
+        'ph:chart-pie-bold', 'mdi:chart-pie', 'ph:chart-line-up-bold', 'carbon:growth', 'tabler:trending-up', 'lucide:trending-up', 'ph:arrows-clockwise-bold', 'mdi:autorenew', 'ph:calculator-bold', 'tabler:calculator',
+        'lucide:calculator', 'mdi:calculator', 'ph:safe-bold', 'carbon:security-as-a-service', 'tabler:vault', 'lucide:lock', 'ph:key-bold', 'mdi:key-outline', 'ph:receipt-bold', 'tabler:receipt',
+        'lucide:receipt', 'mdi:file-document-outline', 'ph:hand-coins-bold', 'carbon:send-alt', 'tabler:send', 'lucide:send', 'ph:trend-up-bold', 'mdi:finance', 'ph:stack-bold', 'tabler:layers-difference',
+        'lucide:layers', 'mdi:stack-overflow', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:magnifying-glass-bold', 'tabler:search',
+        'lucide:search', 'mdi:magnify', 'ph:shield-check-bold', 'carbon:safe', 'tabler:shield-check', 'lucide:shield-check', 'ph:shield-star-bold', 'mdi:verified', 'ph:seal-check-bold', 'tabler:discount-2',
+        'lucide:percent', 'mdi:percent', 'ph:percent-bold', 'carbon:percentage', 'tabler:percentage', 'lucide:calculator', 'ph:coins-bold', 'mdi:cash-multiple', 'ph:money-bold', 'tabler:cash',
+        'lucide:banknote', 'mdi:cash', 'ph:ticket-bold', 'carbon:ticket', 'tabler:ticket', 'lucide:ticket', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:scales-bold', 'tabler:scales',
+        'lucide:scales', 'mdi:scale-balance', 'ph:globe-bold', 'carbon:globe', 'tabler:world', 'lucide:globe', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:shield-plus-bold', 'tabler:lock-plus',
+        'mdi:bitcoin', 'ph:currency-btc-bold', 'tabler:currency-bitcoin', 'lucide:bitcoin', 'ph:hand-holding-heart-bold', 'mdi:charity', 'ph:presentation-chart-bold', 'tabler:presentation-analytics', 'lucide:line-chart', 'mdi:database-arrow-up',
+        'ph:briefcase-simple-bold', 'tabler:briefcase-2', 'ph:hand-eye-bold', 'mdi:finance', 'tabler:report-money', 'ph:money-wavy-bold', 'mdi:transfer', 'ph:lightning-bold', 'tabler:bolt', 'lucide:zap'
+    ],
+    edu: [
+        'ph:graduation-cap-bold', 'lucide:book-open', 'mdi:school-outline', 'tabler:certificate', 'ph:pencil-circle-bold', 'lucide:library', 'mdi:microscope', 'carbon:education', 'ph:book-bold', 'tabler:book',
+        'lucide:book', 'mdi:book-variant', 'ph:chalkboard-teacher-bold', 'carbon:teacher', 'tabler:presentation', 'lucide:presentation', 'ph:backpack-bold', 'mdi:backpack', 'ph:pencil-bold', 'tabler:pencil',
+        'lucide:pencil', 'mdi:lead-pencil', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler', 'lucide:ruler', 'ph:compass-bold', 'mdi:compass-outline', 'ph:exam-bold', 'tabler:notes',
+        'lucide:sticky-note', 'mdi:note-text-outline', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:atom-bold', 'mdi:atom', 'ph:globe-bold', 'tabler:world',
+        'lucide:globe-2', 'mdi:earth', 'ph:brain-bold', 'carbon:idea', 'tabler:bulb', 'lucide:lightbulb', 'ph:medal-bold', 'mdi:medal', 'ph:trophy-bold', 'tabler:trophy',
+        'lucide:trophy', 'mdi:trophy-outline', 'ph:video-camera-bold', 'carbon:video', 'tabler:video', 'lucide:video', 'ph:microphone-stage-bold', 'mdi:microphone-variant', 'ph:student-bold', 'tabler:user-check',
+        'lucide:user-2', 'mdi:account-school', 'ph:users-four-bold', 'carbon:group', 'tabler:users', 'lucide:users', 'ph:puzzle-piece-bold', 'mdi:puzzle-outline', 'ph:strategy-bold', 'tabler:chess',
+        'lucide:gamepad', 'mdi:controller-classic-outline', 'ph:lamp-bold', 'carbon:light', 'tabler:lamp', 'lucide:lamp', 'ph:bell-bold', 'mdi:bell-outline', 'ph:clock-bold', 'tabler:clock',
+        'lucide:clock-4', 'mdi:timer-outline', 'ph:paper-plane-bold', 'carbon:send', 'tabler:send', 'lucide:send', 'ph:flask-bold', 'mdi:flask-outline', 'ph:test-tube-bold', 'tabler:test-pipe',
+        'lucide:beaker', 'mdi:flask', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:palette', 'ph:music-note-bold', 'mdi:music-note', 'ph:piano-key-bold', 'tabler:music',
+        'lucide:music', 'mdi:music', 'ph:microscope-bold', 'tabler:microscope', 'mdi:telescope', 'ph:binoculars-bold', 'tabler:binoculars', 'lucide:binoculars', 'ph:dna-bold', 'tabler:dna',
+        'lucide:dna', 'mdi:dna', 'ph:atom-bold', 'tabler:atom', 'lucide:atom', 'mdi:molecule', 'ph:lightning-bold', 'tabler:bolt', 'lucide:zap', 'mdi:flash-outline'
+    ],
+    travel: [
+        'ph:airplane-tilt-bold', 'lucide:globe', 'mdi:map-marker-outline', 'tabler:compass', 'ph:mountains-bold', 'lucide:palmtree', 'mdi:beach', 'carbon:plane', 'ph:map-trifold-bold', 'tabler:map',
+        'lucide:map-pin', 'mdi:map-legend', 'ph:camera-bold', 'mdi:camera-outline', 'ph:suitcase-rolling-bold', 'carbon:suitcase', 'tabler:luggage', 'lucide:luggage', 'ph:ticket-bold', 'mdi:ticket-outline',
+        'ph:compass-rose-bold', 'tabler:navigation', 'lucide:navigation-2', 'mdi:compass-rose', 'ph:hotel-bold', 'carbon:hotel', 'tabler:building-skyscraper', 'lucide:building', 'ph:bed-bold', 'mdi:bed-empty',
+        'ph:train-bold', 'carbon:train', 'tabler:train', 'lucide:train', 'ph:bus-bold', 'mdi:bus', 'ph:car-bold', 'tabler:car', 'lucide:car', 'mdi:car-hatchback',
+        'ph:bicycle-bold', 'carbon:bicycle', 'tabler:bike', 'lucide:bike', 'ph:boat-bold', 'mdi:sailboat', 'ph:anchor-bold', 'tabler:anchor', 'lucide:anchor', 'mdi:anchor',
+        'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:cloud-sun', 'lucide:cloud-sun', 'ph:umbrella-bold', 'mdi:beach-umbrella', 'ph:sun-horizon-bold', 'carbon:sunset', 'tabler:sunset', 'lucide:sunset',
+        'ph:thermometer-hot-bold', 'carbon:temperature-hot', 'tabler:temperature', 'lucide:thermometer-sun', 'ph:flag-bold', 'mdi:flag-variant-outline', 'ph:signpost-bold', 'tabler:signpost', 'lucide:signpost', 'mdi:sign-direction',
+        'ph:globe-stand-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'tabler:world-latitude', 'lucide:languages', 'ph:translate-bold', 'mdi:translate', 'ph:passport-bold', 'mdi:passport',
+        'ph:wallet-bold', 'carbon:wallet', 'tabler:wallet', 'lucide:wallet', 'ph:magnifying-glass-location-bold', 'mdi:map-search-outline', 'ph:binoculars-bold', 'mdi:binoculars', 'ph:backpack-bold', 'tabler:backpack',
+        'lucide:backpack', 'mdi:hiking', 'ph:tent-bold', 'carbon:campsite', 'tabler:tent', 'lucide:tent', 'ph:campfire-bold', 'mdi:campfire', 'ph:island-bold', 'tabler:island',
+        'mdi:palm-tree', 'ph:tree-palm-bold', 'tabler:beach', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:star-bold', 'tabler:star', 'lucide:star', 'mdi:star-outline'
+    ],
+    sport: [
+        'ph:trophy-bold', 'lucide:dumbbell', 'mdi:run', 'tabler:ball-football', 'ph:fire-bold', 'lucide:timer', 'mdi:medal-outline', 'carbon:flash', 'ph:soccer-ball-bold', 'mdi:soccer',
+        'ph:basketball-bold', 'mdi:basketball', 'ph:tennis-ball-bold', 'mdi:tennis-ball', 'ph:volleyball-bold', 'mdi:volleyball', 'ph:baseball-bold', 'mdi:baseball', 'ph:eight-ball-bold', 'mdi:billiards',
+        'ph:ping-pong-bold', 'tabler:ping-pong', 'ph:bowling-ball-bold', 'mdi:bowling', 'ph:boxing-glove-bold', 'mdi:boxing-glove', 'ph:bicycle-bold', 'mdi:bike', 'ph:skateboard-bold', 'mdi:skateboard',
+        'ph:swimming-pool-bold', 'mdi:swim', 'ph:mountain-bold', 'mdi:hiking', 'ph:climbing-bold', 'mdi:climbing', 'ph:fishing-bold', 'mdi:fish', 'ph:sneaker-bold', 'mdi:shoe-sneaker',
+        'ph:t-shirt-bold', 'mdi:tshirt-crew', 'ph:whistle-bold', 'mdi:whistle', 'ph:stopwatch-bold', 'mdi:stopwatch-outline', 'ph:timer-bold', 'tabler:timer', 'lucide:watch', 'mdi:clock-fast',
+        'ph:target-bold', 'mdi:target', 'ph:flag-banner-bold', 'tabler:flag', 'lucide:flag', 'mdi:flag-checkered', 'ph:barbell-bold', 'mdi:weight-lifter', 'ph:activity-bold', 'mdi:pulse',
+        'ph:heartbeat-bold', 'mdi:heart-flash', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:power-bold', 'mdi:power-plug', 'ph:trend-up-bold', 'mdi:trending-up', 'ph:crown-bold', 'mdi:crown',
+        'ph:medal-bold', 'mdi:medal', 'ph:first-aid-kit-bold', 'mdi:briefcase-medical', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:scales-bold', 'mdi:scale-bathroom', 'ph:ruler-bold', 'mdi:tape-measure',
+        'ph:user-bold', 'mdi:account', 'ph:users-bold', 'mdi:account-group', 'ph:handshake-bold', 'mdi:handshake', 'ph:thumbs-up-bold', 'mdi:thumb-up-outline', 'ph:star-bold', 'mdi:star-outline',
+        'ph:rocket-launch-bold', 'mdi:rocket-launch', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:bell-bold', 'mdi:bell',
+        'mdi:karate', 'ph:hand-fist-bold', 'tabler:stretching', 'lucide:accessibility', 'mdi:jump-rope', 'ph:sneaker-move-bold', 'tabler:yoga', 'lucide:zap', 'mdi:arm-flex-outline', 'ph:speedometer-bold'
+    ],
+    art: [
+        'ph:palette-bold', 'lucide:brush', 'mdi:draw', 'tabler:photo', 'ph:camera-bold', 'lucide:pen-tool', 'mdi:vector-square', 'carbon:paint-brush', 'ph:paint-brush-bold', 'tabler:brush',
+        'ph:paint-roller-bold', 'mdi:format-paint', 'ph:pencil-bold', 'tabler:pencil', 'lucide:pencil', 'mdi:pencil-outline', 'ph:fountain-pen-bold', 'tabler:writing', 'lucide:pen-tool', 'mdi:vector-bezier',
+        'ph:selection-all-bold', 'mdi:select-all', 'ph:layers-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:layers-outline', 'ph:stack-bold', 'mdi:stack-overflow', 'ph:crop-bold', 'tabler:crop',
+        'lucide:crop', 'mdi:crop', 'ph:frame-bold', 'tabler:frame', 'lucide:frame', 'mdi:picture-in-picture-bottom-right-outline', 'ph:image-bold', 'mdi:image-filter-hdr', 'ph:video-camera-bold', 'mdi:video-outline',
+        'ph:aperture-bold', 'tabler:aperture', 'lucide:aperture', 'mdi:camera-iris', 'ph:film-script-bold', 'mdi:filmstrip', 'ph:projector-screen-bold', 'mdi:projector', 'ph:speaker-hifi-bold', 'mdi:speaker',
+        'ph:music-note-bold', 'mdi:music-note', 'ph:guitar-bold', 'mdi:guitar-acoustic', 'ph:piano-key-bold', 'mdi:piano', 'ph:microphone-bold', 'mdi:microphone', 'ph:headphones-bold', 'mdi:headphones',
+        'ph:monitor-bold', 'mdi:monitor', 'ph:desktop-bold', 'mdi:desktop-mac', 'ph:smartphone-bold', 'mdi:cellphone', 'ph:tablet-bold', 'mdi:tablet-ipad', 'ph:laptop-bold', 'mdi:laptop',
+        'ph:mouse-bold', 'mdi:mouse', 'ph:keyboard-bold', 'mdi:keyboard', 'ph:printer-bold', 'mdi:printer', 'ph:scanner-bold', 'mdi:scanner', 'ph:briefcase-bold', 'mdi:briefcase',
+        'ph:cube-bold', 'mdi:cube-outline', 'ph:sphere-bold', 'mdi:sphere', 'ph:cylinder-bold', 'mdi:cylinder', 'ph:triangle-bold', 'mdi:triangle-outline', 'ph:square-bold', 'mdi:square-outline',
+        'ph:circle-bold', 'mdi:circle-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:heart-bold', 'mdi:heart-outline', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-bold', 'mdi:white-balance-sunny',
+        'mdi:theater', 'ph:mask-happy-bold', 'tabler:masks-theater', 'lucide:drama', 'ph:paint-bucket-bold', 'mdi:format-color-fill', 'tabler:color-picker', 'lucide:pipette', 'mdi:feather', 'ph:feather-bold'
     ],
 
 
@@ -252,489 +389,600 @@ const icons = {
 
 
 
-
-
-
-
-// Append these to your icons object
-finance : [
-    'ph:bank-bold', 'lucide:wallet', 'mdi:chart-line', 'tabler:coin', 'ph:credit-card-bold', 'mdi:piggy-bank-outline', 'lucide:landmark', 'carbon:finance', 'ph:currency-dollar-bold', 'tabler:currency-dollar',
-    'lucide:dollar-sign', 'mdi:currency-usd', 'ph:currency-eur-bold', 'tabler:currency-euro', 'lucide:euro', 'mdi:currency-eur', 'ph:chart-bar-bold', 'carbon:chart-bar', 'tabler:chart-bar', 'lucide:bar-chart-3',
-    'ph:chart-pie-bold', 'mdi:chart-pie', 'ph:chart-line-up-bold', 'carbon:growth', 'tabler:trending-up', 'lucide:trending-up', 'ph:arrows-clockwise-bold', 'mdi:autorenew', 'ph:calculator-bold', 'tabler:calculator',
-    'lucide:calculator', 'mdi:calculator', 'ph:safe-bold', 'carbon:security-as-a-service', 'tabler:vault', 'lucide:lock', 'ph:key-bold', 'mdi:key-outline', 'ph:receipt-bold', 'tabler:receipt',
-    'lucide:receipt', 'mdi:file-document-outline', 'ph:hand-coins-bold', 'carbon:send-alt', 'tabler:send', 'lucide:send', 'ph:trend-up-bold', 'mdi:finance', 'ph:stack-bold', 'tabler:layers-difference',
-    'lucide:layers', 'mdi:stack-overflow', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:magnifying-glass-bold', 'tabler:search',
-    'lucide:search', 'mdi:magnify', 'ph:shield-check-bold', 'carbon:safe', 'tabler:shield-check', 'lucide:shield-check', 'ph:shield-star-bold', 'mdi:verified', 'ph:seal-check-bold', 'tabler:discount-2',
-    'lucide:percent', 'mdi:percent', 'ph:percent-bold', 'carbon:percentage', 'tabler:percentage', 'lucide:calculator', 'ph:coins-bold', 'mdi:cash-multiple', 'ph:money-bold', 'tabler:cash',
-    'lucide:banknote', 'mdi:cash', 'ph:ticket-bold', 'carbon:ticket', 'tabler:ticket', 'lucide:ticket', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:scales-bold', 'tabler:scales',
-    'lucide:scales', 'mdi:scale-balance', 'ph:globe-bold', 'carbon:globe', 'tabler:world', 'lucide:globe', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:shield-plus-bold', 'tabler:lock-plus'
-],
-
-edu : [
-    'ph:graduation-cap-bold', 'lucide:book-open', 'mdi:school-outline', 'tabler:certificate', 'ph:pencil-circle-bold', 'lucide:library', 'mdi:microscope', 'carbon:education', 'ph:book-bold', 'tabler:book',
-    'lucide:book', 'mdi:book-variant', 'ph:chalkboard-teacher-bold', 'carbon:teacher', 'tabler:presentation', 'lucide:presentation', 'ph:backpack-bold', 'mdi:backpack', 'ph:pencil-bold', 'tabler:pencil',
-    'lucide:pencil', 'mdi:lead-pencil', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler', 'lucide:ruler', 'ph:compass-bold', 'mdi:compass-outline', 'ph:exam-bold', 'tabler:notes',
-    'lucide:sticky-note', 'mdi:note-text-outline', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:atom-bold', 'mdi:atom', 'ph:globe-bold', 'tabler:world',
-    'lucide:globe-2', 'mdi:earth', 'ph:brain-bold', 'carbon:idea', 'tabler:bulb', 'lucide:lightbulb', 'ph:medal-bold', 'mdi:medal', 'ph:trophy-bold', 'tabler:trophy',
-    'lucide:trophy', 'mdi:trophy-outline', 'ph:video-camera-bold', 'carbon:video', 'tabler:video', 'lucide:video', 'ph:microphone-stage-bold', 'mdi:microphone-variant', 'ph:student-bold', 'tabler:user-check',
-    'lucide:user-2', 'mdi:account-school', 'ph:users-four-bold', 'carbon:group', 'tabler:users', 'lucide:users', 'ph:puzzle-piece-bold', 'mdi:puzzle-outline', 'ph:strategy-bold', 'tabler:chess',
-    'lucide:gamepad', 'mdi:controller-classic-outline', 'ph:lamp-bold', 'carbon:light', 'tabler:lamp', 'lucide:lamp', 'ph:bell-bold', 'mdi:bell-outline', 'ph:clock-bold', 'tabler:clock',
-    'lucide:clock-4', 'mdi:timer-outline', 'ph:paper-plane-bold', 'carbon:send', 'tabler:send', 'lucide:send', 'ph:flask-bold', 'mdi:flask-outline', 'ph:test-tube-bold', 'tabler:test-pipe',
-    'lucide:beaker', 'mdi:flask', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:palette', 'ph:music-note-bold', 'mdi:music-note', 'ph:piano-key-bold', 'tabler:music'
-],
-
-travel :  [
-    'ph:airplane-tilt-bold', 'lucide:globe', 'mdi:map-marker-outline', 'tabler:compass', 'ph:mountains-bold', 'lucide:palmtree', 'mdi:beach', 'carbon:plane', 'ph:map-trifold-bold', 'tabler:map',
-    'lucide:map-pin', 'mdi:map-legend', 'ph:camera-bold', 'mdi:camera-outline', 'ph:suitcase-rolling-bold', 'carbon:suitcase', 'tabler:luggage', 'lucide:luggage', 'ph:ticket-bold', 'mdi:ticket-outline',
-    'ph:compass-rose-bold', 'tabler:navigation', 'lucide:navigation-2', 'mdi:compass-rose', 'ph:hotel-bold', 'carbon:hotel', 'tabler:building-skyscraper', 'lucide:building', 'ph:bed-bold', 'mdi:bed-empty',
-    'ph:train-bold', 'carbon:train', 'tabler:train', 'lucide:train', 'ph:bus-bold', 'mdi:bus', 'ph:car-bold', 'tabler:car', 'lucide:car', 'mdi:car-hatchback',
-    'ph:bicycle-bold', 'carbon:bicycle', 'tabler:bike', 'lucide:bike', 'ph:boat-bold', 'mdi:sailboat', 'ph:anchor-bold', 'tabler:anchor', 'lucide:anchor', 'mdi:anchor',
-    'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:cloud-sun', 'lucide:cloud-sun', 'ph:umbrella-bold', 'mdi:beach-umbrella', 'ph:sun-horizon-bold', 'carbon:sunset', 'tabler:sunset', 'lucide:sunset',
-    'ph:thermometer-hot-bold', 'carbon:temperature-hot', 'tabler:temperature', 'lucide:thermometer-sun', 'ph:flag-bold', 'mdi:flag-variant-outline', 'ph:signpost-bold', 'tabler:signpost', 'lucide:signpost', 'mdi:sign-direction',
-    'ph:globe-stand-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'tabler:world-latitude', 'lucide:languages', 'ph:translate-bold', 'mdi:translate', 'ph:passport-bold', 'mdi:passport',
-    'ph:wallet-bold', 'carbon:wallet', 'tabler:wallet', 'lucide:wallet', 'ph:magnifying-glass-location-bold', 'mdi:map-search-outline', 'ph:binoculars-bold', 'mdi:binoculars', 'ph:backpack-bold', 'tabler:backpack',
-    'lucide:backpack', 'mdi:hiking', 'ph:tent-bold', 'carbon:campsite', 'tabler:tent', 'lucide:tent', 'ph:campfire-bold', 'mdi:campfire', 'ph:island-bold', 'tabler:island'
-],
-
-sport : [
-    'ph:trophy-bold', 'lucide:dumbbell', 'mdi:run', 'tabler:ball-football', 'ph:fire-bold', 'lucide:timer', 'mdi:medal-outline', 'carbon:flash', 'ph:soccer-ball-bold', 'mdi:soccer',
-    'ph:basketball-bold', 'mdi:basketball', 'ph:tennis-ball-bold', 'mdi:tennis-ball', 'ph:volleyball-bold', 'mdi:volleyball', 'ph:baseball-bold', 'mdi:baseball', 'ph:eight-ball-bold', 'mdi:billiards',
-    'ph:ping-pong-bold', 'tabler:ping-pong', 'ph:bowling-ball-bold', 'mdi:bowling', 'ph:boxing-glove-bold', 'mdi:boxing-glove', 'ph:bicycle-bold', 'mdi:bike', 'ph:skateboard-bold', 'mdi:skateboard',
-    'ph:swimming-pool-bold', 'mdi:swim', 'ph:mountain-bold', 'mdi:hiking', 'ph:climbing-bold', 'mdi:climbing', 'ph:fishing-bold', 'mdi:fish', 'ph:sneaker-bold', 'mdi:shoe-sneaker',
-    'ph:t-shirt-bold', 'mdi:tshirt-crew', 'ph:whistle-bold', 'mdi:whistle', 'ph:stopwatch-bold', 'mdi:stopwatch-outline', 'ph:timer-bold', 'tabler:timer', 'lucide:watch', 'mdi:clock-fast',
-    'ph:target-bold', 'mdi:target', 'ph:flag-banner-bold', 'tabler:flag', 'lucide:flag', 'mdi:flag-checkered', 'ph:barbell-bold', 'mdi:weight-lifter', 'ph:activity-bold', 'mdi:pulse',
-    'ph:heartbeat-bold', 'mdi:heart-flash', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:power-bold', 'mdi:power-plug', 'ph:trend-up-bold', 'mdi:trending-up', 'ph:crown-bold', 'mdi:crown',
-    'ph:medal-bold', 'mdi:medal', 'ph:first-aid-kit-bold', 'mdi:briefcase-medical', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:scales-bold', 'mdi:scale-bathroom', 'ph:ruler-bold', 'mdi:tape-measure',
-    'ph:user-bold', 'mdi:account', 'ph:users-bold', 'mdi:account-group', 'ph:handshake-bold', 'mdi:handshake', 'ph:thumbs-up-bold', 'mdi:thumb-up-outline', 'ph:star-bold', 'mdi:star-outline',
-    'ph:rocket-launch-bold', 'mdi:rocket-launch', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:bell-bold', 'mdi:bell'
-],
-
-art :  [
-    'ph:palette-bold', 'lucide:brush', 'mdi:draw', 'tabler:photo', 'ph:camera-bold', 'lucide:pen-tool', 'mdi:vector-square', 'carbon:paint-brush', 'ph:paint-brush-bold', 'tabler:brush',
-    'ph:paint-roller-bold', 'mdi:format-paint', 'ph:pencil-bold', 'tabler:pencil', 'lucide:pencil', 'mdi:pencil-outline', 'ph:fountain-pen-bold', 'tabler:writing', 'lucide:pen-tool', 'mdi:vector-bezier',
-    'ph:selection-all-bold', 'mdi:select-all', 'ph:layers-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:layers-outline', 'ph:stack-bold', 'mdi:stack-overflow', 'ph:crop-bold', 'tabler:crop',
-    'lucide:crop', 'mdi:crop', 'ph:frame-bold', 'tabler:frame', 'lucide:frame', 'mdi:picture-in-picture-bottom-right-outline', 'ph:image-bold', 'mdi:image-filter-hdr', 'ph:video-camera-bold', 'mdi:video-outline',
-    'ph:aperture-bold', 'tabler:aperture', 'lucide:aperture', 'mdi:camera-iris', 'ph:film-script-bold', 'mdi:filmstrip', 'ph:projector-screen-bold', 'mdi:projector', 'ph:speaker-hifi-bold', 'mdi:speaker',
-    'ph:music-note-bold', 'mdi:music-note', 'ph:guitar-bold', 'mdi:guitar-acoustic', 'ph:piano-key-bold', 'mdi:piano', 'ph:microphone-bold', 'mdi:microphone', 'ph:headphones-bold', 'mdi:headphones',
-    'ph:monitor-bold', 'mdi:monitor', 'ph:desktop-bold', 'mdi:desktop-mac', 'ph:smartphone-bold', 'mdi:cellphone', 'ph:tablet-bold', 'mdi:tablet-ipad', 'ph:laptop-bold', 'mdi:laptop',
-    'ph:mouse-bold', 'mdi:mouse', 'ph:keyboard-bold', 'mdi:keyboard', 'ph:printer-bold', 'mdi:printer', 'ph:scanner-bold', 'mdi:scanner', 'ph:briefcase-bold', 'mdi:briefcase',
-    'ph:cube-bold', 'mdi:cube-outline', 'ph:sphere-bold', 'mdi:sphere', 'ph:cylinder-bold', 'mdi:cylinder', 'ph:triangle-bold', 'mdi:triangle-outline', 'ph:square-bold', 'mdi:square-outline',
-    'ph:circle-bold', 'mdi:circle-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:heart-bold', 'mdi:heart-outline', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-bold', 'mdi:white-balance-sunny'
-],
-
-
-
-
-
-
-
-
-
-// Append these to your icons object
-beauty : [
-    'ph:sparkle-bold', 'lucide:flower-2', 'mdi:face-woman-outline', 'tabler:pills', 'ph:moon-stars-bold', 'lucide:sun', 'mdi:shimmer', 'carbon:content-view', 'ph:butterfly-bold', 'mdi:butterfly-outline',
-    'ph:scissors-bold', 'tabler:scissors', 'lucide:scissors', 'mdi:content-cut', 'ph:lipstick-bold', 'mdi:lipstick', 'ph:eye-bold', 'mdi:eye-outline', 'ph:eyeliner-bold', 'mdi:eye-plus-outline',
-    'ph:hand-fist-bold', 'mdi:hand-back-right-outline', 'ph:nail-polish-bold', 'mdi:nail-polish', 'ph:hair-dryer-bold', 'mdi:hair-dryer', 'ph:mirror-bold', 'mdi:mirror-variant', 'ph:spray-bottle-bold', 'mdi:spray-bottle',
-    'ph:jar-bold', 'mdi:bottle-tonic-outline', 'ph:flower-lotus-bold', 'mdi:flower-tulip-outline', 'ph:leaf-bold', 'mdi:leaf-maple', 'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint',
-    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:diamond-bold', 'mdi:diamond-outline', 'ph:crown-bold', 'mdi:crown-outline', 'ph:magic-wand-bold', 'mdi:magic-staff',
-    'ph:rainbow-bold', 'mdi:rainbow', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-dim-bold', 'mdi:sun-angle-outline', 'ph:wind-bold', 'mdi:wind-power-outline', 'ph:bird-bold', 'mdi:bird',
-    'ph:feather-bold', 'mdi:feather', 'ph:mask-happy-bold', 'mdi:emoticon-happy-outline', 'ph:woman-bold', 'mdi:human-female', 'ph:user-bold', 'mdi:account-outline', 'ph:users-bold', 'mdi:account-group-outline',
-    'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:palette-bold', 'mdi:palette-outline', 'ph:paint-brush-bold', 'mdi:brush-outline', 'ph:gift-bold', 'mdi:gift-outline',
-    'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline',
-    'ph:bell-bold', 'mdi:bell-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth'
-],
-
-legal :  [
-    'ph:scales-bold', 'lucide:gavel', 'mdi:shield-account-outline', 'tabler:law', 'ph:briefcase-bold', 'lucide:fingerprint', 'mdi:balance-scale', 'carbon:security', 'ph:shield-bold', 'mdi:shield-outline',
-    'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:shield-star-bold', 'mdi:shield-star-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:lock-open-bold', 'mdi:lock-open-outline', 'ph:key-bold', 'mdi:key-outline',
-    'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:file-text-bold', 'mdi:file-document-outline', 'ph:file-check-bold', 'mdi:file-check-outline', 'ph:file-lock-bold', 'mdi:file-lock-outline',
-    'ph:notebook-bold', 'mdi:notebook-outline', 'ph:signature-bold', 'mdi:draw-pen', 'ph:stamp-bold', 'mdi:stamp', 'ph:books-bold', 'mdi:bookshelf', 'ph:bank-bold', 'mdi:bank-outline',
-    'ph:landmark-bold', 'mdi:office-building-outline', 'ph:courthouse-bold', 'mdi:town-hall', 'ph:police-car-bold', 'mdi:police-badge-outline', 'ph:handcuffs-bold', 'mdi:handcuffs', 'ph:eye-bold', 'mdi:eye-outline',
-    'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:user-focus-bold', 'mdi:account-search-outline', 'ph:globe-bold', 'mdi:earth',
-    'ph:balance-bold', 'mdi:scale', 'ph:gavel-bold', 'mdi:gavel', 'ph:hammer-bold', 'mdi:hammer', 'ph:folder-bold', 'mdi:folder-outline', 'ph:folder-simple-lock-bold', 'mdi:folder-lock-outline',
-    'ph:folder-open-bold', 'mdi:folder-open-outline', 'ph:archive-bold', 'mdi:archive-outline', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:newspaper-bold', 'mdi:newspaper-variant-outline', 'ph:chat-centered-text-bold', 'mdi:chat-outline',
-    'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:clock-bold', 'mdi:clock-outline',
-    'ph:info-bold', 'mdi:information-outline', 'ph:question-bold', 'mdi:help-circle-outline', 'ph:check-circle-bold', 'mdi:check-circle-outline', 'ph:x-circle-bold', 'mdi:close-circle-outline', 'ph:warning-bold', 'mdi:alert-outline'
-],
-
-pet : [
-    'ph:dog-bold', 'lucide:paw-print', 'mdi:cat', 'tabler:bone', 'ph:bird-bold', 'mdi:fish', 'lucide:bug', 'carbon:pet-care', 'ph:paw-print-bold', 'mdi:paw',
-    'ph:horse-bold', 'mdi:horse', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:cow-bold', 'mdi:cow', 'ph:sheep-bold', 'mdi:sheep', 'ph:pig-bold', 'mdi:pig',
-    'ph:snake-bold', 'mdi:snake', 'ph:bug-bold', 'mdi:bug-outline', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:bee-bold', 'mdi:bee', 'ph:heart-bold', 'mdi:heart-outline',
-    'ph:house-bold', 'mdi:home-outline', 'ph:bone-bold', 'mdi:bone', 'ph:fish-bold', 'mdi:fish-bowl-outline', 'ph:bowl-food-bold', 'mdi:bowl-mix-outline', 'ph:first-aid-bold', 'mdi:medication-outline',
-    'ph:stethoscope-bold', 'mdi:stethoscope', 'ph:syringe-bold', 'mdi:needle', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:magnifying-glass-bold', 'mdi:magnify',
-    'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline',
-    'ph:tag-bold', 'mdi:tag-outline', 'ph:gift-bold', 'mdi:gift-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline',
-    'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth', 'ph:star-bold', 'mdi:star-outline',
-    'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:leaf-bold', 'mdi:leaf', 'ph:tree-bold', 'mdi:tree-outline',
-    'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:key-bold', 'mdi:key-outline'
-],
-
-music : [
-    'ph:music-notes-bold', 'lucide:mic-2', 'mdi:headphones', 'tabler:disc', 'ph:speaker-hifi-bold', 'lucide:guitar', 'mdi:piano', 'carbon:music', 'ph:microphone-bold', 'mdi:microphone-variant',
-    'ph:microphone-stage-bold', 'mdi:microphone-settings', 'ph:speaker-high-bold', 'mdi:speaker-multiple', 'ph:speaker-none-bold', 'mdi:speaker-off', 'ph:headphones-bold', 'mdi:headset', 'ph:earphones-bold', 'mdi:earbuds',
-    'ph:vinyl-record-bold', 'mdi:record-player', 'ph:disc-bold', 'mdi:disc-player', 'ph:cassette-tape-bold', 'mdi:cassette', 'ph:radio-bold', 'mdi:radio', 'ph:boom-box-bold', 'mdi:boombox',
-    'ph:piano-key-bold', 'mdi:keyboard-variant', 'ph:guitar-bold', 'mdi:guitar-electric', 'ph:trumpet-bold', 'mdi:trumpet', 'ph:metronome-bold', 'mdi:metronome', 'ph:playlist-bold', 'mdi:playlist-music',
-    'ph:equalizer-bold', 'mdi:equalizer', 'ph:waveform-bold', 'mdi:waveform', 'ph:sound-module-bold', 'mdi:tune-vertical', 'ph:broadcast-bold', 'mdi:broadcast', 'ph:antenna-bold', 'mdi:antenna',
-    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:sparkle-bold', 'mdi:shimmer',
-    'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:globe-bold', 'mdi:earth', 'ph:users-bold', 'mdi:account-group-outline',
-    'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:video-camera-bold', 'mdi:video-outline', 'ph:film-strip-bold', 'mdi:filmstrip',
-    'ph:briefcase-bold', 'mdi:briefcase-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline',
-    'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline'
-],
-
-nature : [
-    'ph:leaf-bold', 'lucide:sprout', 'mdi:tree-outline', 'tabler:plant', 'ph:cloud-sun-bold', 'lucide:wind', 'mdi:flower-outline', 'carbon:agriculture', 'ph:tree-bold', 'mdi:tree',
-    'ph:tree-evergreen-bold', 'mdi:pine-tree', 'ph:tree-palm-bold', 'mdi:palm-tree', 'ph:flower-bold', 'mdi:flower', 'ph:flower-tulip-bold', 'mdi:flower-tulip', 'ph:flower-lotus-bold', 'mdi:flower-poppy',
-    'ph:plant-bold', 'mdi:sprout-outline', 'ph:cactus-bold', 'mdi:cactus', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:sun-dim-bold', 'mdi:sun-angle', 'ph:moon-bold', 'mdi:moon-waning-crescent',
-    'ph:cloud-bold', 'mdi:cloud-outline', 'ph:cloud-rain-bold', 'mdi:cloud-rain', 'ph:cloud-snow-bold', 'mdi:cloud-snow', 'ph:cloud-lightning-bold', 'mdi:cloud-flash', 'ph:rainbow-bold', 'mdi:rainbow',
-    'ph:drop-bold', 'mdi:tint', 'ph:water-bold', 'mdi:water', 'ph:waves-bold', 'mdi:waves', 'ph:mountains-bold', 'mdi:mountain', 'ph:volcano-bold', 'mdi:volcano',
-    'ph:globe-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'ph:compass-bold', 'mdi:compass-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:binoculars-bold', 'mdi:binoculars',
-    'ph:bird-bold', 'mdi:bird', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:fish-bold', 'mdi:fish', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:bug-bold', 'mdi:bug',
-    'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:recycle-bold', 'mdi:recycle', 'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:thermometer-bold', 'mdi:thermometer',
-    'ph:wind-bold', 'mdi:wind-power-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:sparkle-bold', 'mdi:shimmer', 'ph:footprints-bold', 'mdi:shoe-print',
-    'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:clock-bold', 'mdi:clock-outline'
-]
+// Add these inside your const icons = { ... } object to complete it:
+    beauty: [
+        'ph:sparkle-bold', 'lucide:flower-2', 'mdi:face-woman-outline', 'tabler:pills', 'ph:moon-stars-bold', 'lucide:sun', 'mdi:shimmer', 'carbon:content-view', 'ph:butterfly-bold', 'mdi:butterfly-outline',
+        'ph:scissors-bold', 'tabler:scissors', 'lucide:scissors', 'mdi:content-cut', 'ph:lipstick-bold', 'mdi:lipstick', 'ph:eye-bold', 'mdi:eye-outline', 'ph:eyeliner-bold', 'mdi:eye-plus-outline',
+        'ph:hand-fist-bold', 'mdi:hand-back-right-outline', 'ph:nail-polish-bold', 'mdi:nail-polish', 'ph:hair-dryer-bold', 'mdi:hair-dryer', 'ph:mirror-bold', 'mdi:mirror-variant', 'ph:spray-bottle-bold', 'mdi:spray-bottle',
+        'ph:jar-bold', 'mdi:bottle-tonic-outline', 'ph:flower-lotus-bold', 'mdi:flower-tulip-outline', 'ph:leaf-bold', 'mdi:leaf-maple', 'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint',
+        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:diamond-bold', 'mdi:diamond-outline', 'ph:crown-bold', 'mdi:crown-outline', 'ph:magic-wand-bold', 'mdi:magic-staff',
+        'ph:rainbow-bold', 'mdi:rainbow', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-dim-bold', 'mdi:sun-angle-outline', 'ph:wind-bold', 'mdi:wind-power-outline', 'ph:bird-bold', 'mdi:bird',
+        'ph:feather-bold', 'mdi:feather', 'ph:mask-happy-bold', 'mdi:emoticon-happy-outline', 'ph:woman-bold', 'mdi:human-female', 'ph:user-bold', 'mdi:account-outline', 'ph:users-bold', 'mdi:account-group-outline',
+        'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:palette-bold', 'mdi:palette-outline', 'ph:paint-brush-bold', 'mdi:brush-outline', 'ph:gift-bold', 'mdi:gift-outline',
+        'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline',
+        'ph:bell-bold', 'mdi:bell-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth',
+        'tabler:skincare', 'mdi:face-mask-outline', 'ph:sparkles-bold', 'lucide:sparkles', 'tabler:bottle', 'ph:spray-bottle-bold', 'mdi:face-agent', 'ph:smiley-wink-bold', 'tabler:massage', 'mdi:spa-outline',
+        'ph:flower-bold', 'tabler:flower', 'lucide:lotus', 'mdi:clover', 'ph:crown-simple-bold', 'tabler:premium-rights', 'ph:sketch-logo-bold', 'tabler:brand-sketch', 'mdi:creation', 'ph:magic-wand-bold'
+    ],
+    legal: [
+        'ph:scales-bold', 'lucide:gavel', 'mdi:shield-account-outline', 'tabler:law', 'ph:briefcase-bold', 'lucide:fingerprint', 'mdi:balance-scale', 'carbon:security', 'ph:shield-bold', 'mdi:shield-outline',
+        'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:shield-star-bold', 'mdi:shield-star-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:lock-open-bold', 'mdi:lock-open-outline', 'ph:key-bold', 'mdi:key-outline',
+        'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:file-text-bold', 'mdi:file-document-outline', 'ph:file-check-bold', 'mdi:file-check-outline', 'ph:file-lock-bold', 'mdi:file-lock-outline',
+        'ph:notebook-bold', 'mdi:notebook-outline', 'ph:signature-bold', 'mdi:draw-pen', 'ph:stamp-bold', 'mdi:stamp', 'ph:books-bold', 'mdi:bookshelf', 'ph:bank-bold', 'mdi:bank-outline',
+        'ph:landmark-bold', 'mdi:office-building-outline', 'ph:courthouse-bold', 'mdi:town-hall', 'ph:police-car-bold', 'mdi:police-badge-outline', 'ph:handcuffs-bold', 'mdi:handcuffs', 'ph:eye-bold', 'mdi:eye-outline',
+        'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:user-focus-bold', 'mdi:account-search-outline', 'ph:globe-bold', 'mdi:earth',
+        'ph:balance-bold', 'mdi:scale', 'ph:gavel-bold', 'mdi:gavel', 'ph:hammer-bold', 'mdi:hammer', 'ph:folder-bold', 'mdi:folder-outline', 'ph:folder-simple-lock-bold', 'mdi:folder-lock-outline',
+        'ph:folder-open-bold', 'mdi:folder-open-outline', 'ph:archive-bold', 'mdi:archive-outline', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:newspaper-bold', 'mdi:newspaper-variant-outline', 'ph:chat-centered-text-bold', 'mdi:chat-outline',
+        'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:clock-bold', 'mdi:clock-outline',
+        'ph:info-bold', 'mdi:information-outline', 'ph:question-bold', 'mdi:help-circle-outline', 'ph:check-circle-bold', 'mdi:check-circle-outline', 'ph:x-circle-bold', 'mdi:close-circle-outline', 'ph:warning-bold', 'mdi:alert-outline',
+        'tabler:gavel', 'lucide:scale', 'ph:read-cv-logo-bold', 'mdi:script-text-outline', 'tabler:file-certificate', 'ph:certificate-bold', 'mdi:medal-outline', 'ph:shield-slash-bold', 'tabler:shield-off', 'mdi:eye-off-outline'
+    ],
+    pet: [
+        'ph:dog-bold', 'lucide:paw-print', 'mdi:cat', 'tabler:bone', 'ph:bird-bold', 'mdi:fish', 'lucide:bug', 'carbon:pet-care', 'ph:paw-print-bold', 'mdi:paw',
+        'ph:horse-bold', 'mdi:horse', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:cow-bold', 'mdi:cow', 'ph:sheep-bold', 'mdi:sheep', 'ph:pig-bold', 'mdi:pig',
+        'ph:snake-bold', 'mdi:snake', 'ph:bug-bold', 'mdi:bug-outline', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:bee-bold', 'mdi:bee', 'ph:heart-bold', 'mdi:heart-outline',
+        'ph:house-bold', 'mdi:home-outline', 'ph:bone-bold', 'mdi:bone', 'ph:fish-bold', 'mdi:fish-bowl-outline', 'ph:bowl-food-bold', 'mdi:bowl-mix-outline', 'ph:first-aid-bold', 'mdi:medication-outline',
+        'ph:stethoscope-bold', 'mdi:stethoscope', 'ph:syringe-bold', 'mdi:needle', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:magnifying-glass-bold', 'mdi:magnify',
+        'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline',
+        'ph:tag-bold', 'mdi:tag-outline', 'ph:gift-bold', 'mdi:gift-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline',
+        'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth', 'ph:star-bold', 'mdi:star-outline',
+        'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:leaf-bold', 'mdi:leaf', 'ph:tree-bold', 'mdi:tree-outline',
+        'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:key-bold', 'mdi:key-outline',
+        'tabler:dog', 'lucide:dog', 'ph:cat-bold', 'tabler:cat', 'mdi:cat', 'tabler:fish-hook', 'ph:fish-simple-bold', 'mdi:fish-off', 'tabler:paws', 'lucide:bone'
+    ],
+    music: [
+        'ph:music-notes-bold', 'lucide:mic-2', 'mdi:headphones', 'tabler:disc', 'ph:speaker-hifi-bold', 'lucide:guitar', 'mdi:piano', 'carbon:music', 'ph:microphone-bold', 'mdi:microphone-variant',
+        'ph:microphone-stage-bold', 'mdi:microphone-settings', 'ph:speaker-high-bold', 'mdi:speaker-multiple', 'ph:speaker-none-bold', 'mdi:speaker-off', 'ph:headphones-bold', 'mdi:headset', 'ph:earphones-bold', 'mdi:earbuds',
+        'ph:vinyl-record-bold', 'mdi:record-player', 'ph:disc-bold', 'mdi:disc-player', 'ph:cassette-tape-bold', 'mdi:cassette', 'ph:radio-bold', 'mdi:radio', 'ph:boom-box-bold', 'mdi:boombox',
+        'ph:piano-key-bold', 'mdi:keyboard-variant', 'ph:guitar-bold', 'mdi:guitar-electric', 'ph:trumpet-bold', 'mdi:trumpet', 'ph:metronome-bold', 'mdi:metronome', 'ph:playlist-bold', 'mdi:playlist-music',
+        'ph:equalizer-bold', 'mdi:equalizer', 'ph:waveform-bold', 'mdi:waveform', 'ph:sound-module-bold', 'mdi:tune-vertical', 'ph:broadcast-bold', 'mdi:broadcast', 'ph:antenna-bold', 'mdi:antenna',
+        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:sparkle-bold', 'mdi:shimmer',
+        'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:globe-bold', 'mdi:earth', 'ph:users-bold', 'mdi:account-group-outline',
+        'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:video-camera-bold', 'mdi:video-outline', 'ph:film-strip-bold', 'mdi:filmstrip',
+        'ph:briefcase-bold', 'mdi:briefcase-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline',
+        'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline',
+        'tabler:music', 'lucide:music', 'ph:music-note-simple-bold', 'tabler:brand-soundcloud', 'mdi:soundcloud', 'ph:spotify-logo-bold', 'tabler:brand-spotify', 'mdi:spotify', 'ph:apple-logo-bold', 'tabler:brand-apple'
+    ],
+    nature: [
+        'ph:leaf-bold', 'lucide:sprout', 'mdi:tree-outline', 'tabler:plant', 'ph:cloud-sun-bold', 'lucide:wind', 'mdi:flower-outline', 'carbon:agriculture', 'ph:tree-bold', 'mdi:tree',
+        'ph:tree-evergreen-bold', 'mdi:pine-tree', 'ph:tree-palm-bold', 'mdi:palm-tree', 'ph:flower-bold', 'mdi:flower', 'ph:flower-tulip-bold', 'mdi:flower-tulip', 'ph:flower-lotus-bold', 'mdi:flower-poppy',
+        'ph:plant-bold', 'mdi:sprout-outline', 'ph:cactus-bold', 'mdi:cactus', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:sun-dim-bold', 'mdi:sun-angle', 'ph:moon-bold', 'mdi:moon-waning-crescent',
+        'ph:cloud-bold', 'mdi:cloud-outline', 'ph:cloud-rain-bold', 'mdi:cloud-rain', 'ph:cloud-snow-bold', 'mdi:cloud-snow', 'ph:cloud-lightning-bold', 'mdi:cloud-flash', 'ph:rainbow-bold', 'mdi:rainbow',
+        'ph:drop-bold', 'mdi:tint', 'ph:water-bold', 'mdi:water', 'ph:waves-bold', 'mdi:waves', 'ph:mountains-bold', 'mdi:mountain', 'ph:volcano-bold', 'mdi:volcano',
+        'ph:globe-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'ph:compass-bold', 'mdi:compass-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:binoculars-bold', 'mdi:binoculars',
+        'ph:bird-bold', 'mdi:bird', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:fish-bold', 'mdi:fish', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:bug-bold', 'mdi:bug',
+        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:recycle-bold', 'mdi:recycle', 'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:thermometer-bold', 'mdi:thermometer',
+        'ph:wind-bold', 'mdi:wind-power-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:sparkle-bold', 'mdi:shimmer', 'ph:footprints-bold', 'mdi:shoe-print',
+        'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:clock-bold', 'mdi:clock-outline',
+        'tabler:leaf', 'lucide:leaf', 'ph:leaf-simple-bold', 'tabler:sprout', 'mdi:leaf-off', 'ph:paw-print-bold', 'tabler:paw', 'lucide:paw-print', 'mdi:seed-outline', 'ph:seedling-bold'
+    ]
 };
 
 
-    let lastLayout = -1;
+
+const industryRules = {
+    tech: { hues: [190, 250], fonts: ['Orbitron', 'Space Grotesk', 'Unbounded', 'JetBrains Mono'] },
+    realestate: { hues: [200, 230], fonts: ['Cinzel', 'Libre Baskerville', 'Lora', 'Prata'] },
+    food: { hues: [0, 45], fonts: ['Bangers', 'Fredoka One', 'Pacifico', 'Satisfy'] },
+    fashion: { hues: [300, 350], fonts: ['Playfair Display', 'Alice', 'Fraunces', 'Prata'] },
+    health: { hues: [160, 190], fonts: ['Outfit', 'Quicksand', 'Comfortaa', 'Manrope'] },
+    finance: { hues: [210, 240], fonts: ['Cinzel', 'Libre Baskerville', 'EB Garamond', 'Domine'] },
+    edu: { hues: [200, 220], fonts: ['Merriweather', 'Lora', 'Cardo', 'Crimson Text'] },
+    travel: { hues: [180, 210], fonts: ['Exo 2', 'Jost', 'Raleway'] },
+    sport: { hues: [0, 20], fonts: ['Anton', 'Archivo Black', 'Russo One', 'Bebas Neue'] },
+    art: { hues: [260, 300], fonts: ['Syne', 'Unbounded', 'Righteous', 'Shrikhand'] },
+    beauty: { hues: [320, 350], fonts: ['Allura', 'Dancing Script', 'Great Vibes'] },
+    legal: { hues: [210, 230], fonts: ['Bodoni Moda', 'EB Garamond', 'Forum'] },
+    pet: { hues: [20, 50], fonts: ['Fredoka One', 'Comfortaa', 'Indie Flower'] },
+    music: { hues: [270, 320], fonts: ['Monoton', 'Syncopate', 'Press Start 2P'] },
+    nature: { hues: [100, 140], fonts: ['Alice', 'Lora', 'Work Sans', 'Quicksand'] }
+};
+
+
+
+const designConsistencyEngine = {
+    tech: { iconScale: 0.9, textSpacing: '0.1em', shadow: '0 10px 30px rgba(99,102,241,0.2)' },
+    realestate: { iconScale: 0.8, textSpacing: '0.2em', shadow: '0 15px 35px rgba(0,0,0,0.05)' },
+    food: { iconScale: 1.1, textSpacing: '0.01em', shadow: '0 12px 25px rgba(244,63,94,0.15)' },
+    fashion: { iconScale: 0.85, textSpacing: '0.4em', shadow: '0 20px 40px rgba(0,0,0,0.1)' },
+    health: { iconScale: 0.9, textSpacing: '0.15em', shadow: '0 8px 20px rgba(16,185,129,0.1)' },
+    finance: { iconScale: 0.8, textSpacing: '0.1em', shadow: '0 10px 30px rgba(30,58,138,0.1)' },
+    edu: { iconScale: 0.9, textSpacing: '0.05em', shadow: '0 5px 15px rgba(0,0,0,0.05)' },
+    travel: { iconScale: 1.0, textSpacing: '0.2em', shadow: '0 10px 25px rgba(14,165,233,0.15)' },
+    sport: { iconScale: 1.2, textSpacing: '-0.02em', shadow: '0 15px 30px rgba(239,68,68,0.2)' },
+    art: { iconScale: 1.0, textSpacing: '0.1em', shadow: '0 20px 50px rgba(139,92,246,0.2)' },
+    beauty: { iconScale: 0.9, textSpacing: '0.3em', shadow: '0 10px 40px rgba(236,72,153,0.1)' },
+    legal: { iconScale: 0.8, textSpacing: '0.2em', shadow: '0 10px 20px rgba(0,0,0,0.1)' },
+    pet: { iconScale: 1.1, textSpacing: '0.05em', shadow: '0 12px 24px rgba(245,158,11,0.15)' },
+    music: { iconScale: 1.3, textSpacing: '0.1em', shadow: '0 15px 45px rgba(168,85,247,0.3)' },
+    nature: { iconScale: 1.0, textSpacing: '0.2em', shadow: '0 10px 30px rgba(34,197,94,0.1)' }
+};
+
+
+const personalityRules = {
+    modern: { weight: '800', spacing: '0.1em', transform: 'uppercase', iconStyle: 'bold' },
+    classic: { weight: '400', spacing: '0.05em', transform: 'none', iconStyle: 'outline' },
+    luxury: { weight: '300', spacing: '0.4em', transform: 'uppercase', iconStyle: 'thin' },
+    playful: { weight: '600', spacing: '0em', transform: 'none', iconStyle: 'bold' },
+    minimal: { weight: '400', spacing: '0.2em', transform: 'lowercase', iconStyle: 'outline' },
+    bold: { weight: '900', spacing: '-0.02em', transform: 'uppercase', iconStyle: 'bold' }
+};
+
+
     let lastColor = -1;
 
-    function generateLogos() {
-        if(!document.getElementById('bizName').value) return alert("Enter Business Name");
-        document.getElementById('welcomeScreen').style.display = 'none';
-        document.getElementById('loadMore').classList.remove('hidden');
-        document.getElementById('logoGrid').innerHTML = '';
-        renderBatch();
+function generateLogos() {
+    if(!document.getElementById('bizName').value) return alert("Enter Business Name");
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('paginationWrapper').classList.remove('hidden');
+    
+    pageCache = {}; // Clear previous session
+    renderPage(1);
+}
+
+
+function renderPage(page) {
+    // 1. Update the Global Current Page
+    currentPage = page;
+    
+    const grid = document.getElementById('logoGrid');
+    grid.innerHTML = '';
+    
+    // 2. Check Cache or Generate New Batch
+    if (!pageCache[currentPage]) {
+        pageCache[currentPage] = generateLogoDataBatch();
     }
 
-    function renderBatch() {
-        const name = document.getElementById('bizName').value.toUpperCase();
-        const tag = document.getElementById('tagline').value.toUpperCase();
-        const industry = document.getElementById('industry').value;
-        const grid = document.getElementById('logoGrid');
+    // 3. Render the batch
+    pageCache[currentPage].forEach(item => {
+        grid.appendChild(createLogoCard(item.name, item.tag, item.config));
+    });
 
-        for (let i = 0; i < 24; i++) {
-            let colorIdx, layoutIdx;
-            do { colorIdx = Math.floor(Math.random() * colors.length); } while (colorIdx === lastColor);
-            do { layoutIdx = Math.floor(Math.random() * 26); } while (layoutIdx === lastLayout);
-            
-            lastColor = colorIdx;
-            lastLayout = layoutIdx;
+    // 4. Refresh UI and Scroll
+    updatePaginationUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-            const config = {
-                color: colors[colorIdx],
-                font: fonts[Math.floor(Math.random() * fonts.length)],
-                icon: icons[industry][Math.floor(Math.random() * icons[industry].length)],
-                layout: layoutIdx
-            };
+// THE ENGINE: Creates 24 unique combinations from the 1.87 Billion possibilities
+function generateLogoDataBatch() {
+    const name = document.getElementById('bizName').value.toUpperCase();
+    const tag = document.getElementById('tagline').value.toUpperCase();
+    const industryKey = document.getElementById('industry').value;
+    const industryRule = industryRules[industryKey];
+    const designStyle = designConsistencyEngine[industryKey] || designConsistencyEngine.tech;
+    
+    let batch = [];
+    for (let i = 0; i < logosPerPage; i++) {
+        const isIconDominant = Math.random() > 0.5;
+        const iconSize = isIconDominant ? (90 * designStyle.iconScale) : (50 * designStyle.iconScale);
+        const titleSize = isIconDominant ? '1.5rem' : '2.5rem';
+        const hue = industryRule.hues[0] + (Math.random() * (industryRule.hues[1] - industryRule.hues[0]));
+        
+        batch.push({
+            name: name,
+            tag: tag,
+            config: {
+                color: { 
+                    main: `hsl(${hue}, 70%, 45%)`, 
+                    secondary: `hsl(${hue}, 80%, 15%)`, 
+                    bg: Math.random() > 0.8 ? '#111827' : '#ffffff', // 20% Dark variants
+                    grad: `linear-gradient(135deg, hsl(${hue}, 70%, 45%) 0%, hsl(${(hue+30)%360}, 70%, 60%) 100%)`
+                },
+                font: { 
+                    name: industryRule.fonts[Math.floor(Math.random() * industryRule.fonts.length)],
+                    tagFont: 'Inter',
+                    weight: '800',
+                    spacing: designStyle.textSpacing
+                },
+                icon: icons[industryKey][Math.floor(Math.random() * icons[industryKey].length)],
+                layout: Math.floor(Math.random() * 26),
+                hierarchy: { icon: `${iconSize}px`, title: titleSize, shadow: designStyle.shadow }
+            }
+        });
+    }
+    return batch;
+}
 
-            grid.appendChild(createLogoCard(name, tag, config));
-        }
+
+
+
+
+function updatePaginationUI() {
+    const wrapper = document.getElementById('paginationButtons');
+    if (!wrapper) return;
+    wrapper.innerHTML = '';
+
+    // Calculate a visible range of 5 pages around the current page
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(maxPages, startPage + 4);
+    
+    // Adjust start if we are near the end
+    if (endPage === maxPages) {
+        startPage = Math.max(1, endPage - 4);
     }
 
-    function createLogoCard(name, tag, config) {
-        const div = document.createElement('div');
-        div.className = "logo-card relative bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center transition-all hover:shadow-2xl overflow-hidden";
-        div.style.backgroundColor = config.color.bg;
-        div.style.minHeight = "360px";
-
-        let layoutHTML = '';
-        // BIG LOGO size: w-20 h-20 (80px)
-        const bigIcon = `<div class="w-20 h-20 flex items-center justify-center mb-6"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 80px;"></iconify-icon></div>`;
-        const whiteIcon = `<div class="w-16 h-16 flex items-center justify-center"><iconify-icon icon="${config.icon}" style="color: #ffffff; font-size: 60px;"></iconify-icon></div>`;
-
-        switch(config.layout) {
-            case 0: // Classic Centered
-                layoutHTML = `
-                    <div class="flex flex-col items-center w-full">
-                        ${bigIcon}
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black text-center leading-tight mb-2">${name}</h2>
-                        <p class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-40 text-center">${tag}</p>
-                    </div>`;
-                break;
-            case 1: // Professional Side-by-Side
-                layoutHTML = `
-                    <div class="flex items-center justify-center gap-8 w-full px-4">
-                        <div class="w-20 h-20 flex-shrink-0"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 80px;"></iconify-icon></div>
-                        <div class="text-left border-l-4 pl-8 border-gray-100" style="border-color: ${config.color.main}">
-                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black leading-none mb-2">${name}</h2>
-                            <p class="text-[11px] font-medium opacity-60 italic tracking-widest">${tag}</p>
-                        </div>
-                    </div>`;
-                break;
-            case 2: // Luxury Gold/Badge Style
-                layoutHTML = `
-                    <div class="flex flex-col items-center w-full">
-                        <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl" style="background: ${config.color.grad}">${whiteIcon}</div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-light tracking-[0.2em] mb-2 uppercase">${name}</h2>
-                        <div class="h-0.5 w-16 mb-2" style="background: ${config.color.main}"></div>
-                        <p class="text-[8px] font-black uppercase tracking-[0.5em]" style="color: ${config.color.main}">${tag}</p>
-                    </div>`;
-                break;
-            case 3: // Modern Underline
-                layoutHTML = `
-                    <div class="flex flex-col items-center w-full">
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black italic tracking-tighter mb-4">${name}</h2>
-                        <div class="w-full max-w-[200px] h-1.5 rounded-full mb-6" style="background: ${config.color.grad}"></div>
-                        <div class="flex items-center gap-4">
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
-                            <p class="text-xs font-bold text-gray-400 tracking-widest">${tag}</p>
-                        </div>
-                    </div>`;
-                break;
-            case 4: // Vertical Pill
-                layoutHTML = `
-                    <div class="flex flex-col items-center w-full">
-                        <div class="mb-6"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 90px;"></iconify-icon></div>
-                        <div class="bg-gray-900 text-white px-6 py-2 rounded-lg mb-2">
-                             <h2 style="font-family: ${config.font.name}" class="text-xl font-bold">${name}</h2>
-                        </div>
-                        <p class="text-[9px] font-bold tracking-[0.3em] uppercase text-gray-400">${tag}</p>
-                    </div>`;
-                break;
-
-
-
-
-case 5: // The "Bordered Capsule"
-                layoutHTML = `
-                    <div class="flex flex-col items-center border-2 p-8 rounded-[4rem] w-full max-w-[280px]" style="border-color: ${config.color.main}">
-                        <div class="mb-4"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 60px;"></iconify-icon></div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black uppercase tracking-widest">${name}</h2>
-                        <p class="text-[9px] font-bold opacity-40 mt-1">${tag}</p>
-                    </div>`;
-                break;
-            case 6: // The "Luxury Diamond"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="w-20 h-20 rotate-45 border-4 flex items-center justify-center mb-10" style="border-color: ${config.color.main}">
-                            <div class="-rotate-45"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 45px;"></iconify-icon></div>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold tracking-tighter">${name}</h2>
-                        <p class="text-[10px] tracking-[0.6em] uppercase opacity-50 mt-2">${tag}</p>
-                    </div>`;
-                break;
-            case 7: // The "Modern Sidebar"
-                layoutHTML = `
-                    <div class="flex items-start gap-6 text-left w-full px-6">
-                        <div class="w-2 h-24 rounded-full" style="background: ${config.color.grad}"></div>
-                        <div>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
-                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black leading-none mt-2">${name}</h2>
-                            <p class="text-sm font-medium opacity-40 mt-2 lowercase">${tag}</p>
-                        </div>
-                    </div>`;
-                break;
-            case 8: // The "Dotted Orbit"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="p-6 rounded-full border-4 border-dotted mb-6 animate-[spin_20s_linear_infinite]" style="border-color: ${config.color.main}">
-                            <div class="animate-[spin_20s_linear_infinite_reverse]"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 50px;"></iconify-icon></div>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest">${name}</h2>
-                        <div class="h-1 w-12 rounded-full my-2" style="background: ${config.color.main}"></div>
-                        <p class="text-[9px] font-bold opacity-60 uppercase">${tag}</p>
-                    </div>`;
-                break;
-            case 9: // The "Dual-Tone Block"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="flex items-center bg-gray-900 rounded-xl overflow-hidden mb-4 shadow-xl">
-                            <div class="p-4 bg-white"><iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon></div>
-                            <div class="px-6 py-2">
-                                <h2 style="font-family: ${config.font.name}" class="text-white text-xl font-bold">${name}</h2>
-                            </div>
-                        </div>
-                        <p class="text-xs font-light tracking-[0.3em] uppercase" style="color: ${config.color.main}">${tag}</p>
-                    </div>`;
-                break;
-            case 10: // The "Minimalist Square"
-                layoutHTML = `
-                    <div class="border-l-8 border-b-8 p-10 flex flex-col items-start" style="border-color: ${config.color.main}">
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;"></iconify-icon>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black mt-4">${name}</h2>
-                        <p class="text-sm font-bold opacity-30 tracking-widest">${tag}</p>
-                    </div>`;
-                break;
-            case 11: // The "Geometric Split"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-0.5" style="background: ${config.color.main}"></div>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
-                            <div class="w-12 h-0.5" style="background: ${config.color.main}"></div>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-5xl font-black tracking-tighter">${name}</h2>
-                        <p class="text-[10px] font-bold mt-2 bg-gray-100 px-4 py-1 rounded-full uppercase">${tag}</p>
-                    </div>`;
-                break;
-            case 12: // The "Badge & Banner"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 70px;" class="mb-4"></iconify-icon>
-                        <div class="relative">
-                            <div class="absolute inset-0 skew-x-[-15deg] transform" style="background: ${config.color.grad}"></div>
-                            <h2 style="font-family: ${config.font.name}" class="relative px-8 py-2 text-white text-2xl font-bold">${name}</h2>
-                        </div>
-                        <p class="mt-4 text-[9px] font-black uppercase tracking-[0.4em] opacity-40">${tag}</p>
-                    </div>`;
-                break;
-            case 13: // The "Floating Monogram"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="relative mb-6">
-                            <div class="text-[120px] font-black leading-none opacity-10" style="color: ${config.color.main}">${name[0]}</div>
-                            <div class="absolute inset-0 flex items-center justify-center pt-8">
-                                <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;"></iconify-icon>
-                            </div>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold uppercase tracking-tight">${name}</h2>
-                        <p class="text-xs font-medium opacity-50 italic">${tag}</p>
-                    </div>`;
-                break;
-            case 14: // The "High Fashion Vertical"
-                layoutHTML = `
-                    <div class="flex flex-col items-center py-10 border-x-2 px-12" style="border-color: ${config.color.main}">
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-light tracking-[0.5em] uppercase border-b-2 pb-4 mb-4 border-gray-100">${name}</h2>
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 40px;"></iconify-icon>
-                        <p class="text-[8px] font-black tracking-[0.8em] mt-6 opacity-30">${tag}</p>
-                    </div>`;
-                break;
-            case 15: // The "Techno Shield"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="w-20 h-20 bg-gray-900 rounded-tr-[30px] rounded-bl-[30px] flex items-center justify-center mb-6 shadow-2xl shadow-indigo-200">
-                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 40px;"></iconify-icon>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest">${name}</h2>
-                        <div class="flex gap-1 mt-2">
-                             <div class="w-2 h-2 rounded-full" style="background: ${config.color.main}"></div>
-                             <div class="w-8 h-2 rounded-full" style="background: ${config.color.main}"></div>
-                             <div class="w-2 h-2 rounded-full" style="background: ${config.color.main}"></div>
-                        </div>
-                        <p class="text-[10px] mt-2 font-bold opacity-40 uppercase">${tag}</p>
-                    </div>`;
-                break;
-            case 16: // The "Circular Frame"
-                layoutHTML = `
-                    <div class="flex flex-col items-center p-12 border-[12px] rounded-full border-double" style="border-color: ${config.color.main}">
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;" class="mb-2"></iconify-icon>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-tighter text-center">${name}</h2>
-                        <p class="text-[9px] font-bold text-center opacity-40">${tag}</p>
-                    </div>`;
-                break;
-            case 17: // The "Bracket Focus"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="flex items-center gap-2">
-                            <span class="text-6xl font-thin opacity-20" style="color: ${config.color.main}">[</span>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 60px;"></iconify-icon>
-                            <span class="text-6xl font-thin opacity-20" style="color: ${config.color.main}">]</span>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-bold mt-4 uppercase">${name}</h2>
-                        <p class="text-xs italic opacity-40 tracking-[0.2em]">${tag}</p>
-                    </div>`;
-                break;
-            case 18: // The "Gradient Underlay"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="w-24 h-4 rounded-full mb-2 opacity-30" style="background: ${config.color.grad}"></div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-5xl font-black relative z-10 leading-none">${name}</h2>
-                        <div class="flex items-center gap-4 mt-4">
-                            <div class="h-px w-10 bg-gray-200"></div>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 35px;"></iconify-icon>
-                            <div class="h-px w-10 bg-gray-200"></div>
-                        </div>
-                        <p class="text-[10px] font-bold uppercase mt-2 text-gray-400">${tag}</p>
-                    </div>`;
-                break;
-            case 19: // The "Architecture Split"
-                layoutHTML = `
-                    <div class="flex flex-col w-full px-10">
-                        <div class="flex items-end justify-between border-b-4 pb-4" style="border-color: ${config.color.secondary}">
-                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-4xl font-black tracking-tighter">${name}</h2>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 50px;"></iconify-icon>
-                        </div>
-                        <p class="text-right text-sm font-bold tracking-[0.4em] mt-2 uppercase opacity-40">${tag}</p>
-                    </div>`;
-                break;
-            case 20: // The "Slanted Slice"
-                layoutHTML = `
-                    <div class="flex flex-col items-center -skew-x-12">
-                        <div class="p-6 bg-gray-900 rounded-lg mb-4 shadow-2xl">
-                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;" class="skew-x-12"></iconify-icon>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black uppercase italic tracking-widest skew-x-12">${name}</h2>
-                        <div class="bg-indigo-500 text-white px-4 py-1 mt-2 font-bold text-[10px] skew-x-12">${tag}</div>
-                    </div>`;
-                break;
-            case 21: // The "Retro Seal"
-                layoutHTML = `
-                    <div class="flex flex-col items-center border-[6px] border-double p-8 rounded-2xl" style="border-color: ${config.color.main}">
-                        <div class="flex items-center gap-3 mb-4">
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
-                            <div class="h-8 w-px bg-gray-200"></div>
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;" class="opacity-30"></iconify-icon>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black tracking-widest text-center">${name}</h2>
-                        <p class="text-xs font-bold mt-2 opacity-50 uppercase">${tag}</p>
-                    </div>`;
-                break;
-            case 22: // The "Curved Tech"
-                layoutHTML = `
-                    <div class="flex flex-col items-center">
-                        <div class="w-20 h-20 rounded-tr-[40px] rounded-bl-[40px] flex items-center justify-center mb-6 shadow-xl" style="background: ${config.color.grad}">
-                            <iconify-icon icon="${config.icon}" style="color: white; font-size: 40px;"></iconify-icon>
-                        </div>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-bold uppercase tracking-tighter">${name}</h2>
-                        <p class="text-[11px] font-medium tracking-[0.2em] text-indigo-500 mt-1">${tag}</p>
-                    </div>`;
-                break;
-            case 23: // The "Hollow Frame"
-                layoutHTML = `
-                    <div class="relative p-12">
-                        <div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4" style="border-color: ${config.color.main}"></div>
-                        <div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4" style="border-color: ${config.color.main}"></div>
-                        <div class="flex flex-col items-center relative z-10">
-                            <iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 50px;" class="mb-4"></iconify-icon>
-                            <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-3xl font-black">${name}</h2>
-                            <p class="text-[9px] font-bold tracking-widest mt-2 opacity-40 uppercase">${tag}</p>
-                        </div>
-                    </div>`;
-                break;
-            case 24: // The "Soft & Modern"
-                layoutHTML = `
-                    <div class="flex items-center flex-col bg-gray-50 rounded-[3rem] p-12 w-full max-w-[300px] border border-white shadow-inner">
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 70px;" class="mb-6 drop-shadow-lg"></iconify-icon>
-                        <h2 style="font-family: ${config.font.name}; color: ${config.color.secondary}" class="text-2xl font-black text-center">${name}</h2>
-                        <p class="text-xs font-bold opacity-30 mt-2">${tag}</p>
-                    </div>`;
-                break;
-            default: // Minimalist Monogram
-                layoutHTML = `
-                    <div class="flex flex-col items-center w-full relative">
-                        <span class="absolute inset-0 flex items-center justify-center text-[140px] font-black opacity-[0.03]" style="color: ${config.color.main}">${name[0]}</span>
-                        <div class="relative z-10 flex flex-col items-center">
-                            <div class="mb-4"><iconify-icon icon="${config.icon}" style="color: ${config.color.secondary}; font-size: 70px;"></iconify-icon></div>
-                            <h2 style="font-family: ${config.font.name}; color: ${config.color.main}" class="text-3xl font-black">${name}</h2>
-                            <p class="text-xs font-medium tracking-widest mt-1 opacity-60">${tag}</p>
-                        </div>
-                    </div>`;
-        }
-
-        div.innerHTML = `
-            ${layoutHTML}
-            <div class="download-overlay opacity-0 absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-4 transition-all duration-300 p-10">
-                <button onclick="downloadLogo(event, 'jpg')" class="w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-xs transition-all">JPG</button>
-                <button onclick="downloadLogo(event, 'png')" class="w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-xs transition-all">PNG</button>
-                <button onclick="downloadLogo(event, 'pdf')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-xs shadow-xl">PDF DOCUMENT</button>
-            </div>
-        `;
-        return div;
+    // 1. Previous Button
+    if (currentPage > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.innerText = 'Prev';
+        prevBtn.className = "px-4 py-2 rounded-xl font-bold bg-white text-gray-600 border hover:bg-gray-50 transition-all cursor-pointer";
+        prevBtn.onclick = () => renderPage(currentPage - 1);
+        wrapper.appendChild(prevBtn);
     }
 
+    // 2. Numbered Buttons
+    for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = i;
+        btn.className = `w-12 h-12 rounded-xl font-bold transition-all border cursor-pointer ${i === currentPage ? 'bg-indigo-600 text-white shadow-xl border-indigo-600' : 'bg-white text-gray-400 hover:border-indigo-500'}`;
+        
+        // This closure ensures 'i' is captured correctly for every button
+        const pageTarget = i;
+        btn.onclick = () => renderPage(pageTarget);
+        
+        wrapper.appendChild(btn);
+    }
+
+    // 3. Next Button
+    if (currentPage < maxPages) {
+        const nextBtn = document.createElement('button');
+        nextBtn.innerText = 'Next';
+        nextBtn.className = "px-4 py-2 rounded-xl font-bold bg-white text-gray-600 border hover:bg-gray-50 transition-all cursor-pointer";
+        nextBtn.onclick = () => renderPage(currentPage + 1);
+        wrapper.appendChild(nextBtn);
+    }
+    
+    document.getElementById('pageInfo').innerText = `Infinite Discovery: Showing Page ${currentPage} of ${maxPages}`;
+}
+
+
+function createLogoCard(name, tag, config) {
+const emotionalShadow = config.hierarchy.shadow;
+const glassClass = config.color.bg === '#ffffff' ? 'bg-white shadow-xl' : 'glass-effect shadow-2xl';
+    const div = document.createElement('div');
+    // Root container forces everything to absolute center
+    div.className = "logo-card relative p-8 rounded-[2.5rem] border transition-all hover:shadow-2xl overflow-hidden flex flex-col items-center justify-center text-center cursor-pointer";
+    
+    div.style.backgroundColor = config.color.bg;
+    div.style.borderColor = config.isDark ? '#374151' : '#f3f4f6';
+    div.style.minHeight = "420px"; 
+    div.style.width = "100%";
+
+    // Factor 2: Typography Control Engine
+    const titleStyle = `
+        font-family: '${config.font.name}'; 
+        color: ${config.color.secondary}; 
+        font-weight: ${config.font.weight}; 
+        letter-spacing: ${config.font.spacing}; 
+        text-transform: ${config.font.transform};
+        line-height: 1.1;
+        display: block;
+        width: 100%;
+        word-wrap: break-word;
+    `;
+    
+    const tagStyle = `
+        font-family: '${config.font.tagFont}'; 
+        color: ${config.isDark ? '#9ca3af' : config.color.main}; 
+        font-weight: 700; 
+        letter-spacing: 0.4em; 
+        text-transform: uppercase; 
+        font-size: 10px;
+        opacity: 0.8;
+        margin-top: 10px;
+        display: block;
+        width: 100%;
+    `;
+
+    const iconColor = config.isDark ? '#ffffff' : config.color.main;
+    
+    // Standardized Icon Component (Factor 5)
+    const getIcon = (size, mb = "20px") => `
+        <div class="flex items-center justify-center w-full" style="margin-bottom: ${mb}">
+            <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: ${size};"></iconify-icon>
+        </div>
+    `;
+
+    let layoutHTML = '';
+
+    switch(config.layout) {
+        case 0: // Classic Centered
+            layoutHTML = `${getIcon('90px')} <h2 style="${titleStyle}" class="text-3xl">${name}</h2> <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 1: // Side-by-Side (Factor 3: Spacing)
+            layoutHTML = `
+                <div class="flex items-center justify-center gap-6 w-full max-w-sm mx-auto">
+                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 70px;"></iconify-icon>
+                    <div class="text-left border-l-2 pl-6" style="border-color: ${config.color.main}44">
+                        <h2 style="${titleStyle}" class="text-2xl text-left">${name}</h2>
+                        <p style="${tagStyle}" class="text-left mt-1">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+
+        case 2: // Luxury Gold/Badge
+            layoutHTML = `
+                <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl" style="background: ${config.color.grad}">
+                    <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;"></iconify-icon>
+                </div>
+                <h2 style="${titleStyle}" class="text-2xl mb-2">${name}</h2>
+                <div class="h-0.5 w-16 mx-auto" style="background: ${config.color.main}"></div>
+                <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 3: // Modern Underline
+            layoutHTML = `
+                <h2 style="${titleStyle}" class="text-4xl mb-4">${name}</h2>
+                <div class="w-28 h-1.5 rounded-full mb-6 mx-auto" style="background: ${config.color.grad}"></div>
+                <div class="flex items-center justify-center gap-3">
+                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 30px;"></iconify-icon>
+                    <p style="${tagStyle}" class="mt-0 w-auto">${tag}</p>
+                </div>`;
+            break;
+
+        case 4: // Vertical Pill
+            layoutHTML = `
+                <div class="mb-6">${getIcon('80px', '0')}</div>
+                <div class="bg-gray-900 text-white px-8 py-3 rounded-2xl mb-3">
+                    <h2 style="${titleStyle} color:white;" class="text-xl">${name}</h2>
+                </div>
+                <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 5: // Bordered Capsule
+            layoutHTML = `
+                <div class="border-2 p-10 rounded-[4rem] flex flex-col items-center w-full max-w-[300px] mx-auto" style="border-color: ${config.color.main}66">
+                    ${getIcon('65px')}
+                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
+                    <p style="${tagStyle}">${tag}</p>
+                </div>`;
+            break;
+
+        case 6: // Luxury Diamond
+            layoutHTML = `
+                <div class="w-20 h-20 rotate-45 border-4 flex items-center justify-center mb-12 mx-auto" style="border-color: ${config.color.main}">
+                    <div class="-rotate-45"><iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 40px;"></iconify-icon></div>
+                </div>
+                <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
+                <p style="${tagStyle}" class="mt-2">${tag}</p>`;
+            break;
+
+        case 7: // Modern Sidebar
+            layoutHTML = `
+                <div class="flex items-center justify-center gap-8 text-left w-full px-4">
+                    <div class="w-2 h-24 rounded-full shrink-0" style="background: ${config.color.grad}"></div>
+                    <div class="flex flex-col items-start overflow-hidden">
+                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 45px;"></iconify-icon>
+                        <h2 style="${titleStyle}" class="text-3xl text-left mt-2">${name}</h2>
+                        <p style="${tagStyle}" class="text-left mt-1 lowercase">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+
+        case 8: // Dotted Orbit
+            layoutHTML = `
+                <div class="p-8 rounded-full border-4 border-dotted mb-6 mx-auto animate-[spin_30s_linear_infinite]" style="border-color: ${config.color.main}">
+                    <div class="animate-[spin_30s_linear_infinite_reverse]">
+                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon>
+                    </div>
+                </div>
+                <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
+                <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 9: // Dual-Tone Block
+            layoutHTML = `
+                <div class="flex items-center bg-gray-900 rounded-[1.5rem] overflow-hidden mb-5 shadow-2xl border-2 border-white">
+                    <div class="p-5 bg-white border-r-4 flex items-center justify-center" style="border-color: ${config.color.main}">${getIcon('40px', '0')}</div>
+                    <div class="px-8 py-2 flex items-center justify-center"><h2 style="${titleStyle} color:white;" class="text-xl">${name}</h2></div>
+                </div>
+                <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 10: // Minimalist Square
+            layoutHTML = `
+                <div class="border-l-[10px] border-b-[10px] p-10 flex flex-col items-start text-left w-full max-w-[300px] mx-auto" style="border-color: ${config.color.main}">
+                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon>
+                    <h2 style="${titleStyle}" class="text-4xl text-left mt-4">${name}</h2>
+                    <p style="${tagStyle}" class="text-left opacity-40">${tag}</p>
+                </div>`;
+            break;
+
+        case 11: // Geometric Split
+            layoutHTML = `
+                <div class="flex items-center justify-center gap-4 mb-6 w-full px-10">
+                    <div class="h-0.5 grow" style="background: ${config.color.main}33"></div>
+                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 50px;"></iconify-icon>
+                    <div class="h-0.5 grow" style="background: ${config.color.main}33"></div>
+                </div>
+                <h2 style="${titleStyle}" class="text-5xl">${name}</h2>
+                <p style="${tagStyle}" class="mt-4 italic">${tag}</p>`;
+            break;
+
+        case 12: // Badge & Banner
+            layoutHTML = `
+                <div class="mb-4">${getIcon('75px', '0')}</div>
+                <div class="relative w-full max-w-[280px] mx-auto">
+                    <div class="absolute inset-0 skew-x-[-12deg] transform shadow-lg" style="background: ${config.color.grad}"></div>
+                    <h2 style="${titleStyle} color:white;" class="relative px-6 py-3 text-2xl font-bold italic">${name}</h2>
+                </div>
+                <p style="${tagStyle}" class="mt-6">${tag}</p>`;
+            break;
+
+        case 13: // Monogram Alpha (Factor 8)
+            layoutHTML = `
+                <div class="relative w-full h-48 flex items-center justify-center">
+                    <span class="absolute inset-0 flex items-center justify-center text-[180px] font-black opacity-[0.08] select-none pointer-events-none" style="color: ${config.color.main}">${name[0]}</span>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="mb-2">${getIcon('65px', '10px')}</div>
+                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
+                        <p style="${tagStyle}">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+
+        case 14: // High Fashion Vertical
+            layoutHTML = `
+                <div class="flex flex-col items-center py-12 border-x-2 px-10 mx-auto" style="border-color: ${config.color.main}22">
+                    <h2 style="${titleStyle}" class="text-3xl tracking-[0.3em] border-b pb-6 mb-6">${name}</h2>
+                    ${getIcon('45px', '0')}
+                    <p style="${tagStyle}" class="mt-8">${tag}</p>
+                </div>`;
+            break;
+
+        case 15: // Techno Shield
+            layoutHTML = `
+                <div class="w-24 h-24 bg-gray-900 rounded-tr-[40px] rounded-bl-[40px] flex items-center justify-center mb-8 shadow-2xl mx-auto rotate-12 hover:rotate-0 transition-transform">
+                    <div class="-rotate-12 hover:rotate-0"><iconify-icon icon="${config.icon}" style="color: white; font-size: 45px;"></iconify-icon></div>
+                </div>
+                <h2 style="${titleStyle}" class="text-2xl tracking-widest">${name}</h2>
+                <div class="flex gap-2 mt-4 justify-center">
+                     <div class="w-3 h-1 rounded-full" style="background: ${config.color.main}"></div>
+                     <div class="w-12 h-1 rounded-full opacity-20" style="background: ${config.color.main}"></div>
+                </div>
+                <p style="${tagStyle}">${tag}</p>`;
+            break;
+
+        case 16: // Circular Frame
+            layoutHTML = `
+                <div class="p-12 border-[12px] rounded-full border-double flex flex-col items-center mx-auto" style="border-color: ${config.color.main}">
+                    <div class="mb-2">${getIcon('50px', '5px')}</div>
+                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
+                </div>
+                <p style="${tagStyle}" class="mt-6">${tag}</p>`;
+            break;
+
+        case 17: // Bracket Focus
+            layoutHTML = `
+                <div class="flex items-center justify-center gap-6 w-full">
+                    <span class="text-8xl font-thin opacity-20 leading-none" style="color: ${config.color.main}">[</span>
+                    <div class="flex flex-col items-center">
+                        ${getIcon('60px')}
+                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
+                    </div>
+                    <span class="text-8xl font-thin opacity-20 leading-none" style="color: ${config.color.main}">]</span>
+                </div>
+                <p style="${tagStyle}" class="mt-4">${tag}</p>`;
+            break;
+
+        case 18: // Gradient Glow
+            layoutHTML = `
+                <div class="relative flex flex-col items-center">
+                    <div class="w-40 h-8 rounded-full mb-[-25px] opacity-30 blur-xl" style="background: ${config.color.grad}"></div>
+                    <h2 style="${titleStyle}" class="text-5xl relative z-10">${name}</h2>
+                    <div class="mt-8 flex flex-col items-center w-full">
+                        <div class="h-px w-20 bg-gray-200 mb-4"></div>
+                        ${getIcon('40px')}
+                        <p style="${tagStyle}">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+
+        case 19: // Architecture Split
+            layoutHTML = `
+                <div class="flex flex-col w-full px-8 text-center items-center">
+                    <div class="flex items-end justify-between border-b-4 pb-4 w-full" style="border-color: ${config.color.secondary}">
+                        <h2 style="${titleStyle}" class="text-4xl text-left grow">${name}</h2>
+                        <div class="shrink-0 ml-4"><iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon></div>
+                    </div>
+                    <p style="${tagStyle}" class="text-right mt-2 w-full italic font-medium">${tag}</p>
+                </div>`;
+            break;
+
+        case 20: // Slanted Slice
+            layoutHTML = `
+                <div class="flex flex-col items-center -skew-x-12 transform">
+                    <div class="p-7 bg-gray-900 rounded-3xl mb-5 shadow-2xl">
+                        <div class="skew-x-12 transform">${getIcon('55px', '0')}</div>
+                    </div>
+                    <h2 style="${titleStyle}" class="text-3xl skew-x-12 transform italic font-black">${name}</h2>
+                    <div class="bg-indigo-600 text-white px-8 py-2 mt-4 skew-x-12 transform font-bold text-xs tracking-widest uppercase shadow-lg">${tag}</div>
+                </div>`;
+            break;
+
+        case 21: // Retro Concentric Seal
+            layoutHTML = `
+                <div class="flex flex-col items-center border-[10px] border-double p-12 rounded-full aspect-square justify-center w-[300px] h-[300px] mx-auto shadow-inner" style="border-color: ${config.color.main}">
+                    ${getIcon('45px', '10px')}
+                    <h2 style="${titleStyle}" class="text-xl">${name}</h2>
+                    <div class="h-px w-16 bg-gray-200 my-3"></div>
+                    <p style="${tagStyle}" class="mt-0 text-[9px]">${tag}</p>
+                </div>`;
+            break;
+
+        case 22: // Curved Tech Block
+            layoutHTML = `
+                <div class="w-24 h-24 rounded-tr-[50px] rounded-bl-[50px] flex items-center justify-center mb-8 shadow-xl" style="background: ${config.color.grad}">
+                    <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;"></iconify-icon>
+                </div>
+                <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
+                <p style="${tagStyle}" class="mt-3 opacity-60">${tag}</p>`;
+            break;
+
+        case 23: // Thin L-Brackets
+            layoutHTML = `
+                <div class="relative p-14 group">
+                    <div class="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2" style="border-color: ${config.color.main}"></div>
+                    <div class="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2" style="border-color: ${config.color.main}"></div>
+                    <div class="flex flex-col items-center relative z-10">
+                        ${getIcon('60px')}
+                        <h2 style="${titleStyle}" class="text-4xl font-black">${name}</h2>
+                        <p style="${tagStyle}">${tag}</p>
+                    </div>
+                </div>`;
+            break;
+
+        case 24: // Soft UI Card
+            layoutHTML = `
+                <div class="bg-gray-50/50 p-12 rounded-[3.5rem] shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center w-full max-w-[320px] mx-auto">
+                    <div class="mb-8 drop-shadow-2xl animate-pulse-slow">${getIcon('85px', '0')}</div>
+                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
+                    <p style="${tagStyle}" class="mt-4 opacity-40">${tag}</p>
+                </div>`;
+            break;
+
+        case 25: // Heavy Monogram Block (Short Names)
+            layoutHTML = `
+                <div class="flex flex-col items-center w-full">
+                    <div class="text-8xl font-black mb-6 px-10 py-4 border-[6px] shadow-2xl transform -rotate-2" style="color: ${config.color.main}; border-color: ${config.color.main}">
+                        ${name.slice(0, 3)}
+                    </div>
+                    ${getIcon('35px', '10px')}
+                    <h2 style="${titleStyle}" class="text-xl italic">${name}</h2>
+                    <p style="${tagStyle}">${tag}</p>
+                </div>`;
+            break;
+
+        default: // Wordmark Precision
+            layoutHTML = `
+                <div class="flex flex-col items-center w-full">
+                    <h2 style="${titleStyle}" class="text-6xl italic mb-4">${name}</h2>
+                    <div class="flex items-center gap-4 w-full justify-center">
+                        <div class="h-0.5 grow bg-gray-100"></div>
+                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
+                        <p style="${tagStyle}" class="mt-0 w-auto">${tag}</p>
+                        <div class="h-0.5 grow bg-gray-100"></div>
+                    </div>
+                </div>`;
+    }
+
+ div.innerHTML = `
+    <!-- Removed background circle for clean exports and soothing look -->
+    <div class="w-full h-full flex flex-col items-center justify-center p-8 transition-all" style="filter: drop-shadow(${config.hierarchy.shadow})">
+        ${layoutHTML}
+    </div>
+    
+    <!-- Download Overlay -->
+    <div class="download-overlay opacity-0 absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 transition-all duration-300 p-10 ${config.color.bg === '#111827' ? 'bg-black/95' : ''}">
+        <p class="text-[10px] font-black ${config.color.bg === '#111827' ? 'text-white' : 'text-gray-400'} mb-2 uppercase tracking-widest italic">Ready to export</p>
+        <button onclick="downloadLogo(event, 'jpg')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-indigo-700 transition-all shadow-xl">Download JPG</button>
+        <button onclick="downloadLogo(event, 'png')" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold text-xs hover:bg-black transition-all">Transparent PNG</button>
+        <button onclick="downloadLogo(event, 'pdf')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold text-xs hover:bg-gray-200 transition-all">Premium PDF</button>
+    </div>
+`;
+    return div;
+}
     async function downloadLogo(event, type) {
         event.stopPropagation();
         const card = event.currentTarget.closest('.logo-card');
