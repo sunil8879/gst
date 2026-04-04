@@ -153,6 +153,8 @@
         flex-direction: column;
         width: 90%;
     }
+
+#card-frame { margin-bottom: -280px !important; } .controls { margin-top: 0 !important; padding-bottom: 80px; }
 }
     </style>
 </head>
@@ -297,7 +299,7 @@ function adjustMobileScale() {
         
         // Adjust the toolbar position so it doesn't overlap
         const controls = document.querySelector('.controls');
-        controls.style.marginTop = "20px";
+     
     } else {
         // Reset to desktop scale
         const card = document.getElementById('card-frame');
