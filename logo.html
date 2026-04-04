@@ -3,1186 +3,1402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogoGen AI - Professional Suite</title>
+    <title>NEXUS LOGO ENGINE | Infinite Branding</title>
+
+<!-- FontAwesome 6 Library - REQUIRED FOR ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+   
+    <!-- External Assets -->
+<link href="https://fonts.googleapis.com/css2?family=Abel&family=Abril+Fatface&family=Alegreya&family=Alice&family=Almarai&family=Amiri&family=Anton&family=Architects+Daughter&family=Archivo+Black&family=Arimo&family=Arvo&family=Asap&family=Assistant&family=Bangers&family=Bebas+Neue&family=Bitter&family=Bree+Serif&family=Cabin&family=Cairo&family=Cardo&family=Catamaran&family=Caveat&family=Cinzel&family=Comfortaa&family=Cookie&family=Cormorant+Garamond&family=Courgette&family=Crimson+Text&family=Dancing+Script&family=Didact+Gothic&family=Domine&family=Dosis&family=Eb+Garamond&family=Exo+2&family=Fira+Sans&family=Fjalla+One&family=Francois+One&family=Fredoka+One&family=Gloria+Hallelujah&family=Great+Vibes&family=Handlee&family=Heebo&family=Hind&family=Inconsolata&family=Indie+Flower&family=Inter:wght@400;900&family=Josefin+Sans&family=Jost&family=Kanit&family=Kaushan+Script&family=Lalezar&family=Lato&family=Lexend:wght@800&family=Libre+Baskerville&family=Libre+Franklin&family=Lobster&family=Lora&family=Luckiest+Guy&family=M+PLUS+Rounded+1c&family=Maven+Pro&family=Merriweather&family=Montserrat:wght@400;900&family=Muli&family=Nanum+Gothic&family=Noticia+Text&family=Noto+Sans&family=Nunito&family=Old+Standard+TT&family=Open+Sans&family=Orbitron&family=Oswald&family=Outfit:wght@400;900&family=Pacifico&family=PT+Sans&family=PT_Serif&family=Passions+Conflict&family=Pathway+Gothic+One&family=Permanent+Marker&family=Playfair+Display:wght@400;900&family=Poppins:wght@400;900&family=Prompt&family=Quicksand&family=Rajdhani&family=Raleway&family=Righteous&family=Roboto&family=Roboto+Condensed&family=Roboto+Mono&family=Roboto+Slab&family=Russo+One&family=Sacramento&family=Saira&family=Satisfy&family=Shadows+Into+Light&family=Space+Grotesk:wght@700&family=Syncopate:wght@700&family=Teko&family=Titillium+Web&family=Ubuntu&family=Varela+Round&family=Work+Sans&family=Yanone+Kaffeesatz&family=Zilla+Slab&display=swap" rel="stylesheet">
     
-    <!-- External Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ICONIFY: Gives access to millions of icons from all libraries -->
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Alice&family=Alfa+Slab+One&family=Allura&family=Amatic+SC&family=Anonymous+Pro&family=Anton&family=Archivo+Black&family=Audiowide&family=Bangers&family=Bebas+Neue&family=Be+Vietnam+Pro:wght@100;900&family=Bitter&family=Bodoni+Moda&family=Bungee&family=Cardo&family=Carter+One&family=Caveat&family=Cinzel&family=Comfortaa&family=Cookie&family=Cormorant+Garamond&family=Courgette&family=Courier+Prime&family=Crimson+Text&family=Dancing+Script&family=DM+Sans&family=DM+Serif+Display&family=Domine&family=EB+Garamond&family=Exo+2&family=Faustina&family=Fira+Code&family=Forum&family=Fraunces&family=Fredoka+One&family=Gloria+Hallelujah&family=Great+Vibes&family=Heebo&family=Inconsolata&family=Indie+Flower&family=Inter:wght@400;900&family=JetBrains+Mono&family=Jost&family=Kanit&family=Kaushan+Script&family=Lato&family=Lexend&family=Libre+Baskerville&family=Lobster&family=Lora&family=Major+Mono+Display&family=Manrope&family=Merriweather&family=Michroma&family=Monoton&family=Montserrat&family=Nanum+Gothic+Coding&family=Noto+Serif&family=Open+Sans&family=Orbitron&family=Oswald&family=Outfit:wght@100;900&family=Pacifico&family=Passion+One&family=Permanent+Marker&family=Phudu&family=Playfair+Display&family=Plus+Jakarta+Sans&family=Poppins:wght@100;900&family=Prata&family=Press+Start+2P&family=Public+Sans&family=Quicksand&family=Rajdhani&family=Raleway&family=Righteous&family=Roboto&family=Roboto+Mono&family=Rubik+Mono+One&family=Russo+One&family=Sacramento&family=Saira+Stencil+One&family=Satisfy&family=Shadows+Into+Light&family=Shrikhand&family=Source+Code+Pro&family=Space+Grotesk&family=Space+Mono&family=Spectral&family=Staatliches&family=Syne&family=Syncopate&family=Teko&family=Tenor+Sans&family=Titan+One&family=Ultra&family=Unbounded:wght@200;900&family=Volkhov&family=Work+Sans&family=Yellowtail&family=Yeseva+One&display=swap" rel="stylesheet">
+
+
     <style>
-        .logo-card:hover .download-overlay { opacity: 1; }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
+        :root {
+            --primary: #1e3a8a;
+            --aqua: #7FFFD4;
+            --navy: #0f172a;
+            --white: #ffffff;
+            --bg-canvas: #e2e8f0;
         }
-        iconify-icon { display: inline-block; width: 100%; height: 100%; }
-        .bg-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--navy); color: white; display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 380px; background: #161e2e; padding: 30px; 
+            border-right: 1px solid #2d3748; overflow-y: auto; flex-shrink: 0;
+        }
+        .sidebar h2 { font-weight: 800; color: var(--aqua); text-transform: uppercase; margin-bottom: 25px; border-bottom: 2px solid var(--aqua); padding-bottom: 10px; }
+        
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #a0aec0; margin-bottom: 8px; }
+        input, select { 
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2d3748; 
+            background: #0f172a; color: white; font-weight: 600; font-size: 0.9rem;
+        }
+        input:focus { outline: none; border-color: var(--aqua); }
+
+        /* --- WORKSPACE --- */
+        .workspace { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; padding: 40px; position: relative; }
+
+        /* --- THE LOGO CANVAS --- */
+        #logo-preview-container {
+            width: 512px; height: 512px; background: white;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        #logo-content {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; width: 100%; height: 100%;
+            padding: 40px; text-align: center;
+        }
+
+        #logo-icon { font-size: 80px; margin-bottom: 15px; transition: 0.3s; }
+        #logo-text { font-size: 45px; line-height: 1; transition: 0.3s; }
+        #logo-slogan { font-size: 14px; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; }
+
+        /* --- CONTROLS --- */
+        .controls { display: flex; gap: 15px; margin-top: 40px; }
+        .btn { 
+            padding: 15px 25px; border-radius: 12px; border: none; font-weight: 800; 
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.75rem;
+        }
+        .btn-magic { background: var(--aqua); color: var(--navy); box-shadow: 0 0 20px rgba(127, 255, 212, 0.3); }
+        .btn-download { background: var(--white); color: var(--navy); }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+
+        /* --- DL DROPDOWN --- */
+        .dl-group { position: relative; display: inline-block; }
+        .dl-menu { 
+            position: absolute; bottom: 100%; left: 0; background: white; 
+            border-radius: 10px; display: none; width: 150px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 10px; z-index: 100;
+        }
+        .dl-group:hover .dl-menu { display: block; }
+        .dl-menu button { 
+            width: 100%; padding: 10px; border: none; background: none; 
+            text-align: left; font-weight: 700; cursor: pointer; color: var(--navy); 
+        }
+        .dl-menu button:hover { background: #f0fdfa; color: var(--primary); }
+
+        /* --- LAYOUT VARIANTS --- */
+        .layout-side { flex-direction: row !important; gap: 20px; }
+        .layout-badge { border: 20px solid; padding: 20px; }
+        .layout-minimal #logo-icon { display: none; }
+        .layout-icon-only #logo-text, .layout-icon-only #logo-slogan { display: none; }
+
+#logo-icon { display: inline-block; font-family: "Font Awesome 6 Free"; font-weight: 900; }
+
+
+
+/* --- ADVANCED TEXT EFFECTS --- */
+.text-gradient { background: linear-gradient(to right, var(--aqua), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.text-outline { -webkit-text-stroke: 1px var(--white); color: transparent; }
+.text-3d { text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15); }
+
+/* --- ADVANCED CONTAINER EFFECTS --- */
+.glass { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); }
+.neo { background: #e0e0e0 !important; box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff !important; border: none !important; }
+.neo #logo-text, .neo #logo-icon { color: #444 !important; }
+
+/* --- BLOBS & SHAPES --- */
+
+.frame-corner { border: 10px solid transparent; border-image: radial-gradient(var(--aqua) 2px, transparent 0) 10; }
+
+#user-uploaded-img { max-width: 150px; display: none; margin-bottom: 15px; }
+
+.logo-content-base {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
 
 
 
 
-/* Emotional Appeal Layer */
-.glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-.soft-shadow { shadow: 0 20px 40px -15px rgba(0,0,0,0.1); }
-.inner-glow { box-shadow: inset 0 2px 10px rgba(255,255,255,0.5); }
-.logo-card { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.text-gradient { -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+/* --- 20 PRO LOGO LAYOUTS --- */
+.lay-1 { flex-direction: row !important; gap: 30px; text-align: left; } /* Icon Left */
+.lay-2 { flex-direction: column !important; } /* Icon Top */
+.lay-3 #logo-icon { display: none; } /* Wordmark */
+.lay-4 #logo-icon { font-family: inherit; font-style: normal; border: 4px solid; padding: 10px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; } /* Lettermark */
+.lay-5 { border-radius: 50% !important; border: 10px double; padding: 50px; } /* Badge */
+.lay-6 { flex-direction: row !important; gap: 15px; } .lay-6 #logo-slogan { margin-top: 0; padding-left: 15px; border-left: 2px solid; } /* Inline */
+.lay-7 { flex-direction: row !important; } .lay-7 #logo-icon { padding-right: 30px; border-right: 3px solid; margin-bottom: 0; } .lay-7 .text-group { padding-left: 30px; text-align: left; }
+.lay-8 #logo-icon { position: absolute; font-size: 300px !important; opacity: 0.1; z-index: 1; transform: rotate(-15deg); } /* Overlay */
+.lay-9 { border-radius: 50% !important; border: 5px solid; outline: 15px solid transparent; outline-offset: -20px; } /* Emblem */
+.lay-10 { gap: 0; } .lay-10 #logo-icon, .lay-10 #logo-text, .lay-10 #logo-slogan { background: rgba(0,0,0,0.1); width: 100%; padding: 10px; margin: 2px 0; } /* Stacked Block */
+.lay-11 { transform: skewX(-10deg); } /* Diagonal */
+.lay-12 #logo-text { background: var(--white); color: var(--navy); padding: 5px 20px; } /* Text inside shape */
+.lay-13 { border: 2px solid; border-radius: 50% !important; width: 450px !important; height: 450px !important; } /* Circle Border */
+.lay-14 { border-left: 20px solid; padding-left: 40px !important; align-items: flex-start !important; text-align: left; } /* Side Strip */
+.lay-15 #logo-preview-container { background-image: radial-gradient(var(--white) 1px, transparent 0); background-size: 20px 20px; } /* Pattern */
+.lay-16 #logo-text { border-bottom: 5px solid; padding-bottom: 10px; margin-bottom: 10px; } /* Underline */
+.lay-17 #logo-text { border-top: 5px solid; padding-top: 10px; } /* Overline */
+.lay-18 #logo-text { text-align: left; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.2); } /* Split Text */
+.lay-19 { flex-direction: row !important; justify-content: center; gap: 20px; } /* Icon Between */
+.lay-20 { align-items: flex-start !important; justify-content: flex-start !important; padding: 40px !important; } /* Minimal Corner */
+
+/* Base helper for Text Grouping */
+.text-group { display: flex; flex-direction: column; z-index: 5; }
     </style>
 </head>
-<body class="bg-pattern font-sans text-gray-900">
+<body>
 
-    <header class="bg-white/80 backdrop-blur-md border-b py-4 px-8 flex justify-between items-center sticky top-0 z-50">
-        <h1 class="text-2xl font-black tracking-tighter text-indigo-600">LOGOGEN AI</h1>
-        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Advanced Logo Engine</div>
-    </header>
-
-    <div class="flex flex-col lg:flex-row min-h-screen">
+    <div class="sidebar">
+        <h2>Logo Generator</h2>
         
-        <!-- Sidebar -->
-        <aside class="w-full lg:w-96 bg-white p-8 border-r shadow-2xl z-20">
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Business Name</label>
-                    <input type="text" id="bizName" placeholder="e.g. Lumina" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all text-lg font-bold">
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Tagline</label>
-                    <input type="text" id="tagline" placeholder="e.g. Future of Tech" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all">
-                </div>
+        <div class="input-group">
+            <label>Brand Name</label>
+            <input type="text" id="in_name" value="NEXUS" oninput="updateLogo()">
+        </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Industry</label>
-                    <select id="industry" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all cursor-pointer font-medium">
-                        <option value="tech">Technology & AI</option>
-                        <option value="realestate">Real Estate & Luxury Housing</option>
-                        <option value="food">Restaurant & Cafe</option>
-                        <option value="fashion">Fashion & Boutique</option>
-                        <option value="health">Medical & Wellness</option>
-                        <option value="finance">Finance & Crypto</option>
-                        <option value="edu">Education & Academy</option>
-                        <option value="travel">Travel & Adventure</option>
-                        <option value="sport">Fitness & Athletics</option>
-                        <option value="art">Design & Studio</option>
-                        <option value="beauty">Beauty & Cosmetics</option>
-                        <option value="legal">Law & Justice</option>
-                        <option value="pet">Pets & Animals</option>
-                        <option value="music">Music & DJ</option>
-                        <option value="nature">Nature & Ecology</option>
-                    </select>
-                </div>
+        <div class="input-group">
+            <label>Slogan / Tagline</label>
+            <input type="text" id="in_slogan" value="INFINITE POSSIBILITIES" oninput="updateLogo()">
+        </div>
+
+     <div class="input-group">
+    <label>Icon Keyword (Search 1000+ Icons)</label>
+    <input type="text" id="in_icon" list="icon-list" value="bolt" oninput="updateLogo()">
+    <datalist id="icon-list">
+     <option value="briefcase">Briefcase</option>
+<option value="building">Office Building</option>
+<option value="city">Skyscraper</option>
+<option value="users">Team/Group</option>
+<option value="handshake">Partnership</option>
+<option value="chart-line">Growth Chart</option>
+<option value="chart-pie">Pie Chart</option>
+<option value="chart-bar">Bar Chart</option>
+<option value="chart-area">Area Chart</option>
+<option value="file-alt">Document</option>
+<option value="file-invoice">Invoice</option>
+<option value="file-contract">Contract</option>
+<option value="signature">Signature</option>
+<option value="stamp">Stamp</option>
+<option value="calculator">Calculator</option>
+<option value="cash-register">Cash Register</option>
+<option value="credit-card">Credit Card</option>
+<option value="wallet">Wallet</option>
+<option value="coins">Coins</option>
+<option value="money-bill-wave">Cash Flow</option>
+<option value="safe">Vault</option>
+<option value="university">Bank</option>
+<option value="landmark">Institution</option>
+<option value="desktop">Desktop PC</option>
+<option value="laptop">Laptop</option>
+<option value="print">Printer</option>
+<option value="phone-alt">Telephone</option>
+<option value="mobile-alt">Mobile Phone</option>
+<option value="envelope">Email Envelope</option>
+<option value="at">At Symbol</option>
+<option value="bell">Notification Bell</option>
+<option value="bullseye">Target</option>
+<option value="flag">Goal Flag</option>
+<option value="sitemap">Workflow Sitemap</option>
+<option value="id-card">ID Card</option>
+<option value="calendar-alt">Calendar</option>
+<option value="clock">Clock/Time</option>
+<option value="tasks">Checklist Tasks</option>
+<option value="project-diagram">Strategy Diagram</option>
+<option value="lightbulb">Idea Bulb</option>
+<option value="brain">Intelligence</option>
+<option value="user-tie">Professional/Manager</option>
+<option value="medal">Award Medal</option>
+<option value="trophy">Champion Trophy</option>
+<option value="star">Star Ranking</option>
+<option value="crown">Premium/King</option>
+<option value="anchor">Stability</option>
+<option value="compass">Direction/Compass</option>
+<option value="globe">Global/World</option>
+<option value="map-marked-alt">Map/Location</option>
+<option value="key">Access Key</option>
+<option value="lock">Security Lock</option>
+<option value="unlock">Unlock</option>
+<option value="shield-alt">Protection Shield</option>
+<option value="search">Search Lens</option>
+<option value="cog">Settings Gear</option>
+<option value="cogs">Management Gears</option>
+<option value="tools">Tools/Maintenance</option>
+<option value="wrench">Repair Wrench</option>
+<option value="hammer">Construction Hammer</option>
+<option value="rupee-sign">Rupee Symbol</option>
+<option value="dollar-sign">Dollar Symbol</option>
+<option value="euro-sign">Euro Symbol</option>
+<option value="pound-sign">Pound Symbol</option>
+<option value="yen-sign">Yen Symbol</option>
+<option value="percentage">Percentage</option>
+<option value="file-invoice-dollar">Tax/Finance</option>
+<option value="piggy-bank">Savings</option>
+<option value="gem">Diamond/Gem</option>
+<option value="balance-scale">Legal Balance</option>
+<option value="qrcode">QR Code</option>
+<option value="barcode">Barcode</option>
+<option value="receipt">Receipt</option>
+<option value="shopping-cart">Cart</option>
+<option value="shopping-bag">Shopping Bag</option>
+<option value="store">Storefront</option>
+<option value="tag">Price Tag</option>
+<option value="gift">Gift Box</option>
+<option value="box">Shipping Box</option>
+<option value="truck">Delivery Truck</option>
+<option value="warehouse">Warehouse</option>
+<option value="clipboard-check">Audit Check</option>
+<option value="presentation">Presentation Slide</option>
+<option value="address-book">Contacts</option>
+<option value="archive">Archive</option>
+<option value="award">Award Ribbon</option>
+<option value="balance-scale-left">Law Justice</option>
+<option value="barcode">Retail Barcode</option>
+<option value="book">Ledger Book</option>
+<option value="box-open">Product Open</option>
+<option value="broadcast-tower">Broadcasting</option>
+<option value="business-time">Business Hours</option>
+<option value="certificate">Certified Badge</option>
+<option value="chart-line">Stock Growth</option>
+<option value="clipboard">Notes Clipboard</option>
+<option value="copy">Duplicate</option>
+<option value="edit">Edit/Draft</option>
+<option value="eraser">Correction</option>
+<option value="fax">Fax Machine</option>
+<option value="folder-open">File Folder</option>
+<option value="industry">Factory/Industry</option>
+<option value="info-circle">Help Info</option>
+<option value="life-ring">Support</option>
+<option value="network-wired">Network</option>
+<option value="paper-plane">Send Message</option>
+<option value="paste">Paste Document</option>
+<option value="pen-nib">Signature Pen</option>
+<option value="percentage">Discount</option>
+<option value="phone-square">Call Support</option>
+<option value="registered">Registered Trade</option>
+<option value="save">Save Data</option>
+<option value="share-alt">Social Share</option>
+<option value="shopping-basket">Basket</option>
+<option value="table">Data Table</option>
+<option value="thumbtack">Pin/Marker</option>
+<option value="trademark">Trademark</option>
+<option value="user-check">Verified User</option>
+<option value="user-friends">Users Group</option>
+<option value="video">Conference Call</option>
+<option value="address-card">Profile Card</option>
+<option value="balance-scale-right">Court</option>
+<option value="binoculars">Vision/Search</option>
+<option value="book-reader">Library/Study</option>
+<option value="bullhorn">Promotion</option>
+<option value="calculator">Accounting</option>
+<option value="chess-knight">Strategy Piece</option>
+<option value="cloud">Cloud Storage</option>
+<option value="comment-alt">Communication</option>
+<option value="database">Server Database</option>
+<option value="door-open">Office Entry</option>
+<option value="external-link-alt">Website Link</option>
+<option value="file-download">Download File</option>
+<option value="file-excel">Excel Sheet</option>
+<option value="file-pdf">PDF Document</option>
+<option value="file-word">Word Document</option>
+<option value="fingerprint">Biometrics</option>
+<option value="funnel-dollar">Sales Funnel</option>
+<option value="globe-americas">Global Trade</option>
+<option value="history">History Log</option>
+<option value="home">Property</option>
+<option value="hourglass-half">Deadline</option>
+<option value="images">Gallery/Media</option>
+<option value="infinity">Unlimited</option>
+<option value="key">Secure Key</option>
+<option value="list-ol">Order List</option>
+<option value="list-ul">Bullet List</option>
+<option value="map-pin">Location Pin</option>
+<option value="marker">Highlighter</option>
+<option value="money-check-alt">Bank Check</option>
+<option value="mouse">Computer Mouse</option>
+<option value="newspaper">Press/News</option>
+<option value="paperclip">Attachment</option>
+<option value="passport">Travel/Global</option>
+<option value="poll">User Poll</option>
+<option value="portrait">User Portrait</option>
+<option value="puzzle-piece">Solution</option>
+<option value="question-circle">FAQ Help</option>
+<option value="search-dollar">Audit Search</option>
+<option value="server">Hosting Server</option>
+<option value="shield-virus">Safety</option>
+<option value="sliders-h">Adjustment</option>
+<option value="smile">Customer Service</option>
+<option value="sort-amount-up">Sorting</option>
+<option value="spell-check">Proofing</option>
+<option value="sticky-note">Reminder</option>
+<option value="stopwatch">Timer</option>
+<option value="stream">Activity Stream</option>
+<option value="sync">Data Sync</option>
+<option value="tags">Marketing Tags</option>
+<option value="thumbs-up">Approval</option>
+<option value="toolbox">Repair Kit</option>
+<option value="trash">Delete/Cleanup</option>
+<option value="user-cog">Account Settings</option>
+<option value="user-edit">Edit Profile</option>
+<option value="user-lock">Private User</option>
+<option value="user-md">Medical Consultant</option>
+<option value="user-shield">Admin Security</option>
+<option value="users-cog">Team Management</option>
+<option value="vial">Product Test</option>
+<option value="wifi">Connection</option>
+<option value="window-restore">Interface</option>
+<option value="check-double">Verified</option>
+<option value="check-square">Completed</option>
+<option value="circle-notch">Processing</option>
+<option value="clipboard-list">Inventory</option>
+<option value="cloud-download-alt">Cloud Sync</option>
+<option value="comment-dots">Chat Support</option>
+<option value="compress">Minimize</option>
+<option value="crosshairs">Precision Focus</option>
+<option value="cube">Product Cube</option>
+<option value="cubes">Block Chain</option>
+<option value="desktop">IT Support</option>
+<option value="download">Data Download</option>
+<option value="ellipsis-h">More Options</option>
+<option value="exchange-alt">Currency Trade</option>
+<option value="expand">Full Screen</option>
+<option value="external-link-square-alt">Export</option>
+<option value="eye">Visibility</option>
+<option value="eye-slash">Private</option>
+<option value="file-archive">Zip Folder</option>
+<option value="file-code">Code File</option>
+<option value="file-csv">CSV Data</option>
+<option value="file-export">Export Data</option>
+<option value="file-image">Image File</option>
+<option value="file-import">Import Data</option>
+<option value="file-powerpoint">PPT Presentation</option>
+<option value="file-signature">Electronic Sign</option>
+<option value="file-upload">Upload File</option>
+<option value="filter">Data Filter</option>
+<option value="fire">Trend Hot</option>
+<option value="folder">General Folder</option>
+<option value="font">Typography</option>
+<option value="forward">Next Step</option>
+<option value="gift">Rewards</option>
+<option value="glass-martini-alt">Events/Lounge</option>
+<option value="grip-horizontal">Drag Control</option>
+<option value="hdd">Hard Drive</option>
+<option value="headphones">Customer Support</option>
+<option value="heart">Brand Love</option>
+<option value="hot-tub">Relaxation/Spa</option>
+<option value="image">Picture/Banner</option>
+<option value="keyboard">Data Entry</option>
+<option value="language">Global/Translate</option>
+<option value="level-up-alt">Growth Level</option>
+<option value="link">Hyperlink</option>
+<option value="map">Navigation</option>
+<option value="microchip">Technology</option>
+<option value="minus">Decrease</option>
+<option value="money-bill">Billing</option>
+<option value="moon">Night Mode</option>
+<option value="palette">Creative Design</option>
+<option value="paper-plane">Marketing Email</option>
+<option value="paragraph">Text Layout</option>
+<option value="phone">Call Center</option>
+<option value="plus">Add New</option>
+<option value="power-off">System Power</option>
+<option value="puzzle-piece">Integration</option>
+<option value="random">Shuffle</option>
+<option value="redo">Undo/Repeat</option>
+<option value="reply">Customer Response</option>
+<option value="robot">AI Automation</option>
+<option value="rocket">Speed Launch</option>
+<option value="rss">Feed/Blog</option>
+<option value="search-location">Local Search</option>
+<option value="share">Social Network</option>
+<option value="shopping-cart">Ecommerce</option>
+<option value="signal">Mobile Network</option>
+<option value="sign-in-alt">Portal Login</option>
+<option value="sign-out-alt">Portal Logout</option>
+<option value="space-shuttle">Advance Tech</option>
+<option value="star-half-alt">Rating</option>
+<option value="sync-alt">Auto Refresh</option>
+<option value="tachometer-alt">Dashboard Speed</option>
+<option value="tasks">Project Management</option>
+<option value="terminal">Developer Console</option>
+<option value="th">Grid Layout</option>
+<option value="th-large">Large Grid</option>
+<option value="th-list">List View</option>
+<option value="ticket-alt">Events Ticket</option>
+<option value="times">Close/Cancel</option>
+<option value="toggle-on">Switch On</option>
+<option value="university">Education/Bank</option>
+<option value="upload">Data Upload</option>
+<option value="user">User Account</option>
+<option value="user-circle">User Avatar</option>
+<option value="user-plus">Hire/Join</option>
+<option value="video">Visual Media</option>
+<option value="volume-up">Audio/Sound</option>
 
 
+<option value="atom">Physics/Science</option>
+<option value="microchip">Microchip/Hardware</option>
+<option value="dna">Genetics/Identity</option>
+<option value="flask">Chemistry/Laboratory</option>
+<option value="microscope">Research</option>
+<option value="telescope">Future Vision</option>
+<option value="satellite">Satellite/Communication</option>
+<option value="robot">Robotics/AI</option>
+<option value="brain">Neurology/Smart</option>
+<option value="biohazard">Biohazard Safety</option>
+<option value="virus">Security Virus</option>
+<option value="shield-virus">Antivirus</option>
+<option value="bacteria">Healthcare Science</option>
+<option value="code">Software Code</option>
+<option value="code-branch">Version Control</option>
+<option value="terminal">Coding Terminal</option>
+<option value="keyboard">Keyboard/Input</option>
+<option value="mouse">Mouse/UX</option>
+<option value="vr-cardboard">Virtual Reality</option>
+<option value="gamepad">Gaming/Joystick</option>
+<option value="ethernet">Local Network</option>
+<option value="server">Cloud Server</option>
+<option value="database">SQL Database</option>
+<option value="wifi">WiFi Wireless</option>
+<option value="signal">Network Signal</option>
+<option value="sim-card">Mobile Sim</option>
+<option value="battery-full">Energy Power</option>
+<option value="solar-panel">Solar Energy</option>
+<option value="bolt">Electric Bolt</option>
+<option value="plug">Power Connection</option>
+<option value="charging-station">EV Charging</option>
+<option value="satellite-dish">Radio/Signal</option>
+<option value="projector">Media Projector</option>
+<option value="camera">Photography</option>
+<option value="video">Motion Video</option>
+<option value="tv">Television</option>
+<option value="headphones">Audio Sound</option>
+<option value="microphone">Podcast/Mic</option>
+<option value="speaker">Studio Speaker</option>
+<option value="mobile">Smart Phone</option>
+<option value="tablet">Digital Tablet</option>
+<option value="watch">Smart Watch</option>
+<option value="print">3D Printing</option>
+<option value="scanner">Scanning</option>
+<option value="memory">RAM Memory</option>
+<option value="sd-card">Storage SD</option>
+<option value="link">Digital Link</option>
+<option value="unlink">Broken Link</option>
+<option value="search">Data Search</option>
+<option value="cloud">Cloud Network</option>
+<option value="cloud-upload-alt">Upload Cloud</option>
+<option value="cloud-download-alt">Download Cloud</option>
+<option value="file-code">Source Code</option>
+<option value="file-medical">Digital Health</option>
+<option value="user-secret">Privacy/Secret</option>
+<option value="user-ninja">Expert Ninja</option>
+<option value="user-astronaut">Space/Explorer</option>
+<option value="meteor">Impact Meteor</option>
+<option value="globe-asia">Asia/Pacific</option>
+<option value="globe-europe">Europe/Global</option>
+<option value="globe-americas">Americas/Global</option>
+<option value="map-pin">Geolocation</option>
+<option value="location-arrow">GPS Navigation</option>
+<option value="compass">Magnet Compass</option>
+<option value="angle-double-right">Fast Forward</option>
+<option value="sync">Refresh Loop</option>
+<option value="power-off">Shutdown</option>
+<option value="cog">System Tool</option>
+<option value="cogs">Infrastructure</option>
+<option value="wrench">Repair Tech</option>
+<option value="hammer">Build Tech</option>
+<option value="toolbox">Dev Ops</option>
+<option value="stream">Data Stream</option>
+<option value="network-wired">Enterprise Network</option>
+<option value="broadcast-tower">Transmission</option>
+<option value="antenna-receive">Receiving</option>
+<option value="microchip">IoT Device</option>
+<option value="calculator">Math Logic</option>
+<option value="expand">Maximize</option>
+<option value="compress">Compress Data</option>
+<option value="exchange-alt">Data Transfer</option>
+<option value="bug">Software Bug</option>
+<option value="file-archive">Zip Archive</option>
+<option value="hashtag">Digital Tag</option>
+<option value="at">Email Link</option>
+<option value="keyboard">Data Entry</option>
+<option value="mouse-pointer">Cursor Action</option>
+<option value="braille">Accessibility</option>
+<option value="fingerprint">Identity Auth</option>
+<option value="key">Encryption Key</option>
+<option value="shield-alt">Data Security</option>
+<option value="unlock">Decryption</option>
+<option value="certificate">SSL Secure</option>
+<option value="fire">Processing Power</option>
+<option value="rocket">Fast Deployment</option>
+<option value="truck-loading">Logistic Tech</option>
+<option value="cubes">Nodes/Chain</option>
+<option value="vector-square">Vector Graphic</option>
+<option value="bezier-curve">Design Curve</option>
+<option value="pen-tool">Path Pen</option>
+<option value="layer-group">UI Layers</option>
+<option value="columns">Grid Layout</option>
+<option value="table">Dataset</option>
+<option value="th">Tiles</option>
+<option value="align-center">Center Alignment</option>
+<option value="font">Text Font</option>
+<option value="bold">Bold Logic</option>
+<option value="italic">Italic Logic</option>
+<option value="list">Sequence</option>
+<option value="indent">Formatting</option>
+<option value="quote-right">Snippet</option>
+<option value="undo">Rollback</option>
+<option value="redo">Commit</option>
+<option value="terminal">Command Line</option>
+<option value="window-maximize">Desktop App</option>
+<option value="window-close">Exit</option>
+<option value="user-cog">Admin User</option>
+<option value="users-cog">Group Policy</option>
+<option value="share-alt">API Share</option>
+<option value="download">Offline Access</option>
+<option value="upload">Push Data</option>
+<option value="paper-plane">Messaging</option>
+<option value="sms">Text Service</option>
+<option value="podcast">Streaming Audio</option>
+<option value="video-slash">Privacy Video</option>
+<option value="image">Media Display</option>
+<option value="rss">Syndication</option>
+<option value="ad">Digital Ad</option>
+<option value="search-plus">Zoom In</option>
+<option value="search-minus">Zoom Out</option>
+<option value="filter">Filter Search</option>
+<option value="magic">Automation Magic</option>
+<option value="wand-magic">Magic Tool</option>
+<option value="tools">Utility Box</option>
+<option value="vial">Testing</option>
+<option value="vials">Laboratory</option>
+<option value="flask">Science Experiment</option>
+<option value="microscope">Detail View</option>
+<option value="glasses">Smart Vision</option>
+<option value="lightbulb">Innovation</option>
+<option value="headset">Tech Support</option>
+<option value="mobile">Smart Interface</option>
+<option value="shield-alt">Firewall</option>
+<option value="lock">Encryption</option>
+<option value="map-marker-alt">Pointer</option>
+<option value="sync">Syncing</option>
+<option value="hdd">Storage Drive</option>
+<option value="sd-card">Memory Card</option>
+<option value="id-card">User ID</option>
+<option value="sliders-h">Configuration</option>
+<option value="battery-three-quarters">Performance</option>
+<option value="bolt">Flash Speed</option>
+<option value="plug">Connection</option>
+<option value="laptop-code">Frontend Dev</option>
+<option value="terminal">Backend Dev</option>
+<option value="project-diagram">Architecture</option>
+<option value="cube">Component</option>
+<option value="cubes">Systems</option>
+<option value="cloud-sun">Cloud Computing</option>
+<option value="server">Mainframe</option>
+<option value="ethernet">Hardwired</option>
+<option value="broadcast-tower">Antenna</option>
+<option value="stream">Timeline</option>
+<option value="infinity">Loops</option>
+<option value="braille">Accessibility</option>
+<option value="sign-language">Universal</option>
+<option value="assistive-listening-systems">Hearing Support</option>
+<option value="universal-access">Global Access</option>
+<option value="audio-description">Audio UI</option>
+<option value="blind">Vision Support</option>
+<option value="low-vision">Low Vision UI</option>
+<option value="phone-volume">Volume UI</option>
+<option value="tty">Text Phone</option>
+<option value="hand-point-up">Tap Action</option>
+<option value="hand-pointer">Hover Action</option>
+<option value="fingerprint">Secure Touch</option>
+<option value="face-smile">Friendly UI</option>
+<option value="icons">Asset Library</option>
+<option value="images">Media Assets</option>
+<option value="puzzle-piece">Plugin</option>
+<option value="shapes">UI Kit</option>
+<option value="tint">Visual Fill</option>
+<option value="brush">Design Tool</option>
+<option value="paint-roller">Frontend UI</option>
+<option value="pen-fancy">Elegant Design</option>
+<option value="magic">Auto Design</option>
+<option value="eye-dropper">Color Picker</option>
+<option value="highlighter">Code Highlight</option>
+<option value="feather">Lightweight</option>
+<option value="signature">Digital ID</option>
+<option value="id-badge">ID Badge</option>
+<option value="barcode">System Code</option>
+<option value="qrcode">Scan Action</option>
+<option value="mobile-alt">Responsive</option>
+<option value="tablet-alt">Tablet UI</option>
+<option value="laptop">Laptop UI</option>
+<option value="desktop">Large UI</option>
+<option value="tv">Wide UI</option>
 
 
+<option value="ambulance">Emergency Ambulance</option>
+<option value="hospital">Hospital Building</option>
+<option value="h-square">Medical Hospital</option>
+<option value="clinic-medical">Medical Clinic</option>
+<option value="user-md">General Physician</option>
+<option value="user-nurse">Nurse Care</option>
+<option value="stethoscope">Heart Listening</option>
+<option value="heartbeat">Pulse Rate</option>
+<option value="heart">Heart Health</option>
+<option value="first-aid">First Aid Kit</option>
+<option value="medkit">Medical Kit</option>
+<option value="pills">Medicine Pills</option>
+<option value="capsules">Pill Capsules</option>
+<option value="syringe">Injection/Vaccine</option>
+<option value="thermometer">Body Temperature</option>
+<option value="tooth">Dental Care</option>
+<option value="eye">Eye Care</option>
+<option value="glasses">Optometry</option>
+<option value="wheelchair">Accessibility Care</option>
+<option value="walking">Physical Therapy</option>
+<option value="weight">Weight Scale</option>
+<option value="baby">Pediatric Care</option>
+<option value="hand-holding-medical">Care Giving</option>
+<option value="lungs">Pulmonary Health</option>
+<option value="brain">Mental Health</option>
+<option value="bone">Orthopedics</option>
+<option value="microscope">Medical Lab</option>
+<option value="hamburger">Fast Food Burger</option>
+<option value="pizza-slice">Italian Pizza</option>
+<option value="hotdog">Hotdog Snack</option>
+<option value="ice-cream">Dessert Ice Cream</option>
+<option value="cookie">Bakery Cookie</option>
+<option value="cake">Sweet Cake</option>
+<option value="donut">Pastry Donut</option>
+<option value="candy-cane">Candy/Sweets</option>
+<option value="apple-alt">Healthy Fruit</option>
+<option value="carrot">Fresh Vegetable</option>
+<option value="lemon">Citrus Fruit</option>
+<option value="pepper-hot">Spicy Food</option>
+<option value="fish">Seafood/Fish</option>
+<option value="egg">Farm Egg</option>
+<option value="bread-slice">Fresh Bakery</option>
+<option value="cheese">Dairy Cheese</option>
+<option value="coffee">Coffee Shop</option>
+<option value="tea">Green Tea</option>
+<option value="wine-glass">Red Wine</option>
+<option value="beer">Chilled Beer</option>
+<option value="cocktail">Lounge Drink</option>
+<option value="glass-whiskey">Spirits</option>
+<option value="mug-hot">Hot Beverage</option>
+<option value="utensils">Fine Dining</option>
+<option value="chef-hat">Executive Chef</option>
+<option value="spoon">Dining Spoon</option>
+<option value="knife">Kitchen Knife</option>
+<option value="mortar-pestle">Pharmacy/Spice</option>
+<option value="blender">Juice Blender</option>
+<option value="kettle">Home Kitchen</option>
+<option value="tshirt">Casual Clothing</option>
+<option value="mitten">Accessories</option>
+<option value="socks">Footwear</option>
+<option value="shoe-prints">Walking Shoes</option>
+<option value="glasses">Fashion Eyewear</option>
+<option value="watch">Luxury Watch</option>
+<option value="handbag">Fashion Handbag</option>
+<option value="wallet">Leather Wallet</option>
+<option value="crown">Fashion Crown</option>
+<option value="gem">Luxury Jewelry</option>
+<option value="cut">Scissors/Tailoring</option>
+<option value="spa">Wellness Spa</option>
+<option value="heart">Skin Care</option>
+<option value="pump-soap">Hand Wash</option>
+<option value="lipstick">Cosmetic Makeup</option>
+<option value="comb">Hair Styling</option>
+<option value="razor">Shaving Care</option>
+<option value="bath">Personal Hygiene</option>
+<option value="shower">Shower Refresh</option>
+<option value="soap">Cleaning Bar</option>
+<option value="bed">Bedroom Comfort</option>
+<option value="couch">Living Lounge</option>
+<option value="chair">Interior Seat</option>
+<option value="table">Dining Table</option>
+<option value="tv">Home Theater</option>
+<option value="lamp">Study Lighting</option>
+<option value="door-closed">Entry Gate</option>
+<option value="door-open">Hospitality</option>
+<option value="home">Residential</option>
+<option value="building">Commercial Area</option>
+<option value="hotel">Travel Stay</option>
+<option value="campground">Outdoor Life</option>
+<option value="mountain">Hiking Nature</option>
+<option value="tree">Environmental</option>
+<option value="leaf">Eco-Friendly</option>
+<option value="seedling">Plant Growth</option>
+<option value="flower">Floral Garden</option>
+<option value="sun">Summer Season</option>
+<option value="moon">Night Life</option>
+<option value="cloud">Sky/Nature</option>
+<option value="bolt">Storm Energy</option>
+<option value="water">Ocean Life</option>
+<option value="swimmer">Sport Swimming</option>
+<option value="running">Track Fitness</option>
+<option value="bicycle">Cyclist Club</option>
+<option value="motorcycle">Motor Club</option>
+<option value="car">Family Car</option>
+<option value="bus">Public Transport</option>
+<option value="train">Railway Journey</option>
+<option value="plane">Air Travel</option>
+<option value="ship">Ocean Cruise</option>
+<option value="helicopter">Rescue Air</option>
+<option value="map-marker-alt">Navigation Pin</option>
+<option value="compass">Explorer</option>
+<option value="binoculars">Sightseeing</option>
+<option value="camera">Photo Studio</option>
+<option value="video">Film Media</option>
+<option value="music">Music Studio</option>
+<option value="headphones">Audio DJ</option>
+<option value="microphone">Radio Show</option>
+<option value="guitar">Musical Instrument</option>
+<option value="drum">Percussion</option>
+<option value="compact-disc">DJ Disc</option>
+<option value="broadcast-tower">Radio Station</option>
+<option value="bullhorn">Public Speaker</option>
+<option value="ticket-alt">Events Ticket</option>
+<option value="dice">Game/Leisure</option>
+<option value="puzzle-piece">Gaming Fun</option>
+<option value="shapes">Abstract Fun</option>
+<option value="smile">Happy User</option>
+<option value="frown">Support Issue</option>
+<option value="meh">Average Review</option>
+<option value="angry">User Feedback</option>
+<option value="laugh">Social Media</option>
+<option value="star">Five Star Rating</option>
+<option value="thumbs-up">Brand Approval</option>
+<option value="thumbs-down">Negative Review</option>
+<option value="heart">Like Action</option>
+<option value="comment">User Chat</option>
+<option value="share">Viral Share</option>
+<option value="paper-plane">Quick Message</option>
+<option value="envelope">Letter Mail</option>
+<option value="phone">Contact Us</option>
+<option value="address-book">Directory</option>
+<option value="id-card">Profile Identity</option>
+<option value="user">Single Member</option>
+<option value="users">Community Group</option>
+<option value="user-plus">Join Us</option>
+<option value="user-friends">Team Play</option>
+<option value="user-graduate">Education Success</option>
+<option value="school">Campus Life</option>
+<option value="university">College Degree</option>
+<option value="book">Textbook/Study</option>
+<option value="pen">Writing Tool</option>
+<option value="pencil-alt">Sketch Art</option>
+<option value="palette">Design Palette</option>
+<option value="brush">Paint Brush</option>
+<option value="ruler">Architect Rule</option>
+<option value="briefcase">Lawyer/Business</option>
+<option value="shield-alt">Insurance Shield</option>
+<option value="lock">Security Lock</option>
+<option value="key">Master Key</option>
+<option value="globe">World Wide</option>
+<option value="wifi">Signal Connect</option>
+<option value="bolt">Fast Action</option>
+<option value="rocket">Speed Launch</option>
+<option value="fire">Hot Product</option>
+<option value="leaf">Natural Product</option>
+<option value="paw">Pet Shop</option>
+<option value="cat">Cat Pet</option>
+<option value="dog">Dog Pet</option>
+<option value="horse">Equestrian</option>
+<option value="bird">Aviary</option>
+<option value="dragon">Fantasy</option>
+<option value="crown">Premium Selection</option>
+<option value="medal">Best Quality</option>
+<option value="trophy">Industry Leader</option>
+<option value="star">Top Rated</option>
+<option value="award">Certified Best</option>
+<option value="check">Verified Work</option>
+<option value="times">Cancel Process</option>
+<option value="plus">Add Item</option>
+<option value="minus">Remove Item</option>
+<option value="cog">System Settings</option>
+<option value="cogs">Advanced Settings</option>
+<option value="tools">Handyman Repair</option>
+<option value="wrench">Mechanical Repair</option>
+<option value="hammer">Construction Build</option>
+<option value="lightbulb">Creative Idea</option>
+<option value="battery-full">Energy Power</option>
+<option value="mobile">Cell Phone</option>
+<option value="laptop">Portable PC</option>
+<option value="desktop">Home Office</option>
+<option value="tv">Media Lounge</option>
+<option value="gamepad">Video Games</option>
+<option value="print">Document Print</option>
+<option value="keyboard">Typewriter</option>
+<option value="mouse">Cursor Point</option>
+<option value="save">Data Save</option>
+<option value="search">Discovery</option>
+<option value="archive">Old Files</option>
+<option value="folder">Files Storage</option>
+<option value="paperclip">Attachment</option>
+<option value="link">Website Link</option>
+<option value="unlink">Broken Link</option>
+<option value="bell">Reminder Alert</option>
+<option value="flag">Marker Point</option>
+<option value="anchor">Safety Ship</option>
+<option value="compass">Compass Map</option>
+<option value="map">Travel Map</option>
+<option value="globe">Global Coverage</option>
 
 
-<div>
-    <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase">Brand Personality</label>
-    <select id="personality" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none transition-all cursor-pointer font-medium" onchange="generateLogos()">
-        <option value="modern">Modern & Clean</option>
-        <option value="classic">Classic & Elegant</option>
-        <option value="luxury">Luxury & High-End</option>
-        <option value="playful">Fun & Playful</option>
-        <option value="minimal">Minimalist</option>
-        <option value="bold">Bold & Industrial</option>
+<option value="basketball-ball">Basketball Sports</option>
+<option value="football-ball">American Football</option>
+<option value="soccer-ball">Soccer Football</option>
+<option value="volleyball-ball">Volleyball Sports</option>
+<option value="baseball-ball">Baseball Sports</option>
+<option value="bowling-ball">Bowling Alley</option>
+<option value="table-tennis-paddle-ball">Table Tennis</option>
+<option value="golf-ball">Golf Club</option>
+<option value="hockey-puck">Ice Hockey</option>
+<option value="quidditch">Fantasy Sports</option>
+<option value="biking">Cycling Fitness</option>
+<option value="running">Track & Field</option>
+<option value="walking">Hiking Trail</option>
+<option value="skating">Ice Skating</option>
+<option value="skiing">Winter Sports</option>
+<option value="snowboarding">Snow Sports</option>
+<option value="swimmer">Swimming Pool</option>
+<option value="dumbbell">Bodybuilding Gym</option>
+<option value="fist-raised">Martial Arts</option>
+<option value="medal">Medalist Award</option>
+<option value="trophy">Winner Trophy</option>
+<option value="flag-checkered">Auto Racing</option>
+<option value="stopwatch">Sports Timer</option>
+<option value="whistle">Referee Signal</option>
+<option value="shield-alt">Sports Protection</option>
+<option value="shoe-prints">Athletic Shoes</option>
+<option value="mountain">Mountain Range</option>
+<option value="volcano">Erupting Lava</option>
+<option value="river">Water Stream</option>
+<option value="ocean">Sea Waves</option>
+<option value="water">Pool Water</option>
+<option value="wind">Windy Weather</option>
+<option value="snow">Snowy Weather</option>
+<option value="cloud-rain">Rainy Weather</option>
+<option value="cloud-sun">Partly Cloudy</option>
+<option value="sun">Sunny Weather</option>
+<option value="moon">Night Crescent</option>
+<option value="star">Starry Night</option>
+<option value="meteor">Space Meteor</option>
+<option value="globe">Earth Planet</option>
+<option value="leaf">Autumn Leaf</option>
+<option value="tree">Green Pine</option>
+<option value="seedling">Plant Sprout</option>
+<option value="flower">Nature Bloom</option>
+<option value="fire">Fire Flame</option>
+<option value="ice-cream">Frosty Cold</option>
+<option value="thermometer-empty">Freezing</option>
+<option value="thermometer-full">Heat Wave</option>
+<option value="cactus">Desert Plant</option>
+<option value="cloud-showers-heavy">Monsoon</option>
+<option value="umbrella">Rain Shield</option>
+<option value="rainbow">Colorful Sky</option>
+<option value="icicles">Frozen Ice</option>
+<option value="wind">Air Flow</option>
+<option value="smog">Pollution</option>
+<option value="smoke">Smoke/Fire</option>
+<option value="tint">Water Drop</option>
+<option value="droplet">Moisture</option>
+<option value="shapes">Geometric Art</option>
+<option value="cube">3D Block</option>
+<option value="cubes">Stacked Blocks</option>
+<option value="square">Standard Square</option>
+<option value="circle">Standard Circle</option>
+<option value="triangle">Standard Triangle</option>
+<option value="play">Action Play</option>
+<option value="pause">Action Pause</option>
+<option value="stop">Action Stop</option>
+<option value="forward">Next Page</option>
+<option value="backward">Prev Page</option>
+<option value="step-forward">Last Page</option>
+<option value="step-backward">First Page</option>
+<option value="sync">Synchronize</option>
+<option value="redo">Redo Action</option>
+<option value="undo">Undo Action</option>
+<option value="plus">Increase/Add</option>
+<option value="minus">Decrease/Sub</option>
+<option value="times">Close Icon</option>
+<option value="check">Correct Icon</option>
+<option value="search">Find Icon</option>
+<option value="cog">Config Icon</option>
+<option value="wrench">Repair Icon</option>
+<option value="trash">Delete Icon</option>
+<option value="edit">Pen Icon</option>
+<option value="pencil-alt">Draw Icon</option>
+<option value="lock">Private Icon</option>
+<option value="unlock">Open Icon</option>
+<option value="key">Access Icon</option>
+<option value="user">Profile Icon</option>
+<option value="bell">Alert Icon</option>
+<option value="home">Home Icon</option>
+<option value="envelope">Mail Icon</option>
+<option value="phone">Call Icon</option>
+<option value="location-arrow">GPS Icon</option>
+<option value="map-marker-alt">Pin Icon</option>
+<option value="th">Grid Icon</option>
+<option value="list">List Icon</option>
+<option value="bars">Menu Icon</option>
+<option value="share">Viral Icon</option>
+<option value="download">Get File</option>
+<option value="upload">Push File</option>
+<option value="cloud">Online Cloud</option>
+<option value="wifi">Signal WiFi</option>
+<option value="battery-full">Power Life</option>
+<option value="bolt">Flash Charge</option>
+<option value="mobile">Cellular Icon</option>
+<option value="laptop">Portable Icon</option>
+<option value="desktop">PC Monitor</option>
+<option value="print">Output Print</option>
+<option value="camera">Photo Lens</option>
+<option value="music">Audio Note</option>
+<option value="video">Movie Reel</option>
+<option value="gamepad">Joystick Fun</option>
+<option value="heart">Love Icon</option>
+<option value="star">Favorite Icon</option>
+<option value="thumbs-up">Like Icon</option>
+<option value="thumbs-down">Dislike Icon</option>
+<option value="comment">Chat Icon</option>
+<option value="paper-plane">Send Icon</option>
+<option value="link">URL Icon</option>
+<option value="unlink">Broken URL</option>
+<option value="eye">View Icon</option>
+<option value="eye-slash">Hidden Icon</option>
+<option value="clock">Time Icon</option>
+<option value="calendar">Date Icon</option>
+<option value="flag">Mark Icon</option>
+<option value="bookmark">Save Point</option>
+<option value="briefcase">Job Icon</option>
+<option value="building">Company Icon</option>
+<option value="university">Academy Icon</option>
+<option value="graduation-cap">Student Icon</option>
+<option value="microchip">Processor Icon</option>
+<option value="robot">Machine Icon</option>
+<option value="rocket">Blast Icon</option>
+<option value="bullhorn">Voice Icon</option>
+<option value="gift">Present Icon</option>
+<option value="shopping-cart">Store Icon</option>
+<option value="coffee">Morning Icon</option>
+<option value="hamburger">Fast Food</option>
+<option value="pizza-slice">Pizza Icon</option>
+<option value="utensils">Eat Icon</option>
+<option value="glass-martini">Drinks Icon</option>
+<option value="beer">Pub Icon</option>
+<option value="car">Travel Icon</option>
+<option value="plane">Flight Icon</option>
+<option value="bus">Transit Icon</option>
+<option value="train">Track Icon</option>
+<option value="ship">Sea Icon</option>
+<option value="anchor">Marine Icon</option>
+<option value="compass">North Icon</option>
+<option value="globe">Earth Icon</option>
+<option value="sun">Day Icon</option>
+<option value="moon">Night Icon</option>
+<option value="cloud">Sky Icon</option>
+<option value="snowflake">Cold Icon</option>
+<option value="fire">Hot Icon</option>
+<option value="leaf">Eco Icon</option>
+<option value="tree">Nature Icon</option>
+<option value="seedling">Plant Icon</option>
+<option value="flower">Bloom Icon</option>
+<option value="paw">Pet Icon</option>
+<option value="dog">Dog Icon</option>
+<option value="cat">Cat Icon</option>
+<option value="horse">Ranch Icon</option>
+<option value="dragon">Myth Icon</option>
+<option value="crown">Royal Icon</option>
+<option value="trophy">Success Icon</option>
+<option value="medal">Rank Icon</option>
+<option value="star">Rating Icon</option>
+<option value="gem">Diamond Icon</option>
+<option value="skull">Hazard Icon</option>
+<option value="biohazard">Medical Warning</option>
+<option value="radiation">Nuclear Warning</option>
+<option value="exclamation-triangle">Danger Alert</option>
+<option value="info-circle">Guide Icon</option>
+<option value="question-circle">Help Point</option>
+<option value="check-circle">Confirmed</option>
+<option value="times-circle">Rejected</option>
+<option value="arrow-up">Upward</option>
+<option value="arrow-down">Downward</option>
+<option value="arrow-left">Leftward</option>
+<option value="arrow-right">Rightward</option>
+<option value="chevron-up">Step Up</option>
+<option value="chevron-down">Step Down</option>
+<option value="chevron-left">Step Left</option>
+<option value="chevron-right">Step Right</option>
+<option value="angle-up">Top Corner</option>
+<option value="angle-down">Bottom Corner</option>
+<option value="angle-left">Side Corner Left</option>
+<option value="angle-right">Side Corner Right</option>
+<option value="caret-up">Pointer Top</option>
+<option value="caret-down">Pointer Bottom</option>
+<option value="caret-left">Pointer Left</option>
+<option value="caret-right">Pointer Right</option>
+<option value="long-arrow-alt-up">Full Up</option>
+<option value="long-arrow-alt-down">Full Down</option>
+<option value="long-arrow-alt-left">Full Left</option>
+<option value="long-arrow-alt-right">Full Right</option>
+<option value="infinity">Forever Icon</option>
+<option value="redo-alt">Replay Icon</option>
+<option value="sync-alt">Parallel Icon</option>
+<option value="history">Time Log Icon</option>
+<option value="undo-alt">Revert Icon</option>
+<option value="ruler-combined">Blueprint/Drafting</option>
+<option value="ruler-horizontal">Width Measurement</option>
+<option value="ruler-vertical">Height Measurement</option>
+<option value="drafting-compass">Engineering Design</option>
+<option value="fill-drip">Color Fill Tool</option>
+<option value="highlighter">Emphasis/Marker</option>
+<option value="border-style">Framework Border</option>
+<option value="border-none">Minimalist/Borderfree</option>
+<option value="vector-square">Vector Graphics</option>
+<option value="object-group">Layout Grouping</option>
+<option value="object-ungroup">Layer Separation</option>
+<option value="clone">Duplicate/Copy</option>
+<option value="atlas">Global Reference</option>
+<option value="chalkboard">Teaching Board</option>
+<option value="graduation-cap">Academic Success</option>
+<option value="archway">Architectural Gate</option>
+<option value="monument">Heritage Landmark</option>
+<option value="museum">Art/Culture Gallery</option>
+<option value="theater-masks">Drama/Performance</option>
+<option value="drum">Beats/Rhythm</option>
+<option value="guitar">Strings/Music</option>
+<option value="file-audio">Audio Production</option>
+<option value="file-video">Video Production</option>
+<option value="shuttle-van">Transit Logistics</option>
+<option value="dolly">Loading/Moving</option>
+<option value="dolly-flatbed">Warehouse Transport</option>
+<option value="shipping-fast">Express Shipping</option>
+<option value="pallet">Distribution Center</option>
+<option value="forklift">Industrial Stacking</option>
+<option value="temperature-high">Climate Control</option>
+<option value="temperature-low">Cold Storage</option>
+<option value="fan">Ventilation System</option>
+<option value="faucet">Plumbing Service</option>
+<option value="toilet-paper">Sanitary Supply</option>
+<option value="hand-sparkles">Sterile/Cleaning</option>
+<option value="spray-can">Disinfectant/Paint</option>
+<option value="fire-extinguisher">Safety/Fire Protection</option>
+<option value="conveyor-belt">Manufacturing Process</option>
+<option value="screwdriver">Precision Assembly</option>
+<option value="truck-monster">Heavy Duty Power</option>
+<option value="truck-pickup">Utility Vehicle</option>
+<option value="car-side">Automotive Profile</option>
+<option value="car-crash">Insurance/Repair</option>
+<option value="car-battery">Engine Power</option>
+
+<!-- JUSTICE, SYMBOLS & CULTURE (921-960) -->
+<option value="oil-can">Maintenance Service</option>
+<option value="tire">Wheel/Traction</option>
+<option value="tire-flat">Flat Tire Service</option>
+<option value="vote-yea">Consensus/Approval</option>
+<option value="gavel">Legal Authority</option>
+<option value="bible">Spiritual Christian</option>
+<option value="church">Chapel/Worship</option>
+<option value="mosque">Islamic Community</option>
+<option value="synagogue">Jewish Faith</option>
+<option value="vihara">Buddhist Temple</option>
+<option value="torii-gate">Shinto Tradition</option>
+<option value="kaaba">Pilgrimage Center</option>
+<option value="ankh">Ancient Wisdom</option>
+<option value="dharmachakra">Wheel of Dharma</option>
+<option value="hanukiah">Menorah Festival</option>
+<option value="peace">Global Harmony</option>
+<option value="yin-yang">Balance/Duality</option>
+<option value="om">Spiritual Zen</option>
+<option value="spider">Spooky/Network</option>
+<option value="skull-crossbones">Toxic/Danger</option>
+<option value="ghost">Apparition/Fun</option>
+<option value="hat-wizard">Magic/Fantasy</option>
+<option value="dungeon">Basement/Gaming</option>
+<option value="dragon">Mythical Beast</option>
+<option value="hippo">African Wildlife</option>
+<option value="otter">Playful Nature</option>
+<option value="crow">Avian/Darkness</option>
+<option value="feather-alt">Lightweight Writing</option>
+<option value="quill-pen">Classic Literature</option>
+<option value="scroll">Ancient Knowledge</option>
+<option value="hand-holding-usd">Financial Funding</option>
+<option value="hand-holding-heart">Charity Support</option>
+<option value="hands-helping">Team Cooperation</option>
+<option value="praying-hands">Faithful Devotion</option>
+<option value="balance-scale-left">Weight of Law</option>
+<option value="balance-scale-right">Court Justice</option>
+<option value="landmark">Civic Landmark</option>
+<option value="potted-plant">Interior Greenery</option>
+<option value="holly-berry">Seasonal Nature</option>
+<option value="smog">Pollution/Industry</option>
+
+<!-- HOUSEHOLD, ACCESSIBILITY & MISC (961-1000) -->
+<option value="soap">Personal Cleaning</option>
+<option value="sink">Kitchen Plumbing</option>
+<option value="baby-carriage">Parenting Goods</option>
+<option value="restroom">Public Amenity</option>
+<option value="blind">Vision Assistive</option>
+<option value="deaf">Hearing Assistive</option>
+<option value="assistive-listening-systems">Audio Support</option>
+<option value="universal-access">Global Design</option>
+<option value="sign-language">Inclusive Communication</option>
+<option value="low-vision">Accessibility UI</option>
+<option value="braille">Tactile Reading</option>
+<option value="tty">Communication Terminal</option>
+<option value="cart-arrow-down">Save for Later</option>
+<option value="cart-plus">Add to Shopping</option>
+<option value="cash-register">Checkout Counter</option>
+<option value="clinic-medical">Local Healthcare</option>
+<option value="comment-medical">Telehealth Chat</option>
+<option value="file-medical-alt">E-Health Records</option>
+<option value="laptop-medical">Digital Diagnostics</option>
+<option value="microscope">Deep Analysis</option>
+<option value="pager">Classic Alert</option>
+<option value="pills">Prescription Meds</option>
+<option value="poop">Humor/Emoji</option>
+<option value="prescription-bottle">Medication Supply</option>
+<option value="stethoscope">Heart Monitor</option>
+<option value="thermometer">Temperature Sensor</option>
+<option value="user-md">Expert Physician</option>
+<option value="user-nurse">Nursing Care</option>
+<option value="vials">Lab Diagnostics</option>
+<option value="weight">Measurement Mass</option>
+<option value="weight-hanging">Heavy Weight</option>
+<option value="wheelchair">Mobility Support</option>
+<option value="baby">Infancy Sector</option>
+<option value="candy-cane">Holiday Treats</option>
+<option value="cookie-bite">Snack Delight</option>
+<option value="fish">Seafood Protein</option>
+<option value="ice-cream">Dessert Shop</option>
+<option value="pizza-slice">Quick Bites</option>
+<option value="utensil-spoon">Dining Table</option>
+<option value="gem">Luxury Jewel</option>
+    </datalist>
+</div>
+
+<hr style="border-color:#2d3748; margin:20px 0;">
+
+<div class="input-group">
+    <label>Custom Brand Image (Optional)</label>
+    <input type="file" id="in_img" accept="image/*" onchange="previewUserImg(event)">
+</div>
+
+<div class="input-group">
+    <label>Background Image URL</label>
+    <input type="text" id="in_bg_img" placeholder="https://..." oninput="updateLogo()">
+</div>
+
+<div class="input-group">
+    <label>Visual Style Override</label>
+    <select id="in_vibe" onchange="shuffleLogo()">
+        <option value="none">Standard</option>
+        <option value="glass">Glassmorphism</option>
+        <option value="neo">Neumorphism</option>
+        <option value="neon">Neon Glow</option>
+        <option value="3d">3D Depth</option>
     </select>
 </div>
 
-<button onclick="magicShuffle()" class="w-full mt-4 bg-white border-2 border-indigo-600 text-indigo-600 font-black py-4 rounded-2xl hover:bg-indigo-50 transition-all uppercase text-xs tracking-widest shadow-sm">
-    ✨ Magic Shuffle
-</button>
+        <div class="input-group">
+            <label>Aspect Ratio</label>
+            <select id="in_shape" onchange="updateLogo()">
+                <option value="square">Square (1:1)</option>
+                <option value="rect">Landscape (3:2)</option>
+                <option value="circle">Circular</option>
+            </select>
+        </div>
 
-                <button onclick="generateLogos()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-indigo-200 transform hover:-translate-y-1 uppercase tracking-widest">
-                    Create My Brand
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 p-8">
-            <div id="welcomeScreen" class="text-center py-40">
-                <h2 class="text-5xl font-black text-gray-200 uppercase italic">Enter Business Info</h2>
-            </div>
-            <div id="logoGrid" class="grid-container"></div>
-
-
-            <!-- Professional Pagination UI -->
-<div id="paginationWrapper" class="hidden flex flex-col items-center mt-12 pb-20">
-    <div id="paginationButtons" class="flex items-center gap-2">
-        <!-- Buttons will be injected here -->
-    </div>
-    <p id="pageInfo" class="text-xs font-bold text-gray-400 mt-4 uppercase tracking-widest"></p>
-</div>
-
-
-        </main>
+        <button class="btn btn-magic" style="width: 100%;" onclick="shuffleLogo()">
+            <i class="fas fa-random"></i> Shuffle Infinite Designs
+        </button>
     </div>
 
-<script>
+    <div class="workspace">
+        <div id="logo-preview-container">
+           <div id="logo-content" class="logo-content-base">
+    <i id="logo-icon" class="fa-solid fa-bolt"></i>
+    <div class="text-group">
+        <div id="logo-text">NEXUS</div>
+        <div id="logo-slogan">INFINITE POSSIBILITIES</div>
+    </div>
+        </div>
+  </div>
+        <div class="controls">
+            <div class="dl-group">
+                <button class="btn btn-download">Download As <i class="fas fa-chevron-up"></i></button>
+                <div class="dl-menu">
+                    <button onclick="exportLogo('png')">PNG Image</button>
+                    <button onclick="exportLogo('jpg')">JPG Image</button>
+                    <button onclick="exportLogo('svg')">SVG Vector</button>
+                    <button onclick="exportLogo('pdf')">PDF Document</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+      const fonts = ['Abel', 'Abril Fatface', 'Anton', 'Arvo', 'Bebas Neue', 'Bitter', 'Bree Serif', 'Cabin', 'Cairo', 'Caveat', 'Comfortaa', 'Courgette', 'Crimson Text', 'Dancing Script', 'Dosis', 'Exo 2', 'Fira Sans', 'Fjalla One', 'Fredoka One', 'Hind', 'Inconsolata', 'Indie+Flower', 'Inter', 'Josefin Sans', 'Kanit', 'Lalezar', 'Lato', 'Lexend', 'Libre Baskerville', 'Lobster', 'Lora', 'Montserrat', 'Nunito', 'Open Sans', 'Oswald', 'Outfit', 'Pacifico', 'Playfair Display', 'Poppins', 'Quicksand', 'Raleway', 'Righteous', 'Roboto', 'Shadows Into Light', 'Space Grotesk', 'Syncopate', 'Teko', 'Titillium Web', 'Ubuntu', 'Varela Round'];
+        
+    function updateLogo() {
+            const name = document.getElementById('in_name').value;
+            const slogan = document.getElementById('in_slogan').value;
+            const iconInput = document.getElementById('in_icon').value.trim(); // Added trim
+            
+            document.getElementById('logo-text').innerText = name;
+            document.getElementById('logo-slogan').innerText = slogan;
+            
+            // This forces the icon to update immediately
+            const iconEl = document.getElementById('logo-icon');
+            iconEl.className = `fa-solid fa-${iconInput}`;
+            
+            const shape = document.getElementById('in_shape').value;
+            const container = document.getElementById('logo-preview-container');
+            if(shape === 'circle') { container.style.borderRadius = '50%'; container.style.width = '550px'; }
+            else if(shape === 'rect') { container.style.borderRadius = '0px'; container.style.width = '750px'; }
+            else { container.style.borderRadius = '0px'; container.style.width = '550px'; }
+        }
 
-const getAdvancedText = (name, style, color, font, weight) => {
-    const width = 400;
-    const height = 150;
-    let path = "";
-    let transform = "";
+     function previewUserImg(e) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                let img = document.getElementById('logo-user-img');
+                if(!img) {
+                    img = document.createElement('img');
+                    img.id = "logo-user-img";
+                    document.getElementById('logo-content').prepend(img);
+                }
+                img.src = reader.result;
+                img.style.maxWidth = "180px";
+                img.style.maxHeight = "180px";
+                img.style.marginBottom = "15px";
+                img.style.objectFit = "contain";
+                document.getElementById('logo-icon').style.display = "none";
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+function shuffleLogo() {
+    const container = document.getElementById('logo-preview-container');
+    const content = document.getElementById('logo-content');
+    const text = document.getElementById('logo-text');
+    const icon = document.getElementById('logo-icon');
+    const slogan = document.getElementById('logo-slogan');
+    const vibe = document.getElementById('in_vibe').value;
+    const name = document.getElementById('in_name').value;
+
+    // 1. Color Palette
+    const h = Math.floor(Math.random() * 360);
+    const isDark = Math.random() > 0.5;
+    const bgColor = isDark ? `hsl(${h}, 40%, 12%)` : `hsl(${h}, 15%, 98%)`;
+    const accent = isDark ? `hsl(${Math.random() * 360}, 80%, 75%)` : `hsl(${h}, 80%, 25%)`;
+
+    // 2. Apply Theme
+    container.style.background = bgColor;
+    container.style.color = accent;
+    container.style.border = "none";
+    container.style.padding = "40px";
+
+    // 3. Random Layout (1 to 20)
+    const layoutNum = Math.floor(Math.random() * 20) + 1;
+    content.className = "logo-content-base lay-" + layoutNum;
     
-    // Logic for different text shapes
-    if (style === 'arc') path = "M 50,120 Q 200,20 350,120";
-    else if (style === 'curve') path = "M 50,80 A 150,150 0 1,1 350,80";
-    else if (style === 'wave') path = "M 50,100 Q 125,50 200,100 T 350,100";
-    else return `<h2 style="font-family:${font}; color:${color}; font-weight:${weight};" class="text-3xl">${name}</h2>`;
-
-    return `
-    <svg viewBox="0 0 400 150" class="w-full h-24">
-        <path id="textPath" d="${path}" fill="transparent" />
-        <text fill="${color}" style="font-family:${font}; font-weight:${weight}; font-size:45px; letter-spacing:2px;">
-            <textPath href="#textPath" startOffset="50%" text-anchor="middle">${name}</textPath>
-        </text>
-    </svg>`;
-};
-
-
-
-
-
-
-
-let pageCache = {}; // Stores logos per page so they stay the same when going back
-let currentPage = 1;
-let lastLayout = -1; // To ensure layout variety
-const logosPerPage = 24;
-const maxPages = 100000; // Navigation limit (24,000,00 logos per session)
-
-
- // This engine generates 500 unique, professional palettes using Golden Angle distribution
-const generate500Palettes = () => {
-    const palettes = [
-        // We keep your initial high-quality manual palettes first
-        { main: '#6366f1', secondary: '#1e1b4b', bg: '#ffffff', grad: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)' },
-        { main: '#10b981', secondary: '#064e3b', bg: '#ffffff', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
-        { main: '#f43f5e', secondary: '#4c0519', bg: '#ffffff', grad: 'linear-gradient(135deg, #fb7185 0%, #e11d48 100%)' },
-        { main: '#0ea5e9', secondary: '#0c4a6e', bg: '#ffffff', grad: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)' },
-        { main: '#f59e0b', secondary: '#451a03', bg: '#ffffff', grad: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)' }
-    ];
-
-    const hslToHex = (h, s, l) => {
-        l /= 100;
-        const a = s * Math.min(l, 1 - l) / 100;
-        const f = n => {
-            const k = (n + h / 30) % 12;
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-            return Math.round(255 * color).toString(16).padStart(2, '0');
-        };
-        return `#${f(0)}${f(8)}${f(4)}`;
-    };
-
-    // Generate 495 additional unique palettes
-    for (let i = 0; i < 495; i++) {
-        // Use the Golden Angle to distribute hues evenly (0-360)
-        const hue = (i * 137.508) % 360; 
-        
-        // Vary saturation and lightness for professional branding looks
-        const saturation = 60 + (i % 30); // 60% to 90%
-        const lightness = 40 + (i % 20);  // 40% to 60%
-        
-        const mainColor = hslToHex(hue, saturation, lightness);
-        const secondaryColor = hslToHex(hue, saturation, lightness - 25); // Darker version
-        const accentColor = hslToHex((hue + 15) % 360, saturation, lightness - 10);
-        
-        palettes.push({
-            main: mainColor,
-            secondary: secondaryColor,
-            bg: '#ffffff',
-            grad: `linear-gradient(135deg, ${mainColor} 0%, ${accentColor} 100%)`
-        });
+    // 4. Typography & Icon Randomization
+    const font = fonts[Math.floor(Math.random() * fonts.length)];
+    text.style.fontFamily = font;
+    text.style.color = accent;
+    icon.style.color = accent;
+    slogan.style.color = accent;
+    slogan.style.opacity = "0.8";
+    
+    // 5. Special Layout Logic
+    icon.style.display = "block";
+    text.style.display = "block";
+    icon.innerText = ""; // Clear initials if any
+    
+    if(layoutNum === 4) { // Lettermark Logic
+        icon.innerText = name.charAt(0).toUpperCase();
+        icon.className = ""; // Remove fontawesome class
+    } else {
+        icon.className = `fa-solid fa-${document.getElementById('in_icon').value}`;
     }
-    return palettes;
-};
 
-// Initialize the 500 colors
-const colors = generate500Palettes();
+    if(layoutNum === 19) { // Icon Between logic
+        const mid = Math.ceil(name.length / 2);
+        const part1 = name.substring(0, mid);
+        const part2 = name.substring(mid);
+        text.innerHTML = `<span>${part1}</span> <i class="${icon.className}" style="font-size:0.8em"></i> <span>${part2}</span>`;
+        icon.style.display = "none";
+    } else {
+        text.innerHTML = name;
+    }
 
-  const fonts = [
-    // --- SANS-SERIF (Modern, Clean) ---
-    { name: 'Inter, sans-serif' }, { name: 'Montserrat, sans-serif' }, { name: 'Open Sans, sans-serif' }, 
-    { name: 'Roboto, sans-serif' }, { name: 'Lato, sans-serif' }, { name: 'Oswald, sans-serif' }, 
-    { name: 'Raleway, sans-serif' }, { name: 'Quicksand, sans-serif' }, { name: 'Be Vietnam Pro, sans-serif' }, 
-    { name: 'Lexend, sans-serif' }, { name: 'Kanit, sans-serif' }, { name: 'Heebo, sans-serif' }, 
-    { name: 'Work Sans, sans-serif' }, { name: 'DM Sans, sans-serif' }, { name: 'Plus Jakarta Sans, sans-serif' }, 
-    { name: 'Public Sans, sans-serif' }, { name: 'Manrope, sans-serif' }, { name: 'Jost, sans-serif' }, 
-    { name: 'Space Grotesk, sans-serif' }, { name: 'Syne, sans-serif' }, { name: 'Outfit, sans-serif' },
-    { name: 'Poppins, sans-serif' }, { name: 'Exo 2, sans-serif' }, { name: 'Archivo Black, sans-serif' },
+    // 6. Shape Logic
+    const shapeType = document.getElementById('in_shape').value;
+    if(shapeType === 'circle') container.style.borderRadius = "50%";
+    else if(shapeType === 'rect') container.style.width = "750px";
+    else { container.style.width = "550px"; container.style.borderRadius = "0px"; }
 
-    // --- SERIF (Elegant, High-End) ---
-    { name: 'Lora, serif' }, { name: 'Merriweather, serif' }, { name: 'PT Serif, serif' }, 
-    { name: 'Crimson Text, serif' }, { name: 'Noto Serif, serif' }, { name: 'Libre Baskerville, serif' }, 
-    { name: 'EB Garamond, serif' }, { name: 'Cormorant Garamond, serif' }, { name: 'Playfair Display, serif' }, 
-    { name: 'Bitter, serif' }, { name: 'DM Serif Display, serif' }, { name: 'Fraunces, serif' }, 
-    { name: 'Prata, serif' }, { name: 'Cinzel, serif' }, { name: 'Bodoni Moda, serif' }, 
-    { name: 'Spectral, serif' }, { name: 'Domine, serif' }, { name: 'Alice, serif' }, 
-    { name: 'Cardo, serif' }, { name: 'Faustina, serif' }, { name: 'Yeseva One, serif' },
-    { name: 'Volkhov, serif' }, { name: 'Tenor Sans, serif' }, { name: 'Forum, serif' },
-
-    // --- DISPLAY & BOLD (Branding, Logos) ---
-    { name: 'Bebas Neue, cursive' }, { name: 'Bungee, cursive' }, { name: 'Abril Fatface, cursive' }, 
-    { name: 'Fredoka One, cursive' }, { name: 'Righteous, cursive' }, { name: 'Comfortaa, cursive' }, 
-    { name: 'Russo One, cursive' }, { name: 'Bangers, cursive' }, { name: 'Carter One, cursive' }, 
-    { name: 'Shrikhand, cursive' }, { name: 'Monoton, cursive' }, { name: 'Titan One, cursive' }, 
-    { name: 'Alfa Slab One, cursive' }, { name: 'Ultra, cursive' }, { name: 'Passion One, cursive' },
-    { name: 'Anton, cursive' }, { name: 'Staatliches, cursive' }, { name: 'Saira Stencil One, cursive' },
-    { name: 'Syncopate, sans-serif' }, { name: 'Michroma, sans-serif' }, { name: 'Audiowide, cursive' }, 
-    { name: 'Orbitron, sans-serif' }, { name: 'Unbounded, sans-serif' }, { name: 'Phudu, cursive' },
-    { name: 'Rubik Mono One, sans-serif' }, { name: 'Press Start 2P, cursive' },
-
-    // --- MONOSPACE (Tech, Industrial) ---
-    { name: 'Fira Code, monospace' }, { name: 'Source Code Pro, monospace' }, { name: 'JetBrains Mono, monospace' }, 
-    { name: 'Inconsolata, monospace' }, { name: 'Courier Prime, monospace' }, { name: 'Space Mono, monospace' }, 
-    { name: 'Anonymous Pro, monospace' }, { name: 'Nanum Gothic Coding, monospace' }, { name: 'Major Mono Display, monospace' }, 
-    { name: 'Roboto Mono, monospace' },
-
-    // --- SCRIPT & HANDWRITTEN (Organic, Personal) ---
-    { name: 'Pacifico, cursive' }, { name: 'Permanent Marker, cursive' }, { name: 'Lobster, cursive' }, 
-    { name: 'Caveat, cursive' }, { name: 'Kaushan Script, cursive' }, { name: 'Shadows Into Light, cursive' }, 
-    { name: 'Amatic SC, cursive' }, { name: 'Gloria Hallelujah, cursive' }, { name: 'Indie Flower, cursive' }, 
-    { name: 'Dancing Script, cursive' }, { name: 'Great Vibes, cursive' }, { name: 'Sacramento, cursive' }, 
-    { name: 'Allura, cursive' }, { name: 'Cookie, cursive' }, { name: 'Satisfy, cursive' }, 
-    { name: 'Yellowtail, cursive' }, { name: 'Courgette, cursive' }, { name: 'Teko, sans-serif' },
-    { name: 'Rajdhani, sans-serif' }
-];
-
-const icons = {
-    tech: [
-        'ph:cpu-bold', 'lucide:cpu', 'mdi:robot-outline', 'tabler:atom-2', 'ph:cube-bold', 'lucide:layers', 'mdi:database-sync', 'tabler:binary', 
-        'ph:terminal-window-bold', 'lucide:code-2', 'ph:circuit-board-bold', 'mdi:laptop', 'tabler:microscope', 'ph:device-mobile-bold', 
-        'lucide:fingerprint', 'mdi:hard-disk', 'ph:hard-drives-bold', 'tabler:headset', 'lucide:mouse-pointer-2', 'ph:monitor-bold',
-        'carbon:chip', 'tabler:circuit-board', 'lucide:webhook', 'ph:unite-bold', 'mdi:api', 'carbon:blockchain', 'tabler:braces', 'ph:broadcast-bold', 
-        'lucide:cable', 'mdi:cast-connected', 'ph:cloud-check-bold', 'tabler:cloud-computing', 'lucide:command', 'ph:connect-without-contact-bold', 
-        'mdi:console', 'carbon:data-analytics', 'tabler:desktop-analytics', 'ph:devices-bold', 'lucide:dribbble', 'mdi:ethernet', 'ph:eye-bold', 
-        'tabler:file-code', 'lucide:filter', 'ph:flash-drive-bold', 'mdi:gamepad-variant', 'carbon:ibm-cloud', 'tabler:incoming-mail', 'ph:infinity-bold', 
-        'lucide:key', 'mdi:keyboard-outline', 'ph:link-bold', 'tabler:lock-access', 'lucide:megaphone', 'ph:microphone-bold', 'mdi:modem', 
-        'carbon:operations-record', 'tabler:package', 'ph:paper-plane-tilt-bold', 'lucide:phone-call', 'mdi:poker-chip', 'ph:power-bold', 
-        'tabler:printer', 'lucide:radio', 'ph:selection-all-bold', 'mdi:settings-helper', 'carbon:term', 'tabler:tool', 'ph:user-focus-bold', 
-        'lucide:video', 'mdi:vibrate', 'ph:watch-bold', 'tabler:wave-triangle', 'lucide:wind', 'ph:wrench-bold', 'mdi:xml', 'carbon:zoom-in', 
-        'tabler:access-point', 'ph:activity-bold', 'lucide:airplay', 'mdi:antenna', 'ph:aperture-bold', 'tabler:archive', 'lucide:asterisk', 
-        'ph:at-bold', 'mdi:auto-fix', 'carbon:barcode', 'tabler:battery-4', 'lucide:beaker', 'ph:bluetooth-bold', 'mdi:bluetooth-connect', 
-        'ph:bookmarks-bold', 'tabler:box-multiple', 'lucide:briefcase', 'ph:browser-bold', 'mdi:bug-outline', 'carbon:calculation', 'tabler:camera-selfie', 
-        'lucide:cast', 'ph:chart-bar-bold', 'mdi:chart-bubble', 'carbon:cloud-app', 'tabler:cloud-data-connection'
-    ],
-    realestate: [
-        'ph:house-line-bold', 'lucide:building-2', 'mdi:office-building-outline', 'tabler:key', 'ph:buildings-bold', 'lucide:warehouse', 
-        'mdi:castle', 'tabler:wall', 'ph:door-bold', 'lucide:tent', 'mdi:home-city-outline', 'ph:garage-bold', 'tabler:home-2', 'lucide:lamp',
-        'carbon:home', 'tabler:building-skyscraper', 'lucide:shrub', 'ph:tree-structure-bold', 'mdi:home-floor-1', 'ph:elevator-bold', 
-        'tabler:armchair', 'lucide:sofa', 'mdi:balcony', 'ph:bathtub-bold', 'carbon:store', 'tabler:window', 'lucide:door-open', 
-        'ph:armchair-bold', 'mdi:bed-outline', 'ph:bed-bold', 'tabler:building-community', 'lucide:fence', 'mdi:home-account', 'ph:home-bold', 
-        'carbon:location', 'tabler:map-pin', 'lucide:landmark', 'ph:bank-bold', 'mdi:bank-outline', 'ph:blueprint-bold', 'tabler:tool', 
-        'lucide:drill', 'mdi:home-automation', 'ph:lightbulb-bold', 'carbon:heat-map', 'tabler:building-factory', 'lucide:factory', 
-        'ph:factory-bold', 'mdi:home-heart', 'ph:magnifying-glass-plus-bold', 'tabler:search', 'lucide:search', 'mdi:home-search-outline', 
-        'ph:map-trifold-bold', 'carbon:map', 'tabler:map', 'lucide:map', 'ph:navigation-arrow-bold', 'mdi:door-closed', 'ph:identification-card-bold', 
-        'tabler:id', 'lucide:key-round', 'mdi:key-variant', 'ph:shield-check-bold', 'carbon:security', 'tabler:shield-check', 'lucide:shield', 
-        'ph:signpost-bold', 'mdi:sign-direction', 'ph:strategy-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:floor-plan', 'ph:ruler-bold', 
-        'carbon:rule', 'tabler:ruler-2', 'lucide:ruler', 'ph:tree-bold', 'mdi:tree-outline', 'ph:park-bold', 'tabler:trees', 'lucide:trees', 
-        'mdi:nature', 'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:sun', 'lucide:sun', 'ph:thermometer-hot-bold', 'mdi:home-thermometer', 
-        'ph:fan-bold', 'tabler:fan', 'mdi:gate', 'ph:ladder-bold', 'tabler:building-arch', 'mdi:fence-electric', 'ph:hammer-bold', 'lucide:utility-pole', 
-        'mdi:tools', 'tabler:home-bolt', 'ph:intersect-bold', 'mdi:vector-rectangle', 'carbon:area'
-    ],
-    food: [
-        'ph:cooking-pot-bold', 'lucide:utensils', 'mdi:pizza', 'tabler:tools-kitchen-2', 'ph:coffee-bold', 'lucide:cake', 'mdi:silverware-fork-knife',
-        'tabler:meat', 'ph:hamburger-bold', 'lucide:soup', 'mdi:food-apple-outline', 'tabler:egg', 'ph:bowl-food-bold', 'lucide:fish',
-        'carbon:restaurant', 'mdi:egg-fried', 'ph:apple-bold', 'carbon:strawberry', 'lucide:egg-fried', 'ph:orange-bold', 'tabler:lemon',
-        'lucide:citrus', 'mdi:lemon-outline', 'ph:cheese-bold', 'tabler:cheese', 'lucide:pizza', 'ph:pizza-bold', 'mdi:bread-slice-outline', 
-        'ph:bread-bold', 'tabler:bread', 'lucide:sandwich', 'mdi:hamburger-check', 'ph:bowl-steam-bold', 'carbon:haze-night', 'tabler:soup', 
-        'lucide:soup', 'ph:coffee-bean-bold', 'mdi:coffee-maker', 'ph:brandy-bold', 'tabler:glass-full', 'lucide:glass-water', 'mdi:glass-wine', 
-        'ph:wine-bold', 'carbon:drink-01', 'tabler:beer', 'lucide:beer', 'ph:beer-bottle-bold', 'mdi:bottle-wine-outline', 'ph:martini-bold', 
-        'tabler:cup', 'lucide:mug', 'mdi:tea', 'ph:tea-bag-bold', 'carbon:shopping-cart', 'tabler:basket', 'lucide:shopping-basket', 
-        'ph:shopping-cart-bold', 'mdi:cart-outline', 'ph:fork-knife-bold', 'tabler:chef-hat', 'lucide:chef-hat', 'mdi:chef-hat', 
-        'ph:hat-chef-bold', 'carbon:events', 'tabler:calendar-event', 'lucide:calendar-days', 'ph:calendar-bold', 'mdi:table-furniture', 
-        'ph:table-bold', 'tabler:table', 'lucide:refrigerator', 'mdi:fridge-outline', 'ph:fridge-bold', 'carbon:temperature-hot', 'tabler:flame', 
-        'lucide:flame', 'ph:fire-bold', 'mdi:fire-circle', 'ph:salt-bold', 'tabler:pepper', 'mdi:bottle-soda-outline', 'ph:ice-cream-bold', 
-        'mdi:ice-cream-outline', 'tabler:ice-cream', 'lucide:cookie', 'mdi:cookie-outline', 'ph:cookie-bold', 'tabler:candy', 'lucide:candy', 
-        'ph:candy-bold', 'mdi:cupcake', 'carbon:circle-dash', 'tabler:mushroom', 'ph:nut-bold', 'mdi:peanut-outline', 'ph:carrot-bold', 
-        'tabler:carrot', 'lucide:grape', 'mdi:fruit-grapes-outline'
-    ],
-    fashion: [
-        'ph:shirt-folded-bold', 'lucide:shopping-bag', 'tabler:hanger', 'mdi:diamond-stone', 'ph:crown-bold', 'lucide:gem', 'mdi:glasses',
-        'tabler:brand-sketch', 'ph:handbag-bold', 'lucide:watch', 'mdi:watch-variant', 'tabler:shoe', 'ph:high-heel-bold', 'lucide:shirt',
-        'carbon:store', 'mdi:shoe-heel', 'ph:sneaker-bold', 'lucide:footprints', 'mdi:shoe-print', 'ph:t-shirt-bold', 'carbon:category-add', 
-        'tabler:shirt', 'ph:pants-bold', 'mdi:dolly', 'ph:bag-bold', 'tabler:briefcase', 'lucide:briefcase', 'mdi:briefcase-outline', 
-        'ph:suit-case-bold', 'carbon:inventory-management', 'tabler:shopping-cart', 'lucide:shopping-cart', 'ph:shopping-cart-simple-bold', 
-        'mdi:cart-check', 'ph:tag-bold', 'tabler:tag', 'lucide:tag', 'mdi:tag-outline', 'ph:label-bold', 'carbon:tag-group', 'tabler:tags', 
-        'lucide:tags', 'ph:needle-bold', 'mdi:needle', 'ph:spool-bold', 'tabler:sewing-machine', 'lucide:scissors', 'mdi:scissors-cutting', 
-        'ph:scissors-bold', 'carbon:edge-node', 'tabler:cut', 'lucide:ribbon', 'ph:ribbon-bold', 'mdi:medal-outline', 'ph:dress-bold', 
-        'tabler:woman', 'lucide:person-standing', 'mdi:human-female', 'ph:user-bold', 'carbon:user-avatar', 'tabler:user', 'lucide:user', 
-        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'tabler:star', 'lucide:star', 'mdi:star-face', 'ph:sparkle-bold', 
-        'carbon:flash', 'tabler:brightness', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:palette-bold', 'tabler:palette', 
-        'lucide:palette', 'mdi:palette-outline', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:brush', 'ph:eye-bold', 
-        'mdi:eye-outline', 'ph:lipstick-bold', 'tabler:brand-instagram', 'lucide:instagram', 'mdi:instagram', 'ph:diamond-bold', 
-        'carbon:jewelry', 'tabler:diamond', 'lucide:annoyed', 'ph:mask-happy-bold', 'mdi:theater', 'ph:magic-wand-bold', 'tabler:wand',
-        'ph:wallet-bold', 'mdi:wallet-outline', 'tabler:wallet', 'lucide:pocket', 'ph:coat-hanger-bold', 'mdi:hanger', 'tabler:bowtie'
-    ],
-    health: [
-        'ph:heartbeat-bold', 'lucide:activity', 'mdi:stethoscope', 'tabler:pill', 'ph:first-aid-kit-bold', 'lucide:brain', 'mdi:dna',
-        'tabler:thermometer', 'ph:hospital-bold', 'lucide:hospital', 'mdi:hospital-marker', 'tabler:vaccine', 'ph:pill-bold', 'lucide:smile',
-        'carbon:medical', 'ph:first-aid-bold', 'tabler:first-aid-kit', 'lucide:first-aid', 'ph:baby-bold', 'mdi:baby-carriage', 'ph:bone-bold', 
-        'tabler:bone', 'lucide:bone', 'mdi:bone', 'ph:brain-bold', 'carbon:query', 'tabler:mood-smile', 'lucide:smile', 'ph:smiley-bold', 
-        'mdi:emoticon-happy-outline', 'ph:hand-heart-bold', 'tabler:heart-handshake', 'lucide:heart-pulse', 'mdi:heart-pulse', 'ph:pulse-bold', 
-        'carbon:friendship', 'tabler:users', 'lucide:users', 'ph:users-bold', 'mdi:account-group', 'ph:eye-bold', 'tabler:eye', 'lucide:eye', 
-        'mdi:eye-check-outline', 'ph:ear-bold', 'carbon:audio-console', 'tabler:ear', 'lucide:ear', 'ph:tooth-bold', 'mdi:tooth-outline', 
-        'ph:lungs-bold', 'tabler:lungs', 'lucide:wind', 'mdi:air-filter', 'ph:virus-bold', 'carbon:coronavirus', 'tabler:virus', 
-        'lucide:microscope', 'ph:microscope-bold', 'mdi:microscope', 'ph:test-tube-bold', 'tabler:test-pipe', 'lucide:beaker', 
-        'mdi:beaker-outline', 'ph:flask-bold', 'carbon:chemical-hazard', 'tabler:flask', 'lucide:flask-conical', 'ph:clipboard-text-bold', 
-        'mdi:clipboard-pulse-outline', 'ph:notebook-bold', 'tabler:report-medical', 'lucide:clipboard-list', 'mdi:file-document-edit-outline', 
-        'ph:file-text-bold', 'carbon:document', 'tabler:file-medical', 'lucide:file-heart', 'ph:heart-straight-bold', 'mdi:heart-plus-outline', 
-        'ph:plus-circle-bold', 'tabler:plus', 'lucide:plus-square', 'mdi:hospital-building', 'ph:ambulance-bold', 'carbon:ambulance', 
-        'tabler:ambulance', 'lucide:ambulance', 'ph:wheelchair-bold', 'mdi:wheelchair-accessibility', 'ph:person-bold', 'tabler:user',
-        'mdi:yoga', 'ph:peace-bold', 'tabler:bottle', 'lucide:flask-round', 'mdi:meditation', 'ph:flower-lotus-bold', 'tabler:stretcher'
-    ],
-
-
-
-
-
-// Add these inside your const icons = { ... } object:
-    finance: [
-        'ph:bank-bold', 'lucide:wallet', 'mdi:chart-line', 'tabler:coin', 'ph:credit-card-bold', 'mdi:piggy-bank-outline', 'lucide:landmark', 'carbon:finance', 'ph:currency-dollar-bold', 'tabler:currency-dollar',
-        'lucide:dollar-sign', 'mdi:currency-usd', 'ph:currency-eur-bold', 'tabler:currency-euro', 'lucide:euro', 'mdi:currency-eur', 'ph:chart-bar-bold', 'carbon:chart-bar', 'tabler:chart-bar', 'lucide:bar-chart-3',
-        'ph:chart-pie-bold', 'mdi:chart-pie', 'ph:chart-line-up-bold', 'carbon:growth', 'tabler:trending-up', 'lucide:trending-up', 'ph:arrows-clockwise-bold', 'mdi:autorenew', 'ph:calculator-bold', 'tabler:calculator',
-        'lucide:calculator', 'mdi:calculator', 'ph:safe-bold', 'carbon:security-as-a-service', 'tabler:vault', 'lucide:lock', 'ph:key-bold', 'mdi:key-outline', 'ph:receipt-bold', 'tabler:receipt',
-        'lucide:receipt', 'mdi:file-document-outline', 'ph:hand-coins-bold', 'carbon:send-alt', 'tabler:send', 'lucide:send', 'ph:trend-up-bold', 'mdi:finance', 'ph:stack-bold', 'tabler:layers-difference',
-        'lucide:layers', 'mdi:stack-overflow', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:magnifying-glass-bold', 'tabler:search',
-        'lucide:search', 'mdi:magnify', 'ph:shield-check-bold', 'carbon:safe', 'tabler:shield-check', 'lucide:shield-check', 'ph:shield-star-bold', 'mdi:verified', 'ph:seal-check-bold', 'tabler:discount-2',
-        'lucide:percent', 'mdi:percent', 'ph:percent-bold', 'carbon:percentage', 'tabler:percentage', 'lucide:calculator', 'ph:coins-bold', 'mdi:cash-multiple', 'ph:money-bold', 'tabler:cash',
-        'lucide:banknote', 'mdi:cash', 'ph:ticket-bold', 'carbon:ticket', 'tabler:ticket', 'lucide:ticket', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:scales-bold', 'tabler:scales',
-        'lucide:scales', 'mdi:scale-balance', 'ph:globe-bold', 'carbon:globe', 'tabler:world', 'lucide:globe', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:shield-plus-bold', 'tabler:lock-plus',
-        'mdi:bitcoin', 'ph:currency-btc-bold', 'tabler:currency-bitcoin', 'lucide:bitcoin', 'ph:hand-holding-heart-bold', 'mdi:charity', 'ph:presentation-chart-bold', 'tabler:presentation-analytics', 'lucide:line-chart', 'mdi:database-arrow-up',
-        'ph:briefcase-simple-bold', 'tabler:briefcase-2', 'ph:hand-eye-bold', 'mdi:finance', 'tabler:report-money', 'ph:money-wavy-bold', 'mdi:transfer', 'ph:lightning-bold', 'tabler:bolt', 'lucide:zap'
-    ],
-    edu: [
-        'ph:graduation-cap-bold', 'lucide:book-open', 'mdi:school-outline', 'tabler:certificate', 'ph:pencil-circle-bold', 'lucide:library', 'mdi:microscope', 'carbon:education', 'ph:book-bold', 'tabler:book',
-        'lucide:book', 'mdi:book-variant', 'ph:chalkboard-teacher-bold', 'carbon:teacher', 'tabler:presentation', 'lucide:presentation', 'ph:backpack-bold', 'mdi:backpack', 'ph:pencil-bold', 'tabler:pencil',
-        'lucide:pencil', 'mdi:lead-pencil', 'ph:ruler-bold', 'carbon:rule', 'tabler:ruler', 'lucide:ruler', 'ph:compass-bold', 'mdi:compass-outline', 'ph:exam-bold', 'tabler:notes',
-        'lucide:sticky-note', 'mdi:note-text-outline', 'ph:briefcase-bold', 'carbon:portfolio', 'tabler:briefcase', 'lucide:briefcase', 'ph:atom-bold', 'mdi:atom', 'ph:globe-bold', 'tabler:world',
-        'lucide:globe-2', 'mdi:earth', 'ph:brain-bold', 'carbon:idea', 'tabler:bulb', 'lucide:lightbulb', 'ph:medal-bold', 'mdi:medal', 'ph:trophy-bold', 'tabler:trophy',
-        'lucide:trophy', 'mdi:trophy-outline', 'ph:video-camera-bold', 'carbon:video', 'tabler:video', 'lucide:video', 'ph:microphone-stage-bold', 'mdi:microphone-variant', 'ph:student-bold', 'tabler:user-check',
-        'lucide:user-2', 'mdi:account-school', 'ph:users-four-bold', 'carbon:group', 'tabler:users', 'lucide:users', 'ph:puzzle-piece-bold', 'mdi:puzzle-outline', 'ph:strategy-bold', 'tabler:chess',
-        'lucide:gamepad', 'mdi:controller-classic-outline', 'ph:lamp-bold', 'carbon:light', 'tabler:lamp', 'lucide:lamp', 'ph:bell-bold', 'mdi:bell-outline', 'ph:clock-bold', 'tabler:clock',
-        'lucide:clock-4', 'mdi:timer-outline', 'ph:paper-plane-bold', 'carbon:send', 'tabler:send', 'lucide:send', 'ph:flask-bold', 'mdi:flask-outline', 'ph:test-tube-bold', 'tabler:test-pipe',
-        'lucide:beaker', 'mdi:flask', 'ph:paint-brush-bold', 'carbon:paint-brush', 'tabler:brush', 'lucide:palette', 'ph:music-note-bold', 'mdi:music-note', 'ph:piano-key-bold', 'tabler:music',
-        'lucide:music', 'mdi:music', 'ph:microscope-bold', 'tabler:microscope', 'mdi:telescope', 'ph:binoculars-bold', 'tabler:binoculars', 'lucide:binoculars', 'ph:dna-bold', 'tabler:dna',
-        'lucide:dna', 'mdi:dna', 'ph:atom-bold', 'tabler:atom', 'lucide:atom', 'mdi:molecule', 'ph:lightning-bold', 'tabler:bolt', 'lucide:zap', 'mdi:flash-outline'
-    ],
-    travel: [
-        'ph:airplane-tilt-bold', 'lucide:globe', 'mdi:map-marker-outline', 'tabler:compass', 'ph:mountains-bold', 'lucide:palmtree', 'mdi:beach', 'carbon:plane', 'ph:map-trifold-bold', 'tabler:map',
-        'lucide:map-pin', 'mdi:map-legend', 'ph:camera-bold', 'mdi:camera-outline', 'ph:suitcase-rolling-bold', 'carbon:suitcase', 'tabler:luggage', 'lucide:luggage', 'ph:ticket-bold', 'mdi:ticket-outline',
-        'ph:compass-rose-bold', 'tabler:navigation', 'lucide:navigation-2', 'mdi:compass-rose', 'ph:hotel-bold', 'carbon:hotel', 'tabler:building-skyscraper', 'lucide:building', 'ph:bed-bold', 'mdi:bed-empty',
-        'ph:train-bold', 'carbon:train', 'tabler:train', 'lucide:train', 'ph:bus-bold', 'mdi:bus', 'ph:car-bold', 'tabler:car', 'lucide:car', 'mdi:car-hatchback',
-        'ph:bicycle-bold', 'carbon:bicycle', 'tabler:bike', 'lucide:bike', 'ph:boat-bold', 'mdi:sailboat', 'ph:anchor-bold', 'tabler:anchor', 'lucide:anchor', 'mdi:anchor',
-        'ph:cloud-sun-bold', 'carbon:cloud-sun', 'tabler:cloud-sun', 'lucide:cloud-sun', 'ph:umbrella-bold', 'mdi:beach-umbrella', 'ph:sun-horizon-bold', 'carbon:sunset', 'tabler:sunset', 'lucide:sunset',
-        'ph:thermometer-hot-bold', 'carbon:temperature-hot', 'tabler:temperature', 'lucide:thermometer-sun', 'ph:flag-bold', 'mdi:flag-variant-outline', 'ph:signpost-bold', 'tabler:signpost', 'lucide:signpost', 'mdi:sign-direction',
-        'ph:globe-stand-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'tabler:world-latitude', 'lucide:languages', 'ph:translate-bold', 'mdi:translate', 'ph:passport-bold', 'mdi:passport',
-        'ph:wallet-bold', 'carbon:wallet', 'tabler:wallet', 'lucide:wallet', 'ph:magnifying-glass-location-bold', 'mdi:map-search-outline', 'ph:binoculars-bold', 'mdi:binoculars', 'ph:backpack-bold', 'tabler:backpack',
-        'lucide:backpack', 'mdi:hiking', 'ph:tent-bold', 'carbon:campsite', 'tabler:tent', 'lucide:tent', 'ph:campfire-bold', 'mdi:campfire', 'ph:island-bold', 'tabler:island',
-        'mdi:palm-tree', 'ph:tree-palm-bold', 'tabler:beach', 'lucide:sun', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:star-bold', 'tabler:star', 'lucide:star', 'mdi:star-outline'
-    ],
-    sport: [
-        'ph:trophy-bold', 'lucide:dumbbell', 'mdi:run', 'tabler:ball-football', 'ph:fire-bold', 'lucide:timer', 'mdi:medal-outline', 'carbon:flash', 'ph:soccer-ball-bold', 'mdi:soccer',
-        'ph:basketball-bold', 'mdi:basketball', 'ph:tennis-ball-bold', 'mdi:tennis-ball', 'ph:volleyball-bold', 'mdi:volleyball', 'ph:baseball-bold', 'mdi:baseball', 'ph:eight-ball-bold', 'mdi:billiards',
-        'ph:ping-pong-bold', 'tabler:ping-pong', 'ph:bowling-ball-bold', 'mdi:bowling', 'ph:boxing-glove-bold', 'mdi:boxing-glove', 'ph:bicycle-bold', 'mdi:bike', 'ph:skateboard-bold', 'mdi:skateboard',
-        'ph:swimming-pool-bold', 'mdi:swim', 'ph:mountain-bold', 'mdi:hiking', 'ph:climbing-bold', 'mdi:climbing', 'ph:fishing-bold', 'mdi:fish', 'ph:sneaker-bold', 'mdi:shoe-sneaker',
-        'ph:t-shirt-bold', 'mdi:tshirt-crew', 'ph:whistle-bold', 'mdi:whistle', 'ph:stopwatch-bold', 'mdi:stopwatch-outline', 'ph:timer-bold', 'tabler:timer', 'lucide:watch', 'mdi:clock-fast',
-        'ph:target-bold', 'mdi:target', 'ph:flag-banner-bold', 'tabler:flag', 'lucide:flag', 'mdi:flag-checkered', 'ph:barbell-bold', 'mdi:weight-lifter', 'ph:activity-bold', 'mdi:pulse',
-        'ph:heartbeat-bold', 'mdi:heart-flash', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:power-bold', 'mdi:power-plug', 'ph:trend-up-bold', 'mdi:trending-up', 'ph:crown-bold', 'mdi:crown',
-        'ph:medal-bold', 'mdi:medal', 'ph:first-aid-kit-bold', 'mdi:briefcase-medical', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:scales-bold', 'mdi:scale-bathroom', 'ph:ruler-bold', 'mdi:tape-measure',
-        'ph:user-bold', 'mdi:account', 'ph:users-bold', 'mdi:account-group', 'ph:handshake-bold', 'mdi:handshake', 'ph:thumbs-up-bold', 'mdi:thumb-up-outline', 'ph:star-bold', 'mdi:star-outline',
-        'ph:rocket-launch-bold', 'mdi:rocket-launch', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:bell-bold', 'mdi:bell',
-        'mdi:karate', 'ph:hand-fist-bold', 'tabler:stretching', 'lucide:accessibility', 'mdi:jump-rope', 'ph:sneaker-move-bold', 'tabler:yoga', 'lucide:zap', 'mdi:arm-flex-outline', 'ph:speedometer-bold'
-    ],
-    art: [
-        'ph:palette-bold', 'lucide:brush', 'mdi:draw', 'tabler:photo', 'ph:camera-bold', 'lucide:pen-tool', 'mdi:vector-square', 'carbon:paint-brush', 'ph:paint-brush-bold', 'tabler:brush',
-        'ph:paint-roller-bold', 'mdi:format-paint', 'ph:pencil-bold', 'tabler:pencil', 'lucide:pencil', 'mdi:pencil-outline', 'ph:fountain-pen-bold', 'tabler:writing', 'lucide:pen-tool', 'mdi:vector-bezier',
-        'ph:selection-all-bold', 'mdi:select-all', 'ph:layers-bold', 'tabler:layers-intersect', 'lucide:layers', 'mdi:layers-outline', 'ph:stack-bold', 'mdi:stack-overflow', 'ph:crop-bold', 'tabler:crop',
-        'lucide:crop', 'mdi:crop', 'ph:frame-bold', 'tabler:frame', 'lucide:frame', 'mdi:picture-in-picture-bottom-right-outline', 'ph:image-bold', 'mdi:image-filter-hdr', 'ph:video-camera-bold', 'mdi:video-outline',
-        'ph:aperture-bold', 'tabler:aperture', 'lucide:aperture', 'mdi:camera-iris', 'ph:film-script-bold', 'mdi:filmstrip', 'ph:projector-screen-bold', 'mdi:projector', 'ph:speaker-hifi-bold', 'mdi:speaker',
-        'ph:music-note-bold', 'mdi:music-note', 'ph:guitar-bold', 'mdi:guitar-acoustic', 'ph:piano-key-bold', 'mdi:piano', 'ph:microphone-bold', 'mdi:microphone', 'ph:headphones-bold', 'mdi:headphones',
-        'ph:monitor-bold', 'mdi:monitor', 'ph:desktop-bold', 'mdi:desktop-mac', 'ph:smartphone-bold', 'mdi:cellphone', 'ph:tablet-bold', 'mdi:tablet-ipad', 'ph:laptop-bold', 'mdi:laptop',
-        'ph:mouse-bold', 'mdi:mouse', 'ph:keyboard-bold', 'mdi:keyboard', 'ph:printer-bold', 'mdi:printer', 'ph:scanner-bold', 'mdi:scanner', 'ph:briefcase-bold', 'mdi:briefcase',
-        'ph:cube-bold', 'mdi:cube-outline', 'ph:sphere-bold', 'mdi:sphere', 'ph:cylinder-bold', 'mdi:cylinder', 'ph:triangle-bold', 'mdi:triangle-outline', 'ph:square-bold', 'mdi:square-outline',
-        'ph:circle-bold', 'mdi:circle-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:heart-bold', 'mdi:heart-outline', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-bold', 'mdi:white-balance-sunny',
-        'mdi:theater', 'ph:mask-happy-bold', 'tabler:masks-theater', 'lucide:drama', 'ph:paint-bucket-bold', 'mdi:format-color-fill', 'tabler:color-picker', 'lucide:pipette', 'mdi:feather', 'ph:feather-bold'
-    ],
-
-
-
-
-
-
-// Add these inside your const icons = { ... } object to complete it:
-    beauty: [
-        'ph:sparkle-bold', 'lucide:flower-2', 'mdi:face-woman-outline', 'tabler:pills', 'ph:moon-stars-bold', 'lucide:sun', 'mdi:shimmer', 'carbon:content-view', 'ph:butterfly-bold', 'mdi:butterfly-outline',
-        'ph:scissors-bold', 'tabler:scissors', 'lucide:scissors', 'mdi:content-cut', 'ph:lipstick-bold', 'mdi:lipstick', 'ph:eye-bold', 'mdi:eye-outline', 'ph:eyeliner-bold', 'mdi:eye-plus-outline',
-        'ph:hand-fist-bold', 'mdi:hand-back-right-outline', 'ph:nail-polish-bold', 'mdi:nail-polish', 'ph:hair-dryer-bold', 'mdi:hair-dryer', 'ph:mirror-bold', 'mdi:mirror-variant', 'ph:spray-bottle-bold', 'mdi:spray-bottle',
-        'ph:jar-bold', 'mdi:bottle-tonic-outline', 'ph:flower-lotus-bold', 'mdi:flower-tulip-outline', 'ph:leaf-bold', 'mdi:leaf-maple', 'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint',
-        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:diamond-bold', 'mdi:diamond-outline', 'ph:crown-bold', 'mdi:crown-outline', 'ph:magic-wand-bold', 'mdi:magic-staff',
-        'ph:rainbow-bold', 'mdi:rainbow', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:sun-dim-bold', 'mdi:sun-angle-outline', 'ph:wind-bold', 'mdi:wind-power-outline', 'ph:bird-bold', 'mdi:bird',
-        'ph:feather-bold', 'mdi:feather', 'ph:mask-happy-bold', 'mdi:emoticon-happy-outline', 'ph:woman-bold', 'mdi:human-female', 'ph:user-bold', 'mdi:account-outline', 'ph:users-bold', 'mdi:account-group-outline',
-        'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:palette-bold', 'mdi:palette-outline', 'ph:paint-brush-bold', 'mdi:brush-outline', 'ph:gift-bold', 'mdi:gift-outline',
-        'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline',
-        'ph:bell-bold', 'mdi:bell-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth',
-        'tabler:skincare', 'mdi:face-mask-outline', 'ph:sparkles-bold', 'lucide:sparkles', 'tabler:bottle', 'ph:spray-bottle-bold', 'mdi:face-agent', 'ph:smiley-wink-bold', 'tabler:massage', 'mdi:spa-outline',
-        'ph:flower-bold', 'tabler:flower', 'lucide:lotus', 'mdi:clover', 'ph:crown-simple-bold', 'tabler:premium-rights', 'ph:sketch-logo-bold', 'tabler:brand-sketch', 'mdi:creation', 'ph:magic-wand-bold'
-    ],
-    legal: [
-        'ph:scales-bold', 'lucide:gavel', 'mdi:shield-account-outline', 'tabler:law', 'ph:briefcase-bold', 'lucide:fingerprint', 'mdi:balance-scale', 'carbon:security', 'ph:shield-bold', 'mdi:shield-outline',
-        'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:shield-star-bold', 'mdi:shield-star-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:lock-open-bold', 'mdi:lock-open-outline', 'ph:key-bold', 'mdi:key-outline',
-        'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:identification-badge-bold', 'mdi:badge-account-horizontal-outline', 'ph:file-text-bold', 'mdi:file-document-outline', 'ph:file-check-bold', 'mdi:file-check-outline', 'ph:file-lock-bold', 'mdi:file-lock-outline',
-        'ph:notebook-bold', 'mdi:notebook-outline', 'ph:signature-bold', 'mdi:draw-pen', 'ph:stamp-bold', 'mdi:stamp', 'ph:books-bold', 'mdi:bookshelf', 'ph:bank-bold', 'mdi:bank-outline',
-        'ph:landmark-bold', 'mdi:office-building-outline', 'ph:courthouse-bold', 'mdi:town-hall', 'ph:police-car-bold', 'mdi:police-badge-outline', 'ph:handcuffs-bold', 'mdi:handcuffs', 'ph:eye-bold', 'mdi:eye-outline',
-        'ph:magnifying-glass-bold', 'mdi:magnify', 'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:user-focus-bold', 'mdi:account-search-outline', 'ph:globe-bold', 'mdi:earth',
-        'ph:balance-bold', 'mdi:scale', 'ph:gavel-bold', 'mdi:gavel', 'ph:hammer-bold', 'mdi:hammer', 'ph:folder-bold', 'mdi:folder-outline', 'ph:folder-simple-lock-bold', 'mdi:folder-lock-outline',
-        'ph:folder-open-bold', 'mdi:folder-open-outline', 'ph:archive-bold', 'mdi:archive-outline', 'ph:briefcase-metal-bold', 'mdi:bag-checked', 'ph:newspaper-bold', 'mdi:newspaper-variant-outline', 'ph:chat-centered-text-bold', 'mdi:chat-outline',
-        'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:clock-bold', 'mdi:clock-outline',
-        'ph:info-bold', 'mdi:information-outline', 'ph:question-bold', 'mdi:help-circle-outline', 'ph:check-circle-bold', 'mdi:check-circle-outline', 'ph:x-circle-bold', 'mdi:close-circle-outline', 'ph:warning-bold', 'mdi:alert-outline',
-        'tabler:gavel', 'lucide:scale', 'ph:read-cv-logo-bold', 'mdi:script-text-outline', 'tabler:file-certificate', 'ph:certificate-bold', 'mdi:medal-outline', 'ph:shield-slash-bold', 'tabler:shield-off', 'mdi:eye-off-outline'
-    ],
-    pet: [
-        'ph:dog-bold', 'lucide:paw-print', 'mdi:cat', 'tabler:bone', 'ph:bird-bold', 'mdi:fish', 'lucide:bug', 'carbon:pet-care', 'ph:paw-print-bold', 'mdi:paw',
-        'ph:horse-bold', 'mdi:horse', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:cow-bold', 'mdi:cow', 'ph:sheep-bold', 'mdi:sheep', 'ph:pig-bold', 'mdi:pig',
-        'ph:snake-bold', 'mdi:snake', 'ph:bug-bold', 'mdi:bug-outline', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:bee-bold', 'mdi:bee', 'ph:heart-bold', 'mdi:heart-outline',
-        'ph:house-bold', 'mdi:home-outline', 'ph:bone-bold', 'mdi:bone', 'ph:fish-bold', 'mdi:fish-bowl-outline', 'ph:bowl-food-bold', 'mdi:bowl-mix-outline', 'ph:first-aid-bold', 'mdi:medication-outline',
-        'ph:stethoscope-bold', 'mdi:stethoscope', 'ph:syringe-bold', 'mdi:needle', 'ph:thermometer-bold', 'mdi:thermometer', 'ph:identification-card-bold', 'mdi:card-account-details-outline', 'ph:magnifying-glass-bold', 'mdi:magnify',
-        'ph:users-bold', 'mdi:account-group-outline', 'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline',
-        'ph:tag-bold', 'mdi:tag-outline', 'ph:gift-bold', 'mdi:gift-outline', 'ph:clock-bold', 'mdi:clock-outline', 'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline',
-        'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:globe-bold', 'mdi:earth', 'ph:star-bold', 'mdi:star-outline',
-        'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:leaf-bold', 'mdi:leaf', 'ph:tree-bold', 'mdi:tree-outline',
-        'ph:water-bold', 'mdi:water-outline', 'ph:drop-bold', 'mdi:tint', 'ph:shield-bold', 'mdi:shield-outline', 'ph:lock-bold', 'mdi:lock-outline', 'ph:key-bold', 'mdi:key-outline',
-        'tabler:dog', 'lucide:dog', 'ph:cat-bold', 'tabler:cat', 'mdi:cat', 'tabler:fish-hook', 'ph:fish-simple-bold', 'mdi:fish-off', 'tabler:paws', 'lucide:bone'
-    ],
-    music: [
-        'ph:music-notes-bold', 'lucide:mic-2', 'mdi:headphones', 'tabler:disc', 'ph:speaker-hifi-bold', 'lucide:guitar', 'mdi:piano', 'carbon:music', 'ph:microphone-bold', 'mdi:microphone-variant',
-        'ph:microphone-stage-bold', 'mdi:microphone-settings', 'ph:speaker-high-bold', 'mdi:speaker-multiple', 'ph:speaker-none-bold', 'mdi:speaker-off', 'ph:headphones-bold', 'mdi:headset', 'ph:earphones-bold', 'mdi:earbuds',
-        'ph:vinyl-record-bold', 'mdi:record-player', 'ph:disc-bold', 'mdi:disc-player', 'ph:cassette-tape-bold', 'mdi:cassette', 'ph:radio-bold', 'mdi:radio', 'ph:boom-box-bold', 'mdi:boombox',
-        'ph:piano-key-bold', 'mdi:keyboard-variant', 'ph:guitar-bold', 'mdi:guitar-electric', 'ph:trumpet-bold', 'mdi:trumpet', 'ph:metronome-bold', 'mdi:metronome', 'ph:playlist-bold', 'mdi:playlist-music',
-        'ph:equalizer-bold', 'mdi:equalizer', 'ph:waveform-bold', 'mdi:waveform', 'ph:sound-module-bold', 'mdi:tune-vertical', 'ph:broadcast-bold', 'mdi:broadcast', 'ph:antenna-bold', 'mdi:antenna',
-        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:sparkle-bold', 'mdi:shimmer',
-        'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:moon-bold', 'mdi:moon-waning-crescent', 'ph:cloud-bold', 'mdi:cloud-outline', 'ph:globe-bold', 'mdi:earth', 'ph:users-bold', 'mdi:account-group-outline',
-        'ph:user-bold', 'mdi:account-outline', 'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:video-camera-bold', 'mdi:video-outline', 'ph:film-strip-bold', 'mdi:filmstrip',
-        'ph:briefcase-bold', 'mdi:briefcase-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:ticket-bold', 'mdi:ticket-outline', 'ph:clock-bold', 'mdi:clock-outline',
-        'ph:calendar-bold', 'mdi:calendar-outline', 'ph:bell-bold', 'mdi:bell-outline', 'ph:phone-bold', 'mdi:phone-outline', 'ph:envelope-bold', 'mdi:email-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline',
-        'tabler:music', 'lucide:music', 'ph:music-note-simple-bold', 'tabler:brand-soundcloud', 'mdi:soundcloud', 'ph:spotify-logo-bold', 'tabler:brand-spotify', 'mdi:spotify', 'ph:apple-logo-bold', 'tabler:brand-apple'
-    ],
-    nature: [
-        'ph:leaf-bold', 'lucide:sprout', 'mdi:tree-outline', 'tabler:plant', 'ph:cloud-sun-bold', 'lucide:wind', 'mdi:flower-outline', 'carbon:agriculture', 'ph:tree-bold', 'mdi:tree',
-        'ph:tree-evergreen-bold', 'mdi:pine-tree', 'ph:tree-palm-bold', 'mdi:palm-tree', 'ph:flower-bold', 'mdi:flower', 'ph:flower-tulip-bold', 'mdi:flower-tulip', 'ph:flower-lotus-bold', 'mdi:flower-poppy',
-        'ph:plant-bold', 'mdi:sprout-outline', 'ph:cactus-bold', 'mdi:cactus', 'ph:sun-bold', 'mdi:white-balance-sunny', 'ph:sun-dim-bold', 'mdi:sun-angle', 'ph:moon-bold', 'mdi:moon-waning-crescent',
-        'ph:cloud-bold', 'mdi:cloud-outline', 'ph:cloud-rain-bold', 'mdi:cloud-rain', 'ph:cloud-snow-bold', 'mdi:cloud-snow', 'ph:cloud-lightning-bold', 'mdi:cloud-flash', 'ph:rainbow-bold', 'mdi:rainbow',
-        'ph:drop-bold', 'mdi:tint', 'ph:water-bold', 'mdi:water', 'ph:waves-bold', 'mdi:waves', 'ph:mountains-bold', 'mdi:mountain', 'ph:volcano-bold', 'mdi:volcano',
-        'ph:globe-bold', 'mdi:earth', 'ph:world-bold', 'carbon:earth', 'ph:compass-bold', 'mdi:compass-outline', 'ph:map-pin-bold', 'mdi:map-marker-outline', 'ph:binoculars-bold', 'mdi:binoculars',
-        'ph:bird-bold', 'mdi:bird', 'ph:butterfly-bold', 'mdi:butterfly', 'ph:fish-bold', 'mdi:fish', 'ph:rabbit-bold', 'mdi:rabbit', 'ph:bug-bold', 'mdi:bug',
-        'ph:heart-bold', 'mdi:heart-outline', 'ph:star-bold', 'mdi:star-outline', 'ph:recycle-bold', 'mdi:recycle', 'ph:shield-check-bold', 'mdi:shield-check-outline', 'ph:thermometer-bold', 'mdi:thermometer',
-        'ph:wind-bold', 'mdi:wind-power-outline', 'ph:fire-bold', 'mdi:fire-outline', 'ph:lightning-bold', 'mdi:lightning-bolt-outline', 'ph:sparkle-bold', 'mdi:shimmer', 'ph:footprints-bold', 'mdi:shoe-print',
-        'ph:camera-bold', 'mdi:camera-outline', 'ph:image-bold', 'mdi:image-outline', 'ph:shopping-bag-bold', 'mdi:shopping-outline', 'ph:tag-bold', 'mdi:tag-outline', 'ph:clock-bold', 'mdi:clock-outline',
-        'tabler:leaf', 'lucide:leaf', 'ph:leaf-simple-bold', 'tabler:sprout', 'mdi:leaf-off', 'ph:paw-print-bold', 'tabler:paw', 'lucide:paw-print', 'mdi:seed-outline', 'ph:seedling-bold'
-    ]
-};
-
-
-
-const industryRules = {
-    tech: { hues: [190, 250], fonts: ['Orbitron', 'Space Grotesk', 'Unbounded', 'JetBrains Mono'] },
-    realestate: { hues: [200, 230], fonts: ['Cinzel', 'Libre Baskerville', 'Lora', 'Prata'] },
-    food: { hues: [0, 45], fonts: ['Bangers', 'Fredoka One', 'Pacifico', 'Satisfy'] },
-    fashion: { hues: [300, 350], fonts: ['Playfair Display', 'Alice', 'Fraunces', 'Prata'] },
-    health: { hues: [160, 190], fonts: ['Outfit', 'Quicksand', 'Comfortaa', 'Manrope'] },
-    finance: { hues: [210, 240], fonts: ['Cinzel', 'Libre Baskerville', 'EB Garamond', 'Domine'] },
-    edu: { hues: [200, 220], fonts: ['Merriweather', 'Lora', 'Cardo', 'Crimson Text'] },
-    travel: { hues: [180, 210], fonts: ['Exo 2', 'Jost', 'Raleway'] },
-    sport: { hues: [0, 20], fonts: ['Anton', 'Archivo Black', 'Russo One', 'Bebas Neue'] },
-    art: { hues: [260, 300], fonts: ['Syne', 'Unbounded', 'Righteous', 'Shrikhand'] },
-    beauty: { hues: [320, 350], fonts: ['Allura', 'Dancing Script', 'Great Vibes'] },
-    legal: { hues: [210, 230], fonts: ['Bodoni Moda', 'EB Garamond', 'Forum'] },
-    pet: { hues: [20, 50], fonts: ['Fredoka One', 'Comfortaa', 'Indie Flower'] },
-    music: { hues: [270, 320], fonts: ['Monoton', 'Syncopate', 'Press Start 2P'] },
-    nature: { hues: [100, 140], fonts: ['Alice', 'Lora', 'Work Sans', 'Quicksand'] }
-};
-
-
-
-const designConsistencyEngine = {
-    tech: { iconScale: 0.9, textSpacing: '0.1em', shadow: '0 10px 30px rgba(99,102,241,0.2)' },
-    realestate: { iconScale: 0.8, textSpacing: '0.2em', shadow: '0 15px 35px rgba(0,0,0,0.05)' },
-    food: { iconScale: 1.1, textSpacing: '0.01em', shadow: '0 12px 25px rgba(244,63,94,0.15)' },
-    fashion: { iconScale: 0.85, textSpacing: '0.4em', shadow: '0 20px 40px rgba(0,0,0,0.1)' },
-    health: { iconScale: 0.9, textSpacing: '0.15em', shadow: '0 8px 20px rgba(16,185,129,0.1)' },
-    finance: { iconScale: 0.8, textSpacing: '0.1em', shadow: '0 10px 30px rgba(30,58,138,0.1)' },
-    edu: { iconScale: 0.9, textSpacing: '0.05em', shadow: '0 5px 15px rgba(0,0,0,0.05)' },
-    travel: { iconScale: 1.0, textSpacing: '0.2em', shadow: '0 10px 25px rgba(14,165,233,0.15)' },
-    sport: { iconScale: 1.2, textSpacing: '-0.02em', shadow: '0 15px 30px rgba(239,68,68,0.2)' },
-    art: { iconScale: 1.0, textSpacing: '0.1em', shadow: '0 20px 50px rgba(139,92,246,0.2)' },
-    beauty: { iconScale: 0.9, textSpacing: '0.3em', shadow: '0 10px 40px rgba(236,72,153,0.1)' },
-    legal: { iconScale: 0.8, textSpacing: '0.2em', shadow: '0 10px 20px rgba(0,0,0,0.1)' },
-    pet: { iconScale: 1.1, textSpacing: '0.05em', shadow: '0 12px 24px rgba(245,158,11,0.15)' },
-    music: { iconScale: 1.3, textSpacing: '0.1em', shadow: '0 15px 45px rgba(168,85,247,0.3)' },
-    nature: { iconScale: 1.0, textSpacing: '0.2em', shadow: '0 10px 30px rgba(34,197,94,0.1)' }
-};
-
-
-const personalityRules = {
-    modern: { weight: '800', spacing: '0.1em', transform: 'uppercase', iconStyle: 'bold' },
-    classic: { weight: '400', spacing: '0.05em', transform: 'none', iconStyle: 'outline' },
-    luxury: { weight: '300', spacing: '0.4em', transform: 'uppercase', iconStyle: 'thin' },
-    playful: { weight: '600', spacing: '0em', transform: 'none', iconStyle: 'bold' },
-    minimal: { weight: '400', spacing: '0.2em', transform: 'lowercase', iconStyle: 'outline' },
-    bold: { weight: '900', spacing: '-0.02em', transform: 'uppercase', iconStyle: 'bold' }
-};
-
-
-const advancedLettering = (color) => [
-    { type: '3d', style: `text-shadow: 1px 1px ${color}, 2px 2px ${color}88, 3px 3px ${color}44, 4px 4px rgba(0,0,0,0.1);` },
-    { type: 'block', style: `-webkit-text-stroke: 1.5px ${color}; color: transparent;` },
-    { type: 'glow', style: `filter: drop-shadow(0 0 10px ${color}66);` },
-    { type: 'italic', style: `font-style: italic;` },
-    { type: 'bold', style: `font-weight: 900; transform: scale(1.1);` }
-];
-
-
-
-
-    let lastColor = -1;
-
-function generateLogos() {
-    if(!document.getElementById('bizName').value) return alert("Enter Business Name");
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('paginationWrapper').classList.remove('hidden');
-    
-    pageCache = {}; // Clear previous session
-    renderPage(1);
+    // 7. WOW Effects (Glass/Neo/Neon)
+    if(vibe === 'glass') container.classList.add('glass');
+    if(vibe === 'neo') container.classList.add('neo');
+    if(vibe === 'neon') text.style.textShadow = `0 0 15px ${accent}`;
 }
+      async function exportLogo(fmt) {
+    const container = document.getElementById('logo-preview-container');
+    const brandName = document.getElementById('in_name').value || 'Logo';
 
-
-function renderPage(page) {
-    // 1. Update the Global Current Page
-    currentPage = page;
-    
-    const grid = document.getElementById('logoGrid');
-    grid.innerHTML = '';
-    
-    // 2. Check Cache or Generate New Batch
-    if (!pageCache[currentPage]) {
-        pageCache[currentPage] = generateLogoDataBatch();
+ if (fmt === 'svg') {
+        const canvas = await html2canvas(container, { backgroundColor: null, scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
+        
+        // This creates an SVG container and embeds the High-Res logo as a vector-wrapped image
+        // This is the only way to keep 3D effects, Glassmorphism, and Icons perfectly intact
+        const svgData = `
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${container.offsetWidth}" height="${container.offsetHeight}">
+            <image width="${container.offsetWidth}" height="${container.offsetHeight}" xlink:href="${imgData}" />
+        </svg>`;
+        
+        const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `${brandName}_Vector.svg`;
+        link.href = url;
+        link.click();
+        return;
     }
 
-    // 3. Render the batch
-    pageCache[currentPage].forEach(item => {
-        grid.appendChild(createLogoCard(item.name, item.tag, item.config));
+    // PNG, JPG, and PDF Logic
+    const canvas = await html2canvas(container, {
+        scale: 4, // 4x scale for professional high-res quality
+        useCORS: true,
+        backgroundColor: (fmt === 'jpg') ? "#FFFFFF" : null, // Forces white BG for JPG
     });
 
-    // 4. Refresh UI and Scroll
-    updatePaginationUI();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (fmt === 'png' || fmt === 'jpg') {
+        const mime = (fmt === 'jpg') ? 'image/jpeg' : 'image/png';
+        const link = document.createElement('a');
+        link.download = `${brandName}_Logo.${fmt}`;
+        link.href = canvas.toDataURL(mime, 1.0);
+        link.click();
+    } else if (fmt === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF(container.offsetWidth > container.offsetHeight ? 'l' : 'p', 'px', [container.offsetWidth, container.offsetHeight]);
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, container.offsetWidth, container.offsetHeight);
+        pdf.save(`${brandName}_Logo.pdf`);
+    }
 }
-
-// THE ENGINE: Creates 24 unique combinations from the 1.87 Billion possibilities
-function generateLogoDataBatch() {
-    const name = document.getElementById('bizName').value.toUpperCase();
-    const tag = document.getElementById('tagline').value.toUpperCase();
-    const industryKey = document.getElementById('industry').value;
-    const industryRule = industryRules[industryKey];
-    const designStyle = designConsistencyEngine[industryKey] || designConsistencyEngine.tech;
-    
-    let batch = [];
-    for (let i = 0; i < logosPerPage; i++) {
-        const isIconDominant = Math.random() > 0.5;
-        const iconSize = isIconDominant ? (90 * designStyle.iconScale) : (50 * designStyle.iconScale);
-        const titleSize = isIconDominant ? '1.5rem' : '2.5rem';
-        const hue = industryRule.hues[0] + (Math.random() * (industryRule.hues[1] - industryRule.hues[0]));
-        
-        batch.push({
-            name: name,
-            tag: tag,
-            config: {
-                color: { 
-                    main: `hsl(${hue}, 70%, 45%)`, 
-                    secondary: `hsl(${hue}, 80%, 15%)`, 
-                    bg: Math.random() > 0.8 ? '#111827' : '#ffffff', // 20% Dark variants
-                    grad: `linear-gradient(135deg, hsl(${hue}, 70%, 45%) 0%, hsl(${(hue+30)%360}, 70%, 60%) 100%)`
-                },
-                font: { 
-                    name: industryRule.fonts[Math.floor(Math.random() * industryRule.fonts.length)],
-                    tagFont: 'Inter',
-                    weight: '800',
-                    spacing: designStyle.textSpacing
-                },
-                icon: icons[industryKey][Math.floor(Math.random() * icons[industryKey].length)],
-                layout: Math.floor(Math.random() * 35),
-                hierarchy: { icon: `${iconSize}px`, title: titleSize, shadow: designStyle.shadow }
-            }
-        });
-    }
-    return batch;
-}
-
-
-
-
-
-function updatePaginationUI() {
-    const wrapper = document.getElementById('paginationButtons');
-    if (!wrapper) return;
-    wrapper.innerHTML = '';
-
-    // Calculate a visible range of 5 pages around the current page
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(maxPages, startPage + 4);
-    
-    // Adjust start if we are near the end
-    if (endPage === maxPages) {
-        startPage = Math.max(1, endPage - 4);
-    }
-
-    // 1. Previous Button
-    if (currentPage > 1) {
-        const prevBtn = document.createElement('button');
-        prevBtn.innerText = 'Prev';
-        prevBtn.className = "px-4 py-2 rounded-xl font-bold bg-white text-gray-600 border hover:bg-gray-50 transition-all cursor-pointer";
-        prevBtn.onclick = () => renderPage(currentPage - 1);
-        wrapper.appendChild(prevBtn);
-    }
-
-    // 2. Numbered Buttons
-    for (let i = startPage; i <= endPage; i++) {
-        const btn = document.createElement('button');
-        btn.innerText = i;
-        btn.className = `w-12 h-12 rounded-xl font-bold transition-all border cursor-pointer ${i === currentPage ? 'bg-indigo-600 text-white shadow-xl border-indigo-600' : 'bg-white text-gray-400 hover:border-indigo-500'}`;
-        
-        // This closure ensures 'i' is captured correctly for every button
-        const pageTarget = i;
-        btn.onclick = () => renderPage(pageTarget);
-        
-        wrapper.appendChild(btn);
-    }
-
-    // 3. Next Button
-    if (currentPage < maxPages) {
-        const nextBtn = document.createElement('button');
-        nextBtn.innerText = 'Next';
-        nextBtn.className = "px-4 py-2 rounded-xl font-bold bg-white text-gray-600 border hover:bg-gray-50 transition-all cursor-pointer";
-        nextBtn.onclick = () => renderPage(currentPage + 1);
-        wrapper.appendChild(nextBtn);
-    }
-    
-    document.getElementById('pageInfo').innerText = `Infinite Discovery: Showing Page ${currentPage} of ${maxPages}`;
-}
-
-
-function createLogoCard(name, tag, config) {
-const emotionalShadow = config.hierarchy.shadow;
-const glassClass = config.color.bg === '#ffffff' ? 'bg-white shadow-xl' : 'glass-effect shadow-2xl';
-    const div = document.createElement('div');
-    // Root container forces everything to absolute center
-    div.className = "logo-card relative p-8 rounded-[2.5rem] border transition-all hover:shadow-2xl overflow-hidden flex flex-col items-center justify-center text-center cursor-pointer";
-    
-    div.style.backgroundColor = config.color.bg;
-    div.style.borderColor = config.isDark ? '#374151' : '#f3f4f6';
-div.style.minHeight = "360px"; // Reduced height for tighter look
-div.style.display = "flex";
-div.style.flexDirection = "column";
-div.style.alignItems = "center";
-div.style.justifyContent = "center";
-div.style.gap = "8px"; // Tight professional spacing
-
-    // Factor 2: Typography Control Engine
-    const titleStyle = `
-        font-family: '${config.font.name}'; 
-     color: ${config.color.bg === '#111827' ? '#ffffff' : config.color.secondary};
-        font-weight: ${config.font.weight}; 
-        letter-spacing: ${config.font.spacing}; 
-        text-transform: ${config.font.transform};
-        line-height: 1.1;
-        display: block;
-        width: 100%;
-        word-wrap: break-word;
-    `;
-    
-    const tagStyle = `
-        font-family: '${config.font.tagFont}'; 
-      color: ${config.color.bg === '#111827' ? '#ffffff' : config.color.main};
-        font-weight: 700; 
-        letter-spacing: 0.4em; 
-        text-transform: uppercase; 
-        font-size: 10px;
-        opacity: 0.8;
-        margin-top: 10px;
-        display: block;
-        width: 100%;
-    `;
-
-    const iconColor = config.isDark ? '#ffffff' : config.color.main;
-    
-    // Standardized Icon Component (Factor 5)
-    const getIcon = (size, mb = "10px") => `
-    <div class="flex items-center justify-center w-full" style="margin-bottom: ${mb}; line-height: 0;">
-        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: ${size};"></iconify-icon>
-    </div>
-`;
-
-    let layoutHTML = '';
-
-    switch(config.layout) {
-        case 0: // Classic Centered
-            layoutHTML = `${getIcon('90px')} <h2 style="${titleStyle}" class="text-3xl">${name}</h2> <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 1: // Professional Horizontal (Perfectly Centered)
-    layoutHTML = `
-        <div class="flex items-center justify-center w-full gap-4">
-            <div class="flex-shrink-0 flex items-center justify-center" style="line-height:0;">
-                <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 60px;"></iconify-icon>
-            </div>
-            <div class="text-left border-l-2 pl-4" style="border-color: ${config.color.main}33">
-                <h2 style="${titleStyle}" class="text-2xl text-left">${name}</h2>
-                <p style="${tagStyle}" class="text-left mt-0">${tag}</p>
-            </div>
-        </div>`;
-    break;
-
-        case 2: // Luxury Gold/Badge
-            layoutHTML = `
-                <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl" style="background: ${config.color.grad}">
-                    <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;"></iconify-icon>
-                </div>
-                <h2 style="${titleStyle}" class="text-2xl mb-2">${name}</h2>
-                <div class="h-0.5 w-16 mx-auto" style="background: ${config.color.main}"></div>
-                <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 3: // Modern Underline
-            layoutHTML = `
-                <h2 style="${titleStyle}" class="text-4xl mb-4">${name}</h2>
-                <div class="w-28 h-1.5 rounded-full mb-6 mx-auto" style="background: ${config.color.grad}"></div>
-                <div class="flex items-center justify-center gap-3">
-                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 30px;"></iconify-icon>
-                    <p style="${tagStyle}" class="mt-0 w-auto">${tag}</p>
-                </div>`;
-            break;
-
-        case 4: // Vertical Pill
-            layoutHTML = `
-                <div class="mb-6">${getIcon('80px', '0')}</div>
-                <div class="bg-gray-900 text-white px-8 py-3 rounded-2xl mb-3">
-                    <h2 style="${titleStyle} color:white;" class="text-xl">${name}</h2>
-                </div>
-                <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 5: // Bordered Capsule
-            layoutHTML = `
-                <div class="border-2 p-10 rounded-[4rem] flex flex-col items-center w-full max-w-[300px] mx-auto" style="border-color: ${config.color.main}66">
-                    ${getIcon('65px')}
-                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
-                    <p style="${tagStyle}">${tag}</p>
-                </div>`;
-            break;
-
-        case 6: // Luxury Diamond
-            layoutHTML = `
-                <div class="w-20 h-20 rotate-45 border-4 flex items-center justify-center mb-12 mx-auto" style="border-color: ${config.color.main}">
-                    <div class="-rotate-45"><iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 40px;"></iconify-icon></div>
-                </div>
-                <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
-                <p style="${tagStyle}" class="mt-2">${tag}</p>`;
-            break;
-
-        case 7: // Modern Sidebar
-            layoutHTML = `
-                <div class="flex items-center justify-center gap-8 text-left w-full px-4">
-                    <div class="w-2 h-24 rounded-full shrink-0" style="background: ${config.color.grad}"></div>
-                    <div class="flex flex-col items-start overflow-hidden">
-                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 45px;"></iconify-icon>
-                        <h2 style="${titleStyle}" class="text-3xl text-left mt-2">${name}</h2>
-                        <p style="${tagStyle}" class="text-left mt-1 lowercase">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-
-        case 8: // Dotted Orbit
-            layoutHTML = `
-                <div class="p-8 rounded-full border-4 border-dotted mb-6 mx-auto animate-[spin_30s_linear_infinite]" style="border-color: ${config.color.main}">
-                    <div class="animate-[spin_30s_linear_infinite_reverse]">
-                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon>
-                    </div>
-                </div>
-                <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
-                <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 9: // Dual-Tone Block
-            layoutHTML = `
-                <div class="flex items-center bg-gray-900 rounded-[1.5rem] overflow-hidden mb-5 shadow-2xl border-2 border-white">
-                    <div class="p-5 bg-white border-r-4 flex items-center justify-center" style="border-color: ${config.color.main}">${getIcon('40px', '0')}</div>
-                    <div class="px-8 py-2 flex items-center justify-center"><h2 style="${titleStyle} color:white;" class="text-xl">${name}</h2></div>
-                </div>
-                <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 10: // Minimalist Square
-            layoutHTML = `
-                <div class="border-l-[10px] border-b-[10px] p-10 flex flex-col items-start text-left w-full max-w-[300px] mx-auto" style="border-color: ${config.color.main}">
-                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon>
-                    <h2 style="${titleStyle}" class="text-4xl text-left mt-4">${name}</h2>
-                    <p style="${tagStyle}" class="text-left opacity-40">${tag}</p>
-                </div>`;
-            break;
-
-        case 11: // Geometric Split
-            layoutHTML = `
-                <div class="flex items-center justify-center gap-4 mb-6 w-full px-10">
-                    <div class="h-0.5 grow" style="background: ${config.color.main}33"></div>
-                    <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 50px;"></iconify-icon>
-                    <div class="h-0.5 grow" style="background: ${config.color.main}33"></div>
-                </div>
-                <h2 style="${titleStyle}" class="text-5xl">${name}</h2>
-                <p style="${tagStyle}" class="mt-4 italic">${tag}</p>`;
-            break;
-
-        case 12: // Badge & Banner
-            layoutHTML = `
-                <div class="mb-4">${getIcon('75px', '0')}</div>
-                <div class="relative w-full max-w-[280px] mx-auto">
-                    <div class="absolute inset-0 skew-x-[-12deg] transform shadow-lg" style="background: ${config.color.grad}"></div>
-                    <h2 style="${titleStyle} color:white;" class="relative px-6 py-3 text-2xl font-bold italic">${name}</h2>
-                </div>
-                <p style="${tagStyle}" class="mt-6">${tag}</p>`;
-            break;
-
-        case 13: // Monogram Alpha (Factor 8)
-            layoutHTML = `
-                <div class="relative w-full h-48 flex items-center justify-center">
-                    <span class="absolute inset-0 flex items-center justify-center text-[180px] font-black opacity-[0.08] select-none pointer-events-none" style="color: ${config.color.main}">${name[0]}</span>
-                    <div class="relative z-10 flex flex-col items-center">
-                        <div class="mb-2">${getIcon('65px', '10px')}</div>
-                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
-                        <p style="${tagStyle}">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-
-        case 14: // High Fashion Vertical
-            layoutHTML = `
-                <div class="flex flex-col items-center py-12 border-x-2 px-10 mx-auto" style="border-color: ${config.color.main}22">
-                    <h2 style="${titleStyle}" class="text-3xl tracking-[0.3em] border-b pb-6 mb-6">${name}</h2>
-                    ${getIcon('45px', '0')}
-                    <p style="${tagStyle}" class="mt-8">${tag}</p>
-                </div>`;
-            break;
-
-        case 15: // Techno Shield
-            layoutHTML = `
-                <div class="w-24 h-24 bg-gray-900 rounded-tr-[40px] rounded-bl-[40px] flex items-center justify-center mb-8 shadow-2xl mx-auto rotate-12 hover:rotate-0 transition-transform">
-                    <div class="-rotate-12 hover:rotate-0"><iconify-icon icon="${config.icon}" style="color: white; font-size: 45px;"></iconify-icon></div>
-                </div>
-                <h2 style="${titleStyle}" class="text-2xl tracking-widest">${name}</h2>
-                <div class="flex gap-2 mt-4 justify-center">
-                     <div class="w-3 h-1 rounded-full" style="background: ${config.color.main}"></div>
-                     <div class="w-12 h-1 rounded-full opacity-20" style="background: ${config.color.main}"></div>
-                </div>
-                <p style="${tagStyle}">${tag}</p>`;
-            break;
-
-        case 16: // Circular Frame
-            layoutHTML = `
-                <div class="p-12 border-[12px] rounded-full border-double flex flex-col items-center mx-auto" style="border-color: ${config.color.main}">
-                    <div class="mb-2">${getIcon('50px', '5px')}</div>
-                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
-                </div>
-                <p style="${tagStyle}" class="mt-6">${tag}</p>`;
-            break;
-
-        case 17: // Bracket Focus
-            layoutHTML = `
-                <div class="flex items-center justify-center gap-6 w-full">
-                    <span class="text-8xl font-thin opacity-20 leading-none" style="color: ${config.color.main}">[</span>
-                    <div class="flex flex-col items-center">
-                        ${getIcon('60px')}
-                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
-                    </div>
-                    <span class="text-8xl font-thin opacity-20 leading-none" style="color: ${config.color.main}">]</span>
-                </div>
-                <p style="${tagStyle}" class="mt-4">${tag}</p>`;
-            break;
-
-        case 18: // Gradient Glow
-            layoutHTML = `
-                <div class="relative flex flex-col items-center">
-                    <div class="w-40 h-8 rounded-full mb-[-25px] opacity-30 blur-xl" style="background: ${config.color.grad}"></div>
-                    <h2 style="${titleStyle}" class="text-5xl relative z-10">${name}</h2>
-                    <div class="mt-8 flex flex-col items-center w-full">
-                        <div class="h-px w-20 bg-gray-200 mb-4"></div>
-                        ${getIcon('40px')}
-                        <p style="${tagStyle}">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-
-        case 19: // Architecture Split
-            layoutHTML = `
-                <div class="flex flex-col w-full px-8 text-center items-center">
-                    <div class="flex items-end justify-between border-b-4 pb-4 w-full" style="border-color: ${config.color.secondary}">
-                        <h2 style="${titleStyle}" class="text-4xl text-left grow">${name}</h2>
-                        <div class="shrink-0 ml-4"><iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 55px;"></iconify-icon></div>
-                    </div>
-                    <p style="${tagStyle}" class="text-right mt-2 w-full italic font-medium">${tag}</p>
-                </div>`;
-            break;
-
-        case 20: // Slanted Slice
-            layoutHTML = `
-                <div class="flex flex-col items-center -skew-x-12 transform">
-                    <div class="p-7 bg-gray-900 rounded-3xl mb-5 shadow-2xl">
-                        <div class="skew-x-12 transform">${getIcon('55px', '0')}</div>
-                    </div>
-                    <h2 style="${titleStyle}" class="text-3xl skew-x-12 transform italic font-black">${name}</h2>
-                    <div class="bg-indigo-600 text-white px-8 py-2 mt-4 skew-x-12 transform font-bold text-xs tracking-widest uppercase shadow-lg">${tag}</div>
-                </div>`;
-            break;
-
-        case 21: // Retro Concentric Seal
-            layoutHTML = `
-                <div class="flex flex-col items-center border-[10px] border-double p-12 rounded-full aspect-square justify-center w-[300px] h-[300px] mx-auto shadow-inner" style="border-color: ${config.color.main}">
-                    ${getIcon('45px', '10px')}
-                    <h2 style="${titleStyle}" class="text-xl">${name}</h2>
-                    <div class="h-px w-16 bg-gray-200 my-3"></div>
-                    <p style="${tagStyle}" class="mt-0 text-[9px]">${tag}</p>
-                </div>`;
-            break;
-
-        case 22: // Curved Tech Block
-            layoutHTML = `
-                <div class="w-24 h-24 rounded-tr-[50px] rounded-bl-[50px] flex items-center justify-center mb-8 shadow-xl" style="background: ${config.color.grad}">
-                    <iconify-icon icon="${config.icon}" style="color: white; font-size: 50px;"></iconify-icon>
-                </div>
-                <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
-                <p style="${tagStyle}" class="mt-3 opacity-60">${tag}</p>`;
-            break;
-
-        case 23: // Thin L-Brackets
-            layoutHTML = `
-                <div class="relative p-14 group">
-                    <div class="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2" style="border-color: ${config.color.main}"></div>
-                    <div class="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2" style="border-color: ${config.color.main}"></div>
-                    <div class="flex flex-col items-center relative z-10">
-                        ${getIcon('60px')}
-                        <h2 style="${titleStyle}" class="text-4xl font-black">${name}</h2>
-                        <p style="${tagStyle}">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-
-        case 24: // Soft UI Card
-            layoutHTML = `
-                <div class="bg-gray-50/50 p-12 rounded-[3.5rem] shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center w-full max-w-[320px] mx-auto">
-                    <div class="mb-8 drop-shadow-2xl animate-pulse-slow">${getIcon('85px', '0')}</div>
-                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
-                    <p style="${tagStyle}" class="mt-4 opacity-40">${tag}</p>
-                </div>`;
-            break;
-
-        case 25: // Heavy Monogram Block (Short Names)
-            layoutHTML = `
-                <div class="flex flex-col items-center w-full">
-                    <div class="text-8xl font-black mb-6 px-10 py-4 border-[6px] shadow-2xl transform -rotate-2" style="color: ${config.color.main}; border-color: ${config.color.main}">
-                        ${name.slice(0, 3)}
-                    </div>
-                    ${getIcon('35px', '10px')}
-                    <h2 style="${titleStyle}" class="text-xl italic">${name}</h2>
-                    <p style="${tagStyle}">${tag}</p>
-                </div>`;
-            break;
-case 26: // Clean Dual-Line (Replacement for Overlap)
-            layoutHTML = `
-                <div class="flex flex-col items-center justify-center">
-                    <div class="h-px w-20 bg-gray-200 mb-6"></div>
-                    ${getIcon('70px')}
-                    <h2 style="${titleStyle}" class="text-3xl mt-4">${name}</h2>
-                    <p style="${tagStyle}">${tag}</p>
-                    <div class="h-px w-20 bg-gray-200 mt-6"></div>
-                </div>`;
-            break;
-        case 27: // Arc Text (Factor 7)
-            layoutHTML = `
-                <div class="flex flex-col items-center justify-center -mb-8">
-                    ${getAdvancedText(name, 'arc', config.color.secondary, config.font.name, config.font.weight)}
-                    <div class="-mt-10 mb-4">${getIcon('60px', '0')}</div>
-                    <p style="${tagStyle}">${tag}</p>
-                </div>`;
-            break;
-        case 28: // 3D Lettering (Factor 1)
-            const effect3d = advancedLettering(config.color.main)[0].style;
-            layoutHTML = `
-                <div class="flex flex-col items-center">
-                    ${getIcon('50px')}
-                    <h2 style="${titleStyle} ${effect3d}" class="text-5xl mb-2">${name}</h2>
-                    <p style="${tagStyle}">${tag}</p>
-                </div>`;
-            break;
-        case 29: // Block Lettering (Factor 2)
-            const blockStyle = advancedLettering(config.color.secondary)[1].style;
-            layoutHTML = `
-                <div class="flex flex-col items-center">
-                    <h2 style="${titleStyle} ${blockStyle}" class="text-6xl tracking-tighter">${name}</h2>
-                    <div class="mt-[-20px] bg-white px-4">${getIcon('40px', '0')}</div>
-                    <p style="${tagStyle}" class="mt-2">${tag}</p>
-                </div>`;
-            break;
-        case 30: // Wave Text (Factor 6)
-            layoutHTML = `
-                <div class="flex flex-col items-center">
-                    ${getIcon('50px')}
-                    ${getAdvancedText(name, 'wave', config.color.secondary, config.font.name, config.font.weight)}
-                    <p style="${tagStyle}" class="-mt-6">${tag}</p>
-                </div>`;
-            break;
-         case 31: // Modern Geometric Side (Replacement for Overlap)
-            layoutHTML = `
-                <div class="flex items-center justify-center gap-6">
-                    <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 shadow-inner">
-                        <iconify-icon icon="${config.icon}" style="color: ${iconColor}; font-size: 50px;"></iconify-icon>
-                    </div>
-                    <div class="text-left">
-                        <h2 style="${titleStyle}" class="text-2xl text-left">${name}</h2>
-                        <p style="${tagStyle}" class="text-left">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-        case 32: // Curved Text Circle (Factor 5)
-            layoutHTML = `
-                <div class="w-64 h-64 border-4 rounded-full flex items-center justify-center relative p-8" style="border-color: ${config.color.main}22">
-                    <div class="absolute inset-0 flex items-center justify-center rotate-[-10deg]">
-                         ${getAdvancedText(name, 'curve', config.color.secondary, config.font.name, config.font.weight)}
-                    </div>
-                    <div class="relative z-10">${getIcon('60px', '0')}</div>
-                </div>`;
-            break;
-        case 33: // Double Layered Monogram
-            layoutHTML = `
-                <div class="relative flex items-center justify-center">
-                    <h2 style="font-family: ${config.font.name}; color: ${config.color.main}11" class="text-[180px] font-black">${name[0]}</h2>
-                    <div class="absolute flex flex-col items-center pt-10">
-                        ${getIcon('50px')}
-                        <h2 style="${titleStyle}" class="text-3xl">${name}</h2>
-                        <p style="${tagStyle}">${tag}</p>
-                    </div>
-                </div>`;
-            break;
-        case 34: // Floating Badge with Shadow
-            layoutHTML = `
-                <div class="bg-white p-10 rounded-2xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border border-gray-50">
-                    ${getIcon('60px')}
-                    <h2 style="${titleStyle}" class="text-2xl">${name}</h2>
-                    <p style="${tagStyle}">${tag}</p>
-                </div>`;
-            break;
-
-        default: // Wordmark Precision
-            layoutHTML = `
-                <div class="flex flex-col items-center w-full">
-                    <h2 style="${titleStyle}" class="text-6xl italic mb-4">${name}</h2>
-                    <div class="flex items-center gap-4 w-full justify-center">
-                        <div class="h-0.5 grow bg-gray-100"></div>
-                        <iconify-icon icon="${config.icon}" style="color: ${config.color.main}; font-size: 30px;"></iconify-icon>
-                        <p style="${tagStyle}" class="mt-0 w-auto">${tag}</p>
-                        <div class="h-0.5 grow bg-gray-100"></div>
-                    </div>
-                </div>`;
-    }
-
- div.innerHTML = `
-    <!-- Removed background circle for clean exports and soothing look -->
-    <div class="w-full h-full flex flex-col items-center justify-center p-8 transition-all" style="filter: drop-shadow(${config.hierarchy.shadow})">
-        ${layoutHTML}
-    </div>
-    
-    <!-- Download Overlay -->
-    <div class="download-overlay opacity-0 absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 transition-all duration-300 p-10 ${config.color.bg === '#111827' ? 'bg-black/95' : ''}">
-        <p class="text-[10px] font-black ${config.color.bg === '#111827' ? 'text-white' : 'text-gray-400'} mb-2 uppercase tracking-widest italic">Ready to export</p>
-        <button onclick="downloadLogo(event, 'jpg')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-indigo-700 transition-all shadow-xl">Download JPG</button>
-        <button onclick="downloadLogo(event, 'png')" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold text-xs hover:bg-black transition-all">Transparent PNG</button>
-        <button onclick="downloadLogo(event, 'pdf')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold text-xs hover:bg-gray-200 transition-all">Premium PDF</button>
-
-<button onclick="seeVariations(event, '${config.icon}', '${config.font.name}')" class="w-full bg-indigo-100 text-indigo-700 py-3 rounded-xl font-bold text-xs hover:bg-indigo-200 transition-all">
-    More Like This
-</button>
-    </div>
-`;
-    return div;
-}
-    async function downloadLogo(event, type) {
-        event.stopPropagation();
-        const card = event.currentTarget.closest('.logo-card');
-        const bizName = document.getElementById('bizName').value || 'logo';
-        const overlay = card.querySelector('.download-overlay');
-        
-        overlay.style.visibility = 'hidden';
-        const canvas = await html2canvas(card, { 
-            scale: 4, 
-            backgroundColor: card.style.backgroundColor,
-            logging: false,
-            useCORS: true
-        });
-        overlay.style.visibility = 'visible';
-
-        if(type === 'pdf') {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('l', 'px', [canvas.width, canvas.height]);
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save(`${bizName}.pdf`);
-        } else {
-            const link = document.createElement('a');
-            link.download = `${bizName}.${type}`;
-            link.href = canvas.toDataURL(`image/${type === 'jpg' ? 'jpeg' : 'png'}`, 1.0);
-            link.click();
-        }
-    }
-
-
-function magicShuffle() {
-    // 1. Clear the cache of the current 22 Lac designs
-    pageCache = {}; 
-    // 2. Reset to page 1
-    currentPage = 1;
-    // 3. Re-generate a fresh batch from the 23 Billion pool
-    renderPage(1);
-    // 4. Smooth feedback for user
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-
-function seeVariations(event, favIcon, favFont) {
-    event.stopPropagation();
-    pageCache = {}; // Reset
-    const grid = document.getElementById('logoGrid');
-    grid.innerHTML = '';
-    
-    // Generate 24 logos using ONLY that icon and font, but different colors/layouts
-    for (let i = 0; i < 24; i++) {
-        const hue = Math.random() * 360;
-        const config = {
-            color: { main: `hsl(${hue}, 70%, 45%)`, secondary: '#111827', bg: '#ffffff' },
-            font: { name: favFont, tagFont: 'Inter', weight: '800' },
-            icon: favIcon,
-            layout: Math.floor(Math.random() * 26),
-            hierarchy: { icon: '80px', title: '2rem', shadow: 'none' }
+        // Init
+        window.onload = () => {
+            updateLogo();
+            shuffleLogo();
         };
-        grid.appendChild(createLogoCard(document.getElementById('bizName').value, '', config));
-    }
-    document.getElementById('paginationWrapper').classList.add('hidden'); // Hide pagination for specific variations
-}
-</script>
+    </script>
 </body>
 </html>
