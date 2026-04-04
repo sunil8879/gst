@@ -114,42 +114,32 @@
 
 
 
+
+
+
 /* --- UNIVERSAL MOBILE COMPLIANCE --- */
-@media (max-width: 900px) {
-    body { 
-        flex-direction: column !important; 
-        overflow-y: auto !important; /* Enable scrolling to see logo */
-        height: auto !important; 
-    }
-    .sidebar { 
-        width: 100% !important; 
-        min-width: 100% !important; 
-        height: auto !important; 
-        position: relative;
-        z-index: 1000; /* Keeps buttons on top */
-        border-right: none;
-        border-bottom: 2px solid var(--aqua);
-    }
-    .workspace { 
-        width: 100% !important; 
-        padding: 40px 10px !important;
-        min-height: 400px;
-        z-index: 1;
-    }
-    #logo-preview-container {
-        /* Auto-scales the logo to fit the phone width */
-        transform: scale(calc(100vw / 650)) !important; 
+#logo-preview-container {
+        /* Scale for mobile */
+        transform: scale(0.55) !important; 
         transform-origin: top center;
-        margin-bottom: -150px !important; /* Removes ghost space */
+        /* Pull the buttons up by removing the empty space left by scaling */
+        margin-bottom: -220px !important; 
     }
+    
+    .workspace {
+        height: auto !important;
+        min-height: 600px !important; /* Ensure enough room for logo + buttons */
+        padding-bottom: 100px !important;
+    }
+
     .controls {
-        margin-top: 0 !important;
-        padding-bottom: 50px;
-        flex-direction: column;
-        width: 80%;
+        display: flex !important;
+        flex-direction: column !important; /* Stack buttons vertically on phones */
+        width: 85% !important;
+        margin: 20px auto !important;
+        position: relative;
+        z-index: 50;
     }
-    .btn { width: 100%; margin-bottom: 5px; }
-}
     </style>
 </head>
 <body>
