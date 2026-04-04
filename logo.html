@@ -150,6 +150,40 @@
 
 /* Base helper for Text Grouping */
 .text-group { display: flex; flex-direction: column; z-index: 5; }
+
+
+
+
+/* --- MOBILE RESPONSIVE ENGINE --- */
+@media (max-width: 900px) {
+    body { 
+        flex-direction: column; 
+        overflow-y: auto; /* Allows scrolling down to see the logo */
+        height: auto; 
+    }
+    .sidebar { 
+        width: 100%; 
+        min-width: 100%; 
+        height: auto; 
+        border-right: none; 
+        border-bottom: 2px solid var(--aqua); 
+    }
+    .workspace { 
+        width: 100%; 
+        padding: 40px 10px; 
+        min-height: 450px; /* Space for the logo */
+    }
+    #logo-preview-container {
+        /* This scales the logo down visually to fit the phone screen */
+        transform: scale(0.6); 
+        transform-origin: top center;
+        margin-bottom: -180px; /* Pulls the buttons up closer to the scaled logo */
+    }
+    .controls {
+        margin-top: 20px;
+        width: 90%;
+    }
+}
     </style>
 </head>
 <body>
@@ -1399,6 +1433,40 @@ function shuffleLogo() {
             updateLogo();
             shuffleLogo();
         };
+
+
+
+
+
+
+
+
+
+
+function fixMobileLogoScale() {
+    if (window.innerWidth <= 900) {
+        const container = document.getElementById('logo-preview-container');
+        // Dynamic math to fit logo into phone width with 20px margin
+        const targetWidth = window.innerWidth - 40;
+        const currentWidth = container.offsetWidth;
+        const scale = targetWidth / currentWidth;
+        
+        container.style.transform = `scale(${scale})`;
+        container.style.marginBottom = `-${currentWidth * (1 - scale)}px`;
+    } else {
+        const container = document.getElementById('logo-preview-container');
+        container.style.transform = "none";
+        container.style.marginBottom = "0";
+    }
+}
+
+// Attach listeners to run on resize and load
+window.addEventListener('resize', fixMobileLogoScale);
+window.onload = () => {
+    updateLogo();
+    shuffleLogo();
+    fixMobileLogoScale();
+};
     </script>
 </body>
 </html>
