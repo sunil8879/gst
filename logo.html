@@ -1250,6 +1250,15 @@
             </select>
         </div>
 
+
+<div class="input-group" style="display:flex; align-items:center; gap:10px;">
+    <input type="checkbox" id="in_trans" style="width:20px;" onchange="updateLogo()">
+    <label style="margin-bottom:0;">Transparent Background</label>
+</div>
+
+
+
+
         <button class="btn btn-magic" style="width: 100%;" onclick="shuffleLogo()">
             <i class="fas fa-random"></i> Shuffle Infinite Designs
         </button>
@@ -1279,25 +1288,53 @@
     </div>
 
     <script>
+let container, accent, content, text, icon, slogan;
+const proPalettes = [
+    { bg: "#0f172a", primary: "#7FFFD4", accent: "#f8fafc" }, // Midnight & Aqua
+    { bg: "#ffffff", primary: "#1e3a8a", accent: "#2563eb" }, // Corporate Blue
+    { bg: "#1a1a1a", primary: "#d4af37", accent: "#ffffff" }, // Premium Gold
+    { bg: "#fef2f2", primary: "#991b1b", accent: "#ef4444" }, // Minimal Red
+    { bg: "#064e3b", primary: "#34d399", accent: "#ecfdf5" }, // Forest Green
+    { bg: "#4c1d95", primary: "#ddd6fe", accent: "#c4b5fd" }, // Tech Purple
+    { bg: "#fff7ed", primary: "#c2410c", accent: "#fb923c" }  // Modern Orange
+];
+
+
       const fonts = ['Abel', 'Abril Fatface', 'Anton', 'Arvo', 'Bebas Neue', 'Bitter', 'Bree Serif', 'Cabin', 'Cairo', 'Caveat', 'Comfortaa', 'Courgette', 'Crimson Text', 'Dancing Script', 'Dosis', 'Exo 2', 'Fira Sans', 'Fjalla One', 'Fredoka One', 'Hind', 'Inconsolata', 'Indie+Flower', 'Inter', 'Josefin Sans', 'Kanit', 'Lalezar', 'Lato', 'Lexend', 'Libre Baskerville', 'Lobster', 'Lora', 'Montserrat', 'Nunito', 'Open Sans', 'Oswald', 'Outfit', 'Pacifico', 'Playfair Display', 'Poppins', 'Quicksand', 'Raleway', 'Righteous', 'Roboto', 'Shadows Into Light', 'Space Grotesk', 'Syncopate', 'Teko', 'Titillium Web', 'Ubuntu', 'Varela Round'];
         
-    function updateLogo() {
+  function updateLogo() {
+            // Use 'const' only once for each variable name in this function
             const name = document.getElementById('in_name').value;
             const slogan = document.getElementById('in_slogan').value;
-            const iconInput = document.getElementById('in_icon').value.trim(); // Added trim
+            const iconInput = document.getElementById('in_icon').value.trim();
+            const isTrans = document.getElementById('in_trans').checked;
+            const bgImg = document.getElementById('in_bg_img').value.trim();
+       container = document.getElementById('logo-preview-container');
             
             document.getElementById('logo-text').innerText = name;
             document.getElementById('logo-slogan').innerText = slogan;
             
-            // This forces the icon to update immediately
             const iconEl = document.getElementById('logo-icon');
             iconEl.className = `fa-solid fa-${iconInput}`;
             
+            // --- BACKGROUND IMAGE LOGIC ---
+            if(bgImg && !isTrans) {
+                container.style.backgroundImage = `url('${bgImg}')`;
+                container.style.backgroundSize = "cover";
+                container.style.backgroundPosition = "center";
+            } else if (isTrans) {
+                container.style.backgroundImage = "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)";
+                container.style.backgroundSize = "20px 20px";
+            } else {
+                container.style.backgroundImage = "none";
+            }
+
             const shape = document.getElementById('in_shape').value;
-            const container = document.getElementById('logo-preview-container');
             if(shape === 'circle') { container.style.borderRadius = '50%'; container.style.width = '550px'; }
             else if(shape === 'rect') { container.style.borderRadius = '0px'; container.style.width = '750px'; }
             else { container.style.borderRadius = '0px'; container.style.width = '550px'; }
+            
+            if(typeof fixMobileLogoScale === "function") fixMobileLogoScale();
         }
 
      function previewUserImg(e) {
@@ -1319,11 +1356,16 @@
             reader.readAsDataURL(e.target.files[0]);
         }
 function shuffleLogo() {
-    const container = document.getElementById('logo-preview-container');
-    const content = document.getElementById('logo-content');
-    const text = document.getElementById('logo-text');
-    const icon = document.getElementById('logo-icon');
-    const slogan = document.getElementById('logo-slogan');
+const palette = proPalettes[Math.floor(Math.random() * proPalettes.length)];
+container = document.getElementById('logo-preview-container');
+  accent = palette.primary; // This ensures colors match perfectly
+    
+    container.style.background = palette.bg;
+  
+content = document.getElementById('logo-content');
+ text = document.getElementById('logo-text');
+     icon = document.getElementById('logo-icon');
+ slogan = document.getElementById('logo-slogan');
     const vibe = document.getElementById('in_vibe').value;
     const name = document.getElementById('in_name').value;
 
@@ -1331,7 +1373,7 @@ function shuffleLogo() {
     const h = Math.floor(Math.random() * 360);
     const isDark = Math.random() > 0.5;
     const bgColor = isDark ? `hsl(${h}, 40%, 12%)` : `hsl(${h}, 15%, 98%)`;
-    const accent = isDark ? `hsl(${Math.random() * 360}, 80%, 75%)` : `hsl(${h}, 80%, 25%)`;
+ accent = isDark ? `hsl(${Math.random() * 360}, 80%, 75%)` : `hsl(${h}, 80%, 25%)`;
 
     // 2. Apply Theme
     container.style.background = bgColor;
@@ -1370,7 +1412,16 @@ function shuffleLogo() {
         text.innerHTML = `<span>${part1}</span> <i class="${icon.className}" style="font-size:0.8em"></i> <span>${part2}</span>`;
         icon.style.display = "none";
     } else {
+      // --- DUAL-TONE TYPOGRAPHY LOGIC ---
+    if (name.length > 3 && Math.random() > 0.4) {
+        const mid = Math.floor(name.length / 2);
+        const part1 = name.substring(0, mid);
+        const part2 = name.substring(mid);
+        // Uses the accent color for the first half and main color for second half
+        text.innerHTML = `<span style="color:${accent}">${part1}</span><span style="opacity:0.8">${part2}</span>`;
+    } else {
         text.innerHTML = name;
+    }
     }
 
     // 6. Shape Logic
@@ -1384,16 +1435,15 @@ function shuffleLogo() {
     if(vibe === 'neo') container.classList.add('neo');
     if(vibe === 'neon') text.style.textShadow = `0 0 15px ${accent}`;
 }
-      async function exportLogo(fmt) {
-    const container = document.getElementById('logo-preview-container');
+   async function exportLogo(fmt) {
+    // FIX: Define the container so the function can see the logo
+ontainer = document.getElementById('logo-preview-container');
     const brandName = document.getElementById('in_name').value || 'Logo';
 
- if (fmt === 'svg') {
-        const canvas = await html2canvas(container, { backgroundColor: null, scale: 2 });
+    if (fmt === 'svg') {
+        const canvas = await html2canvas(container, { backgroundColor: null, scale: 2, useCORS: true });
         const imgData = canvas.toDataURL("image/png");
         
-        // This creates an SVG container and embeds the High-Res logo as a vector-wrapped image
-        // This is the only way to keep 3D effects, Glassmorphism, and Icons perfectly intact
         const svgData = `
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${container.offsetWidth}" height="${container.offsetHeight}">
             <image width="${container.offsetWidth}" height="${container.offsetHeight}" xlink:href="${imgData}" />
@@ -1410,30 +1460,27 @@ function shuffleLogo() {
 
     // PNG, JPG, and PDF Logic
     const canvas = await html2canvas(container, {
-        scale: 4, // 4x scale for professional high-res quality
+        scale: 4, 
         useCORS: true,
-        backgroundColor: (fmt === 'jpg') ? "#FFFFFF" : null, // Forces white BG for JPG
+        backgroundColor: (fmt === 'jpg') ? "#FFFFFF" : null, 
     });
 
+    const imgData = canvas.toDataURL(fmt === 'jpg' ? 'image/jpeg' : 'image/png');
+
     if (fmt === 'png' || fmt === 'jpg') {
-        const mime = (fmt === 'jpg') ? 'image/jpeg' : 'image/png';
         const link = document.createElement('a');
         link.download = `${brandName}_Logo.${fmt}`;
-        link.href = canvas.toDataURL(mime, 1.0);
+        link.href = imgData;
         link.click();
     } else if (fmt === 'pdf') {
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF(container.offsetWidth > container.offsetHeight ? 'l' : 'p', 'px', [container.offsetWidth, container.offsetHeight]);
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, container.offsetWidth, container.offsetHeight);
+        const orientation = container.offsetWidth > container.offsetHeight ? 'l' : 'p';
+        const pdf = new jsPDF(orientation, 'px', [container.offsetWidth, container.offsetHeight]);
+        pdf.addImage(imgData, 'PNG', 0, 0, container.offsetWidth, container.offsetHeight);
         pdf.save(`${brandName}_Logo.pdf`);
     }
 }
-        // Init
-        window.onload = () => {
-            updateLogo();
-            shuffleLogo();
-        };
-
+    
 
 
 
@@ -1444,9 +1491,12 @@ function shuffleLogo() {
 
 
 function fixMobileLogoScale() {
+    // 1. Declare it ONCE here at the top
+   container = document.getElementById('logo-preview-container');
+    if (!container) return;
+
     if (window.innerWidth <= 900) {
-        const container = document.getElementById('logo-preview-container');
-        // Dynamic math to fit logo into phone width with 20px margin
+        // 2. Use it here (Notice: NO 'const' before the name)
         const targetWidth = window.innerWidth - 40;
         const currentWidth = container.offsetWidth;
         const scale = targetWidth / currentWidth;
@@ -1454,19 +1504,21 @@ function fixMobileLogoScale() {
         container.style.transform = `scale(${scale})`;
         container.style.marginBottom = `-${currentWidth * (1 - scale)}px`;
     } else {
-        const container = document.getElementById('logo-preview-container');
+        // 3. Use it here (Notice: NO 'const' before the name)
         container.style.transform = "none";
         container.style.marginBottom = "0";
     }
 }
 
-// Attach listeners to run on resize and load
+// Attach listeners to run on resize
 window.addEventListener('resize', fixMobileLogoScale);
+
+// SINGLE window.onload block to handle everything at start
 window.onload = () => {
     updateLogo();
     shuffleLogo();
     fixMobileLogoScale();
 };
-    </script>
+</script>
 </body>
 </html>
