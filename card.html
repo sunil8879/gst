@@ -117,6 +117,43 @@
         .btn-dl { background: white; color: #020617; }
 
 #card-frame { border-radius: 0px; transition: border-radius 0.4s ease; }
+
+
+
+
+
+/* --- MOBILE RESPONSIVE FIX --- */
+@media (max-width: 900px) {
+    body { 
+        flex-direction: column; 
+        overflow: auto; /* Allows scrolling down to see the card */
+    }
+    .sidebar { 
+        width: 100%; 
+        min-width: 100%; 
+        height: auto; 
+        border-right: none; 
+        border-bottom: 2px solid var(--accent); 
+    }
+    .workspace { 
+        width: 100%;
+        min-height: 500px; /* Ensures space for the card */
+        padding: 0;
+        justify-content: flex-start;
+        overflow: visible;
+    }
+    #card-frame {
+        /* This line auto-scales the 1050px card to fit any mobile screen width */
+        transform: scale(calc(window.innerWidth / 1150)); 
+        transform-origin: top center;
+        margin-top: 20px;
+    }
+    .controls {
+        margin-top: 20px; /* Removes the negative margin used for desktop */
+        flex-direction: column;
+        width: 90%;
+    }
+}
     </style>
 </head>
 <body>
@@ -244,6 +281,34 @@
         }
 
         window.onload = () => { genQR(); update(); shuffle(); };
+
+
+
+
+
+
+
+function adjustMobileScale() {
+    if (window.innerWidth <= 900) {
+        const card = document.getElementById('card-frame');
+        // Calculate the scale: Screen Width divided by Card Width (plus some margin)
+        const scale = window.innerWidth / 1100; 
+        card.style.transform = `scale(${scale})`;
+        
+        // Adjust the toolbar position so it doesn't overlap
+        const controls = document.querySelector('.controls');
+        controls.style.marginTop = "20px";
+    } else {
+        // Reset to desktop scale
+        const card = document.getElementById('card-frame');
+        card.style.transform = "scale(0.6)";
+        document.querySelector('.controls').style.marginTop = "-80px";
+    }
+}
+
+// Run on load and whenever the screen size changes
+window.addEventListener('resize', adjustMobileScale);
+window.addEventListener('load', adjustMobileScale);
     </script>
 </body>
 </html>
