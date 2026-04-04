@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Magic Bio Generator | Infinite Logic</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --aqua: #7FFFD4;
+            --navy: #0f172a;
+            --white: #ffffff;
+            --soft: #f8fafc;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--soft);
+            padding: 20px;
+            color: var(--navy);
+        }
+
+        .bio-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            border-bottom: 8px solid var(--aqua);
+        }
+
+        h2 { 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            color: var(--primary);
+            border-left: 5px solid var(--aqua);
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* FIXED: 3 Equal Columns with Gap */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* FIXED: Centering the Tone Box */
+        .tone-center {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tone-center .input-group {
+            width: 300px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        input:focus { outline: none; border-color: var(--aqua); background: #f0fffb; }
+
+        .btn-magic {
+            background: var(--navy);
+            color: var(--aqua);
+            border: none;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .btn-magic:hover { background: var(--primary); color: white; transform: translateY(-3px); }
+
+        #result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stylish Output Font */
+        #bio_output {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #334155;
+            white-space: pre-line;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .action-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-copy { background: var(--aqua); color: var(--navy); padding: 10px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+
+
+
+
+
+/* Tone Reference Key Styling */
+.tone-key {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px dashed #cbd5e1;
+}
+
+.tone-key h3 {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.tone-item {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    border: 1px solid #e2e8f0;
+}
+
+.tone-item b {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+}
+
+
+
+
+/* 1. Stylish, smaller inputs with spacing (prevent touching) */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 Equal columns */
+    gap: 25px; /* Large gap ensures boxes never touch */
+    margin-bottom: 30px;
+}
+
+input, select {
+    padding: 10px 15px; /* Smaller padding */
+    font-size: 0.85rem; /* Smaller text size */
+    border-radius: 10px; /* Modern rounded corners */
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+}
+
+/* 2. Positioning Award and Tone boxes in the center */
+/* Targets the 7th item (Award) and puts it in the middle column of its row */
+.input-grid > .input-group:nth-child(7) {
+    grid-column: 2;
+}
+
+/* Targets the 8th item (Tone) and puts it in the middle column of its row */
+.input-grid > .input-group:nth-child(8) {
+    grid-column: 2;
+}
+
+/* 3. Aquamarine background for Writing Tone box */
+#biz_tone {
+    background-color: #7FFFD4 !important; /* Aquamarine */
+    border: 2px solid #5eead4;
+    font-weight: 800;
+}
+
+/* 4. Center the Copy and Regenerate buttons */
+.action-row {
+    display: flex;
+    justify-content: center; /* Centers buttons horizontally */
+    gap: 15px;
+    width: 100%;
+    margin-top: 20px;
+}
+    </style>
+</head>
+<body>
+
+    <div class="bio-container">
+        <h2><i class="fas fa-wand-magic-sparkles"></i> Infinite Bio Generator</h2>
+        
+        <div class="input-grid">
+            <div class="input-group"><label>Business Name</label><input type="text" id="biz_name" placeholder="Nexus Solutions"></div>
+            <div class="input-group"><label>Established Year</label><input type="text" id="biz_date" placeholder="e.g. 2015"></div>
+            <div class="input-group"><label>Total Staff</label><input type="text" id="biz_staff" placeholder="e.g. 25+ Professionals"></div>
+            <div class="input-group"><label>Main Service</label><input type="text" id="biz_service" placeholder="GST & Tax Law"></div>
+            <div class="input-group"><label>Target Audience</label><input type="text" id="biz_target" placeholder="MSMEs and Startups"></div>
+            <div class="input-group"><label>Core USP / Strength</label><input type="text" id="biz_strength" placeholder="Precision and Integrity"></div>
+<div class="input-group">
+    <label>Awards / Recognition</label>
+    <input type="text" id="biz_award" placeholder="e.g. ISO 9001 Certified">
+</div>
+            
+            <!-- Centered Tone Selector -->
+            <div class="tone-center">
+                <div class="input-group">
+                    <label>Writing Tone</label>
+                    <select id="biz_tone">
+                        <option value="pro">Professional & Corporate</option>
+                        <option value="modern">Modern & Startup Style</option>
+                        <option value="simple">Simple & Friendly</option>
+                        <option value="bold">Bold & Confident</option>
+                        <option value="problem">Problem-Solution Focused</option>
+                        <option value="premium">Premium & Luxury</option>
+                        <option value="tool">Tool-Based / Functional</option>
+                        <option value="support">Supportive & Helpful</option>
+                        <option value="growth">Growth-Oriented</option>
+                        <option value="creative">Creative & Catchy</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-magic" onclick="generateInfiniteBio()">
+            Generate Professional Bio <i class="fas fa-bolt"></i>
+        </button>
+
+        <div id="result-box">
+            <div id="bio_output"></div>
+            <div class="action-row">
+                <button class="btn-copy" onclick="copyBio(event)">Copy to Clipboard <i class="fas fa-copy"></i></button>
+                <button class="btn-copy" style="background:#cbd5e1" onclick="generateInfiniteBio()">Regenerate <i class="fas fa-sync"></i></button>
+            </div>
+        </div>
+    </div>
+<!-- TONE REFERENCE KEY -->
+        <div class="tone-key">
+            <h3><i class="fas fa-key"></i> Understanding Writing Tones</h3>
+            <div class="tone-grid">
+                <div class="tone-item"><b>Professional</b> Formal, authoritative, and corporate. Best for B2B and established firms.</div>
+                <div class="tone-item"><b>Modern</b> Tech-savvy, agile, and disruptive. Best for startups and SaaS.</div>
+                <div class="tone-item"><b>Simple</b> Easy to understand, jargon-free, and very friendly. Best for local shops.</div>
+                <div class="tone-item"><b>Bold</b> High-energy, confident, and market-leading. Best for industry challengers.</div>
+                <div class="tone-item"><b>Problem-Focused</b> Directly addresses pain points and provides clear solutions.</div>
+                <div class="tone-item"><b>Premium</b> High-end, luxurious, and exclusive. Best for luxury brands.</div>
+                <div class="tone-item"><b>Tool-Based</b> Functional, automated, and efficiency-driven. Best for apps and software.</div>
+                <div class="tone-item"><b>Supportive</b> Caring, empathetic, and relationship-focused. Best for services & NGOs.</div>
+                <div class="tone-item"><b>Growth</b> Scalable, result-driven, and focused on exponential success.</div>
+                <div class="tone-item"><b>Creative</b> Artistic, imaginative, and "out of the box." Best for designers & artists.</div>
+            </div>
+        </div>
+    </div> <!-- This is the end of your bio-container -->
+<script>
+function generateInfiniteBio() {
+    // Exact Variable Names as per your code
+    const name = document.getElementById('biz_name').value || "Our Enterprise";
+    const date = document.getElementById('biz_date').value || "the early years of our industry";
+    const staff = document.getElementById('biz_staff').value || "a dedicated team of experts";
+    const service = document.getElementById('biz_service').value || "bespoke business solutions";
+    const target = document.getElementById('biz_target').value || "our esteemed corporate partners";
+    const strength = document.getElementById('biz_strength').value || "uncompromising excellence";
+    const tone = document.getElementById('biz_tone').value;
+const award = document.getElementById('biz_award').value || "Top Industry Performer";
+
+    const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // TONE MODIFIERS (Adjusts vocabulary based on tone)
+    const toneStyles = {
+        pro: { adj: "strategic", verb: "facilitate", vibe: "It is with great distinction that we maintain" },
+        modern: { adj: "agile", verb: "disrupt", vibe: "We are tech-first and ready to" },
+        simple: { adj: "easy", verb: "help", vibe: "We really enjoy being able to" },
+        bold: { adj: "unrivaled", verb: "command", vibe: "We don't just participate; we" },
+        problem: { adj: "resolved", verb: "solve", vibe: "Stop struggling with details; we" },
+        premium: { adj: "exquisite", verb: "curate", vibe: "Indulge in the world-class prestige as we" },
+        tool: { adj: "functional", verb: "automate", vibe: "Our system is engineered to" },
+        support: { adj: "empathetic", verb: "nurture", vibe: "Your journey is ours as we" },
+        growth: { adj: "exponential", verb: "scale", vibe: "Let's multiply your results as we" },
+        creative: { adj: "vivid", verb: "reimagine", vibe: "Imagine a canvas where we" }
+    };
+    const s = toneStyles[tone];
+
+    // PARAGRAPH 1: HISTORY & INTRODUCTION
+    const intros = [
+        `Ever since our foundational establishment back in ${date}, ${name} has been on a relentless and ${s.adj} pursuit of excellence within the specialized sector of ${service}. ${s.vibe} a standard of quality that ${target} have come to rely on over many years.`,
+        `The story of ${name} began in ${date}, and since that pivotal moment, we have dedicated every ${s.adj} resource to mastering the complexities of ${service} for a global audience. We ${s.verb} a new way of doing business that prioritizes the specific needs of ${target}.`,
+        `Since first opening our doors in ${date}, ${name} has evolved from a visionary concept into a market-leading powerhouse, specifically recognized for our ${s.adj} and sophisticated approach to ${service}. We work daily to ${s.verb} growth for all ${target}.`
+    ];
+
+    const purposes = [
+        `Our primary purpose is to empower ${target} by providing them with a seamless and highly integrated experience that simplifies even the most daunting aspects of ${service}. We use ${s.adj} logic to ensure ${strength} is always delivered.`,
+        `We exist to serve as the definitive bridge between high-level ${service} and the specific, day-to-day operational requirements of ${target}, ensuring no detail is ever overlooked. Our mission is to ${s.verb} success through ${strength}.`,
+        `The fundamental reason for our existence is to cultivate an ecosystem where ${target} can thrive, fueled by our expert delivery of ${service} and ${s.adj} strategic guidance. We believe in the power of ${strength} to change lives.`
+    ];
+
+    // PARAGRAPH 2: MISSION & VISION
+    const missions = [
+        `Our mission is deeply anchored in the belief that ${strength} should be the foundational standard for ${service}, ensuring that ${target} always stay ahead of the curve. We ${s.verb} this through ${s.adj} innovation and care.`,
+        `We are on a mission to redefine the industry benchmarks for ${service}, utilizing our ${strength} to provide solutions that are both sustainable and transformative. This allows us to ${s.verb} a future of ${s.adj} possibilities.`,
+        `At ${name}, our mission is to foster a culture of professional integrity where ${service} acts as a massive catalyst for the long-term success of ${target}. We ${s.verb} every opportunity to demonstrate our ${strength}.`
+    ];
+
+    const visions = [
+        `Looking toward the future, our vision is to expand the horizons of ${service}, becoming the singular, global gold-standard for every ${target} seeking true ${s.adj} innovation. We strive to ${s.verb} a world where ${strength} is the norm.`,
+        `We envision a marketplace where ${target} have unfettered access to elite ${service}, supported by a legacy of ${strength} that spans across every border and industry. We ${s.verb} this vision using ${s.adj} principles.`,
+        `Our long-term vision involves a total transformation of how ${service} is perceived, moving away from simple transactions toward deep, ${s.adj} strategic partnerships. We seek to ${s.verb} the very essence of ${strength}.`
+    ];
+
+    // PARAGRAPH 3: TEAM & USP
+    const teams = [
+        `Today, our organization is proud to be powered by ${staff}, a diverse collective of industry veterans who bring a combined centuries' worth of ${s.adj} experience to the table. This allows ${name} to ${s.verb} even the hardest tasks.`,
+        `Our strength lies in our people, and currently, ${name} is represented by ${staff}, each of whom is a specialist dedicated to the specific advancement of ${service}. We ${s.verb} a culture of ${strength} and ${s.adj} learning.`,
+        `With a growing family of ${staff}, we maintain a multi-disciplinary environment that allows us to tackle the ${s.adj} challenges of ${service} from every possible angle. Our team's ${strength} is what helps us ${s.verb} the competition.`
+    ];
+
+    const usps = [
+        `What truly defines the unique selling proposition of ${name} is our absolute reliance on ${strength}, a quality that is woven into the very fabric of our operational DNA. We ${s.verb} a ${s.adj} advantage that others cannot mimic.`,
+        `In a crowded market, our ${strength} remains our most significant advantage, allowing us to deliver ${service} with a level of precision that competitors simply cannot replicate. We ${s.verb} ${s.adj} results every time.`,
+        `The hallmark of our brand is ${strength}; it is the "secret sauce" that allows us to consistently exceed the high expectations of ${target} regarding ${service}. We ${s.verb} this through ${s.adj} dedication.`
+    ];
+
+    // PARAGRAPH 4: COMPLIANCE, ETHICS & MASSIVE CTA
+    const ethics = [
+        `We operate with a profound respect for regulatory compliance, ensuring that every ${service} we perform for ${target} is fully aligned with current legal standards. Our ${s.adj} framework ensures ${strength} and safety. ${s.vibe} protect your interests by utilizing our ${s.adj} expertise to ${s.verb} your legal requirements.`,
+        `Trust is our currency, and we go to great lengths to protect it by maintaining 100% transparency in our ${service} and our commitment to ${strength}. In an era of shifting laws and complex taxes, ${name} provides a safe harbor for ${target}, guaranteeing that ${service} is handled with total professional care and ${s.adj} precision.`,
+        `Ethics and accountability are not just buzzwords for us; they are the requirements for how we deliver ${service} to ${target}. We take our responsibility seriously, treating every request with the gravity it deserves. Our ${staff} work tirelessly to ${s.verb} a system of ${strength} that protects your ${s.adj} vision.`
+    ];
+
+    const ctas = [
+        `We cordially invite you to join the ${name} family today; let us show you how our ${strength} can revolutionize your approach to ${service}. The path to your ultimate success starts with a single conversation; contact our team of ${staff} today and let’s explore the future of your business together. Experience the standard of ${strength} that only we can provide. Reach out now to learn more about our elite ${service} designed specifically for you and your ${s.adj} goals.`,
+        `The time to ${s.verb} your potential is now. With ${name}, you gain more than a vendor; you gain a ${s.adj} partner committed to ${strength}. Our ${staff} are ready to guide you through the complexities of ${service}. Don't settle for average when you can ${s.verb} excellence. Contact us today and discover why ${target} around the world choose us for our ${strength} and our ${s.adj} methods.`,
+        `Finalizing your search for the perfect partner ends here. At ${name}, we bridge the gap between where you are and where you want to be. Our ${service} is the ${s.adj} tool you need to ${s.verb} your dreams. With a legacy of ${strength} since ${date}, we have the proof and the ${staff} to make it happen. Join the ranks of successful ${target} who have unlocked ${strength} with our help. We look forward to being the catalyst for your next big ${s.adj} breakthrough.`
+    ];
+
+const awardBlocks = [
+    `A defining moment in our history was being recognized with the ${award}, a prestigious honor that validates our unwavering commitment to the highest standards of ${service}. This accolade serves as a testament to the ${s.adj} hard work of our ${staff}.`,
+    `Our dedication to excellence has not gone unnoticed; receiving the ${award} has further solidified our reputation as a ${s.adj} leader in the ${service} market. It is a milestone that reflects our core values of ${strength} and professional integrity.`,
+    `The ${award} remains one of our most cherished achievements, highlighting our unique ability to ${s.verb} results that consistently exceed the expectations of ${target}. It underscores our status as an ${s.adj} force in today's economy.`
+];
+
+    // --- 500 WORD "FLUFF" GENERATOR (DYNAMIC) ---
+    const fluff = [
+        `By meticulously analyzing the macro-economic trends that affect ${target}, we have positioned our ${service} as a future-proof asset for growth. We believe that the intersection of ${strength} and ${s.adj} technology is where the most significant breakthroughs happen.`,
+        `Our commitment to the community of ${target} extends far beyond simple business; we are dedicated to the holistic improvement of our entire professional industry. Sustainability and ${s.adj} stewardship are the guiding principles that inform our long-term strategy for ${service}.`,
+        `Every project we undertake is treated with the same level of gravity and intense focus, ensuring that ${target} never have to worry about the quality of their ${service}. We ${s.verb} ${strength} through our daily dedication and our ${s.adj} mindset.`
+    ];
+
+    // ASSEMBLY (Ensuring 500+ Words)
+    const p1 = `${rand(intros)} ${rand(purposes)} ${rand(fluff)}`;
+    const p2 = `${rand(missions)} ${rand(visions)} ${rand(fluff)}`;
+  // This replaces your old p3 line
+const p3 = `${rand(teams)} ${rand(usps)} ${rand(awardBlocks)} ${rand(fluff)}`;
+    const p4 = `${rand(ethics)} ${rand(ctas)} ${rand(fluff)}`;
+
+    const finalBio = `ESTABLISHED: ${date} | TEAM SIZE: ${staff} | TONE: ${tone.toUpperCase()}\n\n${p1}\n\n${p2}\n\n${p3}\n\n${p4}`;
+
+    document.getElementById('bio_output').innerText = finalBio;
+    document.getElementById('result-box').style.display = 'block';
+}
+
+function copyBio(event) {
+    const text = document.getElementById('bio_output').innerText;
+    navigator.clipboard.writeText(text);
+    const btn = event.currentTarget; // FIXED: Using currentTarget to ensure we catch the button
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = 'Copied! <i class="fas fa-check"></i>';
+    btn.style.background = '#10b981';
+    btn.style.color = 'white';
+    setTimeout(() => { 
+        btn.innerHTML = originalContent;
+        btn.style.background = '';
+        btn.style.color = '';
+    }, 2000);
+}
+</script>
+</body>
+</html>
