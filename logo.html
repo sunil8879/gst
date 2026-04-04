@@ -111,6 +111,45 @@
     background-size: 20px 20px !important;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px !important;
 }
+
+
+
+/* --- UNIVERSAL MOBILE COMPLIANCE --- */
+@media (max-width: 900px) {
+    body { 
+        flex-direction: column !important; 
+        overflow-y: auto !important; /* Enable scrolling to see logo */
+        height: auto !important; 
+    }
+    .sidebar { 
+        width: 100% !important; 
+        min-width: 100% !important; 
+        height: auto !important; 
+        position: relative;
+        z-index: 1000; /* Keeps buttons on top */
+        border-right: none;
+        border-bottom: 2px solid var(--aqua);
+    }
+    .workspace { 
+        width: 100% !important; 
+        padding: 40px 10px !important;
+        min-height: 400px;
+        z-index: 1;
+    }
+    #logo-preview-container {
+        /* Auto-scales the logo to fit the phone width */
+        transform: scale(calc(100vw / 650)) !important; 
+        transform-origin: top center;
+        margin-bottom: -150px !important; /* Removes ghost space */
+    }
+    .controls {
+        margin-top: 0 !important;
+        padding-bottom: 50px;
+        flex-direction: column;
+        width: 80%;
+    }
+    .btn { width: 100%; margin-bottom: 5px; }
+}
     </style>
 </head>
 <body>
