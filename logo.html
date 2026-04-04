@@ -199,6 +199,14 @@
 
 input[list] { cursor: pointer; }
 #in_icon { text-transform: lowercase; } /* Icons are case-sensitive in FA */
+
+
+
+.btn-toggle {
+    flex: 1; padding: 8px; background: #0f172a; border: 1px solid #2d3748;
+    color: white; font-weight: bold; cursor: pointer; border-radius: 6px;
+}
+.btn-toggle.active { background: var(--aqua); color: var(--navy); border-color: var(--aqua); }
     </style>
 </head>
 <body>
@@ -2312,7 +2320,8 @@ input[list] { cursor: pointer; }
             <select id="in_shape" onchange="updateLogo()">
                 <option value="square">Square (1:1)</option>
                 <option value="rect">Landscape (3:2)</option>
-                <option value="circle">Circular</option>
+   
+<option value="circle">Circular</option>
             </select>
         </div>
 
@@ -2323,7 +2332,23 @@ input[list] { cursor: pointer; }
 </div>
 
 
+<div class="input-group">
+    <label>Name Formatting</label>
+    <div style="display: flex; gap: 5px;">
+        <button class="btn-toggle" id="btn_nb" onclick="toggleFormat('nb')">B</button>
+        <button class="btn-toggle" id="btn_ni" onclick="toggleFormat('ni')">I</button>
+        <button class="btn-toggle" id="btn_nu" onclick="toggleFormat('nu')">U</button>
+    </div>
+</div>
 
+<div class="input-group">
+    <label>Tagline Formatting</label>
+    <div style="display: flex; gap: 5px;">
+        <button class="btn-toggle" id="btn_sb" onclick="toggleFormat('sb')">B</button>
+        <button class="btn-toggle" id="btn_si" onclick="toggleFormat('si')">I</button>
+        <button class="btn-toggle" id="btn_su" onclick="toggleFormat('su')">U</button>
+    </div>
+</div>             
 
         <button class="btn btn-magic" style="width: 100%;" onclick="shuffleLogo()">
             <i class="fas fa-random"></i> Shuffle Infinite Designs
@@ -2401,6 +2426,7 @@ const proPalettes = [
             else { container.style.borderRadius = '0px'; container.style.width = '550px'; }
             
             if(typeof fixMobileLogoScale === "function") fixMobileLogoScale();
+applyFormatting();
         }
 
      function previewUserImg(e) {
@@ -2483,6 +2509,7 @@ function shuffleLogo() {
     if(vibe === 'glass') container.classList.add('glass');
     if(vibe === 'neo') container.classList.add('neo');
     if(vibe === 'neon') text.style.textShadow = `0 0 20px ${accent}`;
+applyFormatting();
 }
    async function exportLogo(fmt) {
     // FIX: Define the container so the function can see the logo
@@ -2568,6 +2595,30 @@ window.onload = () => {
     shuffleLogo();
     fixMobileLogoScale();
 };
+
+
+
+const textStyle = { nb:false, ni:false, nu:false, sb:false, si:false, su:false };
+
+        function toggleFormat(type) {
+            textStyle[type] = !textStyle[type];
+            document.getElementById('btn_' + type).classList.toggle('active');
+            updateLogo();
+        }
+
+        // Add this logic inside your existing updateLogo() function
+        function applyFormatting() {
+            const name = document.getElementById('logo-text');
+            const slogan = document.getElementById('logo-slogan');
+
+            name.style.fontWeight = textStyle.nb ? "900" : "400";
+            name.style.fontStyle = textStyle.ni ? "italic" : "normal";
+            name.style.textDecoration = textStyle.nu ? "underline" : "none";
+
+            slogan.style.fontWeight = textStyle.sb ? "900" : "400";
+            slogan.style.fontStyle = textStyle.si ? "italic" : "normal";
+            slogan.style.textDecoration = textStyle.su ? "underline" : "none";
+        }
 </script>
 </body>
 </html>
