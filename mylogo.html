@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRA LOGO GENERATOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Fascinate&family=Modak&family=Monoton&family=Righteous&family=Unbounded:wght@900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root { --bg: #050505; --accent: #ff0055; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
+
+    .controls { 
+        max-width: 1200px; margin: 0 auto 50px; background: #111; padding: 40px; 
+        border-radius: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+        gap: 20px; border: 1px solid #333;
+    }
+
+    input, select { padding: 18px; border-radius: 12px; border: none; background: #222; color: white; font-size: 1.1rem; }
+    
+    .btn-gen { 
+        grid-column: 1 / -1; padding: 20px; border-radius: 12px; border: none;
+        background: linear-gradient(90deg, #ff00cc, #3333ff); color: white;
+        font-size: 1.5rem; font-weight: 900; cursor: pointer; text-transform: uppercase;
+    }
+
+    #logoGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 40px; max-width: 1500px; margin: 0 auto; }
+
+    .logo-card {
+        aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center;
+        border-radius: 40px; overflow: hidden; transition: 0.4s; cursor: pointer;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative;
+    }
+
+    .logo-inner {
+        width: 100%; height: 100%; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 40px; text-align: center; box-sizing: border-box;
+    }
+
+    /* MASSIVE ICONS */
+.logo-icon svg {
+    /* Change width/height from fixed to max-size */
+    width: 220px !important; 
+    height: 220px !important;
+    max-width: 80%; /* Never wider than 80% of the card */
+    max-height: 50%; /* Never taller than 50% of the card */
+    flex-shrink: 1; /* Allow it to shrink if text is too long */
+    margin-bottom: 10px;
+}
+    
+    /* SMALL TEXT */
+ .logo-name {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 90%; /* Keep text away from the very edges */
+    line-height: 1.1;
+}
+
+    .logo-tag { letter-spacing: 0.2em; text-transform: uppercase; font-weight: bold; font-size: 1.0rem; }
+
+    /* DOWNLOAD OVERLAY */
+    .download-overlay {
+        position: absolute; top:0; left:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        opacity: 0; transition: 0.3s; z-index: 10;
+    }
+    .logo-card:hover .download-overlay { opacity: 1; }
+    .dl-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 70%; }
+    .btn-dl { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; background: white; color: black; }
+    .btn-dl:hover { background: var(--accent); color: white; }
+
+    /* LAYOUT HELPERS */
+    .flex-row { flex-direction: row !important; gap: 20px; }
+    .circle-frame { border: 8px solid currentColor; border-radius: 50%; padding: 30px; }
+    .square-frame { border: 8px solid currentColor; padding: 30px; }
+    .underline { border-bottom: 6px solid currentColor; padding-bottom: 5px; }
+    .glass { background: rgba(255,255,255,0.2) !important; backdrop-filter: blur(10px); }
+    .neon-glow { text-shadow: 0 0 15px currentColor; }
+    .outline-text { -webkit-text-stroke: 1px currentColor; color: transparent !important; }
+    .double-border { border: 3px solid currentColor; outline: 8px solid currentColor; outline-offset: 8px; margin: 30px; }
+    .watermark { position: absolute; font-size: 15rem !important; opacity: 0.1 !important; transform: scale(2.5); z-index: 0; }
+
+
+
+
+
+
+
+
+/* 🔴 TOP SECTION (RED + CENTERED) */
+.controls { 
+    max-width: 1200px; 
+    margin: 0 auto 50px; 
+
+    background: #008000; /* RED BACKGROUND */
+    color: #ffffff; /* WHITE TEXT */
+
+    padding: 50px 20px; 
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* horizontal center */
+    justify-content: center; /* vertical center */
+    text-align: center;
+
+    gap: 20px;
+}
+
+/* INPUT GROUP CENTERING */
+.input-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* INPUT FIELDS */
+input, select { 
+    padding: 15px; 
+    border-radius: 10px; 
+    border: none; 
+    background: #FFFFFF; 
+    color: #000000; 
+    font-size: 1rem; 
+    width: 100%;
+}
+
+/* ⚪ BUTTON (WHITE BG + BLACK TEXT) */
+.btn-gen { 
+    padding: 18px 30px; 
+    border-radius: 12px; 
+    border: 2px solid #000;
+
+    background: #000000;   /* WHITE */
+    color: #ffffff;        /* BLACK TEXT */
+
+    font-size: 1.3rem; 
+    font-weight: 900; 
+    cursor: pointer; 
+    text-transform: uppercase;
+
+    transition: 0.3s;
+}
+
+/* 🔥 HOVER EFFECT */
+.btn-gen:hover {
+    background: #000000;
+    color: #FFFFFF;
+}
+
+
+
+/* Headings / labels */
+.controls label {
+    font-weight: 600;
+}
+
+/* Inputs */
+.controls input,
+.controls select {
+    font-weight: 400;
+}
+
+/* Button */
+.btn-gen {
+    font-weight: 700;
+}
+
+.main-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+
+
+/* Styling for the Optional Fixed Image */
+.fixed-user-photo {
+    position: absolute;
+    top: 25px; /* Fixed at the top */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%; /* Circle look */
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 5; /* Above background, behind buttons */
+}
+</style>
+</head>
+<body>
+<h1 class="main-heading">LOGO CARD GENERATOR</h1>
+
+    <div class="controls">
+        <div class="input-group">
+            <label>Business Name</label>
+            <input type="text" id="bizName" value="SUPERNOVA">
+        </div>
+        <div class="input-group">
+            <label>Tagline</label>
+            <input type="text" id="tagline" value="REACH THE STARS">
+        </div>
+
+
+
+<!-- Update your HTML checkboxes to look like this -->
+<div class="input-group" style="grid-column: 1 / -1; display: flex; flex-direction: row; gap: 20px; background: #1a1a1a; padding: 15px; border-radius: 15px; align-items:center;">
+    <div style="display:flex; gap:10px; align-items:center;">
+        <span style="font-size:0.8rem; color:#aaa;">NAME:</span>
+        <label><input type="checkbox" id="nameBold" onclick="applyLiveStyles()"> <b>B</b></label>
+        <label><input type="checkbox" id="nameItalic" onclick="applyLiveStyles()"> <i>I</i></label>
+        <label><input type="checkbox" id="nameUnderline" onclick="applyLiveStyles()"> <u>U</u></label>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center; margin-left: 20px; border-left: 1px solid #444; padding-left: 20px;">
+        <span style="font-size:0.8rem; color:#aaa;">TAGLINE:</span>
+        <label><input type="checkbox" id="tagBold" onclick="applyLiveStyles()"> <b>B</b></label>
+        <label><input type="checkbox" id="tagItalic" onclick="applyLiveStyles()"> <i>I</i></label>
+        <label><input type="checkbox" id="tagUnderline" onclick="applyLiveStyles()"> <u>U</u></label>
+    </div>
+</div>
+
+
+<div class="input-group">
+    <label>Upload an image</label>
+    <input type="file" id="userPhotoInput" accept="image/*" onchange="previewUserPhoto(this)" style="padding: 12px; font-size: 0.9rem;">
+</div>
+
+
+
+        <div class="input-group">
+            <label>Industry</label>
+           <select id="industry">
+    <!-- 1-10: Finance -->
+    <option value="Finance">Finance</option>
+    <option value="Banking">Banking</option>
+    <option value="Insurance">Insurance</option>
+    <option value="Investment">Investment</option>
+    <option value="Accounting">Accounting</option>
+    <option value="Tax Consulting">Tax Consulting</option>
+    <option value="Wealth Management">Wealth Management</option>
+    <option value="Stock Trading">Stock Trading</option>
+    <option value="Microfinance">Microfinance</option>
+    <option value="FinTech">FinTech</option>
+
+    <!-- 11-20: Education -->
+    <option value="Education">Education</option>
+    <option value="E-learning">E-learning</option>
+    <option value="Coaching Institute">Coaching Institute</option>
+    <option value="Skill Development">Skill Development</option>
+    <option value="EdTech">EdTech</option>
+    <option value="Online Courses">Online Courses</option>
+    <option value="Tutoring Services">Tutoring Services</option>
+    <option value="Language Training">Language Training</option>
+    <option value="Test Preparation">Test Preparation</option>
+    <option value="Corporate Training">Corporate Training</option>
+
+    <!-- 21-30: Tech -->
+    <option value="Technology">Technology</option>
+    <option value="Software Development">Software Development</option>
+    <option value="IT Services">IT Services</option>
+    <option value="Cybersecurity">Cybersecurity</option>
+    <option value="Artificial Intelligence">Artificial Intelligence</option>
+    <option value="Data Analytics">Data Analytics</option>
+    <option value="Blockchain">Blockchain</option>
+    <option value="Cloud Computing">Cloud Computing</option>
+    <option value="Web Development">Web Development</option>
+    <option value="Mobile App Development">Mobile App Development</option>
+
+    <!-- 31-40: Healthcare -->
+    <option value="Healthcare">Healthcare</option>
+    <option value="Pharmaceuticals">Pharmaceuticals</option>
+    <option value="Medical Equipment">Medical Equipment</option>
+    <option value="Diagnostics">Diagnostics</option>
+    <option value="Telemedicine">Telemedicine</option>
+    <option value="Fitness Center">Fitness Center</option>
+    <option value="Nutrition Services">Nutrition Services</option>
+    <option value="Mental Health Clinic">Mental Health Clinic</option>
+    <option value="Yoga Studio">Yoga Studio</option>
+    <option value="Ayurveda">Ayurveda</option>
+
+    <!-- 41-50: Retail -->
+    <option value="Retail">Retail</option>
+    <option value="E-commerce">E-commerce</option>
+    <option value="Wholesale">Wholesale</option>
+    <option value="FMCG">FMCG</option>
+    <option value="Supermarket">Supermarket</option>
+    <option value="Fashion Boutique">Fashion Boutique</option>
+    <option value="Footwear Store">Footwear Store</option>
+    <option value="Jewelry Store">Jewelry Store</option>
+    <option value="Cosmetics Store">Cosmetics Store</option>
+    <option value="Luxury Retail">Luxury Retail</option>
+
+    <!-- 51-60: Food -->
+    <option value="Food & Beverage">Food & Beverage</option>
+    <option value="Restaurant">Restaurant</option>
+    <option value="Café">Café</option>
+    <option value="Bakery">Bakery</option>
+    <option value="Catering Services">Catering Services</option>
+    <option value="Cloud Kitchen">Cloud Kitchen</option>
+    <option value="Food Delivery">Food Delivery</option>
+    <option value="Organic Food Store">Organic Food Store</option>
+    <option value="Packaged Foods">Packaged Foods</option>
+    <option value="Beverage Brand">Beverage Brand</option>
+
+    <!-- 61-70: Real Estate -->
+    <option value="Real Estate">Real Estate</option>
+    <option value="Construction">Construction</option>
+    <option value="Interior Design">Interior Design</option>
+    <option value="Architecture">Architecture</option>
+    <option value="Property Management">Property Management</option>
+    <option value="Infrastructure">Infrastructure</option>
+    <option value="Home Decor">Home Decor</option>
+    <option value="Furniture Business">Furniture Business</option>
+    <option value="Smart Home Solutions">Smart Home Solutions</option>
+    <option value="Landscaping">Landscaping</option>
+
+    <!-- 71-80: Travel -->
+    <option value="Travel & Tourism">Travel & Tourism</option>
+    <option value="Hospitality">Hospitality</option>
+    <option value="Hotel">Hotel</option>
+    <option value="Resort">Resort</option>
+    <option value="Travel Agency">Travel Agency</option>
+    <option value="Tour Operator">Tour Operator</option>
+    <option value="Adventure Tourism">Adventure Tourism</option>
+    <option value="Car Rental">Car Rental</option>
+    <option value="Airline Services">Airline Services</option>
+    <option value="Cruise Services">Cruise Services</option>
+
+    <!-- 81-90: Logistics -->
+    <option value="Logistics">Logistics</option>
+    <option value="Transportation">Transportation</option>
+    <option value="Courier Services">Courier Services</option>
+    <option value="Warehousing">Warehousing</option>
+    <option value="Supply Chain">Supply Chain</option>
+    <option value="Import-Export">Import-Export</option>
+    <option value="Shipping">Shipping</option>
+    <option value="Freight Services">Freight Services</option>
+    <option value="Delivery Services">Delivery Services</option>
+    <option value="Packaging Solutions">Packaging Solutions</option>
+
+    <!-- 91-100: Media -->
+    <option value="Media">Media</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Film Production">Film Production</option>
+    <option value="Music Production">Music Production</option>
+    <option value="Gaming">Gaming</option>
+    <option value="Animation">Animation</option>
+    <option value="Photography">Photography</option>
+    <option value="Event Management">Event Management</option>
+    <option value="Advertising Agency">Advertising Agency</option>
+    <option value="Digital Marketing">Digital Marketing</option>
+</select>
+        </div>
+        <button class="btn-gen" onclick="generateLogos()">GENERATE INFINITE LOGOS</button>
+    </div>
+
+    <div id="logoGrid"></div>
+
+<script>
+    const FONTS = ['Archivo Black', 'Bangers', 'Righteous', 'Unbounded', 'Modak', 'Monoton', 'Fascinate'];
+   const PALETTES = [
+    { bg: '#FF0055', text: '#FFFFFF', accent: '#000000' },
+    { bg: '#00F2FF', text: '#000000', accent: '#FFFFFF' },
+    { bg: '#FFDD00', text: '#000000', accent: '#FF0055' },
+    { bg: '#000000', text: '#00FF41', accent: '#00FF41' },
+    { bg: '#FFFFFF', text: '#6200EA', accent: '#03DAC6' },
+    { bg: '#1A1A1A', text: '#FFCC00', accent: '#FFFFFF' },
+    { bg: '#6200EA', text: '#FFFFFF', accent: '#FFDE03' },
+
+    { bg: '#7B00FF', text: '#FFFFFF', accent: '#00E5FF' },
+    { bg: '#FF4D00', text: '#FFFFFF', accent: '#000000' },
+    { bg: '#0A1F44', text: '#FFFFFF', accent: '#4DA3FF' },
+    { bg: '#2E2E2E', text: '#FFFFFF', accent: '#BFBFBF' },
+    { bg: '#0B132B', text: '#FFFFFF', accent: '#FFD700' },
+    { bg: '#1E3A5F', text: '#FFFFFF', accent: '#00C2FF' },
+
+    { bg: '#FF7A18', text: '#FFFFFF', accent: '#FFD200' },
+    { bg: '#0093E9', text: '#FFFFFF', accent: '#80D0C7' },
+    { bg: '#FF6EC7', text: '#FFFFFF', accent: '#FFD166' },
+    { bg: '#A8FF00', text: '#000000', accent: '#006400' },
+
+    { bg: '#4B0F1A', text: '#FFFFFF', accent: '#FF4D6D' },
+    { bg: '#014D4E', text: '#FFFFFF', accent: '#00FFC6' },
+    { bg: '#E5E5E5', text: '#1A1A1A', accent: '#A6A6A6' },
+    { bg: '#1A0033', text: '#FFFFFF', accent: '#9D4EDD' }
+];
+
+const ICONS = {
+        "Finance": ["banknote", "coins", "wallet", "landmark", "piggy-bank", "credit-card", "receipt", "calculator", "vault", "safe", "briefcase", "shield-check", "lock", "key", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "percent", "badge-percent", "dollar-sign", "euro", "pound", "japanese-yen", "indian-rupee", "gem", "diamond", "crown", "award", "medal", "trophy", "target", "flag", "star", "sparkles", "lightbulb", "brain", "users", "user-check", "handshake", "heart-handshake", "globe", "network", "layers", "component", "workflow", "git-branch", "database", "server", "hard-drive", "cloud", "zap", "flame", "rocket", "plane", "truck", "ship", "home", "building-2", "hotel", "warehouse", "factory", "map-pin", "navigation", "compass", "anchor", "scale", "gavel", "stamp", "scroll", "file-text", "files", "clipboard-check", "archive", "clock", "timer", "hourglass", "calendar", "sun", "moon", "leaf", "clover", "box", "package", "gift", "shopping-cart", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal"],
+
+        "Banking": ["landmark", "building-2", "vault", "safe", "key", "key-round", "lock", "shield-check", "shield-ellipsis", "shield-half", "credit-card", "wallet", "piggy-bank", "banknote", "coins", "hand-coins", "circle-dollar-sign", "badge-check", "check-circle-2", "history", "timer", "clock", "globe", "earth", "network", "briefcase", "user-check", "users", "contact-2", "smartphone", "laptop", "tablet", "nfc", "qr-code", "wifi", "hard-drive", "server", "database", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "trending-up", "line-chart", "bar-chart-big", "pie-chart", "arrow-up-right", "target", "award", "medal", "crown", "gem", "star", "sparkles", "sun", "moon", "mountain", "waves", "anchor", "ship", "plane", "truck", "package", "home", "warehouse", "construction", "gavel", "scale", "file-text", "files", "scroll", "stamp", "inbox", "outbox", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "map-pin", "navigation", "compass", "clover", "leaf", "flower", "flame", "zap", "rocket", "activity"],
+
+        "Insurance": ["umbrella", "shield-check", "shield-plus", "shield-ellipsis", "shield-alert", "lock", "key", "heart-handshake", "handshake", "life-buoy", "briefcase", "home", "building-2", "car", "truck", "plane", "ship", "bike", "heart", "heart-pulse", "activity", "stethoscope", "briefcase-medical", "pill", "thermometer", "user-check", "users", "contact-2", "file-check", "file-text", "files", "clipboard-check", "stamp", "signature", "landmark", "banknote", "wallet", "coins", "credit-card", "trending-up", "target", "award", "medal", "trophy", "star", "sparkles", "sun", "cloud", "cloud-sun", "umbrella", "waves", "anchor", "map-pin", "navigation", "compass", "globe", "earth", "network", "lock", "key-round", "hard-drive", "server", "database", "layers", "component", "settings", "workflow", "scaling", "arrow-up-right", "gem", "diamond", "crown", "clover", "leaf", "sprout", "flower", "tree-pine", "mountain", "flame", "zap", "rocket", "battery-charging", "timer", "clock", "calendar", "bell", "bell-ring", "phone", "mail", "help-circle"],
+
+        "Investment": ["trending-up", "arrow-up-right", "line-chart", "bar-chart-big", "pie-chart", "candlestick-chart", "activity", "gem", "diamond", "crown", "award", "medal", "trophy", "star", "sparkles", "rocket", "flame", "zap", "target", "flag", "mountain", "clover", "leaf", "sprout", "tree-pine", "sun", "moon", "orbit", "network", "globe", "earth", "landmark", "building-2", "vault", "safe", "banknote", "coins", "wallet", "credit-card", "briefcase", "user-check", "users", "handshake", "heart-handshake", "shield-check", "lock", "key", "hard-drive", "server", "database", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "file-text", "files", "scroll", "stamp", "gavel", "scale", "percent", "badge-percent", "compass", "navigation", "map-pin", "anchor", "ship", "plane", "truck", "package", "home", "warehouse", "construction", "factory", "history", "help-circle", "life-buoy", "magnifying-glass", "search-check", "check-circle-2"],
+
+        "Accounting": ["calculator", "file-text", "files", "table-2", "layout-list", "list-checks", "clipboard-list", "clipboard-check", "book-open", "book-marked", "archive", "inbox", "outbox", "pen-tool", "pencil", "ruler", "briefcase", "landmark", "banknote", "coins", "wallet", "credit-card", "percent", "badge-percent", "hash", "sigma", "tally-5", "binary", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "stamp", "scroll", "signature", "gavel", "scale", "timer", "clock", "calendar", "hourglass", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "star", "sparkles", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "clover", "leaf", "sun", "mountain"],
+
+        "Tax Consulting": ["gavel", "scale", "file-warning", "file-check", "landmark", "stamp", "signature", "scroll", "badge-percent", "percent", "calculator", "briefcase", "files", "clipboard-check", "archive", "inbox", "outbox", "book-open", "pen-tool", "pencil", "ruler", "banknote", "coins", "wallet", "credit-card", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "target", "award", "medal", "trophy", "star", "sparkles", "sun", "moon", "mountain", "waves", "anchor", "ship", "plane", "truck", "package", "home", "building-2", "warehouse", "construction", "factory", "timer", "clock", "calendar", "hourglass", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket"],
+
+        "Wealth Management": ["crown", "gem", "diamond", "landmark", "building-2", "castle", "vault", "safe", "key", "key-round", "lock", "shield-check", "award", "medal", "trophy", "star", "sparkles", "trending-up", "arrow-up-right", "line-chart", "bar-chart-big", "pie-chart", "activity", "banknote", "coins", "hand-coins", "wallet", "credit-card", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mountain", "clover", "leaf", "sprout", "tree-pine", "sun", "moon", "orbit", "network", "globe", "earth", "hard-drive", "server", "database", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "file-text", "files", "scroll", "stamp", "signature", "gavel", "scale", "percent", "badge-percent", "compass", "navigation", "map-pin", "anchor", "ship", "plane", "truck", "package", "home", "warehouse", "construction", "factory", "history", "help-circle", "life-buoy", "magnifying-glass", "search-check", "check-circle-2", "flame", "zap", "rocket"],
+
+        "Stock Trading": ["candlestick-chart", "line-chart", "bar-chart-big", "pie-chart", "activity", "trending-up", "arrow-up-right", "arrow-up-down", "zap", "flame", "rocket", "timer", "clock", "hourglass", "calendar", "history", "globe", "earth", "network", "mouse-pointer-2", "touchpad", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "hard-drive", "server", "database", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "landmark", "banknote", "coins", "wallet", "credit-card", "vault", "safe", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "target", "award", "medal", "star", "sparkles", "sun", "moon", "mountain", "waves", "anchor", "ship", "plane", "truck", "package", "home", "warehouse", "construction", "factory", "gavel", "scale", "percent", "badge-percent", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "clover", "leaf", "sprout", "diamond", "gem", "crown", "briefcase", "mail", "send", "message-square-text", "phone"],
+
+        "Microfinance": ["hand-coins", "users-2", "user-plus", "user-check", "smile", "heart", "heart-handshake", "handshake", "helping-hand", "sprout", "leaf", "clover", "flower", "tree-pine", "sun", "sun-medium", "mountain", "globe", "earth", "network", "landmark", "building-2", "home", "banknote", "coins", "wallet", "credit-card", "piggy-bank", "briefcase", "clipboard-check", "file-check", "check-circle-2", "badge-check", "award", "medal", "star", "sparkles", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "shield-check", "lock", "key", "hard-drive", "server", "database", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "map-pin", "navigation", "compass", "anchor", "ship", "plane", "truck", "package", "warehouse", "construction", "factory", "gavel", "scale", "percent", "badge-percent", "search-check", "magnifying-glass", "lightbulb", "brain"],
+
+        "FinTech": ["cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "smartphone", "tablet", "laptop", "monitor", "nfc", "qr-code", "wifi", "signal", "bluetooth", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "split", "combine", "git-branch", "webhook", "database", "hard-drive", "server", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "shield-ellipsis", "shield-check", "lock", "key", "credit-card", "wallet", "banknote", "coins", "hand-coins", "trending-up", "arrow-up-right", "line-chart", "bar-chart-big", "pie-chart", "activity", "candlestick-chart", "target", "award", "medal", "trophy", "star", "sparkles", "gem", "diamond", "crown", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain-circuit", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mouse-pointer-2", "touchpad", "scan-eye", "fingerprint", "clover", "leaf", "sun", "moon", "mountain"],
+    
+
+
+
+
+
+
+
+        "Education": ["graduation-cap", "book-open", "school", "library", "pencil", "microscope", "flask-conical", "globe", "medal", "award", "apple", "lamp", "brain", "ruler", "compass", "palette", "pen-tool", "calculator", "microscope", "test-tube", "atom", "dna", "pi", "sigma", "notebook", "sticky-note", "clipboard-list", "bell", "bus", "map", "mountain", "sun", "star", "sparkles", "lightbulb", "users", "user-check", "handshake", "shield-check", "briefcase", "landmark", "building-2", "history", "timer", "clock", "calendar", "mail", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "rocket", "flame", "zap", "gem", "diamond", "crown", "trophy", "check-circle-2", "badge-check", "bookmark", "scroll", "stamp", "signature", "gavel", "scale", "clover", "leaf", "sprout", "tree-pine", "network", "earth", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server"],
+
+        "E-learning": ["laptop", "video", "monitor-play", "mouse-pointer-click", "wifi", "screen-share", "app-window", "tablet", "glasses", "headset", "play-circle", "clapperboard", "list-video", "tv", "smartphone", "signal", "bluetooth", "network", "globe", "earth", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "binary", "code-2", "terminal", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "book-marked", "bookmark", "scroll", "stamp", "signature", "pencil", "pen-tool", "lightbulb", "brain-circuit", "cpu", "microchip", "graduation-cap", "award", "medal", "trophy", "star", "sparkles", "gem", "diamond", "crown", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "user-check", "users", "contact-2", "handshake", "messages-square", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "shield-check", "lock", "key", "nfc", "qr-code"],
+
+        "Coaching Institute": ["megaphone", "target", "flag", "rocket", "flame", "zap", "lightbulb", "brain", "users", "user-check", "presentation", "briefcase", "award", "medal", "trophy", "star", "sparkles", "gem", "diamond", "crown", "compass", "navigation", "map-pin", "globe", "earth", "network", "mountain", "sun", "moon", "clover", "leaf", "sprout", "handshake", "heart-handshake", "message-square-text", "messages-square", "mail", "send", "phone", "help-circle", "life-buoy", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "shield-check", "lock", "key", "graduation-cap", "book-open", "pencil", "pen-tool", "ruler", "calculator", "microscope", "flask-conical", "atom", "dna", "binary", "code-2", "terminal", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "database", "hard-drive", "server", "clipboard-check", "file-text", "scroll", "stamp", "signature", "gavel", "scale", "landmark", "building-2", "home", "warehouse", "factory"],
+
+        "Skill Development": ["hammer", "wrench", "screwdriver", "drill", "pickaxe", "axe", "pen-tool", "pencil", "brush", "palette", "ruler", "compass", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "database", "hard-drive", "server", "puzzle", "construction", "factory", "warehouse", "building-2", "home", "truck", "ship", "plane", "rocket", "shuttle", "zap", "flame", "battery-charging", "activity", "trending-up", "arrow-up-right", "target", "award", "medal", "trophy", "star", "sparkles", "gem", "diamond", "crown", "lightbulb", "brain", "graduation-cap", "book-open", "users", "user-check", "handshake", "heart-handshake", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "shield-check", "lock", "key", "clipboard-check", "file-text", "scroll", "stamp", "signature", "clover", "leaf", "sprout", "flower", "sun", "mountain"],
+
+        "EdTech": ["brain-circuit", "cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "smartphone", "tablet", "laptop", "monitor", "nfc", "qr-code", "wifi", "signal", "bluetooth", "network", "globe", "earth", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "graduation-cap", "book-open", "pencil", "pen-tool", "ruler", "microscope", "flask-conical", "atom", "dna", "test-tube-2", "microchip", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "database", "hard-drive", "server", "clipboard-check", "file-text", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "shield-check", "lock", "key"],
+
+        "Online Courses": ["clapperboard", "play-circle", "list-video", "tv", "monitor-play", "laptop", "tablet", "smartphone", "video", "mic-2", "headphones", "headset", "book-marked", "bookmark", "scroll", "stamp", "signature", "pencil", "pen-tool", "graduation-cap", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "unlock", "lock", "key", "file-text", "files", "clipboard-check", "search-check", "magnifying-glass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "globe", "earth", "network", "wifi", "signal", "nfc", "qr-code", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "landmark", "building-2", "home", "briefcase"],
+
+        "Tutoring Services": ["pencil-line", "highlighter", "eraser", "ruler", "sticky-note", "notebook", "book-open", "messages-square", "message-square-text", "smile", "hand-metal", "handshake", "heart-handshake", "user-check", "users", "contact-2", "graduation-cap", "award", "medal", "star", "sparkles", "lightbulb", "brain", "help-circle", "life-buoy", "check-circle-2", "badge-check", "timer", "clock", "calendar", "history", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "mail", "send", "phone", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shield-check", "lock", "key", "clipboard-check", "file-text", "scroll", "stamp", "signature", "calculator", "microscope", "flask-conical", "atom", "dna", "binary", "code-2", "terminal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "landmark", "building-2", "home", "briefcase", "compass", "navigation", "map-pin", "search-check", "magnifying-glass"],
+
+        "Language Training": ["languages", "globe", "earth", "message-square-text", "type", "book-a", "mic-2", "headset", "headphones", "at-sign", "hash", "megaphone", "send", "mail", "message-circle-more", "smile", "users", "user-check", "handshake", "heart-handshake", "graduation-cap", "book-open", "pencil", "pen-tool", "lightbulb", "brain", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "award", "medal", "star", "sparkles", "gem", "diamond", "crown", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "network", "wifi", "signal", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "landmark", "building-2", "home", "briefcase", "compass", "navigation", "map-pin", "search-check", "magnifying-glass"],
+
+        "Test Preparation": ["timer", "alarm-clock", "hourglass", "clock", "calendar", "list-todo", "check-square", "clipboard-check", "file-question", "search-check", "magnifying-glass", "gauge", "activity", "trending-up", "arrow-up-right", "target", "flag", "medal", "award", "trophy", "star", "sparkles", "lightbulb", "brain", "graduation-cap", "book-open", "pencil", "pen-tool", "ruler", "calculator", "microscope", "flask-conical", "atom", "dna", "binary", "code-2", "terminal", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "nfc", "qr-code", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "globe", "earth", "network", "landmark", "building-2", "home", "briefcase", "scroll", "stamp", "signature"],
+
+        "Corporate Training": ["briefcase", "users-2", "presentation", "handshake", "heart-handshake", "user-cog", "user-check", "workshop", "factory", "building-2", "landmark", "pie-chart", "bar-chart-3", "line-chart", "activity", "trending-up", "arrow-up-right", "target", "flag", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "scaling", "workflow", "settings", "component", "layout-grid", "layers", "network", "globe", "earth", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "nfc", "qr-code", "database", "hard-drive", "server", "clipboard-check", "file-text", "scroll", "stamp", "signature", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "graduation-cap", "book-open", "pencil", "pen-tool", "binary", "code-2", "terminal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket"],
+
+
+
+
+
+
+
+
+
+        "Technology": ["cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "smartphone", "tablet", "laptop", "monitor", "nfc", "qr-code", "wifi", "signal", "bluetooth", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "split", "combine", "git-branch", "webhook", "database", "hard-drive", "server", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain-circuit", "gauge", "activity", "trending-up", "arrow-up-right", "line-chart", "target", "award", "medal", "gem", "diamond", "crown", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mouse-pointer-2", "touchpad", "scan-eye", "fingerprint", "clover", "leaf", "sun", "moon", "mountain", "atom", "dna", "test-tube-2", "flask-conical", "microscope", "power", "plug-zap", "cable", "battery-charging", "fan", "radio", "antenna", "joystick", "gamepad-2", "bot", "robot", "cog", "factory", "construction", "landmark", "briefcase", "mail", "send"],
+
+        "Software Development": ["code-2", "terminal", "brackets", "bug", "bug-play", "git-pull-request", "git-merge", "git-branch", "git-commit", "webhook", "database", "server", "hard-drive", "cloud", "layers", "layout-template", "app-window", "monitor-check", "monitor-dot", "monitor-down", "monitor-off", "monitor-pause", "monitor-play", "monitor-refresh", "monitor-smartphone", "monitor-speaker", "monitor-up", "monitor-x", "monitor", "command", "cpu", "microchip", "circuit-board", "binary", "file-json-2", "file-code-2", "file-code", "file-type-2", "file-type", "files", "clipboard-copy", "clipboard-list", "clipboard", "copy-check", "copy-minus", "copy-plus", "copy-slash", "copy-x", "copy", "external-link", "link-2-off", "link-2", "link", "mouse-pointer-2", "mouse-pointer-click", "mouse-pointer", "move", "network", "orbit", "package-2", "package-check", "package-minus", "package-plus", "package-search", "package-x", "package", "plus-square", "plus", "pocket", "power-off", "power", "puzzle", "refresh-ccw", "refresh-cw", "repeat-1", "repeat", "save", "scaling", "search", "settings-2", "settings", "share-2", "share", "shield-check", "shield-ellipsis", "shield-off", "shield", "smartphone", "sparkles", "split", "square", "step-back", "step-forward", "stop-circle", "terminal-square", "toggle-left", "toggle-right", "trash-2", "trash", "trello", "triangle", "undo-2", "undo", "unlock", "upload-cloud", "upload", "user-check", "user-minus", "user-plus", "user-x", "user", "users", "view", "wand-2", "wand", "watch", "wifi-off", "wifi", "wind", "zap-off", "zap"],
+
+        "IT Services": ["headset", "help-circle", "life-buoy", "wrench", "settings", "settings-2", "cog", "hammer", "screwdriver", "drill", "briefcase", "hard-hat", "shield-check", "shield-alert", "lock", "key", "key-round", "power", "plug-zap", "cable", "battery-charging", "server", "hard-drive", "database", "cloud-cog", "cloud-upload", "cloud-download", "network", "globe", "earth", "wifi", "signal", "smartphone", "tablet", "laptop", "monitor", "monitor-check", "printer", "mouse", "keyboard", "bluetooth", "nfc", "qr-code", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "megaphone", "activity", "trending-up", "arrow-up-right", "target", "award", "medal", "star", "sparkles", "lightbulb", "brain", "graduation-cap", "book-open", "pencil", "pen-tool", "binary", "code-2", "terminal", "layers", "layout-grid", "component", "workflow", "scaling", "landmark", "building-2", "home", "warehouse", "factory", "clover", "leaf", "sun", "mountain", "flame", "zap", "rocket"],
+
+        "Cybersecurity": ["shield-check", "shield-ellipsis", "shield-alert", "shield-off", "shield", "lock", "unlock", "key-round", "key", "vault", "safe", "fingerprint", "scan-eye", "eye-off", "eye", "shredder", "shield-plus", "file-lock-2", "file-lock", "file-warning", "user-check", "user-x", "user-minus", "user-plus", "users", "contact-2", "landmark", "building-2", "home", "network", "globe", "earth", "cloud-lock", "cloud-off", "wifi-off", "signal-low", "hard-drive", "server", "database", "binary", "code-2", "terminal", "bug", "bug-play", "activity", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain-circuit", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "briefcase", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "scaling", "workflow", "settings", "component", "layout-grid", "layers", "smartphone", "laptop", "monitor", "tablet"],
+
+        "Artificial Intelligence": ["brain-circuit", "brain-cog", "brain", "bot", "robot", "cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "sparkles", "wand-2", "wand", "stars", "star", "orbit", "satellite", "network", "globe", "earth", "dna", "atom", "test-tube-2", "microscope", "flask-conical", "lightbulb", "zap", "flame", "rocket", "shuttle", "eye", "scan-eye", "fingerprint", "face-id", "mouth", "audio-lines", "waveform", "mic-2", "speaker", "headphones", "headset", "video", "camera", "image", "aperture", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "database", "hard-drive", "server", "cloud-lightning", "cloud", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower"],
+
+        "Data Analytics": ["bar-chart-big", "bar-chart-3", "pie-chart", "line-chart", "candlestick-chart", "scatter-chart", "activity", "trending-up", "arrow-up-right", "arrow-up-down", "percent", "badge-percent", "hash", "sigma", "tally-5", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "magnifying-glass", "search-check", "search-code", "filter", "table-2", "clipboard-list", "clipboard-check", "file-text", "files", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "hourglass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "landmark", "building-2", "home", "briefcase", "diamond", "gem", "crown"],
+
+        "Blockchain": ["link-2", "link", "blocks", "box", "boxes", "package-2", "package", "lock", "key-round", "key", "vault", "safe", "shield-check", "bitcoin", "coins", "hand-coins", "wallet", "credit-card", "banknote", "landmark", "building-2", "network", "globe", "earth", "orbit", "satellite", "star", "sparkles", "diamond", "gem", "crown", "award", "medal", "trophy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "binary", "code-2", "terminal", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "split", "combine", "git-branch", "webhook"],
+
+        "Cloud Computing": ["cloud", "cloud-upload", "cloud-download", "cloud-cog", "cloud-lightning", "cloud-sun", "cloud-moon", "cloud-rain", "cloud-drizzle", "upload-cloud", "download-cloud", "upload", "download", "server", "hard-drive", "database", "network", "globe", "earth", "wifi", "signal", "smartphone", "tablet", "laptop", "monitor", "bluetooth", "nfc", "qr-code", "binary", "code-2", "terminal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "cpu", "microchip", "circuit-board"],
+
+        "Web Development": ["browser", "globe", "earth", "network", "wifi", "signal", "mouse-pointer-2", "mouse-pointer-click", "touchpad", "layout-template", "layout-grid", "layout-list", "layout", "layers", "component", "settings", "workflow", "scaling", "code-2", "terminal", "brackets", "bug", "bug-play", "database", "server", "hard-drive", "cloud", "app-window", "monitor", "laptop", "tablet", "smartphone", "nfc", "qr-code", "binary", "file-code-2", "file-code", "files", "pencil", "pen-tool", "palette", "brush", "ruler", "compass", "external-link", "link-2", "link", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key"],
+
+        "Mobile App Development": ["smartphone", "tablet", "monitor-smartphone", "touchpad", "fingerprint", "face-id", "qr-code", "nfc", "wifi", "signal", "bluetooth", "network", "globe", "earth", "app-window", "layout-template", "layout-grid", "layers", "component", "settings", "workflow", "scaling", "code-2", "terminal", "brackets", "bug", "bug-play", "database", "server", "hard-drive", "cloud", "binary", "file-code-2", "file-code", "files", "pencil", "pen-tool", "palette", "brush", "ruler", "compass", "external-link", "link-2", "link", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "bell", "battery-charging"],
+
+
+
+
+
+
+
+        "Healthcare": ["heart", "heart-pulse", "activity", "cross", "stethoscope", "briefcase-medical", "user-round-plus", "shield-plus", "hospital", "bandage", "thermometer", "syringe", "pill", "pills", "flask-conical", "microscope", "dna", "test-tube-2", "clipboard-list", "clipboard-check", "file-heart", "first-aid", "users", "user-check", "handshake", "heart-handshake", "smile", "sun", "moon", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "clover", "leaf", "sprout", "flower", "mountain", "waves", "anchor", "flame", "zap", "rocket", "battery-charging", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "landmark", "building-2", "home", "briefcase", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag"],
+
+        "Pharmaceuticals": ["pill", "pills", "flask-conical", "flask-round", "test-tube-2", "test-tube", "dna", "microscope", "microchip", "atom", "droplet", "droplets", "tablets", "syringe", "thermometer", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain-circuit", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "box", "package", "truck", "ship", "plane", "warehouse", "factory", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "heart", "heart-pulse", "activity", "cross", "stethoscope"],
+
+        "Medical Equipment": ["microscope", "stethoscope", "thermometer", "syringe", "flask-conical", "test-tube-2", "dna", "atom", "cpu", "microchip", "circuit-board", "monitor", "smartphone", "tablet", "laptop", "printer", "battery-charging", "power", "plug-zap", "cable", "fan", "radio", "antenna", "wrench", "settings", "cog", "hammer", "screwdriver", "drill", "layers", "layout-grid", "component", "workflow", "scaling", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "warehouse", "factory", "truck", "ship", "plane", "package", "box", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud"],
+
+        "Diagnostics": ["scan-eye", "eye", "microscope", "flask-conical", "test-tube-2", "dna", "atom", "binary", "code-2", "terminal", "database", "hard-drive", "server", "clipboard-list", "clipboard-check", "file-search", "file-text", "files", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "activity", "heart-pulse", "heart", "cross", "stethoscope", "timer", "clock", "calendar", "history", "hourglass", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "target", "flag", "mountain", "sun", "moon", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "gauge", "filter", "list-checks", "fingerprint", "face-id"],
+
+        "Telemedicine": ["smartphone", "video", "camera", "monitor", "laptop", "tablet", "headset", "headphones", "mic-2", "wifi", "signal", "bluetooth", "network", "globe", "earth", "cloud", "heart", "heart-pulse", "activity", "stethoscope", "cross", "briefcase-medical", "pill", "thermometer", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "award", "medal", "star", "sparkles", "lightbulb", "brain", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "binary", "code-2", "terminal", "database", "hard-drive", "server", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "nfc", "qr-code", "app-window", "monitor-play", "monitor-check"],
+
+        "Fitness Center": ["dumbbell", "flame", "activity", "heart-pulse", "heart", "timer", "clock", "timer-reset", "stopwatch", "trophy", "medal", "award", "star", "sparkles", "zap", "battery-charging", "rocket", "shuttle", "mountain", "target", "flag", "bike", "footprints", "hand-metal", "armchair", "users", "user-check", "handshake", "heart-handshake", "smile", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "gem", "diamond", "crown", "shield-check", "lock", "key", "briefcase", "landmark", "building-2", "home", "warehouse", "factory", "scaling", "workflow", "settings", "component", "layout-grid", "layers", "network", "globe", "earth", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "clipboard-check", "file-text", "check-circle-2", "badge-check", "lightbulb", "brain", "apple", "carrot", "cup-soda", "wine", "glass-water", "droplet", "droplets", "utensils", "coffee", "pizza", "drumstick", "sandwich", "burger"],
+
+        "Nutrition Services": ["apple", "carrot", "leaf", "sprout", "flower", "flower-2", "clover", "shrub", "tree-pine", "sun", "moon", "mountain", "waves", "anchor", "clipboard-list", "clipboard-check", "scale", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "heart", "heart-pulse", "activity", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "gem", "diamond", "crown", "shield-check", "lock", "key", "utensils", "coffee", "cup-soda", "wine", "glass-water", "droplet", "droplets", "pizza", "drumstick", "sandwich", "burger", "cake", "cookie", "ice-cream", "candy", "cherry", "strawberry", "grape", "banana", "citrus", "factory", "warehouse", "truck", "ship", "plane", "package", "box", "landmark", "building-2", "home", "briefcase"],
+
+        "Mental Health Clinic": ["brain", "smile", "heart", "hand-heart", "heart-handshake", "handshake", "sun", "sun-medium", "cloud-sun", "cloud", "wind", "waves", "anchor", "mountain", "flower", "flower-2", "leaf", "sprout", "clover", "tree-pine", "star", "sparkles", "lightbulb", "timer", "clock", "calendar", "history", "hourglass", "user-check", "users", "contact-2", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "shield-check", "lock", "key", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "landmark", "building-2", "home", "briefcase", "book-open", "pencil", "pen-tool", "palette", "brush", "music", "mic-2", "headphones", "headset", "video", "camera", "image", "aperture", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server"],
+
+        "Yoga Studio": ["flower", "flower-2", "lotus", "wind", "waves", "anchor", "sun", "sun-medium", "moon", "cloud-sun", "cloud", "mountain", "leaf", "sprout", "clover", "tree-pine", "shrub", "peace", "heart", "hand-heart", "smile", "star", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "hourglass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "book-open", "pencil", "pen-tool", "palette", "brush", "music", "mic-2", "headphones", "headset", "video", "camera", "image", "aperture", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "activity", "heart-pulse", "flame", "zap", "rocket"],
+
+        "Ayurveda": ["leaf", "sprout", "flower", "flower-2", "shrub", "tree-pine", "clover", "sun", "sun-medium", "moon", "mountain", "waves", "anchor", "droplet", "droplets", "glass-water", "wine", "cup-soda", "coffee", "utensils", "pestle-mortar", "bowl", "flask-conical", "test-tube-2", "pill", "pills", "heart", "heart-pulse", "activity", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "star", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "hourglass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "book-open", "pencil", "pen-tool", "palette", "brush", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "factory", "warehouse", "truck", "ship", "plane", "package", "box", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag"],
+
+
+
+
+
+
+
+
+        "Retail": ["shopping-bag", "shopping-cart", "store", "tag", "tags", "label", "package-2", "package", "box", "boxes", "truck", "warehouse", "building-2", "landmark", "home", "briefcase", "wallet", "credit-card", "banknote", "coins", "hand-coins", "barcode", "qr-code", "nfc", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "network", "globe", "earth", "user-check", "users", "contact-2", "handshake", "heart-handshake", "smile", "star", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "percent", "badge-percent", "gift", "party-popper", "ticket"],
+
+        "E-commerce": ["shopping-cart", "shopping-bag", "package-plus", "package-search", "package-check", "truck", "ship", "plane", "globe", "earth", "network", "mouse-pointer-2", "mouse-pointer-click", "touchpad", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "nfc", "qr-code", "barcode", "credit-card", "wallet", "banknote", "coins", "hand-coins", "badge-dollar-sign", "badge-percent", "percent", "tag", "tags", "label", "heart", "star", "sparkles", "gem", "diamond", "crown", "award", "medal", "trophy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud-upload", "external-link", "app-window", "monitor-play", "gift", "box", "boxes"],
+
+        "Wholesale": ["boxes", "box", "package-2", "package", "truck", "forklift", "ship", "plane", "warehouse", "factory", "building-2", "landmark", "briefcase", "clipboard-list", "clipboard-check", "file-text", "files", "archive", "inbox", "outbox", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "gem", "diamond", "crown", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "banknote", "coins", "wallet", "credit-card", "percent", "badge-percent", "tag", "tags", "barcode", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "phone", "help-circle", "life-buoy"],
+
+        "FMCG": ["package-2", "box", "boxes", "shopping-cart", "shopping-bag", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "utensils", "coffee", "cup-soda", "wine", "glass-water", "droplet", "droplets", "apple", "carrot", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "percent", "badge-percent", "tag", "tags", "barcode", "qr-code", "nfc", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "heart", "smile", "gem", "diamond", "crown"],
+
+        "Supermarket": ["shopping-cart", "shopping-bag", "store", "tag", "tags", "barcode", "qr-code", "nfc", "credit-card", "wallet", "banknote", "coins", "hand-coins", "apple", "carrot", "citrus", "banana", "strawberry", "cherry", "grape", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "utensils", "coffee", "cup-soda", "wine", "glass-water", "droplet", "droplets", "pizza", "drumstick", "sandwich", "burger", "cake", "cookie", "ice-cream", "candy", "milk", "egg", "beef", "fish", "package-2", "box", "boxes", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag"],
+
+        "Fashion Boutique": ["shirt", "shopping-bag", "shopping-cart", "tag", "tags", "label", "hanger", "scissors", "needle", "pen-tool", "palette", "brush", "gem", "diamond", "crown", "star", "sparkles", "heart", "smile", "flower", "flower-2", "leaf", "sprout", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "award", "medal", "trophy", "target", "flag", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "gift", "party-popper", "ticket", "landmark", "building-2", "home", "briefcase", "wallet", "credit-card", "banknote", "coins"],
+
+        "Footwear Store": ["boot", "footprints", "activity", "heart-pulse", "heart", "timer", "clock", "stopwatch", "timer-reset", "trophy", "medal", "award", "star", "sparkles", "zap", "flame", "battery-charging", "rocket", "shuttle", "mountain", "target", "flag", "bike", "shopping-bag", "shopping-cart", "tag", "tags", "barcode", "qr-code", "nfc", "credit-card", "wallet", "banknote", "coins", "hand-coins", "user-check", "users", "contact-2", "handshake", "heart-handshake", "smile", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "gem", "diamond", "crown", "shield-check", "lock", "key", "briefcase", "landmark", "building-2", "home", "warehouse", "factory", "scaling", "workflow", "settings", "component", "layout-grid", "layers", "network", "globe", "earth", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "mail", "send", "phone", "help-circle", "life-buoy", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "history", "calendar", "gift", "package-2", "box", "boxes", "truck"],
+
+        "Jewelry Store": ["gem", "diamond", "ring", "sparkles", "sparkle", "star", "stars", "crown", "award", "medal", "trophy", "medal", "heart", "heart-handshake", "handshake", "user-check", "users", "contact-2", "smile", "sun", "moon", "mountain", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flower-2", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "key-round", "vault", "safe", "landmark", "building-2", "home", "briefcase", "wallet", "credit-card", "banknote", "coins", "hand-coins", "tag", "tags", "shopping-bag", "shopping-cart", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "gift", "party-popper", "ticket", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag"],
+
+        "Cosmetics Store": ["sparkles", "sparkle", "wand-2", "wand", "brush", "palette", "brush", "flower", "flower-2", "leaf", "sprout", "clover", "shrub", "tree-pine", "sun", "sun-medium", "moon", "mountain", "waves", "anchor", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "star", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "wallet", "credit-card", "banknote", "coins", "hand-coins", "tag", "tags", "shopping-bag", "shopping-cart", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "gift", "party-popper", "ticket", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "droplet", "droplets"],
+
+        "Luxury Retail": ["crown", "gem", "diamond", "castle", "landmark", "building-2", "home", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "shield-check", "lock", "key", "key-round", "vault", "safe", "wallet", "credit-card", "banknote", "coins", "hand-coins", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flower-2", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "shopping-bag", "shopping-cart", "tag", "tags", "gift", "party-popper", "ticket", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "ship", "plane", "car", "watch"],
+
+
+
+
+
+
+
+        "Food & Beverage": ["utensils", "coffee", "cup-soda", "wine", "glass-water", "beer", "mug", "droplet", "droplets", "flame", "zap", "apple", "carrot", "citrus", "banana", "strawberry", "cherry", "grape", "leaf", "sprout", "flower", "clover", "pizza", "drumstick", "sandwich", "burger", "cake", "cookie", "ice-cream", "candy", "milk", "egg", "beef", "fish", "salad", "soup", "chef-hat", "package-2", "box", "boxes", "shopping-cart", "shopping-bag", "store", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "rocket", "shuttle", "orbit", "satellite", "sun", "moon", "mountain", "waves", "anchor", "gem", "diamond", "crown"],
+
+        "Restaurant": ["chef-hat", "utensils", "utensils-crossed", "soup", "beef", "fish", "pizza", "drumstick", "sandwich", "burger", "salad", "flame", "zap", "clover", "leaf", "sprout", "flower", "flower-2", "sun", "moon", "mountain", "waves", "anchor", "glass-water", "wine", "beer", "cup-soda", "coffee", "mug", "table-2", "layout-grid", "layers", "component", "settings", "workflow", "scaling", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "concierge-bell", "bell"],
+
+        "Café": ["coffee", "mug", "cup-soda", "bean", "cup-soda", "glass-water", "wine", "beer", "cookie", "cake", "ice-cream", "candy", "cherry", "strawberry", "grape", "citrus", "apple", "carrot", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "gift", "party-popper", "ticket", "thermometer-sun", "wind"],
+
+        "Bakery": ["cake", "cookie", "ice-cream", "candy", "cherry", "strawberry", "grape", "citrus", "apple", "carrot", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "chef-hat", "utensils", "utensils-crossed", "wheat", "wheat-off", "egg", "milk", "package-2", "box", "boxes", "shopping-cart", "shopping-bag", "store", "tag", "tags", "barcode", "qr-code", "nfc", "credit-card", "wallet", "banknote", "coins", "hand-coins", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "gift", "party-popper", "ticket"],
+
+        "Catering Services": ["concierge-bell", "chef-hat", "utensils", "utensils-crossed", "soup", "beef", "fish", "pizza", "drumstick", "sandwich", "burger", "salad", "cake", "cookie", "ice-cream", "candy", "clover", "leaf", "sprout", "flower", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "truck", "warehouse", "factory", "package-2", "box", "boxes", "shopping-bag"],
+
+        "Cloud Kitchen": ["tablet", "smartphone", "wifi", "signal", "network", "globe", "earth", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "utensils", "chef-hat", "pizza", "drumstick", "sandwich", "burger", "salad", "soup", "package-2", "box", "boxes", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "nfc", "qr-code", "mouse-pointer-2", "touchpad", "clover", "leaf", "sprout", "flower", "sun", "moon", "mountain"],
+
+        "Food Delivery": ["truck", "car", "bike", "footprints", "timer", "clock", "stopwatch", "timer-reset", "history", "calendar", "navigation", "map-pin", "compass", "globe", "earth", "network", "smartphone", "tablet", "laptop", "wifi", "signal", "nfc", "qr-code", "package-2", "box", "boxes", "shopping-bag", "shopping-cart", "utensils", "chef-hat", "pizza", "drumstick", "sandwich", "burger", "salad", "soup", "cake", "cookie", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "landmark", "building-2", "home", "briefcase", "wallet", "credit-card", "banknote", "coins"],
+
+        "Organic Food Store": ["leaf", "sprout", "flower", "flower-2", "clover", "shrub", "tree-pine", "sun", "sun-medium", "moon", "mountain", "waves", "anchor", "apple", "carrot", "citrus", "banana", "strawberry", "cherry", "grape", "utensils", "coffee", "cup-soda", "wine", "glass-water", "droplet", "droplets", "store", "shopping-bag", "shopping-cart", "tag", "tags", "barcode", "qr-code", "nfc", "credit-card", "wallet", "banknote", "coins", "hand-coins", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "factory", "warehouse", "truck", "package-2", "box", "boxes"],
+
+        "Packaged Foods": ["package-2", "box", "boxes", "archive", "inbox", "outbox", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "utensils", "coffee", "cup-soda", "wine", "glass-water", "droplet", "droplets", "apple", "carrot", "leaf", "sprout", "flower", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "percent", "badge-percent", "tag", "tags", "barcode", "qr-code", "nfc", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "network", "globe", "earth", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "gem", "diamond", "crown", "shopping-bag", "shopping-cart", "gift", "party-popper", "ticket"],
+
+        "Beverage Brand": ["cup-soda", "glass-water", "wine", "beer", "mug", "coffee", "droplet", "droplets", "waves", "anchor", "wind", "sun", "moon", "mountain", "leaf", "sprout", "flower", "clover", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "factory", "warehouse", "truck", "package-2", "box", "boxes", "shopping-bag", "shopping-cart", "tag", "tags", "barcode", "gift", "party-popper", "ticket"],
+
+
+
+
+
+
+
+
+        "Real Estate": ["home", "building-2", "landmark", "hotel", "warehouse", "factory", "key", "key-round", "map-pin", "map", "navigation", "compass", "globe", "earth", "network", "shield-check", "lock", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "users", "user-check", "contact-2", "handshake", "heart-handshake", "banknote", "coins", "wallet", "credit-card", "briefcase", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "percent", "badge-percent", "tag", "tags", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gem", "diamond", "crown", "construction", "fence", "door-open", "ruler", "pen-tool"],
+
+        "Construction": ["hard-hat", "hammer", "wrench", "screwdriver", "drill", "pickaxe", "axe", "shovel", "construction", "framer", "brick-wall", "fence", "truck", "forklift", "crane", "building-2", "landmark", "home", "warehouse", "factory", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "blueprint", "ruler", "compass", "pen-tool", "palette", "brush", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "network", "globe", "earth", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "banknote", "coins", "wallet", "credit-card"],
+
+        "Interior Design": ["palette", "brush", "pen-tool", "pencil", "ruler", "compass", "layers", "layout-template", "layout-grid", "component", "settings", "workflow", "scaling", "lamp", "armchair", "sofa", "bed", "frame", "image", "gallery-thumbnails", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "flower", "flower-2", "leaf", "sprout", "clover", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "landmark", "building-2", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "briefcase", "shopping-bag", "shopping-cart", "tag", "tags", "gift", "party-popper", "ticket"],
+
+        "Architecture": ["blueprint", "ruler", "compass", "pen-tool", "pencil", "brush", "palette", "triangle", "square", "circle", "pyramid", "box", "boxes", "layers", "layout-template", "layout-grid", "component", "settings", "workflow", "scaling", "building-2", "landmark", "hotel", "warehouse", "factory", "home", "pillar", "castle", "monument", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "binary", "code-2", "terminal", "database", "hard-drive", "server", "briefcase", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag"],
+
+        "Property Management": ["key", "key-round", "lock", "unlock", "shield-check", "shield-ellipsis", "shield-alert", "building-2", "landmark", "home", "warehouse", "factory", "clipboard-list", "clipboard-check", "file-check", "file-text", "files", "archive", "inbox", "outbox", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "briefcase", "landmark", "wallet", "credit-card", "banknote", "coins", "hand-coins", "percent", "badge-percent", "tag", "tags", "map-pin", "navigation", "compass", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite"],
+
+        "Infrastructure": ["bridge", "tower", "antenna", "signal", "wifi", "network", "globe", "earth", "building-2", "landmark", "factory", "warehouse", "construction", "hard-hat", "hammer", "wrench", "settings", "cog", "workflow", "scaling", "layers", "layout-grid", "component", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "truck", "ship", "plane", "rocket", "shuttle", "orbit", "satellite", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "battery-charging", "power", "plug-zap", "cable", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "briefcase", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "map-pin", "navigation", "compass"],
+
+        "Home Decor": ["flower-2", "flower", "sprout", "leaf", "clover", "shrub", "tree-pine", "sun", "moon", "mountain", "waves", "anchor", "lamp", "armchair", "sofa", "bed", "frame", "image", "gallery-thumbnails", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "shopping-bag", "shopping-cart", "tag", "tags", "gift", "party-popper", "ticket", "landmark", "building-2", "home", "briefcase", "palette", "brush", "pen-tool", "pencil", "ruler", "compass"],
+
+        "Furniture Business": ["armchair", "sofa", "bed", "lamp", "frame", "layout-grid", "layers", "component", "settings", "workflow", "scaling", "hammer", "wrench", "screwdriver", "drill", "ruler", "pen-tool", "palette", "brush", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "shopping-bag", "shopping-cart", "tag", "tags", "truck", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "clover", "leaf", "sprout", "flower", "sun", "moon", "mountain", "waves", "anchor", "flame", "zap", "rocket"],
+
+        "Smart Home Solutions": ["home", "smartphone", "tablet", "laptop", "monitor", "wifi", "signal", "nfc", "qr-code", "bluetooth", "network", "globe", "earth", "power", "plug-zap", "cable", "battery-charging", "lightbulb", "lamp", "fan", "thermometer-sun", "thermometer-snowflake", "shield-check", "lock", "unlock", "key", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "brain-circuit", "cpu", "microchip", "circuit-board", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "bell-ring", "eye", "scan-eye", "fingerprint"],
+
+        "Landscaping": ["leaf", "sprout", "flower", "flower-2", "shrub", "tree-pine", "clover", "sun", "sun-medium", "moon", "mountain", "waves", "anchor", "droplet", "droplets", "cloud-rain", "wind", "rainbow", "shovel", "hammer", "wrench", "settings", "cog", "workflow", "scaling", "layers", "layout-grid", "component", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "map-pin", "navigation", "compass", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "landmark", "building-2", "home", "briefcase", "palette", "brush", "pen-tool", "pencil", "ruler", "compass", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "fence", "scissors", "gem", "diamond", "crown"],
+
+
+
+
+
+
+
+
+        "Travel & Tourism": ["globe", "earth", "map", "map-pin", "navigation", "compass", "milestone", "palmtree", "mountain", "waves", "sun", "sunset", "cloud-sun", "umbrella", "plane", "ship", "train", "bus", "car", "tram", "bike", "luggage", "suitcase", "briefcase", "ticket", "camera", "image", "aperture", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "heart-handshake", "handshake", "smile", "user-check", "users", "contact-2", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "shield-check", "lock", "key", "landmark", "building-2", "hotel", "home", "warehouse", "factory", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "network", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "clover", "leaf", "sprout", "flower"],
+
+        "Hospitality": ["concierge-bell", "bell", "bed", "hotel", "building-2", "landmark", "home", "coffee", "mug", "cup-soda", "wine", "glass-water", "utensils", "chef-hat", "heart", "hand-heart", "heart-handshake", "handshake", "smile", "user-check", "users", "contact-2", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "shield-check", "lock", "key", "key-round", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "thermometer-sun", "wind", "briefcase", "luggage", "suitcase"],
+
+        "Hotel": ["hotel", "building-2", "landmark", "bed", "key", "key-round", "lock", "concierge-bell", "bell", "wifi", "signal", "coffee", "mug", "glass-water", "wine", "utensils", "chef-hat", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "thermometer-sun", "wind", "briefcase", "luggage", "suitcase", "shower-head", "bath", "tv", "air-vent"],
+
+        "Resort": ["palmtree", "waves", "sun", "sun-medium", "sunset", "sunrise", "cloud-sun", "umbrella", "beach", "hotel", "building-2", "landmark", "mountain", "lake", "anchor", "ship", "cocktail", "wine", "glass-water", "coffee", "mug", "utensils", "chef-hat", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "thermometer-sun", "wind", "clover", "leaf", "sprout", "flower", "flower-2", "shrub", "tree-pine", "briefcase", "luggage", "suitcase"],
+
+        "Travel Agency": ["ticket", "plane", "globe", "earth", "map", "map-pin", "navigation", "compass", "milestone", "suitcase", "luggage", "briefcase", "passport", "archive", "file-text", "files", "clipboard-check", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "palmtree", "cloud-sun", "umbrella", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "network", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "landmark", "building-2", "hotel", "home", "warehouse", "factory", "shield-check", "lock", "key", "gem", "diamond", "crown"],
+
+        "Tour Operator": ["megaphone", "megaphone-off", "users", "user-check", "users-2", "contact-2", "guide", "flag", "flag-triangle-right", "target", "map", "map-pin", "navigation", "compass", "milestone", "camera", "image", "aperture", "bus", "train", "tram", "car", "bike", "plane", "ship", "mountain", "hiking", "footprints", "mountain-snow", "sun", "sunset", "waves", "anchor", "palmtree", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "landmark", "building-2", "hotel", "home", "warehouse", "factory", "shield-check", "lock", "key", "gift", "party-popper", "ticket", "clover", "leaf", "sprout", "flower"],
+
+        "Adventure Tourism": ["mountain", "mountain-snow", "tent", "backpack", "backpack-2", "compass", "navigation", "map", "map-pin", "milestone", "hiking", "footprints", "axe", "pickaxe", "fire", "flame", "campfire", "zap", "bolt", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "clover", "leaf", "sprout", "flower", "tree-pine", "forest", "sun", "sunset", "moon", "waves", "anchor", "ship", "plane", "rocket", "shuttle", "orbit", "satellite", "shield-check", "lock", "key", "camera", "image", "aperture", "bike", "climb", "racer"],
+
+        "Car Rental": ["car", "key", "key-round", "lock", "unlock", "fuel", "gauge", "steering-wheel", "timer", "clock", "stopwatch", "calendar", "history", "map-pin", "navigation", "compass", "milestone", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "banknote", "coins", "wallet", "credit-card", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "shield-check", "landmark", "building-2", "home", "warehouse", "factory", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "truck", "bus", "bike", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags"],
+
+        "Airline Services": ["plane", "plane-takeoff", "plane-landing", "wing", "cloud", "cloud-sun", "wind", "globe", "earth", "earth-2", "network", "signal", "wifi", "terminal", "navigation", "compass", "milestone", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "shield-check", "lock", "key", "landmark", "building-2", "hotel", "briefcase", "luggage", "suitcase", "ticket", "passport", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "sunset", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "air-vent", "fan", "battery-charging", "power"],
+
+        "Cruise Services": ["ship", "anchor", "waves", "ocean", "life-buoy", "helm", "fish", "palmtree", "sun", "sun-medium", "sunset", "sunrise", "cloud-sun", "umbrella", "beach", "hotel", "building-2", "landmark", "cocktail", "wine", "glass-water", "coffee", "mug", "utensils", "chef-hat", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "clover", "leaf", "sprout", "flower", "briefcase", "luggage", "suitcase", "map-pin", "navigation", "compass"],
+
+
+
+
+
+
+
+        "Logistics": ["truck", "package", "package-2", "boxes", "box", "forklift", "container", "warehouse", "factory", "building-2", "landmark", "globe", "earth", "network", "route", "map-pin", "navigation", "compass", "milestone", "timer", "clock", "stopwatch", "history", "calendar", "shield-check", "lock", "key", "key-round", "user-check", "users", "contact-2", "handshake", "heart-handshake", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "briefcase", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags"],
+
+        "Transportation": ["car", "bus", "train", "tram", "bike", "plane", "ship", "steering-wheel", "fuel", "gauge", "timer", "clock", "stopwatch", "calendar", "history", "map-pin", "navigation", "compass", "milestone", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "truck", "forklift", "warehouse", "factory", "building-2", "landmark", "home", "briefcase", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags", "wrench", "hammer", "cog"],
+
+        "Courier Services": ["bike", "footprints", "package-check", "package-2", "box", "boxes", "shopping-bag", "shopping-cart", "timer", "clock", "stopwatch", "timer-reset", "history", "calendar", "navigation", "map-pin", "compass", "milestone", "globe", "earth", "network", "smartphone", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "user-check", "users", "contact-2", "handshake", "heart-handshake", "smile", "star", "stars", "sparkles", "lightbulb", "brain", "check-circle-2", "badge-check", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "briefcase", "landmark", "building-2", "home", "warehouse", "factory", "scaling", "workflow", "settings", "component", "layout-grid", "layers", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "truck", "car", "plane", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags"],
+
+        "Warehousing": ["warehouse", "factory", "boxes", "box", "package-2", "forklift", "crane", "building-2", "landmark", "home", "briefcase", "clipboard-list", "clipboard-check", "file-check", "file-text", "files", "archive", "inbox", "outbox", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "shield-check", "lock", "key", "key-round", "vault", "safe", "hard-hat", "hammer", "wrench", "settings", "cog", "workflow", "scaling", "layers", "layout-grid", "component", "network", "globe", "earth", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "truck", "ship", "plane", "luggage", "suitcase", "map-pin", "navigation", "compass", "user-check", "users", "handshake", "heart-handshake"],
+
+        "Supply Chain": ["link-2", "link", "workflow", "scaling", "git-branch", "webhook", "network", "globe", "earth", "factory", "warehouse", "truck", "ship", "plane", "package-2", "box", "boxes", "layers", "layout-grid", "component", "settings", "cog", "hammer", "wrench", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "luggage", "suitcase", "map-pin", "navigation", "compass"],
+
+        "Import-Export": ["globe", "earth", "earth-2", "ship", "plane", "truck", "boxes", "box", "package-2", "container", "landmark", "building-2", "warehouse", "factory", "handshake", "heart-handshake", "user-check", "users", "contact-2", "languages", "briefcase", "luggage", "suitcase", "ticket", "passport", "map-pin", "navigation", "compass", "milestone", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "network", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "sunset", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "banknote", "coins", "wallet", "credit-card", "percent", "badge-percent", "tag", "tags"],
+
+        "Shipping": ["ship", "anchor", "waves", "ocean", "life-buoy", "helm", "container", "boxes", "box", "package-2", "forklift", "truck", "warehouse", "factory", "building-2", "landmark", "globe", "earth", "network", "map-pin", "navigation", "compass", "milestone", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "shield-check", "lock", "key", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "clover", "leaf", "sprout", "flower", "briefcase", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags", "fish", "palmtree", "sun", "moon", "mountain"],
+
+        "Freight Services": ["truck", "train", "ship", "plane", "forklift", "crane", "container", "boxes", "box", "package-2", "warehouse", "factory", "building-2", "landmark", "globe", "earth", "network", "map-pin", "navigation", "compass", "milestone", "timer", "clock", "stopwatch", "calendar", "history", "weight", "scaling", "workflow", "layers", "layout-grid", "component", "settings", "cog", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "briefcase", "luggage", "suitcase", "ticket", "percent", "badge-percent", "tag", "tags"],
+
+        "Delivery Services": ["truck", "car", "bike", "footprints", "timer", "clock", "stopwatch", "timer-reset", "history", "calendar", "navigation", "map-pin", "compass", "globe", "earth", "network", "smartphone", "tablet", "laptop", "wifi", "signal", "nfc", "qr-code", "package-2", "box", "boxes", "shopping-bag", "shopping-cart", "utensils", "chef-hat", "pizza", "drumstick", "sandwich", "burger", "salad", "soup", "cake", "cookie", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "star", "sparkles", "lightbulb", "brain", "award", "medal", "trophy", "gem", "diamond", "crown", "shield-check", "lock", "key", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "check-circle-2", "badge-check", "search-check", "magnifying-glass", "landmark", "building-2", "home", "briefcase", "wallet", "credit-card", "banknote", "coins", "handshake", "heart-handshake", "smile"],
+
+        "Packaging Solutions": ["box", "boxes", "package-2", "package-plus", "package-search", "package-check", "archive", "inbox", "outbox", "scissors", "pen-tool", "pencil", "ruler", "palette", "brush", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "shield-check", "lock", "key", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "factory", "warehouse", "truck", "ship", "plane", "building-2", "landmark", "home", "briefcase", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "party-popper", "ticket", "percent", "badge-percent", "tag", "tags", "barcode", "qr-code", "nfc", "smartphone", "laptop", "monitor", "tablet"],
+
+
+
+
+
+
+
+
+        "Media": ["tv-2", "radio", "newspaper", "mic-2", "megaphone", "rss", "globe", "earth", "network", "signal", "wifi", "at-sign", "hash", "send", "mail", "message-square-text", "messages-square", "share-2", "video", "clapperboard", "play-circle", "monitor-play", "smartphone", "laptop", "tablet", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "ticket", "party-popper", "gift", "camera", "image", "aperture"],
+
+        "Entertainment": ["party-popper", "ticket", "popcorn", "clapperboard", "film", "video", "tv-2", "monitor-play", "play-circle", "music", "mic-2", "headphones", "headset", "speaker", "guitar", "piano", "disc", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "gift", "box", "package-2", "joystick", "gamepad-2", "ghost", "sword", "wand-2"],
+
+        "Film Production": ["clapperboard", "video", "film", "camera", "aperture", "projector", "monitor-play", "play-circle", "tv-2", "smartphone", "laptop", "monitor", "tablet", "layers", "layout-template", "layout-grid", "component", "settings", "workflow", "scaling", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "crown", "gem", "diamond", "star", "stars", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "ticket", "party-popper", "gift", "mic-2", "headphones", "headset", "speaker", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud"],
+
+        "Music Production": ["music", "mic-2", "headphones", "headset", "speaker", "audio-lines", "waveform", "disc", "guitar", "piano", "drum", "trumpet", "violin", "radio", "monitor-speaker", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "crown", "gem", "diamond", "star", "stars", "sparkles", "lightbulb", "brain", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "gift", "party-popper", "ticket", "heart", "smile"],
+
+        "Gaming": ["gamepad-2", "joystick", "dpad", "mouse-pointer-2", "touchpad", "monitor", "laptop", "smartphone", "tablet", "wifi", "signal", "bluetooth", "network", "globe", "earth", "sword", "swords", "shield-check", "crown", "trophy", "medal", "award", "star", "stars", "sparkles", "ghost", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "target", "flag", "timer", "clock", "calendar", "history", "check-circle-2", "badge-check", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "nfc", "qr-code", "gift", "party-popper", "ticket", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "landmark", "building-2", "home", "briefcase"],
+
+        "Animation": ["pen-tool", "brush", "palette", "pencil", "ruler", "compass", "layers", "layout-template", "layout-grid", "component", "settings", "workflow", "scaling", "move", "mouse-pointer-2", "touchpad", "monitor", "laptop", "tablet", "smartphone", "image", "gallery-thumbnails", "aperture", "camera", "video", "clapperboard", "play-circle", "monitor-play", "star", "stars", "sparkles", "sparkle", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "lightbulb", "brain", "globe", "earth", "network", "wifi", "signal", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "nfc", "qr-code", "gift", "party-popper", "ticket", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase"],
+
+        "Photography": ["camera", "aperture", "image", "gallery-thumbnails", "film", "video", "clapperboard", "projector", "flash-light", "monitor", "laptop", "tablet", "smartphone", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "gem", "diamond", "crown", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "globe", "earth", "network", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "palette", "brush", "pen-tool", "pencil", "ruler", "compass", "gift", "party-popper", "ticket", "nfc", "qr-code"],
+
+        "Event Management": ["calendar-days", "party-popper", "ticket", "ticket-check", "megaphone", "mic-2", "speaker", "music", "video", "camera", "image", "clapperboard", "users", "user-check", "contact-2", "handshake", "heart-handshake", "smile", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "gift", "box", "package-2", "shopping-bag", "timer", "clock", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "target", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "hotel", "map-pin", "navigation", "compass"],
+
+        "Advertising Agency": ["megaphone", "target", "trending-up", "arrow-up-right", "line-chart", "bar-chart-big", "pie-chart", "activity", "palette", "brush", "pen-tool", "pencil", "ruler", "compass", "layers", "layout-template", "layout-grid", "component", "settings", "workflow", "scaling", "lightbulb", "brain", "star", "stars", "sparkles", "award", "medal", "trophy", "crown", "gem", "diamond", "heart", "smile", "user-check", "users", "contact-2", "handshake", "heart-handshake", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "globe", "earth", "network", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "flag", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "flame", "zap", "rocket", "shuttle", "orbit", "satellite", "landmark", "building-2", "home", "briefcase", "shopping-bag", "shopping-cart", "tag", "tags", "gift", "party-popper", "ticket"],
+
+        "Digital Marketing": ["mouse-pointer-2", "mouse-pointer-click", "touchpad", "at-sign", "hash", "share-2", "megaphone", "target", "trending-up", "line-chart", "bar-chart-big", "pie-chart", "activity", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "network", "globe", "earth", "earth-2", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain-circuit", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "landmark", "building-2", "home", "briefcase", "nfc", "qr-code", "tag", "tags", "percent", "badge-percent", "shopping-cart", "shopping-bag"]
+    };
+
+// 1. GENERATE FUNCTION
+// 1. MAIN GENERATE FUNCTION
+// 1. MAIN GENERATE FUNCTION
+function generateLogos() {
+    const grid = document.getElementById('logoGrid');
+    const nameInp = document.getElementById('nameInp') || document.getElementById('bizName');
+    const tagInp = document.getElementById('tagInp') || document.getElementById('tagline');
+    const indSelect = document.getElementById('indInp') || document.getElementById('industry');
+
+    const name = nameInp.value || "BRAND";
+    const tag = tagInp.value || "";
+    const ind = indSelect.value;
+
+    if (!ICONS[ind]) { alert("Select Industry!"); return; }
+
+    // Read initial states
+    const format = {
+        nameB: document.getElementById('nameBold').checked,
+        nameI: document.getElementById('nameItalic').checked,
+        nameU: document.getElementById('nameUnderline').checked,
+        tagB: document.getElementById('tagBold').checked,
+        tagI: document.getElementById('tagItalic').checked,
+        tagU: document.getElementById('tagUnderline').checked
+    };
+
+    grid.innerHTML = ''; 
+    for(let i=0; i<12; i++) {
+        grid.appendChild(createLogo(name, tag, ind, format));
+    }
+    lucide.createIcons();
+    
+    // Safety: ensure live styles are applied to the new batch immediately
+    applyLiveStyles(); 
+}
+// 2. THE CREATE LOGO ENGINE
+function createLogo(name, tag, ind, format) {
+    const layoutIdx = Math.floor(Math.random() * 30) + 1;
+    const font = FONTS[Math.floor(Math.random() * FONTS.length)];
+    const pal = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+    const iconName = ICONS[ind][Math.floor(Math.random() * ICONS[ind].length)];
+
+    const card = document.createElement('div');
+
+
+
+
+    card.className = 'logo-card';
+    card.style.backgroundColor = pal.bg;
+
+    const inner = document.createElement('div');
+    inner.className = 'logo-inner';
+    inner.style.color = pal.text;
+
+
+// OPTIONAL: If a photo is uploaded, add it to the Top-Center of the card
+    if (currentPhotoBase64) {
+        const photoImg = document.createElement('img');
+        photoImg.src = currentPhotoBase64;
+        photoImg.className = 'fixed-user-photo';
+        card.appendChild(photoImg);
+        
+        // Push the inner content down slightly so it doesn't collide
+        inner.style.paddingTop = "100px"; 
+    }
+
+    // NAME ELEMENT + FORMATTING
+    const nameEl = document.createElement('div');
+    nameEl.className = 'logo-name';
+    nameEl.innerText = name;
+    nameEl.style.fontFamily = font;
+  // DYNAMIC FONT SCALING based on character count
+    if (name.length > 20) {
+        nameEl.style.fontSize = '1.2rem'; // Ultra small for very long names
+    } else if (name.length > 15) {
+        nameEl.style.fontSize = '1.5rem';
+    } else if (name.length > 10) {
+        nameEl.style.fontSize = '2.0rem';
+    } else {
+        nameEl.style.fontSize = '2.2rem'; // Default for short names
+    }
+    
+    // Explicitly set or reset styles based on checkboxes
+    nameEl.style.fontWeight = format.nameB ? '900' : 'normal';
+    nameEl.style.fontStyle = format.nameI ? 'italic' : 'normal';
+    nameEl.style.textDecoration = format.nameU ? 'underline' : 'none';
+
+    // TAGLINE ELEMENT + FORMATTING
+    const tagEl = document.createElement('div');
+// Inside createLogo, near tagEl definition:
+    if (tag.length > 25) {
+        tagEl.style.fontSize = '0.6rem';
+    } else {
+        tagEl.style.fontSize = '1.2rem';
+    }
+    tagEl.className = 'logo-tag';
+    tagEl.innerText = tag;
+    tagEl.style.color = pal.accent;
+    tagEl.style.fontWeight = format.tagB ? '900' : 'normal';
+    tagEl.style.fontStyle = format.tagI ? 'italic' : 'normal';
+    tagEl.style.textDecoration = format.tagU ? 'underline' : 'none';
+
+    // ICON ELEMENT
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'logo-icon';
+    iconWrap.innerHTML = `<i data-lucide="${iconName}" color="${pal.text}" stroke-width="1.5"></i>`;
+
+    
+    // 30 LAYOUT ENGINE
+   const appendAll = () => inner.append(iconWrap, nameEl, tagEl);
+
+    switch(layoutIdx) {
+        // --- 1–10: MODERN & CLEAN ---
+        case 1: inner.classList.add('flex-row'); appendAll(); break;
+        case 2: appendAll(); break; // Standard Centered
+        case 3: iconWrap.style.display = 'none'; nameEl.style.fontSize = '4rem'; inner.append(nameEl, tagEl); break;
+        case 4: iconWrap.classList.add('circle-frame'); appendAll(); break;
+        case 5: iconWrap.classList.add('square-frame'); inner.classList.add('flex-row'); appendAll(); break;
+        case 6: card.style.background = `linear-gradient(90deg, ${pal.accent} 35%, ${pal.bg} 35%)`; appendAll(); break;
+        case 7: nameEl.classList.add('bordered-box'); appendAll(); break;
+        case 8: nameEl.classList.add('underline'); appendAll(); break;
+        case 9: appendAll(); break; // Tagline below
+        case 10: nameEl.style.whiteSpace = 'pre-wrap'; nameEl.innerText = name.split(' ').join('\n'); appendAll(); break;
+
+        // --- 11–20: STYLISH & TRENDY ---
+        case 11: card.style.borderLeft = `25px solid ${pal.accent}`; inner.style.alignItems = 'flex-start'; inner.style.textAlign = 'left'; appendAll(); break;
+        case 12: card.style.borderRight = `25px solid ${pal.accent}`; inner.style.alignItems = 'flex-end'; inner.style.textAlign = 'right'; appendAll(); break;
+        case 13: card.style.background = `linear-gradient(135deg, ${pal.bg} 50%, ${pal.accent} 50%)`; appendAll(); break;
+        case 14: card.style.background = `linear-gradient(45deg, ${pal.accent}, ${pal.text})`; inner.style.color = '#ffffff'; appendAll(); break;
+        case 15: nameEl.classList.add('neon-glow'); iconWrap.classList.add('neon-glow'); appendAll(); break;
+        case 16: card.classList.add('glass'); appendAll(); break;
+        case 17: card.style.boxShadow = 'inset 0 0 50px rgba(0,0,0,0.3), 0 40px 60px rgba(0,0,0,0.5)'; appendAll(); break;
+        case 18: nameEl.classList.add('outline-text'); appendAll(); break;
+        case 19: card.style.borderRadius = '50%'; card.style.border = `12px double ${pal.text}`; appendAll(); break;
+        case 20: card.style.borderRadius = '100px'; appendAll(); break;
+
+        // --- 21–30: WOW / CREATIVE / PREMIUM ---
+        case 21: iconWrap.style.marginBottom = '-40px'; iconWrap.style.zIndex = '2'; nameEl.style.zIndex = '1'; appendAll(); break;
+        case 22: nameEl.innerText = name.substring(1); inner.classList.add('flex-row'); appendAll(); break;
+        case 23: 
+            const m = Math.ceil(name.length/2); 
+            nameEl.innerHTML = `<span style="color:${pal.accent}">${name.slice(0,m)}</span>${name.slice(m)}`; 
+            appendAll(); break;
+        case 24: iconWrap.style.transform = 'rotate(-25deg)'; appendAll(); break;
+        case 25: 
+            const wm = iconWrap.cloneNode(true); 
+            wm.classList.add('watermark'); 
+            card.appendChild(wm); 
+            inner.append(nameEl, tagEl); 
+            break;
+        case 26: 
+            inner.style.border = `4px solid ${pal.text}`; 
+            inner.style.outline = `8px solid ${pal.text}`; 
+            inner.style.outlineOffset = '8px'; 
+            inner.style.margin = '35px'; 
+            appendAll(); break;
+        case 27: card.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%)'; appendAll(); break;
+        case 28: 
+            const hr = document.createElement('div'); 
+            hr.style.cssText = `width:120px; height:5px; background:${pal.accent}; margin:15px;`; 
+            inner.append(iconWrap, hr, nameEl, tagEl); 
+            break;
+        case 29: 
+            inner.style.display = 'grid'; 
+            inner.style.gridTemplateColumns = '1fr 1fr'; 
+            inner.append(iconWrap, nameEl, tagEl); 
+            break;
+        case 30: nameEl.classList.add('three-d'); appendAll(); break;
+        
+        default: appendAll(); break;
+    }
+         
+    
+    card.appendChild(inner);
+
+    // DOWNLOAD OVERLAY
+    const overlay = document.createElement('div');
+    overlay.className = 'download-overlay';
+    const btnBox = document.createElement('div');
+    btnBox.className = 'dl-group';
+
+    ['PNG', 'JPG', 'PDF', 'SVG'].forEach(fmt => {
+        const b = document.createElement('button');
+        b.className = 'btn-dl';
+        b.innerText = fmt;
+        b.onclick = (e) => { 
+            e.stopPropagation(); 
+           // We now pass 'card' so the background color is captured
+downloadLogo(card, name, fmt);
+        };
+        btnBox.appendChild(b);
+    });
+
+    overlay.appendChild(btnBox);
+    card.appendChild(overlay);
+
+    return card;
+}
+
+// 3. THE DOWNLOAD HANDLER
+async function downloadLogo(cardElement, fileName, format) {
+    try {
+        // 1. Hide the buttons before capturing
+        const overlay = cardElement.querySelector('.download-overlay');
+        if (overlay) overlay.style.display = 'none';
+
+        // 2. Capture the card at 4x resolution (High Quality)
+        const canvas = await html2canvas(cardElement, {
+            scale: 4, 
+            useCORS: true,
+            backgroundColor: null, // Keeps transparency for PNG
+            logging: false
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        if (format === 'SVG') {
+            // THE FIX: Embed the high-res capture into an SVG wrapper
+            // This preserves ALL 30 layouts (Gradients, Neon, 3D, etc.)
+            const svgContent = `
+                <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <image href="${imgData}" width="1024" height="1024" />
+                </svg>`;
+            const blob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            triggerDownload(url, `${fileName}_card.svg`);
+        } 
+        else if (format === 'PDF') {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'px', [canvas.width, canvas.height]);
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`${fileName}_card.pdf`);
+        } 
+        else if (format === 'JPG') {
+            // For JPG, we need a white background (since it doesn't support transparency)
+            const jpgCanvas = document.createElement('canvas');
+            jpgCanvas.width = canvas.width;
+            jpgCanvas.height = canvas.height;
+            const ctx = jpgCanvas.getContext('2d');
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvas, 0, 0);
+            triggerDownload(jpgCanvas.toDataURL('image/jpeg', 0.9), `${fileName}_card.jpg`);
+        } 
+        else {
+            // PNG
+            triggerDownload(imgData, `${fileName}_card.png`);
+        }
+
+        // 3. Show the buttons again
+        if (overlay) overlay.style.display = 'flex';
+
+    } catch (err) {
+        console.error("Critical Download Error:", err);
+        alert("Download failed. Make sure you are connected to the internet to load libraries.");
+    }
+}
+
+// Helper to trigger the actual browser download
+function triggerDownload(url, name) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+window.onload = generateLogos;
+
+function initIndustryDropdown() {
+    const select = document.getElementById('industry') || document.getElementById('indInp');
+    if (!select) return;
+
+    // Clear existing options
+    select.innerHTML = '';
+
+    // Sort industries alphabetically and add them to the dropdown
+    Object.keys(ICONS).sort().forEach(industry => {
+        const opt = document.createElement('option');
+        opt.value = industry;
+        opt.innerHTML = industry;
+        select.appendChild(opt);
+    });
+}
+
+// Run this when the page loads
+window.addEventListener('DOMContentLoaded', (event) => {
+    initIndustryDropdown();
+    generateLogos(); // Generate first set automatically
+});
+
+
+
+
+function applyLiveStyles() {
+    // 1. Get the current state of all checkboxes
+    const nB = document.getElementById('nameBold').checked;
+    const nI = document.getElementById('nameItalic').checked;
+    const nU = document.getElementById('nameUnderline').checked;
+    
+    const tB = document.getElementById('tagBold').checked;
+    const tI = document.getElementById('tagItalic').checked;
+    const tU = document.getElementById('tagUnderline').checked;
+
+    // 2. Update all Names currently on the grid
+    document.querySelectorAll('.logo-name').forEach(el => {
+        el.style.fontWeight = nB ? '900' : 'normal';
+        el.style.fontStyle = nI ? 'italic' : 'normal';
+        el.style.textDecoration = nU ? 'underline' : 'none';
+    });
+
+    // 3. Update all Taglines currently on the grid
+    document.querySelectorAll('.logo-tag').forEach(el => {
+        el.style.fontWeight = tB ? '900' : 'normal';
+        el.style.fontStyle = tI ? 'italic' : 'normal';
+        el.style.textDecoration = tU ? 'underline' : 'none';
+    });
+}
+
+
+
+
+
+let currentPhotoBase64 = null; // Stores the image globally
+
+function previewUserPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentPhotoBase64 = e.target.result;
+            generateLogos(); // Instant refresh to show image on current cards
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+</body>
+</html>
