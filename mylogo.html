@@ -423,6 +423,42 @@ html, body {
         width: 90%;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+.logo-icon img {
+    width: 240px !important;
+    height: 240px !important;
+    max-width: 65%;
+    max-height: 55%;
+    object-fit: contain;
+    /* Keeps the 3D 'WOW' effect even on uploaded images */
+    filter: drop-shadow(8px 8px 0px rgba(0,0,0,0.2));
+}
+
+
+
+
+
+
+
+.logo-icon img {
+    width: 240px !important;
+    height: 240px !important;
+    max-width: 65%;
+    max-height: 55%;
+    object-fit: contain;
+    /* Keeps the 3D 'WOW' effect even on uploaded images */
+    filter: drop-shadow(8px 8px 0px rgba(0,0,0,0.2));
+}
 </style>
 </head>
 <body>
@@ -1019,16 +1055,7 @@ function createLogo(name, tag, ind, format, pal) {
     inner.style.color = pal.text;
 
 
-// OPTIONAL: If a photo is uploaded, add it to the Top-Center of the card
-    if (currentPhotoBase64) {
-        const photoImg = document.createElement('img');
-        photoImg.src = currentPhotoBase64;
-        photoImg.className = 'fixed-user-photo';
-        card.appendChild(photoImg);
-        
-        // Push the inner content down slightly so it doesn't collide
-        inner.style.paddingTop = "100px"; 
-    }
+
 
     // NAME ELEMENT + FORMATTING
     const nameEl = document.createElement('div');
@@ -1072,26 +1099,24 @@ function createLogo(name, tag, ind, format, pal) {
     tagEl.style.textDecoration = format.tagU ? 'underline' : 'none';
 
     // ICON ELEMENT
- // ICON ELEMENT - Dynamic & Colorful
-  // 1. Create the Dynamic 3D Side Edge
-    card.style.backgroundColor = pal.bg;
-    card.style.borderLeft = `30px solid ${pal.accent}`; // Physical 3D thickness
-    card.style.borderBottom = `10px solid rgba(0,0,0,0.2)`;
-
-    // 2. Icon Logic
-    const iconColor = getDynamicColor(iconName);
+// ICON ELEMENT - Smart Replacement Logic
     const iconWrap = document.createElement('div');
     iconWrap.className = 'logo-icon';
-    
-    // Lively Detail: Randomly rotate icons slightly (-15 to 15 degrees)
-    const randomRot = Math.floor(Math.random() * 30) - 15;
-    iconWrap.style.transform = `rotate(${randomRot}deg)`;
 
-    // Thicker stroke for 3D presence
-    iconWrap.innerHTML = `<i data-lucide="${iconName}" color="${iconColor}" stroke-width="2.8"></i>`;
-    
-    // Optional: Add a soft colorful glow/shadow to the icon to make it 'lively'
-    iconWrap.style.filter = `drop-shadow(0 0 10px ${iconColor}44)`;
+    if (currentPhotoBase64) {
+        // If user uploaded an image, use it instead of the icon
+        const userImg = document.createElement('img');
+        userImg.src = currentPhotoBase64;
+        iconWrap.appendChild(userImg);
+    } else {
+        // Otherwise, use the dynamic Lucide icon
+        const iconColor = getDynamicColor(iconName);
+        iconWrap.innerHTML = `<i data-lucide="${iconName}" color="${iconColor}" stroke-width="2.8"></i>`;
+        
+        // Random rotation only for the default icons to keep them lively
+        const randomRot = Math.floor(Math.random() * 30) - 15;
+        iconWrap.style.transform = `rotate(${randomRot}deg)`;
+    }
 
     
     // 30 LAYOUT ENGINE
