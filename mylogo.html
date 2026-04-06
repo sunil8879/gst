@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ULTRA LOGO GENERATOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Fascinate&family=Modak&family=Monoton&family=Righteous&family=Unbounded:wght@900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Cinzel:wght@900&family=Fascinate&family=Modak&family=Monoton&family=Righteous&family=Unbounded:wght@900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -295,6 +295,87 @@ html, body {
         top: 15px;
     }
 }
+
+
+
+
+
+
+
+/* THE 3D SLAB CARD (Canva Supernova Style) */
+.logo-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 60px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Thick physical bevel on the card itself */
+    box-shadow: 
+        inset 10px 10px 20px rgba(255,255,255,0.2), 
+        inset -10px -10px 20px rgba(0,0,0,0.3),
+        -20px 20px 0px rgba(0,0,0,0.2); 
+    border: 12px solid rgba(255,255,255,0.1);
+}
+
+/* THE 3D EXTRUDED ICON (Not Flat) */
+.logo-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+    /* Stacked shadows create a solid 3D wall for the icon */
+    filter: 
+        drop-shadow(1px 1px 0px rgba(0,0,0,0.5))
+        drop-shadow(2px 2px 0px rgba(0,0,0,0.5))
+        drop-shadow(3px 3px 0px rgba(0,0,0,0.5))
+        drop-shadow(4px 4px 0px rgba(0,0,0,0.5))
+        drop-shadow(10px 10px 20px rgba(0,0,0,0.4));
+}
+
+.logo-icon svg {
+    width: 240px !important;
+    height: 240px !important;
+    max-width: 65%;
+    max-height: 55%;
+    /* Adds a lively highlight to the 3D surface */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* THE 3D EXTRUDED TEXT (Not Flat) */
+.logo-name {
+    width: 90%;
+    text-transform: uppercase;
+    /* Multi-layered shadow creates 'block' letters */
+    text-shadow: 
+        1px 1px 0px rgba(0,0,0,0.3),
+        2px 2px 0px rgba(0,0,0,0.3),
+        3px 3px 0px rgba(0,0,0,0.3),
+        4px 4px 0px rgba(0,0,0,0.3),
+        5px 15px 25px rgba(0,0,0,0.4);
+    letter-spacing: -2px;
+}
+
+.logo-tag {
+    margin-top: 15px;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+
+
+.logo-name {
+    word-wrap: normal; /* Changed from break-word */
+    overflow-wrap: normal;
+    white-space: nowrap; /* FORCES text to stay on one line */
+    max-width: 95%; 
+    line-height: 1.1;
+    display: block;
+}
 </style>
 </head>
 <body>
@@ -460,6 +541,27 @@ html, body {
     <option value="Advertising Agency">Advertising Agency</option>
     <option value="Digital Marketing">Digital Marketing</option>
 </select>
+
+
+<div class="input-group">
+    <label>Search by Background Colour</label>
+    <select id="colorFilter">
+        <option value="ALL">ANY COLOUR (RANDOM)</option>
+        <option value="RED">RED</option>
+        <option value="BLUE">BLUE</option>
+        <option value="YELLOW">YELLOW</option>
+        <option value="GREEN">GREEN</option>
+        <option value="BLACK">BLACK</option>
+        <option value="WHITE">WHITE</option>
+        <option value="PURPLE">PURPLE</option>
+        <option value="ORANGE">ORANGE</option>
+        <option value="PINK">PINK</option>
+        <option value="GREY">GREY</option>
+        <option value="CYAN">CYAN</option>
+    </select>
+</div>
+
+
         </div>
         <button class="btn-gen" onclick="generateLogos()">GENERATE INFINITE LOGOS</button>
     </div>
@@ -467,34 +569,62 @@ html, body {
     <div id="logoGrid"></div>
 
 <script>
-    const FONTS = ['Archivo Black', 'Bangers', 'Righteous', 'Unbounded', 'Modak', 'Monoton', 'Fascinate'];
-   const PALETTES = [
-    { bg: '#FF0055', text: '#FFFFFF', accent: '#000000' },
-    { bg: '#00F2FF', text: '#000000', accent: '#FFFFFF' },
-    { bg: '#FFDD00', text: '#000000', accent: '#FF0055' },
-    { bg: '#000000', text: '#00FF41', accent: '#00FF41' },
-    { bg: '#FFFFFF', text: '#6200EA', accent: '#03DAC6' },
-    { bg: '#1A1A1A', text: '#FFCC00', accent: '#FFFFFF' },
-    { bg: '#6200EA', text: '#FFFFFF', accent: '#FFDE03' },
-
-    { bg: '#7B00FF', text: '#FFFFFF', accent: '#00E5FF' },
-    { bg: '#FF4D00', text: '#FFFFFF', accent: '#000000' },
-    { bg: '#0A1F44', text: '#FFFFFF', accent: '#4DA3FF' },
-    { bg: '#2E2E2E', text: '#FFFFFF', accent: '#BFBFBF' },
-    { bg: '#0B132B', text: '#FFFFFF', accent: '#FFD700' },
-    { bg: '#1E3A5F', text: '#FFFFFF', accent: '#00C2FF' },
-
-    { bg: '#FF7A18', text: '#FFFFFF', accent: '#FFD200' },
-    { bg: '#0093E9', text: '#FFFFFF', accent: '#80D0C7' },
-    { bg: '#FF6EC7', text: '#FFFFFF', accent: '#FFD166' },
-    { bg: '#A8FF00', text: '#000000', accent: '#006400' },
-
-    { bg: '#4B0F1A', text: '#FFFFFF', accent: '#FF4D6D' },
-    { bg: '#014D4E', text: '#FFFFFF', accent: '#00FFC6' },
-    { bg: '#E5E5E5', text: '#1A1A1A', accent: '#A6A6A6' },
-    { bg: '#1A0033', text: '#FFFFFF', accent: '#9D4EDD' }
+const FONTS = [
+    'Algerian', 
+    'Archivo Black', 
+    'Bangers', 
+    'Bauhaus 93', 
+    'Bodoni MT Black', 
+    'Britannic Bold', 
+    'Broadway', 
+    'Castellar', 
+    'Chiller', 
+    'Cinzel', 
+    'Cooper Black', 
+    'Engravers MT', 
+    'Fascinate', 
+    'Forte', 
+    'Franklin Gothic Heavy', 
+    'Gill Sans Ultra Bold', 
+    'Goudy Stout', 
+    'Impact', 
+    'Magneto', 
+    'Modak', 
+    'Monoton', 
+    'Playbill', 
+    'Ravie', 
+    'Righteous', 
+    'Rockwell Extra Bold', 
+    'Showcard Gothic', 
+    'Stencil', 
+    'Unbounded', 
+    'Wide Latin'
 ];
 
+
+ const PALETTES = [
+    { bg: '#FF0055', text: '#FFFFFF', accent: '#000000', colorName: 'RED' },
+    { bg: '#00F2FF', text: '#000000', accent: '#FFFFFF', colorName: 'CYAN' },
+    { bg: '#FFDD00', text: '#000000', accent: '#FF0055', colorName: 'YELLOW' },
+    { bg: '#000000', text: '#00FF41', accent: '#00FF41', colorName: 'BLACK' },
+    { bg: '#FFFFFF', text: '#6200EA', accent: '#03DAC6', colorName: 'WHITE' },
+    { bg: '#1A1A1A', text: '#FFCC00', accent: '#FFFFFF', colorName: 'BLACK' },
+    { bg: '#6200EA', text: '#FFFFFF', accent: '#FFDE03', colorName: 'PURPLE' },
+    { bg: '#7B00FF', text: '#FFFFFF', accent: '#00E5FF', colorName: 'PURPLE' },
+    { bg: '#FF4D00', text: '#FFFFFF', accent: '#000000', colorName: 'ORANGE' },
+    { bg: '#0A1F44', text: '#FFFFFF', accent: '#4DA3FF', colorName: 'BLUE' },
+    { bg: '#2E2E2E', text: '#FFFFFF', accent: '#BFBFBF', colorName: 'GREY' },
+    { bg: '#0B132B', text: '#FFFFFF', accent: '#FFD700', colorName: 'BLUE' },
+    { bg: '#1E3A5F', text: '#FFFFFF', accent: '#00C2FF', colorName: 'BLUE' },
+    { bg: '#FF7A18', text: '#FFFFFF', accent: '#FFD200', colorName: 'ORANGE' },
+    { bg: '#0093E9', text: '#FFFFFF', accent: '#80D0C7', colorName: 'BLUE' },
+    { bg: '#FF6EC7', text: '#FFFFFF', accent: '#FFD166', colorName: 'PINK' },
+    { bg: '#A8FF00', text: '#000000', accent: '#006400', colorName: 'GREEN' },
+    { bg: '#4B0F1A', text: '#FFFFFF', accent: '#FF4D6D', colorName: 'RED' },
+    { bg: '#014D4E', text: '#FFFFFF', accent: '#00FFC6', colorName: 'GREEN' },
+    { bg: '#E5E5E5', text: '#1A1A1A', accent: '#A6A6A6', colorName: 'GREY' },
+    { bg: '#1A0033', text: '#FFFFFF', accent: '#9D4EDD', colorName: 'PURPLE' }
+];
 const ICONS = {
         "Finance": ["banknote", "coins", "wallet", "landmark", "piggy-bank", "credit-card", "receipt", "calculator", "vault", "safe", "briefcase", "shield-check", "lock", "key", "trending-up", "bar-chart-3", "pie-chart", "line-chart", "activity", "percent", "badge-percent", "dollar-sign", "euro", "pound", "japanese-yen", "indian-rupee", "gem", "diamond", "crown", "award", "medal", "trophy", "target", "flag", "star", "sparkles", "lightbulb", "brain", "users", "user-check", "handshake", "heart-handshake", "globe", "network", "layers", "component", "workflow", "git-branch", "database", "server", "hard-drive", "cloud", "zap", "flame", "rocket", "plane", "truck", "ship", "home", "building-2", "hotel", "warehouse", "factory", "map-pin", "navigation", "compass", "anchor", "scale", "gavel", "stamp", "scroll", "file-text", "files", "clipboard-check", "archive", "clock", "timer", "hourglass", "calendar", "sun", "moon", "leaf", "clover", "box", "package", "gift", "shopping-cart", "smartphone", "laptop", "monitor", "tablet", "nfc", "qr-code", "wifi", "signal"],
 
@@ -758,14 +888,34 @@ const ICONS = {
         "Digital Marketing": ["mouse-pointer-2", "mouse-pointer-click", "touchpad", "at-sign", "hash", "share-2", "megaphone", "target", "trending-up", "line-chart", "bar-chart-big", "pie-chart", "activity", "smartphone", "laptop", "monitor", "tablet", "wifi", "signal", "network", "globe", "earth", "earth-2", "layers", "layout-grid", "component", "settings", "workflow", "scaling", "binary", "code-2", "terminal", "database", "hard-drive", "server", "cloud", "cloud-lightning", "zap", "flame", "rocket", "shuttle", "orbit", "satellite", "timer", "clock", "calendar", "history", "search-check", "magnifying-glass", "check-circle-2", "badge-check", "award", "medal", "trophy", "star", "stars", "sparkles", "lightbulb", "brain-circuit", "user-check", "users", "contact-2", "handshake", "heart-handshake", "mail", "send", "message-square-text", "phone", "help-circle", "life-buoy", "mountain", "sun", "moon", "waves", "anchor", "clover", "leaf", "sprout", "flower", "landmark", "building-2", "home", "briefcase", "nfc", "qr-code", "tag", "tags", "percent", "badge-percent", "shopping-cart", "shopping-bag"]
     };
 
+
+
+const VIBRANT_COLORS = [
+    "#F43F5E", "#EC4899", "#D946EF", "#A855F7", "#8B5CF6", 
+    "#6366F1", "#3B82F6", "#0EA5E9", "#06B6D4", "#14B8A6", 
+    "#10B981", "#22C55E", "#84CC16", "#EAB308", "#F59E0B", 
+    "#F97316", "#EF4444"
+];
+
+// This function picks a color based on the text string so it's always "Dynamic"
+const getDynamicColor = (name) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % VIBRANT_COLORS.length;
+    return VIBRANT_COLORS[index];
+};
+
 // 1. GENERATE FUNCTION
 // 1. MAIN GENERATE FUNCTION
 // 1. MAIN GENERATE FUNCTION
 function generateLogos() {
     const grid = document.getElementById('logoGrid');
-    const nameInp = document.getElementById('nameInp') || document.getElementById('bizName');
-    const tagInp = document.getElementById('tagInp') || document.getElementById('tagline');
-    const indSelect = document.getElementById('indInp') || document.getElementById('industry');
+    const nameInp = document.getElementById('bizName');
+    const tagInp = document.getElementById('tagline');
+    const indSelect = document.getElementById('industry');
+    const colorFilterValue = document.getElementById('colorFilter').value;
 
     const name = nameInp.value || "BRAND";
     const tag = tagInp.value || "";
@@ -773,7 +923,15 @@ function generateLogos() {
 
     if (!ICONS[ind]) { alert("Select Industry!"); return; }
 
-    // Read initial states
+    // Logic to filter palettes
+    let availablePalettes = PALETTES;
+    if (colorFilterValue !== "ALL") {
+        availablePalettes = PALETTES.filter(p => p.colorName === colorFilterValue);
+    }
+    
+    // Safety check: if no matches, show all
+    if (availablePalettes.length === 0) availablePalettes = PALETTES;
+
     const format = {
         nameB: document.getElementById('nameBold').checked,
         nameI: document.getElementById('nameItalic').checked,
@@ -785,18 +943,20 @@ function generateLogos() {
 
     grid.innerHTML = ''; 
     for(let i=0; i<12; i++) {
-        grid.appendChild(createLogo(name, tag, ind, format));
+        // Pick from filtered list
+        const chosenPal = availablePalettes[Math.floor(Math.random() * availablePalettes.length)];
+        grid.appendChild(createLogo(name, tag, ind, format, chosenPal));
     }
     lucide.createIcons();
-    
-    // Safety: ensure live styles are applied to the new batch immediately
     applyLiveStyles(); 
 }
+
+
 // 2. THE CREATE LOGO ENGINE
-function createLogo(name, tag, ind, format) {
+function createLogo(name, tag, ind, format, pal) {
     const layoutIdx = Math.floor(Math.random() * 30) + 1;
     const font = FONTS[Math.floor(Math.random() * FONTS.length)];
-    const pal = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+
     const iconName = ICONS[ind][Math.floor(Math.random() * ICONS[ind].length)];
 
     const card = document.createElement('div');
@@ -828,17 +988,22 @@ function createLogo(name, tag, ind, format) {
     nameEl.className = 'logo-name';
     nameEl.innerText = name;
     nameEl.style.fontFamily = font;
-  // DYNAMIC FONT SCALING based on character count
-    if (name.length > 20) {
-        nameEl.style.fontSize = '1.2rem'; // Ultra small for very long names
-    } else if (name.length > 15) {
-        nameEl.style.fontSize = '1.5rem';
-    } else if (name.length > 10) {
-        nameEl.style.fontSize = '2.0rem';
-    } else {
-        nameEl.style.fontSize = '2.2rem'; // Default for short names
+// List of fonts that are naturally very wide
+    const WIDE_FONTS = ['Wide Latin', 'Goudy Stout', 'Showcard Gothic', 'Rockwell Extra Bold', 'Algerian', 'Engravers MT', 'Castellar', 'Broadway'];
+
+    // 1. Set Base Size based on name length
+    let fontSize = 2.2; 
+    if (name.length > 20) fontSize = 1.0;
+    else if (name.length > 15) fontSize = 1.3;
+    else if (name.length > 10) fontSize = 1.8;
+
+    // 2. APPLY VALIDATION: If font is extra wide, shrink it further to prevent overflow
+    if (WIDE_FONTS.includes(font)) {
+        fontSize *= 0.7; // Shrink by 30%
     }
-    
+
+    nameEl.style.fontSize = fontSize + 'rem';
+    nameEl.style.fontFamily = font;
     // Explicitly set or reset styles based on checkboxes
     nameEl.style.fontWeight = format.nameB ? '900' : 'normal';
     nameEl.style.fontStyle = format.nameI ? 'italic' : 'normal';
@@ -860,9 +1025,26 @@ function createLogo(name, tag, ind, format) {
     tagEl.style.textDecoration = format.tagU ? 'underline' : 'none';
 
     // ICON ELEMENT
+ // ICON ELEMENT - Dynamic & Colorful
+  // 1. Create the Dynamic 3D Side Edge
+    card.style.backgroundColor = pal.bg;
+    card.style.borderLeft = `30px solid ${pal.accent}`; // Physical 3D thickness
+    card.style.borderBottom = `10px solid rgba(0,0,0,0.2)`;
+
+    // 2. Icon Logic
+    const iconColor = getDynamicColor(iconName);
     const iconWrap = document.createElement('div');
     iconWrap.className = 'logo-icon';
-    iconWrap.innerHTML = `<i data-lucide="${iconName}" color="${pal.text}" stroke-width="1.5"></i>`;
+    
+    // Lively Detail: Randomly rotate icons slightly (-15 to 15 degrees)
+    const randomRot = Math.floor(Math.random() * 30) - 15;
+    iconWrap.style.transform = `rotate(${randomRot}deg)`;
+
+    // Thicker stroke for 3D presence
+    iconWrap.innerHTML = `<i data-lucide="${iconName}" color="${iconColor}" stroke-width="2.8"></i>`;
+    
+    // Optional: Add a soft colorful glow/shadow to the icon to make it 'lively'
+    iconWrap.style.filter = `drop-shadow(0 0 10px ${iconColor}44)`;
 
     
     // 30 LAYOUT ENGINE
@@ -895,7 +1077,7 @@ function createLogo(name, tag, ind, format) {
 
         // --- 21–30: WOW / CREATIVE / PREMIUM ---
         case 21: iconWrap.style.marginBottom = '-40px'; iconWrap.style.zIndex = '2'; nameEl.style.zIndex = '1'; appendAll(); break;
-        case 22: nameEl.innerText = name.substring(1); inner.classList.add('flex-row'); appendAll(); break;
+   case 22: nameEl.innerText = name; inner.classList.add('flex-row'); appendAll(); break;
         case 23: 
             const m = Math.ceil(name.length/2); 
             nameEl.innerHTML = `<span style="color:${pal.accent}">${name.slice(0,m)}</span>${name.slice(m)}`; 
