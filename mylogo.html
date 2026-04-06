@@ -376,6 +376,53 @@ html, body {
     line-height: 1.1;
     display: block;
 }
+
+
+
+
+
+@media (max-width: 768px) {
+    /* 1. Reduce the 3D Slab thickness to save horizontal space */
+    .logo-card {
+        border-left-width: 12px !important; /* Forces override of the 30px JS style */
+        border-radius: 30px !important;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    /* 2. Reduce padding so content doesn't push the tagline off the bottom */
+    .logo-inner {
+        padding: 15px !important; 
+        justify-content: center !important;
+    }
+
+    /* 3. Shrink the icon size significantly for small screens */
+    .logo-icon {
+        margin-bottom: 5px !important;
+    }
+    
+    .logo-icon svg {
+        width: 120px !important; 
+        height: 120px !important;
+        max-height: 35% !important; /* Keeps icon small so text has room */
+    }
+
+    /* 4. Shrink the Business Name */
+    .logo-name {
+        font-size: 1.4rem !important;
+        margin-top: 5px !important;
+    }
+
+    /* 5. Ensure Tagline fits and is visible */
+    .logo-tag {
+        font-size: 0.7rem !important;
+        letter-spacing: 0.2em !important;
+        margin-top: 5px !important;
+        line-height: 1 !important;
+        display: block !important;
+        width: 90%;
+    }
+}
 </style>
 </head>
 <body>
