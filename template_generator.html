@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Libraries for Downloading -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Infinite Template Generator</title>
+    <!-- Google Fonts for Variety -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Playfair+Display:ital,wght@1,600&family=Oswald:wght@700&family=Bebas+Neue&family=Dancing+Script&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 20px; }
+        .controls { background: #2d2d2d; padding: 20px; border-radius: 12px; position: sticky; top: 10px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5); margin-bottom: 30px; }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        input, select, button { padding: 12px; border-radius: 6px; border: none; font-size: 14px; background: #444; color: white; }
+        button { cursor: pointer; background: #007bff !important; font-weight: bold; }
+        #templateGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        
+        /* Base Card Styling */
+        .base-card { 
+            position: relative; width: 100%; height: 450px; border-radius: 15px; 
+            overflow: hidden; display: flex; flex-direction: column; 
+            background-size: cover; background-position: center; transition: 0.3s;
+        }
+        .base-card:hover { transform: translateY(-5px); }
+        .overlay { position: absolute; inset: 0; z-index: 1; }
+        .content { position: relative; z-index: 2; height: 100%; padding: 30px; display: flex; flex-direction: column; box-sizing: border-box; }
+
+        /* Loading Spinner */
+        #loader { text-align: center; padding: 20px; display: none; font-size: 1.2rem; color: #007bff; }
+
+
+/* Aspect Ratio Adjustments */
+.base-card.tall { height: 600px; max-width: 340px; } /* Stories, Status */
+.base-card.wide { height: 250px; grid-column: span 2; } /* Banners, Covers */
+.base-card.standard { height: 450px; } /* Posts, Posters */
+
+/* Specific Item Styles */
+.menu-list { text-align: left; width: 100%; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; }
+.certificate-border { border: 15px double gold; height: 90%; width: 90%; position: absolute; top: 5%; left: 5%; z-index: 1; }
+
+
+
+
+
+/* Top Part Teal Background */
+.controls { 
+    background-color: #008080; 
+    padding: 40px 20px; 
+    text-align: center; 
+    color: white; 
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    margin-bottom: 40px;
+}
+
+.controls h2 {
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Input Layout: 2 Rows Max */
+.input-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1 1 300px; /* Forces wrap after ~3 items per row */
+}
+
+.input-group label {
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Input boxes: White background, Black font */
+input, select, .dynamic-field {
+    width: 100%;
+    padding: 12px;
+    background-color: white !important;
+    color: black !important;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Centered Button Row */
+.button-row {
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Black Button with White Font */
+#generateBtn {
+    background-color: black !important;
+    color: white !important;
+    padding: 18px 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    text-transform: uppercase;
+}
+
+#generateBtn:hover {
+    background-color: #333 !important;
+    transform: scale(1.05);
+}
+
+
+
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: #f4f4f4; 
+    margin: 0; 
+    padding: 0; 
+}
+
+/* TOP PANEL: Teal Background */
+.controls { 
+    background-color: #DC143C; 
+    padding: 30px 20px; 
+    text-align: center; 
+    color: white; 
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: relative; /* Ensures it stays at the top of the flow */
+    z-index: 10;
+}
+
+.controls h2 {
+    margin: 0 0 25px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* INPUT LAYOUT: Max 2 Rows */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row = 2 rows for 6 inputs */
+    gap: 15px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 11px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
+}
+
+/* INPUT BOXES: White BG, Black Font */
+input, select, .dynamic-field {
+    width: 100%;
+    padding: 12px;
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* BUTTON ROW: 3rd Row Center */
+.button-row {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+/* GENERATE BUTTON: Black BG, White Font */
+#generateBtn {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    padding: 15px 60px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+#generateBtn:hover {
+    background-color: #333 !important;
+    transform: translateY(-2px);
+}
+
+/* TEMPLATE GRID: Clear of the top panel */
+#templateGrid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    gap: 30px; 
+    padding: 40px; 
+    margin-top: 20px; /* Space between Teal panel and cards */
+}
+
+/* Base Card Styling */
+.base-card { 
+    position: relative; 
+    width: 100%; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    background-size: cover; 
+    background-position: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+.base-card.standard { height: 450px; }
+.base-card.tall { height: 600px; }
+.base-card.wide { height: 280px; grid-column: span 2; }
+
+
+
+
+/* REPLACEMENT START: FLEXBOX LAYOUT FOR 3-IN-A-ROW + CENTERED REMAINDERS */
+.input-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* This centers the remainders in Row II */
+    gap: 15px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    /* This calculation forces exactly 3 items per row while allowing the same size */
+    flex: 0 1 calc(33.33% - 15px); 
+    min-width: 250px; /* Prevents them from getting too thin */
+}
+.controls h2 { background: black; color: white; padding: 15px 40px; display: inline-block; border-radius: 35px; }
+
+
+
+
+
+/* Download Overlay on Hover */
+.download-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 20;
+}
+
+.base-card:hover .download-overlay {
+    opacity: 1;
+}
+
+.dl-btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 120px;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.dl-btn:hover {
+    background: #008080;
+    color: white;
+}
+
+/* Hide actions during capture so buttons don't appear in the photo */
+.base-card.capturing .download-overlay {
+    display: none !important;
+}
+
+.input-group { align-items: center; text-align: center; }
+.input-group label { color: white !important; }
+    </style>
+</head>
+<body>
+<div class="controls">
+    <h2>Template Generator</h2>
+    
+    <div class="input-grid">
+        <!-- Static Inputs -->
+        <div class="input-group">
+            <label>Template Type</label>
+            <select id="templateType" onchange="updateInputs()">
+                <option value="instagram">Instagram Post</option>
+                <option value="inst_story">Instagram Story</option>
+                <option value="fb_post">Facebook Post</option>
+                <option value="fb_cover">Facebook Cover</option>
+                <option value="yt_banner">YouTube Banner</option>
+                <option value="youtube">YouTube Thumbnail</option>
+                <option value="sale">Sale / Offer Banner</option>
+                <option value="quote">Motivational Quote Card</option>
+                <option value="event">Event Poster</option>
+                <option value="festival">Festival Greeting</option>
+                <option value="hiring">Hiring / Job Post</option>
+                <option value="certificate">Certificate</option>
+                <option value="id_card">ID Card</option>
+                <option value="menu">Menu Card</option>
+                <option value="wedding">Wedding Invitation</option>
+<option value="party">Party Invite</option>
+<option value="birthday">Birthday Greeting</option>
+<option value="webinar">Webinar</option>
+<option value="brochure">Brochure</option>
+<option value="flyer">Flyer</option>
+
+
+
+                <!-- ... other options ... -->
+            </select>
+        </div>
+
+    <div class="input-group">
+    <label>Image Theme</label>
+    <select id="imgCategory" onchange="startFresh()">
+        <option value="abstract">-- Select Theme --</option>
+        <optgroup label="Core Themes">
+            <option value="nature">Nature</option><option value="abstract">Abstract</option>
+            <option value="business">Business</option><option value="technology">Technology</option>
+            <option value="food">Food</option><option value="travel">Travel</option>
+            <option value="fitness">Fitness</option><option value="fashion">Fashion</option>
+            <option value="luxury">Luxury</option><option value="minimal">Minimal</option>
+        </optgroup>
+        <optgroup label="Mood / Style">
+            <option value="dark">Dark</option><option value="light">Light</option>
+            <option value="neon">Neon</option><option value="gradient">Gradient</option>
+            <option value="vintage">Vintage</option><option value="retro">Retro</option>
+            <option value="elegant">Elegant</option><option value="modern">Modern</option>
+            <option value="professional">Professional</option><option value="creative">Creative</option>
+        </optgroup>
+        <optgroup label="Context Themes">
+            <option value="office">Office</option><option value="startup">Startup</option>
+            <option value="finance">Finance</option><option value="education">Education</option>
+            <option value="healthcare">Healthcare</option><option value="sports">Sports</option>
+            <option value="music">Music</option><option value="festival">Festival</option>
+            <option value="wedding">Wedding</option><option value="birthday">Birthday</option>
+        </optgroup>
+        <optgroup label="Visual Themes">
+            <option value="landscape">Landscape</option><option value="sky">Sky</option>
+            <option value="ocean">Ocean</option><option value="mountains">Mountains</option>
+            <option value="city">City</option><option value="architecture">Architecture</option>
+            <option value="texture">Texture</option><option value="flatlay">Flat Lay</option>
+            <option value="blur">Blur</option><option value="bokeh">Bokeh</option>
+ <option value="3D">3D</option><option value="3D Neon">3D Neon</option>
+ <option value="3D Glass">3D Glass</option><option value="3D Bold">3D Bold</option>
+
+        </optgroup>
+    </select>
+</div>
+
+        <!-- This is where dynamic inputs will inject -->
+        <!-- They will automatically fill the next grid spots -->
+       <div id="dynamicInputs" style="display: flex; flex-wrap: wrap; gap: 15px; flex: 1 1 100%; justify-content: center;"></div>
+    </div>
+
+    <div class="button-row">
+        <button id="generateBtn" onclick="startFresh()">Generate Templates</button>
+    </div>
+</div>
+
+<div id="templateGrid"></div><div id="loader">Loading more templates...</div>
+
+<script>
+const PEXELS_KEY = 'EK3XGcWyIt8Koch3FbcfOMvjtx6Mtbk5p9SzshuTS8iRnw602yY5l9jK';
+const PIXABAY_KEY = '38932758-f534c18530843322e7f591365'; // Replace with your actual key
+let currentPage = 1;
+let isFetching = false;
+let currentQuery = '';
+
+// Fonts to rotate through for "Infinite" look
+const fonts = ['Montserrat', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Dancing Script', 'Arial Black'];
+
+function updateInputs() {
+    const type = document.getElementById('templateType').value;
+    const container = document.getElementById('dynamicInputs');
+    container.innerHTML = '';
+    
+    const configs = {
+        instagram: ['Main Heading', 'Sub Text', 'Brand Name'],
+        youtube: ['Video Title', 'Highlight Word'],
+        event: ['Event Name', 'Date', 'Venue', 'Tagline'],
+        sale: ['Offer (e.g. 50% OFF)', 'Product Category', 'Brand Name'],
+        quote: ['Quote Text', 'Author'],
+        inst_story: ['Main Text', 'Sub Text', 'Brand Name'],
+        fb_post: ['Heading', 'Sub Text', 'Brand'],
+        fb_cover: ['Brand Name', 'Tagline'],
+        yt_banner: ['Channel Name', 'Tagline', 'Schedule'],
+        linkedin: ['Heading', 'Description', 'Brand'],
+        twitter: ['Main Text', 'Highlight Word'],
+        whatsapp: ['Message', 'Brand'],
+        festival: ['Festival Name', 'Greeting', 'Sender'],
+        birthday: ['Name', 'Message'],
+        wedding: ['Couple Names', 'Date', 'Venue'],
+        party: ['Event Name', 'Date', 'Venue'],
+        announcement: ['Title', 'Details'],
+        hiring: ['Job Title', 'Company', 'Apply Info'],
+        webinar: ['Title', 'Date', 'Speaker'],
+        certificate: ['Name', 'Achievement', 'Date'],
+        id_card: ['Name', 'Role', 'ID Number'],
+        menu: ['Restaurant', 'Items', 'Prices'],
+        brochure: ['Heading', 'Content', 'Contact'],
+        flyer: ['Title', 'Offer', 'Contact']
+    };
+
+    configs[type].forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'input-group';
+        div.innerHTML = `<label>${p}</label>
+                         <input type="text" class="dynamic-field" placeholder="Enter ${p}...">`;
+        container.appendChild(div);
+    });
+}
+function startFresh() {
+    document.getElementById('templateGrid').innerHTML = '';
+    currentPage = 1;
+    fetchTemplates();
+}
+
+async function fetchTemplates() {
+    if (isFetching) return;
+    isFetching = true;
+    document.getElementById('loader').style.display = 'block';
+
+    const type = document.getElementById('templateType').value;
+    const category = document.getElementById('imgCategory').value || 'abstract';
+    
+    // --- VALIDATION LOGIC ---
+    // List of types that MUST use Pixabay
+    const pixabayTypes = ['birthday', 'festival', 'wedding', 'party'];
+    
+    let url = '';
+    let headers = {};
+
+    if (pixabayTypes.includes(type)) {
+        // PIXABAY API
+        url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(category)}&image_type=photo&per_page=12&page=${currentPage}`;
+    } else {
+        // PEXELS API
+        url = `https://api.pexels.com/v1/search?query=${category}&per_page=12&page=${currentPage}`;
+        headers = { Authorization: PEXELS_KEY };
+    }
+
+    try {
+        const response = await fetch(url, { headers: headers });
+        const data = await response.json();
+        
+        // Normalize results so createRandomizedCard works for both
+        const photos = pixabayTypes.includes(type) ? data.hits : data.photos;
+
+        photos.forEach(photo => {
+            // Pixabay uses 'webformatURL', Pexels uses 'src.large2x'
+            const imgUrl = pixabayTypes.includes(type) ? photo.webformatURL : photo.src.large2x;
+            const card = createRandomizedCard(imgUrl);
+            document.getElementById('templateGrid').appendChild(card);
+        });
+
+        currentPage++;
+    } catch (err) {
+        console.error("API Error");
+    } finally {
+        isFetching = false;
+        document.getElementById('loader').style.display = 'none';
+    }
+}
+function createRandomizedCard(imgUrl) {
+    const type = document.getElementById('templateType').value;
+    const vals = Array.from(document.querySelectorAll('.dynamic-field')).map(f => f.value || '');
+    
+    const card = document.createElement('div');
+    card.className = 'base-card';
+    
+    // Set Sizing
+    if (['inst_story', 'whatsapp'].includes(type)) card.classList.add('tall');
+    else if (['fb_cover', 'yt_banner'].includes(type)) card.classList.add('wide');
+    else card.classList.add('standard');
+
+    card.style.backgroundImage = `url('${imgUrl}')`;
+    const randomOverlay = `rgba(0,0,0,${(Math.random() * 0.4 + 0.3).toFixed(1)})`;
+
+    let contentHtml = `<div class="overlay" style="background:${randomOverlay}"></div><div class="content" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">`;
+
+    switch(type) {
+        // --- ORIGINAL 5 ---
+        case 'instagram':
+            contentHtml += `<h1 style="font-size:2.5rem; font-weight:900;">${vals[0]}</h1><p>${vals[1]}</p><div style="margin-top:auto; border-top:1px solid white; width:100%; padding-top:10px;">${vals[2]}</div>`;
+            break;
+        case 'youtube':
+            contentHtml = contentHtml.replace('align-items:center', 'align-items:flex-start').replace('text-align:center', 'text-align:left');
+            contentHtml += `<h1 style="font-size:3.5rem; line-height:1; text-shadow:4px 4px 0 #ff0000; -webkit-text-stroke:1px black;">${vals[0]}</h1><span style="background:yellow; color:black; padding:5px 10px; font-weight:bold;">${vals[1]}</span>`;
+            break;
+        case 'event':
+            contentHtml += `<h1 style="border-bottom:3px solid white; padding-bottom:10px;">${vals[0]}</h1><p style="font-style:italic;">${vals[3]}</p><div style="margin-top:20px;">📅 ${vals[1]} <br> 📍 ${vals[2]}</div>`;
+            break;
+        case 'sale':
+            contentHtml += `<h1 style="font-size:5rem; color:#ffcc00; margin:0;">${vals[0]}</h1><p style="font-size:1.5rem;">On ${vals[1]}</p><div style="background:red; padding:10px 30px; border-radius:50px; margin-top:15px; font-weight:bold;">SHOP NOW</div><div style="position:absolute; bottom:20px; right:20px;">${vals[2]}</div>`;
+            break;
+        case 'quote':
+            contentHtml += `<p style="font-size:2rem; font-family:'Playfair Display'; font-style:italic;">"${vals[0]}"</p><p style="margin-top:20px;">— ${vals[1]}</p>`;
+            break;
+
+        // --- NEW 19 ---
+        case 'inst_story':
+            contentHtml = contentHtml.replace('justify-content:center', 'justify-content:space-between');
+            contentHtml += `<div style="margin-top:50px;"><h1>${vals[0]}</h1><p>${vals[1]}</p></div><div style="margin-bottom:30px; font-weight:bold;">${vals[2]}</div>`;
+            break;
+        case 'fb_cover':
+            contentHtml = contentHtml.replace('align-items:center', 'align-items:flex-start').replace('text-align:center', 'text-align:left');
+            contentHtml += `<h1 style="font-size:3rem; margin:0;">${vals[0]}</h1><p>${vals[1]}</p>`;
+            break;
+        case 'yt_banner':
+            contentHtml += `<h1 style="font-size:4rem; margin:0;">${vals[0]}</h1><h3>${vals[1]}</h3><div style="background:red; color:white; padding:5px 15px; font-size:0.8rem;">${vals[2]}</div>`;
+            break;
+        case 'certificate':
+            contentHtml += `<div style="border:10px double gold; padding:20px;"><h3>CERTIFICATE</h3><h1 style="font-family:serif; font-size:3rem;">${vals[0]}</h1><p>For ${vals[1]}</p><small>${vals[2]}</small></div>`;
+            break;
+        case 'menu':
+            contentHtml += `<h2>${vals[0]}</h2><hr style="width:80%"><div style="width:80%;">`;
+            const items = vals[1].split(','); const prices = vals[2].split(',');
+            items.forEach((item, i) => { contentHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${item}</span><span>${prices[i]||''}</span></div>`; });
+            contentHtml += `</div>`;
+            break;
+        case 'hiring':
+            contentHtml += `<h2 style="letter-spacing:10px;">WE ARE HIRING</h2><h1 style="font-size:3rem; margin:10px 0;">${vals[0]}</h1><p>${vals[1]}</p><div style="background:#007bff; padding:10px 20px; border-radius:5px; margin-top:20px;">${vals[2]}</div>`;
+            break;
+        case 'festival':
+            contentHtml += `<h1 style="color:gold;">${vals[0]}</h1><p style="font-size:1.5rem;">${vals[1]}</p><div style="margin-top:auto;">From: ${vals[2]}</div>`;
+            break;
+        case 'id_card':
+            contentHtml += `<div style="width:120px; height:120px; background:#fff; border-radius:10px; margin-bottom:15px;"></div><h2 style="margin:0;">${vals[0]}</h2><p style="color:#007bff; margin:5px 0;">${vals[1]}</p><p style="margin-top:auto; font-family:monospace; opacity:0.6;">${vals[2]}</p>`;
+            break;
+        case 'wedding':
+            contentHtml += `<h1 style="font-family:'Dancing Script'; font-size:3rem;">${vals[0]}</h1><p>Save the Date</p><p>${vals[1]}</p><p>${vals[2]}</p>`;
+            break;
+        default:
+            // Fallback for Birthday, Facebook Post, LinkedIn, Twitter, WhatsApp, Party, Announcement, Webinar, Brochure, Flyer
+            contentHtml += `<h1 style="font-size:2.5rem; margin:10px 0;">${vals[0]}</h1><p style="font-size:1.2rem;">${vals[1]}</p><p style="margin-top:auto;">${vals[2] || ''}</p>`;
+    }
+
+    contentHtml += `</div>`;
+    card.innerHTML = contentHtml;
+
+
+
+
+
+
+// Add Download Buttons
+    const downloadOverlay = document.createElement('div');
+    downloadOverlay.className = 'download-overlay';
+    downloadOverlay.innerHTML = `
+        <button class="dl-btn" onclick="downloadFile(this.parentElement.parentElement, 'png')">PNG</button>
+        <button class="dl-btn" onclick="downloadFile(this.parentElement.parentElement, 'jpg')">JPG</button>
+        <button class="dl-btn" onclick="downloadFile(this.parentElement.parentElement, 'pdf')">PDF</button>
+    `;
+    card.appendChild(downloadOverlay);
+    return card;
+}
+// INFINITE SCROLL DETECTION
+window.onscroll = function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        fetchTemplates();
+    }
+};
+
+// Start
+updateInputs();
+
+
+
+
+
+async function downloadFile(cardElement, format) {
+    // 1. Prepare the card (hide buttons for the photo)
+    cardElement.classList.add('capturing');
+
+    // 2. Capture the card as a canvas
+    const canvas = await html2canvas(cardElement, {
+        useCORS: true, // Important for Pexels images
+        scale: 2,      // Higher quality
+        backgroundColor: null
+    });
+
+    cardElement.classList.remove('capturing');
+
+    if (format === 'png' || format === 'jpg') {
+        // 3a. Handle Image Download
+        const imgType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+        const imgData = canvas.toDataURL(imgType, 0.9);
+        const link = document.createElement('a');
+        link.download = `my-template.${format}`;
+        link.href = imgData;
+        link.click();
+    } else if (format === 'pdf') {
+        // 3b. Handle PDF Download
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        
+        // Match PDF size to Card size
+        const orientation = cardElement.offsetWidth > cardElement.offsetHeight ? 'l' : 'p';
+        const pdf = new jsPDF({
+            orientation: orientation,
+            unit: 'px',
+            format: [cardElement.offsetWidth, cardElement.offsetHeight]
+        });
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, cardElement.offsetWidth, cardElement.offsetHeight);
+        pdf.save('my-template.pdf');
+    }
+}
+</script>
+</body>
+</html>
