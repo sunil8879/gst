@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI Calculator | Smart Business Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --aqua: #7FFFD4;
+            --black: #000000;
+            --white: #ffffff;
+            --gray: #f4f4f4;
+            --shadow: 10px 10px 0px #000000;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--aqua);
+            background-image: radial-gradient(var(--white) 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            color: var(--black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calculator-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 900px;
+            border: 4px solid var(--black);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            box-sizing: border-box;
+            margin-top: 50px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            transform: rotate(-1deg);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            background: var(--black);
+            color: var(--aqua);
+            display: inline-block;
+            padding: 10px 30px;
+            border: 4px solid var(--black);
+            box-shadow: 8px 8px 0px var(--white);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2rem; }
+        }
+
+        /* Input Styling */
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid var(--black);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="range"] {
+            accent-color: var(--black);
+            cursor: pointer;
+            height: 10px;
+        }
+
+        /* Result Panel */
+        .result-panel {
+            background: var(--aqua);
+            border: 4px solid var(--black);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .emi-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 10px 0;
+            line-height: 1;
+        }
+
+        .result-item {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--black);
+            padding: 10px 0;
+            font-weight: 700;
+        }
+
+        /* Example Section */
+        .example-section {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .example-card {
+            background: var(--white);
+            border: 4px solid var(--black);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .example-title {
+            background: var(--black);
+            color: var(--white);
+            padding: 10px 20px;
+            display: inline-block;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .explanation-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-weight: 700;
+        }
+
+        th {
+            background: var(--black);
+            color: var(--aqua);
+            text-align: left;
+            padding: 15px;
+            text-transform: uppercase;
+        }
+
+        td {
+            border: 2px solid var(--black);
+            padding: 12px;
+        }
+
+        tr:nth-child(even) { background: var(--gray); }
+
+        .highlight-row {
+            background: #ffff00 !important;
+            color: black;
+        }
+
+        .badge {
+            background: var(--black);
+            color: var(--white);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+
+
+
+.method-toggle-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.method-toggle {
+    display: flex;
+    background: var(--white);
+    border: 4px solid var(--black);
+    padding: 5px;
+    box-shadow: 6px 6px 0px var(--black);
+}
+
+.toggle-btn {
+    padding: 10px 25px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.toggle-btn.active {
+    background: var(--black);
+    color: var(--aqua);
+}
+
+.toggle-btn:not(.active):hover {
+    background: #e0f7fa;
+}
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>EMI Calculator</h1>
+    </div>
+
+
+
+<!-- CALCULATION METHOD TOGGLE -->
+<div class="method-toggle-container">
+    <div class="method-toggle">
+        <button id="btn-reducing" class="toggle-btn active" onclick="setMethod('reducing')">Reducing Balance</button>
+        <button id="btn-flat" class="toggle-btn" onclick="setMethod('flat')">Flat Rate Method</button>
+    </div>
+</div>
+
+
+    <div class="calculator-container">
+        <div class="grid-layout">
+            <!-- Inputs -->
+            <div class="input-side">
+                <div class="input-group">
+                    <label>Loan Amount (₹)</label>
+                    <input type="number" id="amount" value="1000000" oninput="syncRange('amount')">
+                    <input type="range" id="amountRange" min="100000" max="10000000" step="50000" value="1000000" oninput="syncInput('amount')">
+                </div>
+
+                <div class="input-group">
+                    <label>Interest Rate (% P.A.)</label>
+                    <input type="number" id="rate" value="10.5" step="0.1" oninput="syncRange('rate')">
+                    <input type="range" id="rateRange" min="1" max="20" step="0.1" value="10.5" oninput="syncInput('rate')">
+                </div>
+
+                <div class="input-group">
+                    <label>Tenure (Years)</label>
+                    <input type="number" id="years" value="5" oninput="syncRange('years')">
+                    <input type="range" id="yearsRange" min="1" max="30" step="1" value="5" oninput="syncInput('years')">
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="result-side">
+                <div class="result-panel">
+                    <label>Your Monthly EMI</label>
+                    <div class="emi-value" id="emiDisplay">₹ 21,494</div>
+                    
+                    <div class="result-item">
+                        <span>Principal Amount</span>
+                        <span id="resPrincipal">₹ 10,00,000</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Interest</span>
+                        <span id="resInterest" style="color: #ff4757;">₹ 2,89,634</span>
+                    </div>
+                    <div class="result-item" style="border: none;">
+                        <span>Total Repayment</span>
+                        <span id="resTotal">₹ 12,89,634</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+
+
+<!-- THE FORMULA CARD -->
+<div style="background: white; border: 4px solid black; padding: 20px; margin-bottom: 30px; box-shadow: 8px 8px 0px black;">
+    <h3 style="text-transform: uppercase; border-bottom: 3px solid #7FFFD4; padding-bottom: 5px;">Standard Bank Formula</h3>
+    <div style="font-family: 'Courier New', monospace; font-size: 1.1rem; line-height: 1.8; background: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
+        <p style="font-weight: bold; font-size: 1.3rem; text-align: center;">E = P × R × [ (1 + R)^N / ((1 + R)^N - 1) ]</p>
+        <hr>
+        <b>Where:</b><br>
+        R = Annual Rate / (12 × 100)<br>
+        P = Principal Amount<br>
+        N = Tenure in Months
+        <hr>
+        <b>Step-by-Step Example (₹10 Lakhs @ 10.5% for 5 Yrs):</b><br>
+        R = 10.5 / 1200 = 0.00875<br>
+        EMI = 1,000,000 × 0.00875 × [ (1+0.00875)^60 / ((1+0.00875)^60 - 1) ]<br>
+        <b>Result: ₹21,494 / Month</b>
+    </div>
+</div>
+</div>
+
+
+
+    <!-- Practical Example Section -->
+    <div class="example-section">
+        <div class="example-card">
+            <div class="example-title">Bank Method: Reducing Balance Example</div>
+            
+            <div class="explanation-text">
+                <p><strong>Why is the EMI always the same?</strong> Although you pay <b>₹21,494</b> every month, the bank changes the "internal split" of your money. In the early months, the bank takes more <b>Interest</b>. As your loan balance reduces, they take more <b>Principal</b>. This standard formula ensures your monthly budget remains fixed while your debt gradually vanishes.</p>
+            </div>
+
+            <p style="font-weight: 800; text-transform: uppercase;"><i class="fa fa-table"></i> Breakdown: ₹10 Lakhs @ 10.5% for 5 Years</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Opening Balance</th>
+                        <th>Interest (A)</th>
+                        <th>Principal (B)</th>
+                        <th>Total EMI (A+B)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Month 1</td>
+                        <td>₹ 10,00,000</td>
+                        <td>₹ 8,750</td>
+                        <td>₹ 12,744</td>
+                        <td class="highlight-row">₹ 21,494</td>
+                    </tr>
+                    <tr>
+                        <td>Month 2</td>
+                        <td>₹ 9,87,256</td>
+                        <td>₹ 8,638</td>
+                        <td>₹ 12,856</td>
+                        <td class="highlight-row">₹ 21,494</td>
+                    </tr>
+                    <tr>
+                        <td>Month 12</td>
+                        <td>₹ 8,55,540</td>
+                        <td>₹ 7,486</td>
+                        <td>₹ 14,008</td>
+                        <td class="highlight-row">₹ 21,494</td>
+                    </tr>
+                    <tr>
+                        <td>Month 36</td>
+                        <td>₹ 4,49,150</td>
+                        <td>₹ 3,930</td>
+                        <td>₹ 17,564</td>
+                        <td class="highlight-row">₹ 21,494</td>
+                    </tr>
+                    <tr>
+                        <td>Month 60</td>
+                        <td>₹ 21,308</td>
+                        <td>₹ 186</td>
+                        <td>₹ 21,308</td>
+                        <td class="highlight-row">₹ 21,494</td>
+                    </tr>
+                </tbody>
+            </table>
+<!-- FLAT RATE METHOD EXAMPLE -->
+<div class="example-card" style="margin-top: 40px; border-top: 8px solid black;">
+    <div class="example-title" style="background: #ff4757;">Alternative: Flat Rate Method (Fixed)</div>
+    
+    <div class="explanation-text">
+        <p><strong>Warning:</strong> In the Flat Rate method, interest is calculated on the <b>initial principal</b> for the entire tenure. Even as you pay back the loan, the bank keeps charging interest on the full ₹10 Lakhs. This is common in some personal loans and used car loans.</p>
+    </div>
+
+    <p style="font-weight: 800; text-transform: uppercase;">Calculation: (Principal + Total Interest) / Total Months</p>
+    <div style="background: #fff0f1; padding: 15px; border: 1px solid #ff4757; margin-bottom: 20px; font-family: monospace;">
+        Total Interest = ₹10,00,000 × 10.5% × 5 Years = <b>₹5,25,000</b><br>
+        Total Repayment = ₹10,00,000 + ₹5,25,000 = <b>₹15,25,000</b><br>
+        Monthly EMI = ₹15,25,000 / 60 Months = <b style="font-size: 1.2rem;">₹25,417</b>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Opening Balance</th>
+                <th>Interest (Fixed)</th>
+                <th>Principal (Fixed)</th>
+                <th>Total EMI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Month 1</td>
+                <td>₹ 10,00,000</td>
+                <td>₹ 8,750</td>
+                <td>₹ 16,667</td>
+                <td style="background: #ffcccc;">₹ 25,417</td>
+            </tr>
+            <tr>
+                <td>Month 2</td>
+                <td>₹ 9,83,333</td>
+                <td>₹ 8,750</td>
+                <td>₹ 16,667</td>
+                <td style="background: #ffcccc;">₹ 25,417</td>
+            </tr>
+            <tr>
+                <td>Month 30</td>
+                <td>₹ 5,16,657</td>
+                <td>₹ 8,750</td>
+                <td>₹ 16,667</td>
+                <td style="background: #ffcccc;">₹ 25,417</td>
+            </tr>
+            <tr>
+                <td>Month 60</td>
+                <td>₹ 16,667</td>
+                <td>₹ 8,750</td>
+                <td>₹ 16,667</td>
+                <td style="background: #ffcccc;">₹ 25,417</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- THE "WOW" COMPARISON BOX -->
+    <div style="margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 1; border: 4px solid black; padding: 20px; background: var(--aqua); box-shadow: 6px 6px 0px black;">
+            <h4 style="margin: 0 0 10px 0;">Reducing Balance</h4>
+            <span style="font-size: 1.5rem; font-weight: 900;">₹ 21,494 / mo</span><br>
+            <small>Total Int: ₹2,89,634</small>
+        </div>
+        <div style="flex: 1; border: 4px solid black; padding: 20px; background: white; box-shadow: 6px 6px 0px black;">
+            <h4 style="margin: 0 0 10px 0;">Flat Rate</h4>
+            <span style="font-size: 1.5rem; font-weight: 900; color: #ff4757;">₹ 25,417 / mo</span><br>
+            <small>Total Int: ₹5,25,000</small>
+        </div>
+    </div>
+</div>
+
+<!-- OTHER CALCULATION METHODS -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
+    <!-- REDUCING BALANCE (Standard) -->
+    <div style="border: 3px solid black; padding: 15px; background: #7FFFD4;">
+        <h4 style="margin-top:0;">1. Reducing Balance Method</h4>
+        <p style="font-size: 0.85rem;">Used by: <b>SBI, HDFC, ICICI (Standard)</b></p>
+        <p style="font-size: 0.8rem;">Interest is calculated only on the remaining principal. As you pay, the interest component drops.</p>
+        <span class="badge">Cheaper for User</span>
+    </div>
+
+    <!-- FLAT RATE (Fixed) -->
+    <div style="border: 3px solid black; padding: 15px; background: white;">
+        <h4 style="margin-top:0;">2. Flat Rate Method</h4>
+        <p style="font-size: 0.85rem;">Formula: <b>(P + (P * n * r)) / n</b></p>
+        <p style="font-size: 0.8rem;">Interest is calculated on the full initial loan amount for the entire duration. It never reduces.</p>
+        <p style="font-size: 0.8rem; font-weight:bold; color:red;">Example: ₹10L @ 10.5% Flat = ₹25,417 EMI (Expensive!)</p>
+    </div>
+</div>
+
+
+
+            <div style="margin-top: 25px; border-left: 5px solid var(--black); padding-left: 15px; font-style: italic; font-size: 0.9rem;">
+                <b>Note:</b> Monthly Interest is calculated as: (Opening Balance × Rate) / 12. <br>
+                <b>Principal Paid</b> is simply (Fixed EMI minus Monthly Interest).
+            </div>
+        </div>
+
+
+    <div style="margin-bottom: 50px;"></div>
+
+
+
+<div style="margin-top: 20px; background: black; color: white; padding: 20px; font-size: 0.9rem;">
+    <h4 style="color: #7FFFD4; margin-top:0;">Understanding the Figures:</h4>
+    <ul style="line-height: 1.6;">
+        <li><b>Opening Balance:</b> The amount you still owe the bank at the start of that month.</li>
+        <li><b>Interest (A):</b> The "Profit" the bank takes this month. (Calculated as: Current Balance × Monthly Rate).</li>
+        <li><b>Principal (B):</b> The "Real" debt reduction. This part of your EMI actually reduces your loan.</li>
+        <li><b>Closing Balance:</b> Opening Balance minus Principal (B). This becomes next month's Opening Balance.</li>
+    </ul>
+</div>
+    </div>
+    <script>
+        function syncInput(id) {
+            document.getElementById(id).value = document.getElementById(id + 'Range').value;
+            calculate();
+        }
+
+        function syncRange(id) {
+            document.getElementById(id + 'Range').value = document.getElementById(id).value;
+            calculate();
+        }
+
+     let currentMethod = 'reducing'; // Global state
+
+function setMethod(method) {
+    currentMethod = method;
+    
+    // UI Update for Buttons
+    document.getElementById('btn-reducing').classList.remove('active');
+    document.getElementById('btn-flat').classList.remove('active');
+    
+    if(method === 'reducing') {
+        document.getElementById('btn-reducing').classList.add('active');
+    } else {
+        document.getElementById('btn-flat').classList.add('active');
+    }
+    
+    calculate(); // Re-calculate instantly
+}
+
+function calculate() {
+    let P = parseFloat(document.getElementById('amount').value);
+    let annualRate = parseFloat(document.getElementById('rate').value);
+    let years = parseFloat(document.getElementById('years').value);
+    let N = years * 12;
+    let emi = 0;
+
+    if (currentMethod === 'reducing') {
+        // --- Reducing Balance Formula ---
+        let R = annualRate / 12 / 100;
+        emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+    } else {
+        // --- Flat Rate Formula ---
+        let totalInterest = (P * annualRate * years) / 100;
+        let totalRepayment = P + totalInterest;
+        emi = totalRepayment / N;
+    }
+    
+    let totalRepayment = emi * N;
+    let totalInterest = totalRepayment - P;
+
+    // Display results
+    document.getElementById('emiDisplay').innerText = "₹ " + Math.round(emi).toLocaleString('en-IN');
+    document.getElementById('resPrincipal').innerText = "₹ " + P.toLocaleString('en-IN');
+    document.getElementById('resInterest').innerText = "₹ " + Math.round(totalInterest).toLocaleString('en-IN');
+    document.getElementById('resTotal').innerText = "₹ " + Math.round(totalRepayment).toLocaleString('en-IN');
+}
+        // Initialize
+        calculate();
+
+
+
+
+
+
+function getFlatRateEMI(P, annualRate, years) {
+    let totalInterest = (P * annualRate * years) / 100;
+    let totalRepayment = P + totalInterest;
+    let months = years * 12;
+    return (totalRepayment / months);
+}
+
+// Update your calculate() function to use this if needed:
+// let flatEmi = getFlatRateEMI(1000000, 10.5, 5); 
+// console.log(flatEmi); // Result: 25416.67
+    </script>
+</body>
+</html>
