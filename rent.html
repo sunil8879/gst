@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RENT AGREEMENT DRAFTER | PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --aqua: #7FFFD4;
+            --black: #000000;
+            --white: #ffffff;
+            --border: 3px solid #000;
+            --shadow: 8px 8px 0px #000;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--white);
+            margin: 0; padding: 0; color: var(--black);
+        }
+
+        /* --- Header --- */
+        .navbar {
+            background: var(--white);
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--black);
+        }
+        .navbar h1 {
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: -2px;
+        }
+        .navbar h1 span {
+            background: var(--aqua);
+            padding: 0 15px;
+            border: 4px solid var(--black);
+            box-shadow: 6px 6px 0px var(--black);
+        }
+
+        /* --- Layout --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1100px) { .main-container { grid-template-columns: 1fr; } }
+
+        /* --- Form Cards --- */
+        .card {
+            background: white;
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .card-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card-title i { color: var(--aqua); -webkit-text-stroke: 1px black; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .full { grid-column: 1 / -1; }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--black);
+            font-family: inherit;
+            font-weight: 600;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        input:focus { background: #fafffd; outline: none; border-color: var(--aqua); }
+
+        /* --- Preview Paper --- */
+        .preview-side { position: sticky; top: 20px; height: fit-content; }
+        
+        #agreement-paper {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 60px;
+            min-height: 800px;
+            max-height: 900px;
+            overflow-y: auto;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            font-size: 11pt;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: justify;
+        }
+        
+        .btn-word {
+            width: 100%;
+            padding: 25px;
+            background: var(--black);
+            color: var(--aqua);
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 10px 10px 0px var(--aqua);
+            transition: 0.2s;
+        }
+        .btn-word:hover { transform: translate(-3px, -3px); box-shadow: 13px 13px 0px var(--aqua); }
+
+        .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .check-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 700; }
+
+
+
+/* Custom Alignment Classes */
+.text-center { text-align: center !important; width: 100%; }
+.flex-center { display: flex; flex-direction: column; align-items: center; }
+
+.checkbox-grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Forces 2 columns */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+
+
+label, .card-title { text-align: center !important; justify-content: center !important; width: 100%; }
+.btn-row { display: flex; gap: 15px; margin-top: 20px; width: 100%; }
+.btn-row button { flex: 1; margin: 0; } /* Makes buttons equal width */
+
+
+label { display: block; text-align: center; }
+
+input, textarea, select { text-align: center; }
+::placeholder { text-align: center; opacity: 0.7; }
+
+
+.btn-pdf { background: #007BFF !important; color: white !important; box-shadow: 6px 6px 0px #000 !important; }
+.btn-pdf:hover { background: #0056b3 !important; }
+
+.btn-word, .btn-pdf { 
+    font-family: 'Plus Jakarta Sans', sans-serif !important; 
+    font-size: 1rem !important; 
+    font-weight: 900 !important;
+    height: 65px; /* Ensures equal height for symmetry */
+}
+
+
+/* Styling for invalid inputs */
+.error-field {
+    border: 3px solid #ff4757 !important;
+    background-color: #fff0f1 !important;
+}
+
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1><span>RENT</span> AGREEMENT DRAFTER</h1>
+    <p style="font-weight: 800; margin-top: 10px;">ULTIMATE LEGAL ENGINE 2026</p>
+</div>
+
+<div class="main-container">
+    <!-- LEFT: INPUTS -->
+    <div class="input-side">
+        
+        <!-- PARTIES -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-users"></i> 1. The Parties</div>
+            <div class="form-grid">
+                <div><label>Landlord Name</label><input type="text" id="l_name" placeholder="Full Name" oninput="updateDraft()"></div>
+                <div><label>Landlord Aadhaar</label><input type="text" id="l_aadhaar" placeholder="12 Digit No" oninput="updateDraft()"></div>
+<div><label>Landlord PAN</label><input type="text" id="l_pan" placeholder="ABCDE1234F" oninput="updateDraft()"></div>
+<!-- Add under Landlord Email -->
+<div><label>Landlord WhatsApp No</label><input type="text" id="l_wa" placeholder="10 Digit Mobile No" oninput="updateDraft()"></div>
+
+<!-- Add under Tenant Email -->
+
+<div><label>Landlord Email</label><input type="email" id="l_email" oninput="updateDraft()"></div>
+
+
+
+                <div class="full"><label>Landlord Address</label><input type="text" id="l_addr" placeholder="House/Flat No, Area, City" oninput="updateDraft()"></div>                
+                <div style="margin-top:15px;"><label>Tenant Name</label><input type="text" id="t_name" placeholder="Full Name" oninput="updateDraft()"></div>
+                <div style="margin-top:15px;"><label>Tenant Aadhaar</label><input type="text" id="t_aadhaar" placeholder="12 Digit No" oninput="updateDraft()"></div>
+<div><label>Tenant PAN</label><input type="text" id="t_pan" placeholder="ABCDE1234F" oninput="updateDraft()"></div>
+<div><label>Tenant WhatsApp No</label><input type="text" id="t_wa" placeholder="10 Digit Mobile No" oninput="updateDraft()"></div>
+<div><label>Tenant Email</label><input type="email" id="t_email" oninput="updateDraft()"></div>
+                <div class="full"><label>Tenant Address</label><input type="text" id="t_addr" placeholder="Permanent Address" oninput="updateDraft()"></div>
+            </div>
+        </div>
+
+        <!-- PROPERTY -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-building"></i> 2. Property & Location</div>
+            <div class="form-grid">
+                <div class="full"><label>Full Address of Rented Property</label><input type="text" id="p_addr" oninput="updateDraft()"></div>
+                <div><label>Property Type</label><select id="p_type" onchange="updateDraft()"><option>Flat</option><option>House</option><option>Shop</option></select></div>
+                <div><label>Area (Sq Ft)</label><input type="text" id="p_area" oninput="updateDraft()"></div>
+                <div><label>Floor No</label><input type="text" id="p_floor" oninput="updateDraft()"></div>
+<div><label>Property PIN Code</label><input type="text" id="p_pin" oninput="updateDraft()"></div>
+<div><label>Property Usage</label>
+    <select id="p_usage" onchange="updateDraft()">
+        <option value="Residential">Residential</option>
+        <option value="Commercial">Commercial</option>
+    </select>
+</div>
+<div><label>Furnishing Status</label>
+    <select id="p_furnish_status" onchange="updateDraft()">
+        <option value="Unfurnished">Unfurnished</option>
+        <option value="Semi-Furnished">Semi-Furnished</option>
+        <option value="Fully Furnished">Fully Furnished</option>
+    </select>
+</div>
+                <div><label>Agreement City</label><input type="text" id="ag_place" placeholder="City where signed" oninput="updateDraft()"></div>
+            </div>
+        </div>
+
+        <!-- STATE SELECTION (AUTO LOGIC) -->
+        <div class="card" style="background: #f0fffb;">
+            <div class="card-title"><i class="fas fa-gavel"></i> 3. State Rules & Notice</div>
+            <div class="form-grid">
+                <div class="full">
+                    <label>Select State</label>
+                    <select id="legal_state" onchange="applyStateLogic()">
+                        <option value="">-- Select --</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                    </select>
+                </div>
+                <div><label>Notice Period (Days)</label><input type="number" id="r_notice" value="30" oninput="updateDraft()"></div>
+                <div><label>Lock-in Period (Months)</label><input type="number" id="lock_in" value="6" oninput="updateDraft()"></div>
+<div class="full">
+    <label>Registration Requirement</label>
+    <input type="text" id="auto_reg_status" readonly style="background:#eee; font-size: 0.8rem; color: #d63031;">
+</div>
+                <div class="full"><label>Stamp Duty & Act</label><input type="text" id="auto_legal_info" readonly style="background:#eee;"></div>
+            </div>
+        </div>
+
+        <!-- RENT & TERMS -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-money-bill-wave"></i> 4. Rent & Maintenance</div>
+            <div class="form-grid">
+                <div><label>Monthly Rent (₹)</label><input type="number" id="r_amt" oninput="updateDraft()"></div>
+                <div><label>Security Deposit (₹)</label><input type="number" id="r_deposit" oninput="updateDraft()"></div>
+                <div><label>Rent Escalation (%)</label><input type="number" id="r_escalation" value="5" oninput="updateDraft()"></div>
+                <div><label>Start Date</label><input type="date" id="l_start" oninput="updateDraft()"></div>
+
+<div><label>Lease End Date</label><input type="date" id="l_end" oninput="updateDraft()"></div>
+<div><label>Rent Payment Mode</label>
+    <select id="r_pay_mode" onchange="updateDraft()">
+        <option>UPI/Online Transfer</option>
+        <option>Bank Transfer (NEFT/RTGS)</option>
+        <option>Cash</option>
+        <option>Cheque</option>
+    </select>
+</div>
+<div><label>Late Fee (₹ per day)</label><input type="number" id="r_late_fee" placeholder="e.g. 100" oninput="updateDraft()"></div>
+<div><label>Renewal Terms</label>
+    <select id="r_renewal" onchange="updateDraft()">
+        <option value="Manual Renewal">Manual Renewal</option>
+        <option value="Automatic Renewal (11 Months)">Automatic Renewal</option>
+    </select>
+</div>
+<div><label>Subletting</label>
+    <select id="r_sublet" onchange="updateDraft()">
+        <option value="Strictly Not Allowed">Strictly Not Allowed</option>
+        <option value="Allowed with Written Permission">Allowed with Permission</option>
+    </select>
+</div>
+                
+             <div class="full flex-center" style="margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 20px;">
+    <label class="text-center" style="font-size: 1rem; color: var(--black);">5. Maintenance Paid By Tenant</label>
+    <div class="checkbox-group">
+        <div class="check-item"><input type="checkbox" id="m_water" checked onchange="updateDraft()"> Water</div>
+        <div class="check-item"><input type="checkbox" id="m_elec" checked onchange="updateDraft()"> Electricity</div>
+        <div class="check-item"><input type="checkbox" id="m_soc" onchange="updateDraft()"> Society Charges</div>
+    </div>
+</div>
+<!-- DOCUMENT CHECKLIST - CENTERED & 2x2 GRID -->
+<div class="card full">
+    <div class="card-title text-center" style="justify-content: center;">
+        <i class="fas fa-file-signature"></i> 6. Document Submission Checklist
+    </div>
+    <div class="form-grid">
+        <div class="flex-center" style="border-right: 1px solid #eee;">
+            <label class="text-center">Tenant Documents</label>
+            <div class="checkbox-grid-2x2">
+                <div class="check-item"><input type="checkbox" class="t-doc" value="Aadhaar" onchange="updateDraft()"> Aadhaar</div>
+                <div class="check-item"><input type="checkbox" class="t-doc" value="PAN" onchange="updateDraft()"> PAN</div>
+                <div class="check-item"><input type="checkbox" class="t-doc" value="Passport" onchange="updateDraft()"> Passport</div>
+                <div class="check-item"><input type="checkbox" class="t-doc" value="Voter ID" onchange="updateDraft()"> Voter ID</div>
+<div class="check-item"><input type="checkbox" class="t-doc" value="Others" onchange="updateDraft()"> Others</div>
+            </div>
+        </div>
+        <div class="flex-center">
+            <label class="text-center">Landlord Documents</label>
+            <div class="checkbox-grid-2x2">
+                <div class="check-item"><input type="checkbox" class="l-doc" value="Title Deed" onchange="updateDraft()"> Title Deed</div>
+                <div class="check-item"><input type="checkbox" class="l-doc" value="Tax Receipt" onchange="updateDraft()"> Tax Receipt</div>
+                <div class="check-item"><input type="checkbox" class="l-doc" value="NOC" onchange="updateDraft()"> NOC</div>
+                <div class="check-item"><input type="checkbox" class="l-doc" value="Sale Deed" onchange="updateDraft()"> Sale Deed</div>
+<div class="check-item"><input type="checkbox" class="l-doc" value="Others" onchange="updateDraft()"> Others</div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+
+<div class="card">
+    <div class="card-title">7. Legal Clauses & Logic</div>
+    <div class="form-grid">
+        <div><label>Place of Agreement (City)</label><input type="text" id="ag_place" placeholder="e.g. Mumbai" oninput="updateDraft()"></div>
+        <div><label>Specific Jurisdiction (City)</label><input type="text" id="legal_juris" placeholder="e.g. Pune Courts" oninput="updateDraft()"></div>
+        <div>
+            <label>Early Termination</label>
+            <select id="early_term" onchange="updateDraft()">
+                <option value="Allowed">Allowed</option>
+                <option value="Not Allowed">Not Allowed</option>
+            </select>
+        </div>
+        <div>
+            <label>Dispute Resolution</label>
+            <select id="dispute_res" onchange="updateDraft()">
+                <option value="Mutual Arbitration">Mutual Arbitration</option>
+                <option value="Civil Court Proceeding">Civil Court Proceeding</option>
+            </select>
+        </div>
+        <div>
+            <label>Police Verification</label>
+            <select id="police_ver" onchange="updateDraft()">
+                <option value="Tenant's Responsibility">Tenant's Responsibility</option>
+                <option value="Landlord's Responsibility">Landlord's Responsibility</option>
+            </select>
+        </div>
+        <div class="full"><label>Eviction Conditions</label><textarea id="evict_cond" rows="2" placeholder="e.g. 2 months non-payment..." oninput="updateDraft()"></textarea></div>
+        <div class="full"><label>Special Clauses & Remarks</label><textarea id="special_clauses" rows="3" placeholder="Enter custom terms..." oninput="updateDraft()"></textarea></div>
+
+   </div>
+
+<h3 style="text-align:center;">8. MODEL TENANCY ACT (MTA) APPLICABILITY</h3>
+
+<p>This Agreement shall be governed by the applicable tenancy laws in force in the State/Union Territory where the property is situated.</p>
+
+<p>In the event that the said State/Union Territory has adopted or implemented provisions of the Model Tenancy Act, 2021, the parties agree that the tenancy shall be subject to such provisions to the extent applicable, including but not limited to execution of a written tenancy agreement, regulation of security deposit, and dispute resolution through the prescribed Rent Authority or competent court.</p>
+
+<p>In jurisdictions where the Model Tenancy Act has not been adopted, this Agreement shall be governed by the existing Rent Control laws and the provisions of the Transfer of Property Act, 1882 and the Indian Contract Act, 1872.</p>
+
+
+
+
+
+<h3 style="text-align:center;">9. STAMP DUTY & REGISTRATION</h3>
+
+<p>This Agreement is executed on a non-judicial stamp paper or e-stamp of appropriate value as per the applicable Stamp Act of the State in which the property is situated. The parties hereby declare that the stamp duty has been duly paid in accordance with the prevailing laws.</p>
+
+<p>The cost of stamp duty and registration charges, if applicable, shall be borne by the <b>Landlord</b>, unless otherwise mutually agreed between the parties.</p>
+
+<p>This Agreement shall be registered, if required, under the provisions of the Registration Act, 1908. In case the term of this Agreement exceeds 11 months, or where state laws mandate compulsory registration, the parties agree to complete the registration within the prescribed time and shall cooperate by providing all necessary documents.</p>
+
+<p><b>E-Stamp Declaration:</b> This Agreement may be executed on e-stamp paper generated through an authorized government portal (such as SHCIL or the respective State portal). The unique e-stamp certificate number, date of generation, and QR code shall be considered valid proof of stamp duty payment under applicable laws.</p>
+ 
+</div>
+
+    <!-- RIGHT: PREVIEW -->
+    <div class="preview-side">
+        <div class="card-title">Document Live Preview</div>
+        <div id="agreement-paper">
+            <!-- Text generated by JS -->
+            Start filling details to generate the draft...
+        </div>
+       <div class="btn-row">
+    <button class="btn-word" onclick="generateWord()">Word</button>
+    <button class="btn-pdf" onclick="generatePDF()">PDF</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+</div>
+
+<script>
+const stateData = {
+    "Andhra Pradesh": { act: "Transfer of Property Act", stamp: "0.5% of total rent + deposit", mta: "YES", reg: "Required only if duration >11 months." },
+    "Arunachal Pradesh": { act: "Indian Contract Act", stamp: "₹100 E-Stamp (Flat)", mta: "NO", reg: "Required only if duration >11 months."},
+    "Assam": { act: "Assam Rent Control Act", stamp: "8.25% of total rent", mta: "YES", reg: "Required only if duration >11 months." },
+    "Bihar": { act: "Bihar Rent Control Act", stamp: "₹100 E-Stamp (Flat)", mta: "NO", reg: "Required only if duration >11 months."},
+    "Chhattisgarh": { act: "Chhattisgarh Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Goa": { act: "Goa Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Gujarat": { act: "Gujarat Rent Control Act", stamp: "0.2% (Leave & Licence)", mta: "NO", reg: "Required only if duration >11 months." },
+    "Haryana": { act: "Haryana Rent Control Act", stamp: "5-7% (Varies by area)", mta: "NO", reg: "Required only if duration >11 months." },
+    "Himachal Pradesh": { act: "HP Urban Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Jharkhand": { act: "Jharkhand Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "MANDATORY for all durations (even ≤ 11 months)" },
+    "Karnataka": { act: "Karnataka Rent Act, 1999", stamp: "0.5% of Annual Rent + Deposit", mta: "YES", reg: "Required only if duration >11 months." },
+    "Kerala": { act: "Kerala Buildings Act", stamp: "0.25% of total rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Madhya Pradesh": { act: "MP Accommodation Control Act", stamp: "2% of total rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Maharashtra": { act: "Maharashtra Rent Control Act, 1999", stamp: "0.25% of total rent + deposit", mta: "YES", reg: "MANDATORY for all durations (even ≤ 11 months)"  },
+    "Manipur": { act: "Indian Contract Act", stamp: "4% of Annual Rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Meghalaya": { act: "Meghalaya Residential Act", stamp: "9.9% of Annual Rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Mizoram": { act: "Indian Contract Act", stamp: "5% of Annual Rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Nagaland": { act: "Nagaland Rent Control Act", stamp: "8.25% of Annual Rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Odisha": { act: "Odisha Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Punjab": { act: "Punjab Urban Rent Control Act", stamp: "₹100 to ₹500 Flat", mta: "NO", reg: "Required only if duration >11 months." },
+    "Rajasthan": { act: "Rajasthan Rent Control Act, 2001", stamp: "1% of total rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Sikkim": { act: "Indian Contract Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Tamil Nadu": { act: "TN Buildings Act, 1960", stamp: "1% of total rent + deposit", mta: "YES", reg: "Required only if duration >11 months." },
+    "Telangana": { act: "Telangana Rent Act", stamp: "0.4% of annual rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Tripura": { act: "Tripura Rent Control Laws", stamp: "5% of annual rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Uttar Pradesh": { act: "UP Rent & Eviction Act", stamp: "4% of annual rent", mta: "YES", reg: "Required only if duration >11 months." },
+    "Uttarakhand": { act: "Uttarakhand Rent Control Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "West Bengal": { act: "WB Premises Tenancy Act, 1997", stamp: "0.25% of annual rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Andaman & Nicobar": { act: "Transfer of Property Act", stamp: "₹100 E-Stamp (Flat)", mta: "NO", reg: "Required only if duration >11 months." },
+    "Chandigarh": { act: "Transfer of Property Act", stamp: "₹100 to ₹500 Flat", mta: "NO", reg: "Required only if duration >11 months."},
+    "Dadra & Nagar Haveli": { act: "Indian Contract Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Delhi": { act: "Delhi Rent Control Act, 1958", stamp: "2% of Average Annual Rent", mta: "NO", reg: "Required only if duration >11 months." },
+    "Jammu & Kashmir": { act: "J&K Landlord & Tenant Act", stamp: "₹100 E-Stamp (Flat)", mta: "NO", reg: "Required only if duration >11 months." },
+    "Lakshadweep": { act: "Transfer of Property Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Puducherry": { act: "Puducherry Buildings Act", stamp: "Fixed E-Stamp Value", mta: "NO", reg: "Required only if duration >11 months." },
+    "Ladakh": { act: "Transfer of Property Act", stamp: "₹100 E-Stamp (Flat)", mta: "NO", reg: "Required only if duration >11 months." }
+};
+
+function applyStateLogic() {
+    const state = document.getElementById('legal_state').value;
+    const info = stateData[state];
+    if (info) {
+        document.getElementById('auto_legal_info').value = `${info.act} | ${info.stamp}`;
+document.getElementById('auto_reg_status').value = info.reg;
+    }
+    updateDraft();
+}
+
+function updateDraft() {
+// 1. MTA Deposit Warning Logic
+const validate = (id, regex) => {
+        const el = document.getElementById(id);
+        if (el.value !== "" && !regex.test(el.value)) {
+            el.classList.add('error-field');
+            return false;
+        } else {
+            el.classList.remove('error-field');
+            return true;
+        }
+    };
+
+    // 1. Aadhaar: Exactly 12 digits
+    validate('l_aadhaar', /^\d{12}$/);
+    validate('t_aadhaar', /^\d{12}$/);
+
+// Validates exactly 10 digits for Indian mobile numbers
+validate('l_wa', /^\d{10}$/);
+validate('t_wa', /^\d{10}$/);
+
+    // 2. PAN: 10 Alphanumeric characters
+    validate('l_pan', /^[A-Z0-9]{10}$/i);
+    validate('t_pan', /^[A-Z0-9]{10}$/i);
+
+    // 3. Email: Must have @ and .com
+// Validates standard email format: text + @ + text + . + extension
+validate('l_email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+validate('t_email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+
+// Add this inside updateDraft() before the 'const html' starts
+const selectedState = document.getElementById('legal_state').value;
+const stateInfo = stateData[selectedState] || { act: "Indian Contract Act", stamp: "standard rates", mta: "NO" };
+const rent = parseFloat(document.getElementById('r_amt').value) || 0;
+const deposit = parseFloat(document.getElementById('r_deposit').value) || 0;
+const state = document.getElementById('legal_state').value;
+const mtaStatus = stateData[state]?.mta || "NO";
+
+let mtaWarning = "";
+if (mtaStatus === "YES" && deposit > (rent * 2)) {
+    mtaWarning = `<div style="color:red; border:1px solid red; padding:5px; font-size:0.8rem; margin-bottom:10px;">
+    ⚠️ WARNING: MTA Rules in ${state} limit residential deposit to 2 months rent.</div>`;
+}
+
+// 2. Prepare Execution Line
+const execPlace = document.getElementById('ag_place').value || "________";
+const execDate = new Date().toLocaleDateString('en-IN');
+    // 1. Prepare helper functions and pre-calculate complex variables
+    const val = (id) => document.getElementById(id).value || `____________________`;
+    const today = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'long', year:'numeric'});
+    
+    // Process Checkboxes for Tenant and Landlord Documents
+    let tDocs = [];
+    document.querySelectorAll('.t-doc:checked').forEach(cb => tDocs.push(cb.value));
+    let tDocsList = tDocs.length > 0 ? tDocs.join(", ") : "________________________________";
+
+    let lDocs = [];
+    document.querySelectorAll('.l-doc:checked').forEach(cb => lDocs.push(cb.value));
+    let lDocsList = lDocs.length > 0 ? lDocs.join(", ") : "________________________________";
+
+    // Maintenance logic
+    let mList = [];
+    if(document.getElementById('m_water').checked) mList.push("Water");
+    if(document.getElementById('m_elec').checked) mList.push("Electricity");
+    if(document.getElementById('m_soc').checked) mList.push("Society Charges");
+
+    // 2. Assemble the "100-word per section" document
+    const html = `
+        <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:1.4rem;">RENT AGREEMENT</div>
+        <br>
+
+<p><b>1. THE PARTIES AND DATE:</b> This formal Lease Agreement is entered into on this <b>${today}</b> at <b>${val('ag_place')}</b>. The agreement is made between <b>MR./MS. ${val('l_name')}</b> (hereinafter referred to as the "LANDLORD"), holding Aadhaar Number <b>${val('l_aadhaar')}</b>, PAN <b>${val('l_pan')}</b> and WhatsApp Number <b>${val('l_wa')}</b>, residing at ${val('l_addr')}, AND <b>MR./MS. ${val('t_name')}</b> (hereinafter referred to as the "TENANT"), holding Aadhaar Number <b>${val('t_aadhaar')}</b>, PAN <b>${val('t_pan')}</b> and WhatsApp Number <b>${val('t_wa')}</b>, residing at ${val('t_addr')}.Both parties hereby warrant that they are legally competent to enter into this contract</p>
+
+        <p><b>2. DESCRIPTION OF THE PREMISES:</b> Whereas the Landlord is the absolute and lawful owner of the property situated at <b>${val('p_addr')}</b>, which is described as a <b>${val('p_type')}</b> measuring approximately <b>${val('p_area')} sq. ft.</b>, located on the <b>${val('p_floor')}</b>. The Landlord hereby agrees to demise unto the Tenant, and the Tenant hereby agrees to take on lease, the said premises for residential or commercial purposes. The Tenant has inspected the premises and confirms that the structure, fittings, and installations are in good condition.</p>
+
+        <p><b>3. LEASE TERM AND LOCK-IN PERIOD:</b> This lease shall be valid for a specific duration starting from <b>${val('l_start')}</b>. Both parties have mutually agreed upon a mandatory <b>Lock-in Period of ${val('lock_in')} months</b>. During this period, neither the Landlord nor the Tenant shall be entitled to terminate the agreement. If the Tenant chooses to vacate the premises before the expiry of the lock-in period, the Tenant shall be liable to pay the rent for the remaining months of the lock-in period.</p>
+
+        <p><b>4. RENT, ESCALATION AND LATE FEES:</b> The Tenant covenants to pay a fixed monthly rent of <b>₹${val('r_amt')}</b>. The rent shall be paid in advance by the 5th day of every calendar month. Furthermore, it is agreed that should the agreement be renewed or extended beyond the initial 11 months, the rent shall be subject to an automatic <b>Escalation of ${val('r_escalation')}%</b>. Any delay in the payment of rent beyond the grace period shall attract a late fee penalty as specified by local market standards.</p>
+
+        <p><b>5. SECURITY DEPOSIT AND REFUND:</b> The Tenant has deposited an interest-free sum of <b>₹${val('r_deposit')}</b> as a refundable security deposit. This deposit serves as a guarantee against any unpaid electricity, <b>${mList.join(", ") || "Utility"}</b> bills, or physical damages caused to the property beyond normal wear and tear. The Landlord agrees to refund the entire amount within 7 days of vacating, provided peaceful possession is handed over.</p>
+
+        <p><b>6. PROHIBITED USE AND TERMINATION:</b> The Tenant shall use the premises strictly for lawful purposes. Subletting, assigning, or parting with possession is <b>expressly ${val('early_term')}</b>. The Landlord reserves the unconditional right to initiate eviction proceedings if the Tenant violates any of the following <b>Eviction Conditions: ${val('evict_cond')}</b>. It is further agreed that the mandatory <b>Police Verification</b> shall be the <b>${val('police_ver')}</b>.</p>
+
+        <p><b>7. JURISDICTION AND DISPUTE RESOLUTION:</b> This agreement is governed by the <b>${stateData[document.getElementById('legal_state').value]?.act || 'Indian Contract Act'}</b>. In case of any dispute, the parties shall first attempt to resolve it through <b>${val('dispute_res')}</b>. If the dispute remains unresolved, it shall be referred to the exclusive <b>Jurisdiction of the Courts</b> in the city of <b>${val('legal_juris')}</b>.</p>
+
+        <p><b>8. DOCUMENTS SUBMITTED AND REMARKS:</b> The Tenant has submitted identity proofs: <b>${tDocsList}</b>. The Landlord has provided ownership proofs: <b>${lDocsList}</b>. In addition to the standard terms, the following <b>Special Clauses and Remarks</b> shall form an integral part of this contract: ${val('special_clauses')}.</p>
+
+    
+    <p><b>9. EXECUTION:</b> This agreement is executed at <b>${execPlace}</b> on this date <b>${execDate}</b>.</p>
+
+    <p><b>10. TERM & RENEWAL:</b> The lease is valid for the period starting from <b>${val('l_start')}</b> to <b>${val('l_end')}</b>. A mandatory <b>Lock-in Period of ${val('lock_in')} months</b> applies. Upon expiry, the <b>${val('r_renewal')}</b> clause shall apply.</p>
+
+    <p><b>11. SUBLETTING & USAGE:</b> The premises shall be used for <b>${val('p_usage')}</b> purposes only. <b>Subletting</b> is <b>${val('r_sublet')}</b>. Prohibited activities include any illegal use or causing nuisance to the society.</p>
+
+    <p><b>12. LANDLORD'S ENTRY:</b> The Landlord reserves the right to enter and inspect the premises for repairs or valuation, provided a <b>24-hour prior notice</b> is given to the Tenant.</p>
+    
+    <p><b>13. TERMINATION:</b> Post the lock-in period, either party can terminate the lease by serving a <b>${val('r_notice')} days</b> written notice via the registered emails: ${val('l_email')} / ${val('t_email')}.</p>
+
+
+
+<p><b>14. MODEL TENANCY ACT (MTA) APPLICABILITY:</b> This Agreement shall be governed by the applicable tenancy laws in force in the State of <b>${selectedState}</b>. In the event that the state has implemented the <b>Model Tenancy Act, 2021 (MTA)</b>, both parties agree that this tenancy shall be subject to such provisions, including regulation of security deposits and the dispute resolution mechanism via the Rent Authority. If the MTA is not yet active in this jurisdiction, the agreement remains governed by the <b>${stateInfo.act}</b>.</p>
+
+<p><b>15. STAMP DUTY & REGISTRATION:</b> This Agreement is executed on a non-judicial stamp paper or e-stamp of appropriate value as per the <b>Stamp Act</b> of ${selectedState}. The parties declare that the required duty of <b>${stateInfo.stamp}</b> has been duly paid. As per the rules of the state, registration is <b>${document.getElementById('auto_reg_status').value}</b>. The total cost of stamp paper and registration charges shall be borne by the <b>Landlord</b> unless otherwise mutually agreed. If executed via e-stamp, the certificate number and unique QR code shall serve as conclusive proof of payment.</p>
+
+<p><b>16. SPECIAL CLAUSES & REMARKS:</b> In addition to the standard terms and conditions mentioned in this agreement, the following custom terms have been mutually agreed upon by the Landlord and the Tenant: <i>${val('special_clauses')}</i>. These clauses shall hold the same legal weight as the numbered sections above and shall be binding upon both parties for the entire duration of the lease.</p>
+
+
+<div style="text-align: center; font-weight: 900; margin: 40px 0 20px 0; text-transform: uppercase; text-decoration: underline; font-size: 1.2rem;">
+    SIGNATURES
+</div>
+
+
+        <br><br>
+        <table style="width:100%; border:none;">
+            <tr>
+                <td>____________________<br><b>LANDLORD</b></td>
+                <td style="text-align:right;">____________________<br><b>TENANT</b></td>
+            </tr>
+            <tr><td colspan="2" style="height:60px;"></td></tr>
+            <tr>
+                <td>____________________<br><b>WITNESS 1</b></td>
+                <td style="text-align:right;">____________________<br><b>WITNESS 2</b></td>
+            </tr>
+        </table>
+    `;
+    document.getElementById('agreement-paper').innerHTML = html;
+}
+
+function generateWord() {
+    const content = document.getElementById('agreement-paper').innerHTML;
+    const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'></head><body style="padding:40pt; font-family:Arial;">${content}</body></html>`], {
+        type: 'application/msword'
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Rent_Agreement_Professional_Draft.doc';
+    link.click();
+}
+
+
+
+
+
+
+function generatePDF() {
+    const element = document.getElementById('agreement-paper');
+    
+    // SAVE original styles so we can reset them later
+    const originalMaxHeight = element.style.maxHeight;
+    const originalOverflow = element.style.overflow;
+
+    // FORCE element to show everything for the PDF engine
+    element.style.maxHeight = "none";
+    element.style.overflow = "visible";
+
+    const opt = {
+        margin: [10, 10, 10, 10], // Top, Left, Bottom, Right in mm
+        filename: 'Rent_Agreement_Draft.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            letterRendering: true,
+            scrollY: 0 
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Generate and then RESET the UI
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.maxHeight = originalMaxHeight;
+        element.style.overflow = originalOverflow;
+    });
+}
+
+window.onload = updateDraft;
+
+
+
+
+// Set minimum date to Today for both date pickers on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('l_start').setAttribute('min', today);
+    document.getElementById('l_end').setAttribute('min', today);
+});
+</script>
+
+</body>
+</html>
