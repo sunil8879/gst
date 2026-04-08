@@ -209,6 +209,8 @@
     border: 4px solid var(--black);
     padding: 5px;
     box-shadow: 6px 6px 0px var(--black);
+    width: fit-content; /* Ensures it doesn't stretch weirdly */
+    max-width: 95%;     /* Keeps it within mobile screen */
 }
 
 .toggle-btn {
@@ -229,6 +231,60 @@
 
 .toggle-btn:not(.active):hover {
     background: #e0f7fa;
+}
+
+
+
+
+
+/* --- MOBILE COMPLIANCE FIXES --- */
+
+/* 1. Prevent Container Overflow */
+.calculator-container {
+    max-width: 100%;
+    padding: 20px; /* Reduced from 40px */
+}
+
+/* 2. Responsive Table Wrapper */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+    border: 3px solid var(--black);
+    margin-top: 20px;
+}
+
+table {
+    min-width: 600px; /* Prevents columns from squishing too much */
+    margin-top: 0 !important; /* Managed by wrapper */
+}
+
+/* 3. Responsive Typography */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8rem !important; /* Scaled down from 3.5rem */
+        padding: 10px 15px !important;
+    }
+    .emi-value {
+        font-size: 2.2rem !important; /* Scaled down from 3.5rem */
+    }
+    .toggle-btn {
+        padding: 10px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .calculator-container {
+        padding: 15px;
+        border-width: 3px;
+    }
+    .grid-layout {
+        gap: 20px;
+    }
+    .example-card {
+        padding: 15px;
+    }
 }
     </style>
 </head>
@@ -328,7 +384,7 @@
             </div>
 
             <p style="font-weight: 800; text-transform: uppercase;"><i class="fa fa-table"></i> Breakdown: ₹10 Lakhs @ 10.5% for 5 Years</p>
-            
+<div class="table-wrapper">           
             <table>
                 <thead>
                     <tr>
@@ -377,6 +433,7 @@
                     </tr>
                 </tbody>
             </table>
+</div>
 <!-- FLAT RATE METHOD EXAMPLE -->
 <div class="example-card" style="margin-top: 40px; border-top: 8px solid black;">
     <div class="example-title" style="background: #ff4757;">Alternative: Flat Rate Method (Fixed)</div>
@@ -391,7 +448,7 @@
         Total Repayment = ₹10,00,000 + ₹5,25,000 = <b>₹15,25,000</b><br>
         Monthly EMI = ₹15,25,000 / 60 Months = <b style="font-size: 1.2rem;">₹25,417</b>
     </div>
-
+<div class="table-wrapper">
     <table>
         <thead>
             <tr>
@@ -433,7 +490,7 @@
             </tr>
         </tbody>
     </table>
-
+</div>
     <!-- THE "WOW" COMPARISON BOX -->
     <div style="margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap;">
         <div style="flex: 1; border: 4px solid black; padding: 20px; background: var(--aqua); box-shadow: 6px 6px 0px black;">
