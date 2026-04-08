@@ -176,6 +176,78 @@ input, textarea, select { text-align: center; }
 }
 
 
+
+
+
+
+
+
+
+/* --- MOBILE COMPLIANCE OVERRIDES --- */
+@media (max-width: 768px) {
+    /* 1. Stack the Main Layout */
+    .main-container {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 15px !important;
+        gap: 20px !important;
+    }
+
+    /* 2. Scale down the Header */
+    .navbar { padding: 30px 10px !important; }
+    .navbar h1 { font-size: 1.8rem !important; letter-spacing: -1px !important; }
+    .navbar h1 span { border-width: 2px !important; box-shadow: 4px 4px 0px #000 !important; }
+
+    /* 3. Force 1-Column Forms */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    /* 4. Fix Centered Boxes for Mobile */
+    /* Resets the 350px width limit so they fill the screen on mobile */
+    #police_ver, #r_sublet, #ag_place, #t_email, #l_email {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* 5. Adjust Preview Paper */
+    .preview-side {
+        position: static !important; /* Stop floating on mobile */
+        width: 100% !important;
+    }
+    #agreement-paper {
+        padding: 20px !important; /* Reduce huge 60px padding */
+        min-height: auto !important;
+        font-size: 10pt !important;
+    }
+
+    /* 6. Button Sizing */
+    .btn-row {
+        flex-direction: column !important; /* Stack Word and PDF buttons */
+        gap: 10px !important;
+    }
+    .btn-word, .btn-pdf {
+        width: 100% !important;
+        height: 55px !important;
+    }
+
+    /* 7. Footer/MTA Card Adjustments */
+    .preview-side div[style*="margin-top: 30px"] {
+        padding: 15px !important;
+        margin-top: 20px !important;
+    }
+
+    /* 8. Global Card Adjustments */
+    .card { padding: 20px 15px !important; margin-bottom: 20px !important; }
+    .card-title { font-size: 1rem !important; }
+}
+
+/* 9. Prevent horizontal scroll for the entire page */
+html, body {
+    overflow-x: hidden !important;
+    width: 100vw !important;
+}
     </style>
 </head>
 <body>
